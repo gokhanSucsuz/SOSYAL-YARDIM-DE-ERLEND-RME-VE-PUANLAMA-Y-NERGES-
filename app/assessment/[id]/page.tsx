@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { getAssessmentById, Assessment } from '@/lib/db';
 import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info } from 'lucide-react';
 import Link from 'next/link';
-import { SectionCard } from '@/components/ui-components'; // We can adapt or just write simple HTML
+import { SectionCard } from '@/components/ui-components';
 
 export default function AssessmentDetail() {
   const router = useRouter();
@@ -13,12 +13,15 @@ export default function AssessmentDetail() {
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [user, setUser] = useState<any>(null);
+
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
     if (!userStr) {
       router.push('/login');
       return;
     }
+    setUser(JSON.parse(userStr));
     
     const loadData = async () => {
       try {
@@ -35,15 +38,28 @@ export default function AssessmentDetail() {
     loadData();
   }, [router, params.id]);
 
+  const handleApprove = async () => {
+    if (!assessment) return;
+    try {
+      const updated = { ...assessment, status: 'approved' as const };
+      const { saveAssessment } = await import('@/lib/db');
+      await saveAssessment(updated);
+      setAssessment(updated);
+      alert('İnceleme başarıyla onaylandı.');
+    } catch (err) {
+      alert('Onaylama sırasında bir hata oluştu.');
+    }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="animate-pulse font-medium text-slate-500">Yükleniyor...</div></div>;
-  if (!assessment) return <div className="p-8 text-center">Bulunamadı</div>;
+  if (!assessment || !user) return <div className="p-8 text-center">Bulunamadı</div>;
 
   const { data: state, result: calc } = assessment;
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
       {/* Print Styles */}
-      <style dangerouslySetInnerHTML={{__html: `
+      <style>{`
         @media print {
           body { background-color: #ffffff; }
           .no-print { display: none !important; }
@@ -52,7 +68,7 @@ export default function AssessmentDetail() {
           .print-bg { background-color: transparent !important; }
           .min-h-screen { min-height: auto !important; }
         }
-      `}} />
+      `}</style>
 
       {/* Header */}
       <header className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shrink-0 z-10 no-print">
@@ -69,9 +85,26 @@ export default function AssessmentDetail() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          {user.role === 'personnel' && assessment.status !== 'approved' && (
+            <Link 
+              href={`/assessment/${assessment.id}/edit`}
+              className="flex items-center space-x-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium shadow-sm no-print"
+            >
+              <span className="hidden sm:inline">Düzenle</span>
+            </Link>
+          )}
+          {user.role === 'manager' && assessment.status !== 'approved' && (
+            <button 
+              onClick={handleApprove}
+              className="flex items-center space-x-2 bg-emerald-600 text-white border border-emerald-700 px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium shadow-sm no-print"
+            >
+              <CheckCircle2 size={16} />
+              <span className="hidden sm:inline">Onayla</span>
+            </button>
+          )}
           <button 
             onClick={() => window.print()}
-            className="flex items-center space-x-2 bg-slate-800 text-slate-300 border border-slate-700 px-4 py-2 rounded-lg hover:bg-slate-700 hover:text-white transition-colors text-sm font-medium shadow-sm"
+            className="flex items-center space-x-2 bg-slate-800 text-slate-300 border border-slate-700 px-4 py-2 rounded-lg hover:bg-slate-700 hover:text-white transition-colors text-sm font-medium shadow-sm no-print"
           >
             <Printer size={16} />
             <span className="hidden sm:inline">Yazdır</span>
@@ -82,12 +115,29 @@ export default function AssessmentDetail() {
       <main className="flex-1 max-w-5xl mx-auto w-full p-6 lg:p-10 print-full">
         
         {/* Title area */}
-        <div className="mb-8 border-b border-slate-200 pb-6 print:border-slate-800 print:mb-4">
-          <h2 className="text-3xl font-black text-slate-900">{assessment.applicantName}</h2>
-          <p className="text-slate-500 font-medium mt-1">TC Kimlik: {assessment.applicantTc}</p>
-          <div className="mt-4 flex flex-wrap gap-4 text-sm">
-            <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Tarih: {new Date(assessment.date).toLocaleDateString('tr-TR')}</span>
-            <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">İnceleyen: {assessment.personnelName}</span>
+        <div className="mb-8 border-b border-slate-200 pb-6 print:border-slate-800 print:mb-4 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <h2 className="text-3xl font-black text-slate-900">{assessment.applicantName}</h2>
+            <p className="text-slate-500 font-medium mt-1">TC Kimlik: {assessment.applicantTc} {assessment.householdNo && `• Hane No: ${assessment.householdNo}`}</p>
+            {assessment.applicantAddress && <p className="text-slate-600 mt-2 text-sm max-w-2xl">{assessment.applicantAddress}</p>}
+            
+            <div className="mt-4 flex flex-wrap gap-3 text-sm">
+              <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Tarih: {new Date(assessment.date).toLocaleDateString('tr-TR')}</span>
+              <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">İnceleyen: {assessment.personnelName}</span>
+              {assessment.phoneNumber && <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Tel: {assessment.phoneNumber}</span>}
+              {assessment.householdSize && <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Kişi Sayısı: {assessment.householdSize}</span>}
+            </div>
+          </div>
+          <div className="shrink-0 no-print">
+            {assessment.status === 'approved' ? (
+              <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg text-sm font-bold border border-emerald-200">
+                <CheckCircle2 size={16} /> Onaylandı
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg text-sm font-bold border border-amber-200">
+                <Info size={16} /> Onay Bekliyor
+              </span>
+            )}
           </div>
         </div>
 
@@ -130,20 +180,12 @@ export default function AssessmentDetail() {
               <div className="p-5">
                 <ul className="space-y-3">
                   <li className="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
-                    <span className="text-slate-600">Araç Kaydı Kontrolü</span>
-                    <span className="font-bold">{state.check_arac ? 'Yapıldı' : 'Yapılmadı'}</span>
-                  </li>
-                  <li className="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
-                    <span className="text-slate-600">Tapu Kontrolü</span>
-                    <span className="font-bold">{state.check_tapu ? 'Yapıldı' : 'Yapılmadı'}</span>
-                  </li>
-                  <li className="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
-                    <span className="text-slate-600">SGK Kontrolü</span>
-                    <span className="font-bold">{state.check_sgk ? 'Yapıldı' : 'Yapılmadı'}</span>
+                    <span className="text-slate-600">Sistem Kontrolleri</span>
+                    <span className="font-bold text-emerald-600">Yapıldı</span>
                   </li>
                   <li className="flex justify-between items-center text-sm">
                     <span className="text-slate-600">Gerçeğe Aykırı Beyan</span>
-                    <span className={`font-bold ${state.falseStatement ? 'text-red-600' : 'text-emerald-600'}`}>{state.falseStatement ? 'Tespirt Edildi' : 'Yok'}</span>
+                    <span className={`font-bold ${state.falseStatement ? 'text-red-600' : 'text-emerald-600'}`}>{state.falseStatement ? 'Tespit Edildi' : 'Yok'}</span>
                   </li>
                 </ul>
               </div>

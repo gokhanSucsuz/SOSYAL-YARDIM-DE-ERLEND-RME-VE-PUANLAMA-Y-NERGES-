@@ -1,25 +1,19 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { saveAssessment } from '@/lib/db';
+import { saveAssessment, getAssessmentById } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem } from '@/components/ui-components';
 import Link from 'next/link';
 
-export default function NewAssessmentWizard() {
+export default function EditAssessmentWizard() {
   const router = useRouter();
+  const params = useParams();
   const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(0);
-
-  useEffect(() => {
-    const userStr = localStorage.getItem('currentUser');
-    if (!userStr) {
-      router.push('/login');
-    } else {
-      setUser(JSON.parse(userStr));
-    }
-  }, [router]);
+  const [loading, setLoading] = useState(true);
+  const [assessmentId, setAssessmentId] = useState<string | null>(null);
 
   const [state, setState] = useState({
     applicantName: "",
@@ -71,6 +65,54 @@ export default function NewAssessmentWizard() {
     systemChecksDone: false,
     falseStatement: false,
   });
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('currentUser');
+    if (!userStr) {
+      router.push('/login');
+      return;
+    }
+    const currentUser = JSON.parse(userStr);
+    setUser(currentUser);
+
+    const loadData = async () => {
+      try {
+        const id = params.id as string;
+        const data = await getAssessmentById(id);
+        if (data) {
+          if (data.status === 'approved') {
+            alert('Onaylanmış incelemeler düzenlenemez.');
+            router.push(`/assessment/${id}`);
+            return;
+          }
+          if (currentUser.role === 'manager') {
+            alert('Müdürler incelemeleri düzenleyemez, sadece onaylayabilir.');
+            router.push(`/assessment/${id}`);
+            return;
+          }
+          setAssessmentId(data.id);
+          setState(s => ({
+            ...s,
+            ...data.data,
+            applicantName: data.applicantName,
+            applicantTc: data.applicantTc,
+            applicantAddress: data.applicantAddress || "",
+            householdSize: data.householdSize || 1,
+            phoneNumber: data.phoneNumber || "",
+            householdNo: data.householdNo || ""
+          }));
+        } else {
+          router.push('/');
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
+  }, [router, params.id]);
 
   const set = (key: string, value: any) => setState(s => ({ ...s, [key]: value }));
 
@@ -154,11 +196,11 @@ export default function NewAssessmentWizard() {
   const canProceed = step === 0 ? isIdentityValid : (step === 7 ? state.systemChecksDone : true);
 
   const handleSave = async () => {
-    if (!user) return;
+    if (!user || !assessmentId) return;
     try {
       const assessmentData = {
-        id: crypto.randomUUID(),
-        date: new Date().toISOString(),
+        id: assessmentId,
+        date: new Date().toISOString(), // Update date? Or keep old? Let's update since they edited it.
         personnelId: user.id,
         personnelName: user.name,
         applicantName: state.applicantName,
@@ -183,12 +225,13 @@ export default function NewAssessmentWizard() {
         }
       };
       await saveAssessment(assessmentData);
-      router.push(`/assessment/${assessmentData.id}`);
+      router.push(`/assessment/${assessmentId}`);
     } catch (err) {
       alert("Kayıt sırasında hata oluştu!");
     }
   };
 
+  if (loading) return <div className="h-screen bg-slate-50 flex items-center justify-center">Yükleniyor...</div>;
   if (!user) return null;
 
   return (
@@ -196,14 +239,14 @@ export default function NewAssessmentWizard() {
       {/* Header */}
       <header className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shrink-0 z-10">
         <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-2">
+          <Link href={`/assessment/${assessmentId}`} className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-2">
             <ArrowLeft size={20} />
           </Link>
           <div className="bg-blue-600 p-2 rounded hidden sm:block">
             <ShieldCheck className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold leading-tight">YENİ İNCELEME OLUŞTUR</h1>
+            <h1 className="text-lg font-bold leading-tight">İNCELENMEYİ GÜNCELLE</h1>
             <p className="text-xs text-slate-400 font-medium tracking-widest uppercase">Adım {step + 1} / {stepsCount}</p>
           </div>
         </div>

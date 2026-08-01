@@ -18,6 +18,11 @@ export interface Assessment {
   personnelName: string;
   applicantName: string;
   applicantTc: string;
+  applicantAddress?: string;
+  householdSize?: number;
+  phoneNumber?: string;
+  householdNo?: string;
+  status?: 'pending' | 'approved';
   data: any; // Raw state data
   result: AssessmentResult;
 }

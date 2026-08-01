@@ -129,6 +129,7 @@ export default function Dashboard() {
                   <th className="px-6 py-4 font-bold">TC Kimlik</th>
                   {user.role === 'manager' && <th className="px-6 py-4 font-bold">İnceleyen</th>}
                   <th className="px-6 py-4 font-bold">Puan</th>
+                  <th className="px-6 py-4 font-bold">Durum</th>
                   <th className="px-6 py-4 font-bold">Sonuç</th>
                   <th className="px-6 py-4 font-bold text-right">İşlem</th>
                 </tr>
@@ -136,7 +137,7 @@ export default function Dashboard() {
               <tbody className="divide-y divide-slate-100">
                 {assessments.length === 0 ? (
                   <tr>
-                    <td colSpan={user.role === 'manager' ? 7 : 6} className="px-6 py-12 text-center text-slate-500 bg-slate-50/30 font-medium">
+                    <td colSpan={user.role === 'manager' ? 8 : 7} className="px-6 py-12 text-center text-slate-500 bg-slate-50/30 font-medium">
                       Kayıtlı inceleme bulunmuyor.
                     </td>
                   </tr>
@@ -153,6 +154,17 @@ export default function Dashboard() {
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold ${item.result.isRejected ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
                           {item.result.totalScore} Puan
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {item.status === 'approved' ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
+                            Onaylandı
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800">
+                            Bekliyor
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 text-sm font-bold">
                         {item.result.isRejected ? (
