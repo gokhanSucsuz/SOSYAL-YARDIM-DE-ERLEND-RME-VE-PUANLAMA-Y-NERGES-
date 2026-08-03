@@ -5,6 +5,7 @@ export interface AssessmentResult {
   scoreD: number;
   scoreE: number;
   scoreF: number;
+  scoreG?: number;
   totalScore: number;
   assistance: { text: string; amount: number };
   priorities: string[];

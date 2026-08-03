@@ -2,9 +2,12 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { 
+  ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2,
+  Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug
+} from 'lucide-react';
 import { saveAssessment, getAssessmentById } from '@/lib/db';
-import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem } from '@/components/ui-components';
+import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
 
 export default function EditAssessmentWizard() {
@@ -50,13 +53,22 @@ export default function EditAssessmentWizard() {
     d_kiraci: false,
     d_agirHasarli: false,
     d_sagliksiz: false,
-    // E
+    // E - Beyaz Eşya
+    appliance_buzdolabi: 'yeni',
+    appliance_camasir: 'yeni',
+    appliance_bulasik: 'yeni',
+    appliance_firin: 'yeni',
+    appliance_tv: 'yeni',
+    appliance_telefon: 'yeni',
+    appliance_klima: 'yeni',
+    appliance_diger: 'yeni',
+    // F - Sosyal Kırılganlık
     e_kadinReis: false,
     e_bosanmis: false,
     e_esiCezaevinde: false,
     e_siddetMagduru: false,
     e_afetGelirKaybi: false,
-    // F
+    // G - Kanaat
     f_yasamKosullari: 0,
     f_aciliyet: 0,
     f_sosyalDestek: 0,
@@ -156,20 +168,48 @@ export default function EditAssessmentWizard() {
     if (state.d_sagliksiz) scoreD += 6;
     scoreD = Math.min(scoreD, 10);
 
-    // Section E
-    let scoreE = 0;
-    if (state.e_kadinReis) scoreE += 5;
-    if (state.e_bosanmis) scoreE += 3;
-    if (state.e_esiCezaevinde) scoreE += 5;
-    if (state.e_siddetMagduru) scoreE += 6;
-    if (state.e_afetGelirKaybi) scoreE += 5;
-    scoreE = Math.min(scoreE, 10);
+    // Section E: Beyaz Eşya Durumu (Maks 10 Puan)
+    let rawScoreE = 0;
+    if (state.appliance_buzdolabi === 'yok') rawScoreE += 3;
+    else if (state.appliance_buzdolabi === 'eski') rawScoreE += 1.5;
 
-    // Section F
-    let scoreF = state.f_yasamKosullari + state.f_aciliyet + state.f_sosyalDestek + state.f_risk;
-    scoreF = Math.min(scoreF, 20);
+    if (state.appliance_camasir === 'yok') rawScoreE += 3;
+    else if (state.appliance_camasir === 'eski') rawScoreE += 1.5;
 
-    let totalScore = state.falseStatement ? 0 : (scoreA + scoreB + scoreC + scoreD + scoreE + scoreF);
+    if (state.appliance_firin === 'yok') rawScoreE += 2;
+    else if (state.appliance_firin === 'eski') rawScoreE += 1;
+
+    if (state.appliance_bulasik === 'yok') rawScoreE += 1;
+    else if (state.appliance_bulasik === 'eski') rawScoreE += 0.5;
+
+    if (state.appliance_tv === 'yok') rawScoreE += 1;
+    else if (state.appliance_tv === 'eski') rawScoreE += 0.5;
+
+    if (state.appliance_telefon === 'yok') rawScoreE += 1;
+    else if (state.appliance_telefon === 'eski') rawScoreE += 0.5;
+
+    if (state.appliance_klima === 'yok') rawScoreE += 1;
+    else if (state.appliance_klima === 'eski') rawScoreE += 0.5;
+
+    if (state.appliance_diger === 'yok') rawScoreE += 1;
+    else if (state.appliance_diger === 'eski') rawScoreE += 0.5;
+
+    let scoreE = Math.min(10, Math.round(rawScoreE));
+
+    // Section F: Sosyal Kırılganlık (Maks 10 Puan)
+    let scoreF = 0;
+    if (state.e_kadinReis) scoreF += 5;
+    if (state.e_bosanmis) scoreF += 3;
+    if (state.e_esiCezaevinde) scoreF += 5;
+    if (state.e_siddetMagduru) scoreF += 6;
+    if (state.e_afetGelirKaybi) scoreF += 5;
+    scoreF = Math.min(scoreF, 10);
+
+    // Section G: Sosyal İnceleme Kanaati (Maks 20 Puan)
+    let scoreG = state.f_yasamKosullari + state.f_aciliyet + state.f_sosyalDestek + state.f_risk;
+    scoreG = Math.min(scoreG, 20);
+
+    let totalScore = state.falseStatement ? 0 : (scoreA + scoreB + scoreC + scoreD + scoreE + scoreF + scoreG);
 
     let assistance = { text: "Yardım uygun görülmez (veya Ayni)", amount: 0 };
     if (!state.falseStatement) {
@@ -187,20 +227,23 @@ export default function EditAssessmentWizard() {
     if (state.b_sehitYakini || state.b_gazi) priorities.push("Şehit / Gazi Ailesi");
     if (state.d_afetzede || state.e_afetGelirKaybi) priorities.push("Afet Mağduru");
     if (state.b_yasliYalniz) priorities.push("Yaşlı ve Yalnız Yaşayan");
+    if (state.appliance_buzdolabi === 'yok' || state.appliance_camasir === 'yok') {
+      priorities.push("Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)");
+    }
 
-    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, totalScore, assistance, priorities, isRejected: state.falseStatement };
+    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scoreG, totalScore, assistance, priorities, isRejected: state.falseStatement };
   }, [state]);
 
-  const stepsCount = 9;
+  const stepsCount = 10;
   const isIdentityValid = state.applicantName.trim() !== "" && state.applicantTc.length === 11;
-  const canProceed = step === 0 ? isIdentityValid : (step === 7 ? state.systemChecksDone : true);
+  const canProceed = step === 0 ? isIdentityValid : (step === 8 ? state.systemChecksDone : true);
 
   const handleSave = async () => {
     if (!user || !assessmentId) return;
     try {
       const assessmentData = {
         id: assessmentId,
-        date: new Date().toISOString(), // Update date? Or keep old? Let's update since they edited it.
+        date: new Date().toISOString(),
         personnelId: user.id,
         personnelName: user.name,
         applicantName: state.applicantName,
@@ -218,6 +261,7 @@ export default function EditAssessmentWizard() {
           scoreD: calc.scoreD,
           scoreE: calc.scoreE,
           scoreF: calc.scoreF,
+          scoreG: calc.scoreG,
           totalScore: calc.totalScore,
           assistance: calc.assistance,
           priorities: calc.priorities,
@@ -231,7 +275,7 @@ export default function EditAssessmentWizard() {
     }
   };
 
-  if (loading) return <div className="h-screen bg-slate-50 flex items-center justify-center">Yükleniyor...</div>;
+  if (loading) return <div className="h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-600">Yükleniyor...</div>;
   if (!user) return null;
 
   return (
@@ -438,10 +482,90 @@ export default function EditAssessmentWizard() {
             {step === 5 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">E. Sosyal Kırılganlık</h2>
+                  <h2 className="text-2xl font-bold text-slate-800">E. Beyaz Eşya ve Ev Aletleri Durumu</h2>
+                  <p className="text-slate-500 mt-1">Hanedeki temel ev eşyalarının varlık ve yıpranma durumu (Maksimum 10 Puan)</p>
+                </div>
+                <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE}>
+                  <p className="text-xs text-slate-500 mb-4 font-medium">
+                    Her bir eşya için hanedeki mevcudiyet durumunu "Yok", "Var (Eski/Arızalı)" veya "Var (Yeni/İyi)" olarak belirleyiniz.
+                  </p>
+                  <div className="space-y-3">
+                    <ApplianceStatusItem 
+                      label="Buzdolabı" 
+                      icon={Box} 
+                      value={state.appliance_buzdolabi} 
+                      onChange={(v: any) => set('appliance_buzdolabi', v)} 
+                      pointsYok={3} 
+                      pointsEski={1.5} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Çamaşır Makinesi" 
+                      icon={Shirt} 
+                      value={state.appliance_camasir} 
+                      onChange={(v: any) => set('appliance_camasir', v)} 
+                      pointsYok={3} 
+                      pointsEski={1.5} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Fırın / Ocak" 
+                      icon={Flame} 
+                      value={state.appliance_firin} 
+                      onChange={(v: any) => set('appliance_firin', v)} 
+                      pointsYok={2} 
+                      pointsEski={1} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Bulaşık Makinesi" 
+                      icon={Sparkles} 
+                      value={state.appliance_bulasik} 
+                      onChange={(v: any) => set('appliance_bulasik', v)} 
+                      pointsYok={1} 
+                      pointsEski={0.5} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Televizyon (TV)" 
+                      icon={Tv} 
+                      value={state.appliance_tv} 
+                      onChange={(v: any) => set('appliance_tv', v)} 
+                      pointsYok={1} 
+                      pointsEski={0.5} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Akıllı / Sabit Telefon" 
+                      icon={Smartphone} 
+                      value={state.appliance_telefon} 
+                      onChange={(v: any) => set('appliance_telefon', v)} 
+                      pointsYok={1} 
+                      pointsEski={0.5} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Klima / Isıtıcı" 
+                      icon={Wind} 
+                      value={state.appliance_klima} 
+                      onChange={(v: any) => set('appliance_klima', v)} 
+                      pointsYok={1} 
+                      pointsEski={0.5} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Diğer Temel Ev Aletleri (Süpürge vb.)" 
+                      icon={Plug} 
+                      value={state.appliance_diger} 
+                      onChange={(v: any) => set('appliance_diger', v)} 
+                      pointsYok={1} 
+                      pointsEski={0.5} 
+                    />
+                  </div>
+                </SectionCard>
+              </div>
+            )}
+
+            {step === 6 && (
+              <div className="flex-1">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-slate-800">F. Sosyal Kırılganlık</h2>
                   <p className="text-slate-500 mt-1">Aile içi kırılganlık durumları (Maksimum 10 Puan)</p>
                 </div>
-                <SectionCard title="E. Sosyal Kırılganlık" maxScore={10} currentScore={calc.scoreE}>
+                <SectionCard title="F. Sosyal Kırılganlık" maxScore={10} currentScore={calc.scoreF}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <CheckboxItem label="Aile içi şiddet mağduru" checked={state.e_siddetMagduru} onChange={(v:any) => set('e_siddetMagduru', v)} points={6} />
                     <CheckboxItem label="Kadın hane reisi" checked={state.e_kadinReis} onChange={(v:any) => set('e_kadinReis', v)} points={5} />
@@ -453,13 +577,13 @@ export default function EditAssessmentWizard() {
               </div>
             )}
 
-            {step === 6 && (
+            {step === 7 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">F. Sosyal İnceleme Kanaati</h2>
+                  <h2 className="text-2xl font-bold text-slate-800">G. Sosyal İnceleme Kanaati</h2>
                   <p className="text-slate-500 mt-1">Personelin genel kanaat puanları (Maksimum 20 Puan)</p>
                 </div>
-                <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreF}>
+                <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreG}>
                    <p className="text-sm text-slate-500 mb-4 font-medium">Sosyal inceleme görevlisinin hanedeki genel kanaatine göre her alan için 0 ile 5 arası puanlama yapınız.</p>
                    <div className="space-y-1">
                      <ScoreButtons label="Yaşam Koşulları (Fiziki vb.)" value={state.f_yasamKosullari} onChange={(v:any) => set('f_yasamKosullari', v)} />
@@ -471,7 +595,7 @@ export default function EditAssessmentWizard() {
               </div>
             )}
 
-            {step === 7 && (
+            {step === 8 && (
               <div className="flex-1">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-slate-800">Sistem Kontrolleri</h2>
@@ -521,15 +645,15 @@ export default function EditAssessmentWizard() {
               </div>
             )}
 
-            {step === 8 && (
+            {step === 9 && (
               <div className="flex-1 flex flex-col justify-center items-center py-10">
                 <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center w-full max-w-lg">
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-600 mb-6">
                     <Save size={32} />
                   </div>
-                  <h2 className="text-3xl font-bold text-slate-800 mb-2">İncelemeyi Kaydet</h2>
+                  <h2 className="text-3xl font-bold text-slate-800 mb-2">Güncellemeleri Kaydet</h2>
                   <p className="text-slate-500 mb-8">
-                    Tüm adımları tamamladınız. Formu sisteme kaydederek değerlendirme sürecine sunabilirsiniz.
+                    Değişiklikleri kaydederek inceleme bilgilerini güncelleyebilirsiniz.
                   </p>
                   
                   <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 mb-8">
@@ -544,7 +668,7 @@ export default function EditAssessmentWizard() {
                     onClick={handleSave}
                     className="w-full bg-blue-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition-colors flex justify-center items-center"
                   >
-                    Kaydet ve Bitir
+                    Değişiklikleri Kaydet
                   </button>
                 </div>
               </div>
@@ -553,6 +677,7 @@ export default function EditAssessmentWizard() {
             {/* Navigation Actions */}
             <div className="mt-8 pt-6 border-t border-slate-200 flex justify-between items-center pb-8">
               <button
+                type="button"
                 onClick={() => setStep(s => Math.max(0, s - 1))}
                 disabled={step === 0}
                 className={`flex items-center px-6 py-3 rounded-xl font-medium transition-colors ${step === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-200 bg-slate-100'}`}
@@ -562,6 +687,7 @@ export default function EditAssessmentWizard() {
               
               {step < stepsCount - 1 && (
                 <button
+                  type="button"
                   onClick={() => setStep(s => Math.min(stepsCount - 1, s + 1))}
                   disabled={!canProceed}
                   className={`flex items-center px-6 py-3 rounded-xl font-bold transition-all shadow-sm ${!canProceed ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200'}`}

@@ -93,14 +93,74 @@ export const CounterItem = ({ label, value, onChange, pointsPerItem }: any) => (
     </div>
     <div className="flex items-center space-x-3">
       <button 
+        type="button"
         onClick={() => onChange(Math.max(0, value - 1))}
         className="w-8 h-8 rounded-full bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100 flex items-center justify-center font-bold"
       >-</button>
       <span className="w-6 text-center font-bold text-slate-800">{value}</span>
       <button 
+        type="button"
         onClick={() => onChange(value + 1)}
         className="w-8 h-8 rounded-full bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100 flex items-center justify-center font-bold"
       >+</button>
     </div>
   </div>
 );
+
+export const ApplianceStatusItem = ({ label, icon: Icon, value = 'yeni', onChange, pointsYok, pointsEski }: any) => {
+  const currentVal = value || 'yeni';
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors">
+      <div className="flex items-center space-x-3 mb-3 sm:mb-0">
+        {Icon && (
+          <div className="p-2.5 bg-slate-100 text-slate-600 rounded-lg shrink-0">
+            <Icon size={20} />
+          </div>
+        )}
+        <div>
+          <h4 className="text-sm font-bold text-slate-800">{label}</h4>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {currentVal === 'yok' && <span className="text-red-600 font-semibold">Yok (Mevcut Değil) • +{pointsYok} Puan</span>}
+            {currentVal === 'eski' && <span className="text-amber-600 font-semibold">Var (Eski / Arızalı) • +{pointsEski} Puan</span>}
+            {currentVal === 'yeni' && <span className="text-slate-400 font-medium">Var (Yeni / Çalışır) • 0 Puan</span>}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-lg shrink-0 self-start sm:self-auto">
+        <button
+          type="button"
+          onClick={() => onChange('yok')}
+          className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+            currentVal === 'yok'
+              ? 'bg-red-600 text-white shadow-sm'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+          }`}
+        >
+          Yok
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange('eski')}
+          className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+            currentVal === 'eski'
+              ? 'bg-amber-500 text-white shadow-sm'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+          }`}
+        >
+          Var (Eski)
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange('yeni')}
+          className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+            currentVal === 'yeni'
+              ? 'bg-emerald-600 text-white shadow-sm'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+          }`}
+        >
+          Var (Yeni)
+        </button>
+      </div>
+    </div>
+  );
+};

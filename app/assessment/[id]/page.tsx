@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getAssessmentById, Assessment } from '@/lib/db';
-import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info } from 'lucide-react';
+import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, Box, Shirt, Flame, Sparkles, Tv, Smartphone, Wind, Plug } from 'lucide-react';
 import Link from 'next/link';
 import { SectionCard } from '@/components/ui-components';
 
@@ -55,6 +55,12 @@ export default function AssessmentDetail() {
   if (!assessment || !user) return <div className="p-8 text-center">Bulunamadı</div>;
 
   const { data: state, result: calc } = assessment;
+
+  const getApplianceLabel = (val: string) => {
+    if (val === 'yok') return <span className="text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200">Yok</span>;
+    if (val === 'eski') return <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Var (Eski / Arızalı)</span>;
+    return <span className="text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Var (Yeni / Çalışır)</span>;
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
@@ -145,35 +151,87 @@ export default function AssessmentDetail() {
           {/* Main Info */}
           <div className="flex-1 space-y-6">
             
+            {/* Score Breakdown Grid */}
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden print-break-inside-avoid print:border-slate-300">
-              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 print:bg-white"><h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">Puan Detayları</h3></div>
-              <div className="p-5 grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 print:bg-white flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">Puan Detayları</h3>
+                <span className="text-xs font-bold text-slate-500">Maks Toplam 130</span>
+              </div>
+              <div className="p-5 grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
                   <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">A. Ekonomik</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreA} Puan</p>
+                  <p className="text-lg font-bold text-slate-800">{calc.scoreA} <span className="text-xs font-normal text-slate-400">/ 40</span></p>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">B. Dezavantajlılık</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreB} Puan</p>
+                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">B. Dezavantaj</p>
+                  <p className="text-lg font-bold text-slate-800">{calc.scoreB} <span className="text-xs font-normal text-slate-400">/ 30</span></p>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
                   <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">C. Çocuk/Eğitim</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreC} Puan</p>
+                  <p className="text-lg font-bold text-slate-800">{calc.scoreC} <span className="text-xs font-normal text-slate-400">/ 10</span></p>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
                   <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">D. Barınma</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreD} Puan</p>
+                  <p className="text-lg font-bold text-slate-800">{calc.scoreD} <span className="text-xs font-normal text-slate-400">/ 10</span></p>
+                </div>
+                <div className="p-3 bg-blue-50/50 rounded-lg border border-blue-100 print:bg-white print:border print:border-slate-200">
+                  <p className="text-[10px] uppercase font-bold text-blue-600 mb-1">E. Beyaz Eşya</p>
+                  <p className="text-lg font-bold text-blue-900">{calc.scoreE} <span className="text-xs font-normal text-blue-400">/ 10</span></p>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">E. Kırılganlık</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreE} Puan</p>
+                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">F. Kırılganlık</p>
+                  <p className="text-lg font-bold text-slate-800">{calc.scoreF} <span className="text-xs font-normal text-slate-400">/ 10</span></p>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">F. Kanaat</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreF} Puan</p>
+                <div className="p-3 bg-slate-50 rounded-lg col-span-2 print:bg-white print:border print:border-slate-200">
+                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">G. İnceleme Kanaati</p>
+                  <p className="text-lg font-bold text-slate-800">{calc.scoreG ?? 0} <span className="text-xs font-normal text-slate-400">/ 20</span></p>
                 </div>
               </div>
             </div>
+
+            {/* Beyaz Eşya Details Card */}
+            {state && (
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden print-break-inside-avoid print:border-slate-300">
+                <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 print:bg-white flex justify-between items-center">
+                  <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">E. Beyaz Eşya ve Ev Aletleri Durumu</h3>
+                  <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Bölüm Puanı: {calc.scoreE} / 10</span>
+                </div>
+                <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <span className="font-medium text-slate-700 flex items-center gap-2"><Box size={16} className="text-slate-400"/> Buzdolabı</span>
+                    {getApplianceLabel(state.appliance_buzdolabi || 'yeni')}
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <span className="font-medium text-slate-700 flex items-center gap-2"><Shirt size={16} className="text-slate-400"/> Çamaşır Makinesi</span>
+                    {getApplianceLabel(state.appliance_camasir || 'yeni')}
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <span className="font-medium text-slate-700 flex items-center gap-2"><Flame size={16} className="text-slate-400"/> Fırın / Ocak</span>
+                    {getApplianceLabel(state.appliance_firin || 'yeni')}
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <span className="font-medium text-slate-700 flex items-center gap-2"><Sparkles size={16} className="text-slate-400"/> Bulaşık Makinesi</span>
+                    {getApplianceLabel(state.appliance_bulasik || 'yeni')}
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <span className="font-medium text-slate-700 flex items-center gap-2"><Tv size={16} className="text-slate-400"/> Televizyon (TV)</span>
+                    {getApplianceLabel(state.appliance_tv || 'yeni')}
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <span className="font-medium text-slate-700 flex items-center gap-2"><Smartphone size={16} className="text-slate-400"/> Telefon</span>
+                    {getApplianceLabel(state.appliance_telefon || 'yeni')}
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <span className="font-medium text-slate-700 flex items-center gap-2"><Wind size={16} className="text-slate-400"/> Klima / Isıtıcı</span>
+                    {getApplianceLabel(state.appliance_klima || 'yeni')}
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <span className="font-medium text-slate-700 flex items-center gap-2"><Plug size={16} className="text-slate-400"/> Diğer Ev Aletleri</span>
+                    {getApplianceLabel(state.appliance_diger || 'yeni')}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden print-break-inside-avoid print:border-slate-300">
               <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 print:bg-white"><h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">Güvenlik ve Kontroller</h3></div>
@@ -211,7 +269,7 @@ export default function AssessmentDetail() {
               </div>
             </div>
 
-            {calc.priorities.length > 0 && !calc.isRejected && (
+            {calc.priorities && calc.priorities.length > 0 && !calc.isRejected && (
               <div className="bg-white p-6 rounded-xl border border-slate-200 print:border-slate-300 print-break-inside-avoid">
                 <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">Öncelik Durumu</h4>
                 <ul className="space-y-2">
