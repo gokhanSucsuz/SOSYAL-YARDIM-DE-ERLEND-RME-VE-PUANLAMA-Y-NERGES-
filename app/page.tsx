@@ -99,51 +99,53 @@ export default function Dashboard() {
       `}</style>
 
       {/* Screen Header */}
-      <header className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shrink-0 z-10 no-print">
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-600 p-2 rounded">
-            <ShieldCheck className="w-6 h-6 text-white" />
+      <header className="bg-slate-900 text-white px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shrink-0 z-10 no-print">
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-600 p-2 rounded-xl shrink-0">
+            <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold leading-tight">SOSYAL YARDIM DEĞERLENDİRME VE İNCELEME SİSTEMİ</h1>
-            <p className="text-xs text-slate-400 font-medium tracking-widest uppercase">
+            <h1 className="text-sm sm:text-lg font-bold leading-tight">SOSYAL YARDIM DEĞERLENDİRME VE İNCELEME SİSTEMİ</h1>
+            <p className="text-[10px] sm:text-xs text-slate-400 font-medium tracking-widest uppercase">
               {user.role === 'manager' ? 'Müdür Yetkilisi Yönetim Paneli' : 'Personel Paneli'}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
           <Link
             href="/guide"
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border border-slate-700 mr-2"
+            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-bold px-3 py-2 rounded-xl transition-colors border border-slate-700"
             title="Puanlama ve İnceleme Kılavuzu"
           >
-            <BookOpen size={16} className="text-blue-400" />
-            <span className="hidden sm:inline">Metodoloji Kılavuzu</span>
+            <BookOpen size={16} className="text-blue-400 shrink-0" />
+            <span>Kılavuz & Metodoloji</span>
           </Link>
-          <div className="text-right border-r border-slate-700 pr-4 mr-1">
-            <p className="text-xs text-slate-400">{user.role === 'manager' ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
-            <p className="text-sm font-semibold">{user.name}</p>
+          <div className="flex items-center gap-3">
+            <div className="text-right border-r border-slate-700 pr-3">
+              <p className="text-[10px] text-slate-400">{user.role === 'manager' ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
+              <p className="text-xs sm:text-sm font-semibold truncate max-w-[120px]">{user.name}</p>
+            </div>
+            <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-white transition-colors active:scale-95 touch-manipulation" title="Çıkış Yap">
+              <LogOut size={20} />
+            </button>
           </div>
-          <button onClick={handleLogout} className="text-slate-400 hover:text-white transition-colors" title="Çıkış Yap">
-            <LogOut size={20} />
-          </button>
         </div>
       </header>
       
       {/* Screen Main */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 lg:p-8 space-y-6 no-print">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-5 no-print">
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-black text-slate-900">Gösterge Paneli</h2>
-            <p className="text-slate-500 text-sm font-medium">Hane inceleme ziyaretleri, onay süreçleri ve resmi raporlama.</p>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900">Gösterge Paneli</h2>
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">Hane inceleme ziyaretleri, onay süreçleri ve resmi raporlama.</p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto">
             {user.role === 'manager' && (
               <button
                 onClick={handlePrintApprovedList}
-                className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-md shadow-emerald-950/20"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-md shadow-emerald-950/20 touch-manipulation"
               >
                 <Printer size={18} />
                 <span>Onaylı Liste PDF Çıktısı Al ({approvedCount})</span>
@@ -151,7 +153,7 @@ export default function Dashboard() {
             )}
 
             {user.role === 'personnel' && (
-              <Link href="/assessment/new" className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-bold text-sm transition-colors shadow-sm shadow-blue-200">
+              <Link href="/assessment/new" className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 active:scale-95 font-extrabold text-sm transition-all shadow-md shadow-blue-200 touch-manipulation">
                 <Plus size={18} />
                 Yeni İnceleme Başlat
               </Link>

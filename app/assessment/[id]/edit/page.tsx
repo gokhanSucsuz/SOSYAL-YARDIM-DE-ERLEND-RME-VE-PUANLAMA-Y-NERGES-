@@ -235,6 +235,19 @@ export default function EditAssessmentWizard() {
   }, [state]);
 
   const stepsCount = 10;
+  const stepNames = [
+    "1. Kimlik",
+    "2. Gelir (A)",
+    "3. Dezavantaj (B)",
+    "4. Çocuk (C)",
+    "5. Barınma (D)",
+    "6. Eşya (E)",
+    "7. Sosyal (F)",
+    "8. Kanaat (G)",
+    "9. Kontrol",
+    "10. Kaydet"
+  ];
+
   const isIdentityValid = state.applicantName.trim() !== "" && state.applicantTc.length === 11;
   const canProceed = step === 0 ? isIdentityValid : (step === 8 ? state.systemChecksDone : true);
 
@@ -279,36 +292,61 @@ export default function EditAssessmentWizard() {
   if (!user) return null;
 
   return (
-    <div className="h-screen bg-slate-50 font-sans flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
       {/* Header */}
-      <header className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shrink-0 z-10">
-        <div className="flex items-center gap-4">
-          <Link href={`/assessment/${assessmentId}`} className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-2">
+      <header className="bg-slate-900 text-white px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-20">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link href={`/assessment/${assessmentId}`} className="p-2 hover:bg-slate-800 rounded-xl transition-colors active:scale-95 touch-manipulation">
             <ArrowLeft size={20} />
           </Link>
-          <div className="bg-blue-600 p-2 rounded hidden sm:block">
+          <div className="bg-blue-600 p-2 rounded-xl hidden sm:block">
             <ShieldCheck className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold leading-tight">İNCELENMEYİ GÜNCELLE</h1>
-            <p className="text-xs text-slate-400 font-medium tracking-widest uppercase">Adım {step + 1} / {stepsCount}</p>
+            <h1 className="text-sm sm:text-lg font-bold leading-tight uppercase">İncelemeyi Güncelle</h1>
+            <p className="text-[11px] text-slate-400 font-medium">Adım {step + 1} / {stepsCount}: <span className="text-blue-400 font-extrabold">{stepNames[step]}</span></p>
           </div>
         </div>
-        <div className="text-right border-l border-slate-700 pl-4">
-          <p className="text-xs text-slate-400">İnceleyen Personel</p>
-          <p className="text-sm font-semibold">{user.name}</p>
+        <div className="text-right border-l border-slate-700 pl-3 shrink-0">
+          <p className="text-[10px] text-slate-400">Görevli Personel</p>
+          <p className="text-xs sm:text-sm font-semibold truncate max-w-[110px] sm:max-w-none">{user.name}</p>
         </div>
       </header>
 
       {/* Progress Bar */}
-      <div className="h-1 bg-slate-200 shrink-0">
+      <div className="h-1.5 bg-slate-200 shrink-0">
         <div className="h-full bg-blue-600 transition-all duration-300 ease-out" style={{ width: `${((step + 1) / stepsCount) * 100}%` }}></div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
-        
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6 lg:p-10 flex flex-col items-center">
+      {/* Touch-Friendly Step Pill Navigation */}
+      <div className="bg-slate-900 border-b border-slate-800 px-3 py-2 flex items-center gap-1.5 overflow-x-auto shrink-0 shadow-inner">
+        {stepNames.map((name, idx) => {
+          const isActive = step === idx;
+          const isPassed = step > idx;
+          return (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => {
+                if (idx === 0 || isPassed || canProceed) setStep(idx);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all touch-manipulation shrink-0 ${
+                isActive
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-900/50'
+                  : isPassed
+                  ? 'bg-slate-800 text-blue-300 hover:bg-slate-700'
+                  : 'bg-slate-850 text-slate-400 hover:bg-slate-800'
+              }`}
+            >
+              {name}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Main Content Scrollable Area */}
+      <div className="flex-1 flex flex-col pb-28">
+        <main className="flex-1 p-4 sm:p-6 lg:p-10 flex flex-col items-center">
           <div className="w-full max-w-3xl flex-1 flex flex-col">
             
             {step === 0 && (
@@ -716,31 +754,50 @@ export default function EditAssessmentWizard() {
               </div>
             )}
 
-            {/* Navigation Actions */}
-            <div className="mt-8 pt-6 border-t border-slate-200 flex justify-between items-center pb-8">
-              <button
-                type="button"
-                onClick={() => setStep(s => Math.max(0, s - 1))}
-                disabled={step === 0}
-                className={`flex items-center px-6 py-3 rounded-xl font-medium transition-colors ${step === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-200 bg-slate-100'}`}
-              >
-                <ChevronLeft size={20} className="mr-2" /> Geri
-              </button>
-              
-              {step < stepsCount - 1 && (
-                <button
-                  type="button"
-                  onClick={() => setStep(s => Math.min(stepsCount - 1, s + 1))}
-                  disabled={!canProceed}
-                  className={`flex items-center px-6 py-3 rounded-xl font-bold transition-all shadow-sm ${!canProceed ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200'}`}
-                >
-                  Sonraki Adım <ChevronRight size={20} className="ml-2" />
-                </button>
-              )}
-            </div>
-            
           </div>
         </main>
+      </div>
+
+      {/* Sticky Bottom Navigation Bar for Mobile Ergonomics */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 sm:p-4 shadow-xl z-30 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => setStep(s => Math.max(0, s - 1))}
+          disabled={step === 0}
+          className={`flex items-center justify-center px-4 py-3 rounded-xl font-bold text-sm min-h-[48px] transition-all active:scale-95 touch-manipulation ${
+            step === 0 ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
+        >
+          <ChevronLeft size={20} className="mr-1" /> Geri
+        </button>
+        
+        <div className="text-center">
+          <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Anlık Puan</span>
+          <span className="text-sm sm:text-base font-black text-blue-700">{calc.totalScore} Puan</span>
+        </div>
+
+        {step < stepsCount - 1 ? (
+          <button
+            type="button"
+            onClick={() => setStep(s => Math.min(stepsCount - 1, s + 1))}
+            disabled={!canProceed}
+            className={`flex items-center justify-center px-5 py-3 rounded-xl font-extrabold text-sm min-h-[48px] transition-all shadow-md active:scale-95 touch-manipulation ${
+              !canProceed
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200'
+            }`}
+          >
+            Sonraki Adım <ChevronRight size={20} className="ml-1" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleSave}
+            className="flex items-center justify-center px-5 py-3 rounded-xl font-extrabold text-sm min-h-[48px] bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-md active:scale-95 touch-manipulation"
+          >
+            <Save size={18} className="mr-1.5" /> Değişiklikleri Kaydet
+          </button>
+        )}
       </div>
     </div>
   );
