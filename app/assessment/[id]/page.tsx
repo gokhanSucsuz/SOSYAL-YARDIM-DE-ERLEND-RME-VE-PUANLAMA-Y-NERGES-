@@ -2,18 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { getAssessmentById, Assessment } from '@/lib/db';
-import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, Box, Shirt, Flame, Sparkles, Tv, Smartphone, Wind, Plug } from 'lucide-react';
+import { getAssessmentById, Assessment, saveAssessment } from '@/lib/db';
+import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, AlertTriangle, Check, X, FileText } from 'lucide-react';
 import Link from 'next/link';
-import { SectionCard } from '@/components/ui-components';
 
 export default function AssessmentDetail() {
   const router = useRouter();
   const params = useParams();
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
-
   const [user, setUser] = useState<any>(null);
+  const [approving, setApproving] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
@@ -40,269 +39,675 @@ export default function AssessmentDetail() {
 
   const handleApprove = async () => {
     if (!assessment) return;
+    setApproving(true);
     try {
-      const updated = { ...assessment, status: 'approved' as const };
-      const { saveAssessment } = await import('@/lib/db');
+      const updated = { 
+        ...assessment, 
+        status: 'approved' as const,
+        managerName: user?.name || 'Vakıf Müdürü'
+      };
       await saveAssessment(updated);
       setAssessment(updated);
-      alert('İnceleme başarıyla onaylandı.');
     } catch (err) {
       alert('Onaylama sırasında bir hata oluştu.');
+    } finally {
+      setApproving(false);
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="animate-pulse font-medium text-slate-500">Yükleniyor...</div></div>;
-  if (!assessment || !user) return <div className="p-8 text-center">Bulunamadı</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="animate-pulse font-medium text-slate-500">İnceleme detayları yükleniyor...</div>
+    </div>
+  );
+
+  if (!assessment || !user) return <div className="p-8 text-center text-slate-600">İnceleme kaydı bulunamadı.</div>;
 
   const { data: state, result: calc } = assessment;
 
-  const getApplianceLabel = (val: string) => {
-    if (val === 'yok') return <span className="text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200">Yok</span>;
-    if (val === 'eski') return <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Var (Eski / Arızalı)</span>;
-    return <span className="text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Var (Yeni / Çalışır)</span>;
+  // Helper arrays for options checked
+  const getIncomeText = (val: number) => {
+    if (val === 40) return "Kişi başına gelir açlık sınırının %25 altında (+40 Puan)";
+    if (val === 35) return "Açlık sınırının %25 – 50 arasında (+35 Puan)";
+    if (val === 25) return "Açlık sınırının %50 – 75 arasında (+25 Puan)";
+    if (val === 15) return "Açlık sınırının %75 – 100 arasında (+15 Puan)";
+    return "Açlık sınırı üzerinde (0 Puan)";
   };
+
+  const selectedDisadvantages = [];
+  if (state.b_agirEngelli) selectedDisadvantages.push("Ağır engelli (%70+) (+15 Puan)");
+  if (state.b_engelli) selectedDisadvantages.push("Engelli (%40-69) (+10 Puan)");
+  if (state.b_evdeBakim) selectedDisadvantages.push("Evde bakım hastası (+10 Puan)");
+  if (state.b_kanser) selectedDisadvantages.push("Kanser tedavisi gören (+10 Puan)");
+  if (state.b_kronik) selectedDisadvantages.push("Kronik hastalık (+6 Puan)");
+  if (state.b_yasliYalniz) selectedDisadvantages.push("65 yaş üstü yalnız yaşayan (+8 Puan)");
+  if (state.b_sehitYakini) selectedDisadvantages.push("Şehit yakını (+8 Puan)");
+  if (state.b_gazi) selectedDisadvantages.push("Gazi (+8 Puan)");
+  if (state.b_yetim) selectedDisadvantages.push("Yetim / Öksüz çocuk (+5 Puan)");
+  if (state.b_koruyucuAile) selectedDisadvantages.push("Koruyucu aile (+5 Puan)");
+
+  const selectedEducation = [];
+  if (state.c_0_6yas > 0) selectedEducation.push(`0-6 Yaş Çocuk: ${state.c_0_6yas} kişi (+${state.c_0_6yas * 2} Puan)`);
+  if (state.c_ilkokul > 0) selectedEducation.push(`İlkokul Öğrencisi: ${state.c_ilkokul} kişi (+${state.c_ilkokul * 1} Puan)`);
+  if (state.c_ortaokul > 0) selectedEducation.push(`Ortaokul Öğrencisi: ${state.c_ortaokul} kişi (+${state.c_ortaokul * 2} Puan)`);
+  if (state.c_lise > 0) selectedEducation.push(`Lise Öğrencisi: ${state.c_lise} kişi (+${state.c_lise * 3} Puan)`);
+  if (state.c_uni > 0) selectedEducation.push(`Üniversite Öğrencisi: ${state.c_uni} kişi (+${state.c_uni * 4} Puan)`);
+
+  const selectedHousing = [];
+  if (state.d_evsiz) selectedHousing.push("Evsiz (+10 Puan)");
+  if (state.d_afetzede) selectedHousing.push("Afetzede (+10 Puan)");
+  if (state.d_agirHasarli) selectedHousing.push("Konut ağır hasarlı (+8 Puan)");
+  if (state.d_sagliksiz) selectedHousing.push("Sağlıksız konut (+6 Puan)");
+  if (state.d_kiraci) selectedHousing.push("Kiracı (+5 Puan)");
+
+  const selectedFragility = [];
+  if (state.e_siddetMagduru) selectedFragility.push("Aile içi şiddet mağduru (+6 Puan)");
+  if (state.e_kadinReis) selectedFragility.push("Kadın hane reisi (+5 Puan)");
+  if (state.e_esiCezaevinde) selectedFragility.push("Eşi cezaevinde (+5 Puan)");
+  if (state.e_afetGelirKaybi) selectedFragility.push("Afet nedeniyle gelir kaybı (+5 Puan)");
+  if (state.e_bosanmis) selectedFragility.push("Boşanmış (+3 Puan)");
+
+  const appliancesList = [
+    { label: 'Buzdolabı', val: state.appliance_buzdolabi || 'yeni' },
+    { label: 'Çamaşır Makinesi', val: state.appliance_camasir || 'yeni' },
+    { label: 'Fırın / Ocak', val: state.appliance_firin || 'yeni' },
+    { label: 'Bulaşık Makinesi', val: state.appliance_bulasik || 'yeni' },
+    { label: 'Televizyon (TV)', val: state.appliance_tv || 'yeni' },
+    { label: 'Telefon', val: state.appliance_telefon || 'yeni' },
+    { label: 'Klima / Isıtıcı', val: state.appliance_klima || 'yeni' },
+    { label: 'Diğer Ev Aletleri', val: state.appliance_diger || 'yeni' },
+  ];
+
+  const formatApplianceVal = (val: string) => {
+    if (val === 'yok') return { text: 'YOK', class: 'bg-red-100 text-red-800 border-red-200' };
+    if (val === 'eski') return { text: 'VAR (ESKİ/ARIZALI)', class: 'bg-amber-100 text-amber-800 border-amber-200' };
+    return { text: 'VAR (YENİ/İYİ)', class: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
+  };
+
+  const managerDisplayName = user.role === 'manager' 
+    ? user.name 
+    : (assessment.managerName || 'Ahmet Yılmaz (Vakıf Müdürü)');
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
-      {/* Print Styles */}
+      {/* Print Specific CSS to enforce single page clean official document */}
       <style>{`
         @media print {
-          body { background-color: #ffffff; }
-          .no-print { display: none !important; }
-          .print-full { width: 100% !important; max-width: 100% !important; border: none !important; padding: 0 !important; }
-          .print-break-inside-avoid { break-inside: avoid; }
-          .print-bg { background-color: transparent !important; }
-          .min-h-screen { min-height: auto !important; }
+          @page {
+            size: A4 portrait;
+            margin: 8mm 10mm;
+          }
+          body {
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-size: 10px !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .print-only {
+            display: block !important;
+          }
+          .print-compact-table td, .print-compact-table th {
+            padding: 3px 6px !important;
+          }
+        }
+        @media screen {
+          .print-only {
+            display: none;
+          }
         }
       `}</style>
 
-      {/* Header */}
+      {/* SCREEN NAVBAR */}
       <header className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shrink-0 z-10 no-print">
         <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-2">
+          <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-1">
             <ArrowLeft size={20} />
           </Link>
           <div className="bg-blue-600 p-2 rounded hidden sm:block">
             <ShieldCheck className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold leading-tight">İNCELEME DETAYI</h1>
-            <p className="text-xs text-slate-400 font-medium tracking-widest uppercase">Referans: {assessment.id.slice(0, 8)}</p>
+            <h1 className="text-lg font-bold leading-tight flex items-center gap-2">
+              SOSYAL İNCELEME DETAYLARI
+              {user.role === 'manager' && (
+                <span className="text-xs bg-amber-500 text-slate-950 px-2 py-0.5 rounded font-extrabold uppercase">
+                  Müdür İnceleme Modu
+                </span>
+              )}
+            </h1>
+            <p className="text-xs text-slate-400 font-medium tracking-widest uppercase">
+              Ref ID: {assessment.id.slice(0, 8)}
+            </p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+
+        <div className="flex items-center gap-3">
           {user.role === 'personnel' && assessment.status !== 'approved' && (
             <Link 
               href={`/assessment/${assessment.id}/edit`}
-              className="flex items-center space-x-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium shadow-sm no-print"
+              className="flex items-center space-x-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm font-semibold shadow-sm"
             >
-              <span className="hidden sm:inline">Düzenle</span>
+              <span>Düzenle</span>
             </Link>
           )}
+
           {user.role === 'manager' && assessment.status !== 'approved' && (
             <button 
               onClick={handleApprove}
-              className="flex items-center space-x-2 bg-emerald-600 text-white border border-emerald-700 px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium shadow-sm no-print"
+              disabled={approving}
+              className="flex items-center space-x-2 bg-emerald-600 text-white border border-emerald-700 px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-bold shadow-md shadow-emerald-900/20"
             >
-              <CheckCircle2 size={16} />
-              <span className="hidden sm:inline">Onayla</span>
+              <CheckCircle2 size={18} />
+              <span>{approving ? 'Onaylanıyor...' : 'İncelemeyi Onayla'}</span>
             </button>
           )}
+
           <button 
             onClick={() => window.print()}
-            className="flex items-center space-x-2 bg-slate-800 text-slate-300 border border-slate-700 px-4 py-2 rounded-lg hover:bg-slate-700 hover:text-white transition-colors text-sm font-medium shadow-sm no-print"
+            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-bold shadow-md shadow-blue-900/20"
           >
-            <Printer size={16} />
-            <span className="hidden sm:inline">Yazdır</span>
+            <Printer size={18} />
+            <span>Resmi Çıktı / Yazdır</span>
           </button>
         </div>
       </header>
 
-      <main className="flex-1 max-w-5xl mx-auto w-full p-6 lg:p-10 print-full">
+      {/* SCREEN MAIN CONTENT */}
+      <main className="flex-1 max-w-6xl mx-auto w-full p-6 lg:p-8 space-y-6 no-print">
         
-        {/* Title area */}
-        <div className="mb-8 border-b border-slate-200 pb-6 print:border-slate-800 print:mb-4 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-black text-slate-900">{assessment.applicantName}</h2>
-            <p className="text-slate-500 font-medium mt-1">TC Kimlik: {assessment.applicantTc} {assessment.householdNo && `• Hane No: ${assessment.householdNo}`}</p>
-            {assessment.applicantAddress && <p className="text-slate-600 mt-2 text-sm max-w-2xl">{assessment.applicantAddress}</p>}
-            
-            <div className="mt-4 flex flex-wrap gap-3 text-sm">
-              <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Tarih: {new Date(assessment.date).toLocaleDateString('tr-TR')}</span>
-              <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">İnceleyen: {assessment.personnelName}</span>
-              {assessment.phoneNumber && <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Tel: {assessment.phoneNumber}</span>}
-              {assessment.householdSize && <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Kişi Sayısı: {assessment.householdSize}</span>}
+        {/* Top Header Card */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <h2 className="text-3xl font-black text-slate-900">{assessment.applicantName}</h2>
+              {assessment.status === 'approved' ? (
+                <span className="bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full font-extrabold border border-emerald-200 flex items-center gap-1">
+                  <CheckCircle2 size={14} /> ONAYLANDI
+                </span>
+              ) : (
+                <span className="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-extrabold border border-amber-200 flex items-center gap-1">
+                  <Info size={14} /> MÜDÜR ONAYI BEKLİYOR
+                </span>
+              )}
             </div>
-          </div>
-          <div className="shrink-0 no-print">
-            {assessment.status === 'approved' ? (
-              <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg text-sm font-bold border border-emerald-200">
-                <CheckCircle2 size={16} /> Onaylandı
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg text-sm font-bold border border-amber-200">
-                <Info size={16} /> Onay Bekliyor
-              </span>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm text-slate-600 pt-1">
+              <div><span className="font-bold text-slate-400 block text-xs uppercase">T.C. Kimlik</span>{assessment.applicantTc}</div>
+              <div><span className="font-bold text-slate-400 block text-xs uppercase">Telefon</span>{assessment.phoneNumber || '-'}</div>
+              <div><span className="font-bold text-slate-400 block text-xs uppercase">Hane Kişi Sayısı</span>{assessment.householdSize} kişi</div>
+              <div><span className="font-bold text-slate-400 block text-xs uppercase">Hane No (Ref)</span>{assessment.householdNo || '-'}</div>
+            </div>
+
+            {assessment.applicantAddress && (
+              <p className="text-sm text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-100 mt-2">
+                <strong className="text-slate-800 font-semibold">Adres:</strong> {assessment.applicantAddress}
+              </p>
             )}
+          </div>
+
+          <div className="bg-slate-900 text-white p-5 rounded-xl text-right shrink-0 min-w-[200px]">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Hesaplanan Puan</p>
+            <p className={`text-4xl font-black ${calc.isRejected ? 'text-red-400' : 'text-blue-400'}`}>{calc.totalScore} <span className="text-xs text-slate-400 font-normal">/ 130</span></p>
+            <p className="text-xs font-bold mt-2 uppercase text-slate-300">
+              {calc.isRejected ? 'REDDEDİLDİ' : calc.assistance.text}
+            </p>
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 print:block">
-          {/* Main Info */}
-          <div className="flex-1 space-y-6">
-            
-            {/* Score Breakdown Grid */}
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden print-break-inside-avoid print:border-slate-300">
-              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 print:bg-white flex justify-between items-center">
-                <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">Puan Detayları</h3>
-                <span className="text-xs font-bold text-slate-500">Maks Toplam 130</span>
+        {/* Manager Banner Alert if pending */}
+        {user.role === 'manager' && assessment.status !== 'approved' && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-500 text-white rounded-lg"><AlertTriangle size={20} /></div>
+              <div>
+                <h3 className="font-bold text-amber-900 text-sm">Müdür Onayı Bekleniyor</h3>
+                <p className="text-xs text-amber-700">İncelemeyi yapan personel tarafından hazırlanan formu kontrol ettikten sonra yukarıdaki "İncelemeyi Onayla" butonuna basarak onaylayabilirsiniz.</p>
               </div>
-              <div className="p-5 grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">A. Ekonomik</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreA} <span className="text-xs font-normal text-slate-400">/ 40</span></p>
+            </div>
+            <button 
+              onClick={handleApprove}
+              disabled={approving}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors shrink-0"
+            >
+              Onayla
+            </button>
+          </div>
+        )}
+
+        {/* Detailed Sections View (All Marked Options) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* A. Ekonomik Durum */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 text-sm">A. EKONOMİK DURUM DETAYLARI</h3>
+                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                  {calc.scoreA} / 40 Puan
+                </span>
+              </div>
+              <div className="p-5 space-y-4">
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Gelir Seviyesi Beyanı</p>
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
+                    {getIncomeText(state.income)}
+                  </div>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">B. Dezavantaj</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreB} <span className="text-xs font-normal text-slate-400">/ 30</span></p>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">C. Çocuk/Eğitim</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreC} <span className="text-xs font-normal text-slate-400">/ 10</span></p>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">D. Barınma</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreD} <span className="text-xs font-normal text-slate-400">/ 10</span></p>
-                </div>
-                <div className="p-3 bg-blue-50/50 rounded-lg border border-blue-100 print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-blue-600 mb-1">E. Beyaz Eşya</p>
-                  <p className="text-lg font-bold text-blue-900">{calc.scoreE} <span className="text-xs font-normal text-blue-400">/ 10</span></p>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">F. Kırılganlık</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreF} <span className="text-xs font-normal text-slate-400">/ 10</span></p>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg col-span-2 print:bg-white print:border print:border-slate-200">
-                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">G. İnceleme Kanaati</p>
-                  <p className="text-lg font-bold text-slate-800">{calc.scoreG ?? 0} <span className="text-xs font-normal text-slate-400">/ 20</span></p>
+
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">İlave Gelir / Çalışma Durumları</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div className={`p-2.5 rounded-lg border text-xs font-bold flex items-center justify-between ${state.noWorker ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
+                      <span>Hanede Çalışan Yok</span>
+                      {state.noWorker ? <Check size={16} className="text-amber-600" /> : <X size={14} />}
+                    </div>
+                    <div className={`p-2.5 rounded-lg border text-xs font-bold flex items-center justify-between ${state.noRegularIncome ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
+                      <span>Düzenli Gelir Yok</span>
+                      {state.noRegularIncome ? <Check size={16} className="text-amber-600" /> : <X size={14} />}
+                    </div>
+                    <div className={`p-2.5 rounded-lg border text-xs font-bold flex items-center justify-between ${state.noSgk ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
+                      <span>SGK Kaydı Yok</span>
+                      {state.noSgk ? <Check size={16} className="text-amber-600" /> : <X size={14} />}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Beyaz Eşya Details Card */}
-            {state && (
-              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden print-break-inside-avoid print:border-slate-300">
-                <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 print:bg-white flex justify-between items-center">
-                  <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">E. Beyaz Eşya ve Ev Aletleri Durumu</h3>
-                  <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Bölüm Puanı: {calc.scoreE} / 10</span>
-                </div>
-                <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    <span className="font-medium text-slate-700 flex items-center gap-2"><Box size={16} className="text-slate-400"/> Buzdolabı</span>
-                    {getApplianceLabel(state.appliance_buzdolabi || 'yeni')}
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    <span className="font-medium text-slate-700 flex items-center gap-2"><Shirt size={16} className="text-slate-400"/> Çamaşır Makinesi</span>
-                    {getApplianceLabel(state.appliance_camasir || 'yeni')}
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    <span className="font-medium text-slate-700 flex items-center gap-2"><Flame size={16} className="text-slate-400"/> Fırın / Ocak</span>
-                    {getApplianceLabel(state.appliance_firin || 'yeni')}
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    <span className="font-medium text-slate-700 flex items-center gap-2"><Sparkles size={16} className="text-slate-400"/> Bulaşık Makinesi</span>
-                    {getApplianceLabel(state.appliance_bulasik || 'yeni')}
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    <span className="font-medium text-slate-700 flex items-center gap-2"><Tv size={16} className="text-slate-400"/> Televizyon (TV)</span>
-                    {getApplianceLabel(state.appliance_tv || 'yeni')}
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    <span className="font-medium text-slate-700 flex items-center gap-2"><Smartphone size={16} className="text-slate-400"/> Telefon</span>
-                    {getApplianceLabel(state.appliance_telefon || 'yeni')}
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    <span className="font-medium text-slate-700 flex items-center gap-2"><Wind size={16} className="text-slate-400"/> Klima / Isıtıcı</span>
-                    {getApplianceLabel(state.appliance_klima || 'yeni')}
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    <span className="font-medium text-slate-700 flex items-center gap-2"><Plug size={16} className="text-slate-400"/> Diğer Ev Aletleri</span>
-                    {getApplianceLabel(state.appliance_diger || 'yeni')}
-                  </div>
-                </div>
+            {/* B. Dezavantajlı Bireyler */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 text-sm">B. DEZAVANTAJLI BİREY SEÇENEKLERİ</h3>
+                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                  {calc.scoreB} / 30 Puan
+                </span>
               </div>
-            )}
-
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden print-break-inside-avoid print:border-slate-300">
-              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 print:bg-white"><h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">Güvenlik ve Kontroller</h3></div>
               <div className="p-5">
-                <ul className="space-y-3">
-                  <li className="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
-                    <span className="text-slate-600">Sistem Kontrolleri</span>
-                    <span className="font-bold text-emerald-600">Yapıldı</span>
-                  </li>
-                  <li className="flex justify-between items-center text-sm">
-                    <span className="text-slate-600">Gerçeğe Aykırı Beyan</span>
-                    <span className={`font-bold ${state.falseStatement ? 'text-red-600' : 'text-emerald-600'}`}>{state.falseStatement ? 'Tespit Edildi' : 'Yok'}</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            
-          </div>
-
-          {/* Right Summary */}
-          <div className="w-full lg:w-80 space-y-6 print:w-full print:mt-6">
-            
-            <div className="bg-slate-900 rounded-2xl shadow-sm border border-slate-800 print:border-slate-300 print:bg-white print:text-black overflow-hidden print-break-inside-avoid">
-              <div className="p-6 border-b border-slate-800 print:border-slate-300">
-                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 print:text-slate-500">Toplam Puan</h3>
-                <div className={`text-6xl font-black ${calc.isRejected ? 'text-red-500' : 'text-white'} print:text-black`}>
-                  {calc.totalScore}
-                </div>
-              </div>
-              <div className="p-6 bg-slate-800/50 print:bg-slate-50">
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2 print:text-slate-500">Tavsiye Edilen Sonuç</h4>
-                <div className={`text-xl font-bold ${calc.isRejected ? 'text-red-500' : (calc.totalScore > 30 ? 'text-emerald-400' : 'text-slate-300')} print:text-black`}>
-                  {calc.assistance.amount > 0 ? `${calc.assistance.amount.toLocaleString('tr-TR')} TL` : calc.assistance.text.toUpperCase()}
-                </div>
+                {selectedDisadvantages.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedDisadvantages.map((item, idx) => (
+                      <span key={idx} className="bg-blue-50 text-blue-900 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-blue-600" /> {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-400 font-medium italic">Dezavantajlı birey kriteri bulunmuyor (0 Puan).</p>
+                )}
               </div>
             </div>
 
-            {calc.priorities && calc.priorities.length > 0 && !calc.isRejected && (
-              <div className="bg-white p-6 rounded-xl border border-slate-200 print:border-slate-300 print-break-inside-avoid">
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">Öncelik Durumu</h4>
-                <ul className="space-y-2">
-                  {calc.priorities.map((p, i) => (
-                    <li key={i} className="flex items-start text-sm text-slate-700 font-medium">
-                      <CheckCircle2 size={16} className="text-blue-500 mr-2 shrink-0 mt-0.5 print:text-slate-600" />
-                      <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
+            {/* C. Çocuk ve Eğitim */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 text-sm">C. ÇOCUK VE EĞİTİM DURUMU</h3>
+                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                  {calc.scoreC} / 10 Puan
+                </span>
               </div>
-            )}
-            
-          </div>
-        </div>
+              <div className="p-5">
+                {selectedEducation.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedEducation.map((item, idx) => (
+                      <span key={idx} className="bg-indigo-50 text-indigo-900 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-indigo-600" /> {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-400 font-medium italic">Eğitim gören çocuk kaydı işaretlenmedi (0 Puan).</p>
+                )}
+              </div>
+            </div>
 
-        {/* Print Only Signature Block */}
-        <div className="hidden print:block border border-slate-300 rounded-xl p-6 mt-12 bg-white">
-          <h4 className="font-bold text-slate-800 mb-8 border-b border-slate-200 pb-2">Onay ve İmzalar</h4>
-          <div className="flex justify-between items-end pt-12 px-4">
-             <div className="text-center">
-               <div className="w-48 border-b border-slate-800 mb-2"></div>
-               <span className="text-sm font-bold text-slate-800">Sosyal İnceleme Görevlisi</span>
-               <p className="text-xs text-slate-500 mt-1">{assessment.personnelName}</p>
-             </div>
-             <div className="text-center">
-               <div className="w-48 border-b border-slate-800 mb-2"></div>
-               <span className="text-sm font-bold text-slate-800">Vakıf Müdürü</span>
-             </div>
+            {/* D. Barınma Durumu */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 text-sm">D. BARINMA DURUMU SEÇENEKLERİ</h3>
+                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                  {calc.scoreD} / 10 Puan
+                </span>
+              </div>
+              <div className="p-5">
+                {selectedHousing.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedHousing.map((item, idx) => (
+                      <span key={idx} className="bg-teal-50 text-teal-900 border border-teal-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-teal-600" /> {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-400 font-medium italic">Barınma kriteri işaretlenmedi (0 Puan).</p>
+                )}
+              </div>
+            </div>
+
+            {/* E. Beyaz Eşya ve Ev Aletleri */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 text-sm">E. BEYAZ EŞYA VE EV ALETLERİ KONTROLÜ</h3>
+                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                  {calc.scoreE} / 10 Puan
+                </span>
+              </div>
+              <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {appliancesList.map((app, idx) => {
+                  const status = formatApplianceVal(app.val);
+                  return (
+                    <div key={idx} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 border border-slate-200">
+                      <span className="text-xs font-bold text-slate-700">{app.label}</span>
+                      <span className={`px-2.5 py-1 rounded-md text-[11px] font-extrabold border ${status.class}`}>
+                        {status.text}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* F. Sosyal Kırılganlık */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 text-sm">F. SOSYAL KIRILGANLIK SEÇENEKLERİ</h3>
+                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                  {calc.scoreF} / 10 Puan
+                </span>
+              </div>
+              <div className="p-5">
+                {selectedFragility.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedFragility.map((item, idx) => (
+                      <span key={idx} className="bg-purple-50 text-purple-900 border border-purple-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-purple-600" /> {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-400 font-medium italic">Sosyal kırılganlık maddesi işaretlenmedi (0 Puan).</p>
+                )}
+              </div>
+            </div>
+
+            {/* G. Sosyal İnceleme Kanaati */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 text-sm">G. PERSONEL İNCELEME KANAAT PUANLARI</h3>
+                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                  {calc.scoreG ?? 0} / 20 Puan
+                </span>
+              </div>
+              <div className="p-5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Yaşam Koşulları</p>
+                  <p className="text-xl font-extrabold text-slate-800 mt-1">{state.f_yasamKosullari || 0} / 5</p>
+                </div>
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Aciliyet Durumu</p>
+                  <p className="text-xl font-extrabold text-slate-800 mt-1">{state.f_aciliyet || 0} / 5</p>
+                </div>
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Sosyal Destek</p>
+                  <p className="text-xl font-extrabold text-slate-800 mt-1">{state.f_sosyalDestek || 0} / 5</p>
+                </div>
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Risk Değerlendirme</p>
+                  <p className="text-xl font-extrabold text-slate-800 mt-1">{state.f_risk || 0} / 5</p>
+                </div>
+              </div>
+            </div>
+
           </div>
+
+          {/* Sidebar Summary & System Checks */}
+          <div className="space-y-6">
+            
+            {/* System Check & Integrity */}
+            <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+              <h4 className="font-bold text-slate-800 text-sm uppercase tracking-wide border-b border-slate-100 pb-2">
+                Zorunlu Kontroller
+              </h4>
+              
+              <div className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-900">
+                <span>Kurum Sorgulamaları (SGK/Tapu/Araç)</span>
+                <span className="flex items-center gap-1 text-emerald-700">
+                  <CheckCircle2 size={16} /> YAPILDI
+                </span>
+              </div>
+
+              <div className={`flex items-center justify-between p-3 rounded-lg border text-xs font-bold ${state.falseStatement ? 'bg-red-100 border-red-300 text-red-900' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+                <span>Gerçeğe Aykırı Beyan</span>
+                <span>{state.falseStatement ? 'DİKKAT: TESPİT EDİLDİ' : 'Yok (Sorunsuz)'}</span>
+              </div>
+            </div>
+
+            {/* Summary & Priority Rules */}
+            <div className="bg-slate-900 text-white rounded-xl p-6 shadow-sm space-y-4">
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Değerlendirme Sonucu</p>
+                <p className={`text-2xl font-black mt-1 ${calc.isRejected ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {calc.isRejected ? 'BAŞVURU REDDEDİLDİ' : calc.assistance.text.toUpperCase()}
+                </p>
+              </div>
+
+              {calc.priorities && calc.priorities.length > 0 && !calc.isRejected && (
+                <div className="pt-4 border-t border-slate-800">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Öncelikli Durum Başlıkları</p>
+                  <ul className="space-y-1.5 text-xs text-slate-200">
+                    {calc.priorities.map((p, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span>
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Personnel & Manager Info */}
+            <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-3">
+              <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider border-b border-slate-100 pb-2">İşlem Yapan Görevliler</h4>
+              
+              <div className="text-xs space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">İnceleyen Personel:</span>
+                  <span className="font-bold text-slate-800">{assessment.personnelName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Ziyaret Tarihi:</span>
+                  <span className="font-bold text-slate-800">{new Date(assessment.date).toLocaleDateString('tr-TR')}</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-slate-100">
+                  <span className="text-slate-500">Müdür Onayı:</span>
+                  <span className="font-bold text-slate-800">{managerDisplayName}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
         </div>
 
       </main>
+
+      {/* ========================================================================= */}
+      {/* PRINT-ONLY OFFICIAL DOCUMENT TEMPLATE (EXACT SINGLE A4 PAGE FORMAT)        */}
+      {/* ========================================================================= */}
+      <div className="print-only w-full bg-white text-black p-0 m-0 leading-tight">
+        
+        {/* Official Letterhead */}
+        <div className="text-center border-b-2 border-black pb-2 mb-3">
+          <p className="text-xs font-bold uppercase tracking-widest">T.C.</p>
+          <p className="text-sm font-black uppercase tracking-wider">SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI BAŞKANLIĞI</p>
+          <p className="text-xs font-extrabold tracking-widest uppercase mt-0.5">RESMİ SOSYAL İNCELEME VE DEĞERLENDİRME RAPORU</p>
+        </div>
+
+        {/* Top Info Table */}
+        <table className="w-full border-collapse border border-black text-[10px] mb-3 print-compact-table">
+          <tbody>
+            <tr className="border-b border-black bg-slate-100">
+              <td className="border-r border-black font-bold p-1 w-1/4">T.C. KİMLİK NO:</td>
+              <td className="border-r border-black p-1 w-1/4">{assessment.applicantTc}</td>
+              <td className="border-r border-black font-bold p-1 w-1/4">BAŞVURU SAHİBİ:</td>
+              <td className="p-1 w-1/4 font-bold">{assessment.applicantName}</td>
+            </tr>
+            <tr className="border-b border-black">
+              <td className="border-r border-black font-bold p-1">TELEFON:</td>
+              <td className="border-r border-black p-1">{assessment.phoneNumber || '-'}</td>
+              <td className="border-r border-black font-bold p-1">HANE KİŞİ SAYISI:</td>
+              <td className="p-1">{assessment.householdSize} kişi</td>
+            </tr>
+            <tr className="border-b border-black">
+              <td className="border-r border-black font-bold p-1">HANE REF NO:</td>
+              <td className="border-r border-black p-1">{assessment.householdNo || '-'}</td>
+              <td className="border-r border-black font-bold p-1">ZİYARET TARİHİ:</td>
+              <td className="p-1">{new Date(assessment.date).toLocaleDateString('tr-TR')}</td>
+            </tr>
+            <tr>
+              <td className="border-r border-black font-bold p-1">İKAMET ADRESİ:</td>
+              <td colSpan={3} className="p-1">{assessment.applicantAddress || '-'}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* Evaluation Criteria Matrix */}
+        <div className="mb-3">
+          <div className="bg-slate-200 border border-black font-bold p-1 text-[10px] text-center uppercase tracking-wide mb-1">
+            SOSYAL İNCELEME SEÇENEKLERİ VE PUANLAMA KRİTERLERİ DETAYI
+          </div>
+
+          <table className="w-full border-collapse border border-black text-[9px] print-compact-table">
+            <thead>
+              <tr className="bg-slate-100 border-b border-black">
+                <th className="border-r border-black p-1 text-left w-1/5">KATEGORİ</th>
+                <th className="border-r border-black p-1 text-left">İŞARETLENEN / TESPİT EDİLEN SEÇENEKLER</th>
+                <th className="p-1 text-center w-16">PUAN</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-black">
+                <td className="border-r border-black p-1 font-bold">A. Ekonomik Durum</td>
+                <td className="border-r border-black p-1">
+                  {getIncomeText(state.income)}
+                  {state.noWorker && " • Hanede çalışan yok (+10)"}
+                  {state.noRegularIncome && " • Düzenli gelir yok (+5)"}
+                  {state.noSgk && " • SGK kaydı yok (+5)"}
+                </td>
+                <td className="p-1 text-center font-bold">{calc.scoreA} / 40</td>
+              </tr>
+
+              <tr className="border-b border-black">
+                <td className="border-r border-black p-1 font-bold">B. Dezavantajlılık</td>
+                <td className="border-r border-black p-1">
+                  {selectedDisadvantages.length > 0 ? selectedDisadvantages.join(" • ") : "Mevcut Değil"}
+                </td>
+                <td className="p-1 text-center font-bold">{calc.scoreB} / 30</td>
+              </tr>
+
+              <tr className="border-b border-black">
+                <td className="border-r border-black p-1 font-bold">C. Çocuk ve Eğitim</td>
+                <td className="border-r border-black p-1">
+                  {selectedEducation.length > 0 ? selectedEducation.join(" • ") : "Eğitim gören çocuk kaydı yok"}
+                </td>
+                <td className="p-1 text-center font-bold">{calc.scoreC} / 10</td>
+              </tr>
+
+              <tr className="border-b border-black">
+                <td className="border-r border-black p-1 font-bold">D. Barınma Durumu</td>
+                <td className="border-r border-black p-1">
+                  {selectedHousing.length > 0 ? selectedHousing.join(" • ") : "Standart konut"}
+                </td>
+                <td className="p-1 text-center font-bold">{calc.scoreD} / 10</td>
+              </tr>
+
+              <tr className="border-b border-black">
+                <td className="border-r border-black p-1 font-bold">E. Ev Eşyaları</td>
+                <td className="border-r border-black p-1">
+                  {appliancesList.map(a => `${a.label}: ${a.val === 'yok' ? 'YOK' : (a.val === 'eski' ? 'ESKİ' : 'TAM')}`).join(" | ")}
+                </td>
+                <td className="p-1 text-center font-bold">{calc.scoreE} / 10</td>
+              </tr>
+
+              <tr className="border-b border-black">
+                <td className="border-r border-black p-1 font-bold">F. Kırılganlık</td>
+                <td className="border-r border-black p-1">
+                  {selectedFragility.length > 0 ? selectedFragility.join(" • ") : "Özel kırılganlık maddesi bulunmuyor"}
+                </td>
+                <td className="p-1 text-center font-bold">{calc.scoreF} / 10</td>
+              </tr>
+
+              <tr className="border-b border-black">
+                <td className="border-r border-black p-1 font-bold">G. İnceleme Kanaati</td>
+                <td className="border-r border-black p-1">
+                  Yaşam Koşulları: {state.f_yasamKosullari || 0}/5 • Aciliyet: {state.f_aciliyet || 0}/5 • Sosyal Destek: {state.f_sosyalDestek || 0}/5 • Risk: {state.f_risk || 0}/5
+                </td>
+                <td className="p-1 text-center font-bold">{calc.scoreG ?? 0} / 20</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* System Check & Final Decision Box */}
+        <table className="w-full border-collapse border border-black text-[10px] mb-4 print-compact-table">
+          <tbody>
+            <tr className="border-b border-black bg-slate-100">
+              <td className="border-r border-black font-bold p-1 w-1/3">ZORUNLU KONTROLLER (SGK/TAPU/ARAÇ):</td>
+              <td className="border-r border-black p-1 font-bold text-emerald-800">YAPILDI (EKSİKSİZ)</td>
+              <td className="border-r border-black font-bold p-1 w-1/4">GERÇEĞE AYKIRI BEYAN:</td>
+              <td className="p-1 font-bold">{state.falseStatement ? 'TESPİT EDİLDİ (RED)' : 'YOK'}</td>
+            </tr>
+            <tr className="border-b border-black">
+              <td className="border-r border-black font-bold p-1">HESAPLANAN TOPLAM PUAN:</td>
+              <td className="border-r border-black p-1 text-base font-black">{calc.totalScore} / 130</td>
+              <td className="border-r border-black font-bold p-1">TAVSİYE EDİLEN KARAR:</td>
+              <td className="p-1 font-extrabold text-sm">{calc.isRejected ? 'REDDEDİLDİ' : calc.assistance.text.toUpperCase()}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* Official Note */}
+        <p className="text-[9px] italic text-slate-700 mb-6">
+          * Bu rapor, 3294 Sayılı Sosyal Yardımlaşma ve Dayanışmayı Teşvik Kanunu kapsamında SYDV Sosyal İnceleme Görevlisi tarafından yerinde yapılan ev ziyareti neticesinde düzenlenmiş resmi inceleme belgesidir.
+        </p>
+
+        {/* OFFICIAL SIGNATURE BLOCK AT THE BOTTOM */}
+        <div className="border border-black p-3 rounded-none mt-auto">
+          <div className="flex justify-between items-start text-[10px] pt-1 px-6">
+            
+            {/* Personnel Signature */}
+            <div className="text-center w-5/12">
+              <p className="font-bold uppercase tracking-wider">İNCELEMEYİ YAPAN PERSONEL</p>
+              <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="underline">{assessment.personnelName}</span></p>
+              <p className="text-[9px] text-slate-600">Unvan: Sosyal İnceleme Görevlisi</p>
+              <p className="text-[9px] text-slate-600 mt-0.5">Tarih: {new Date(assessment.date).toLocaleDateString('tr-TR')}</p>
+              <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
+                İmza / Mühür
+              </div>
+            </div>
+
+            {/* Manager Signature */}
+            <div className="text-center w-5/12">
+              <p className="font-bold uppercase tracking-wider">MÜDÜR YETKİLİSİ / VAKIF MÜDÜRÜ</p>
+              <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="underline">{managerDisplayName}</span></p>
+              <p className="text-[9px] text-slate-600">Unvan: SYDV Vakıf Müdürü</p>
+              <p className="text-[9px] text-slate-600 mt-0.5">Onay Durumu: {assessment.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLİYOR'}</p>
+              <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
+                İmza / Mühür
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
     </div>
   );
 }

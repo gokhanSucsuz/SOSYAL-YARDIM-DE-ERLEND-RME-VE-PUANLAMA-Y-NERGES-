@@ -17,6 +17,7 @@ export interface Assessment {
   date: string;
   personnelId: string;
   personnelName: string;
+  managerName?: string;
   applicantName: string;
   applicantTc: string;
   applicantAddress?: string;
