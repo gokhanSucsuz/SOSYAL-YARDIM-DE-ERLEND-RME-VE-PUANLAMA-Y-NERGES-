@@ -256,19 +256,73 @@ export default function GuidePage() {
             </div>
 
             {/* Category G */}
-            <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-              <div className="flex justify-between items-center border-b border-slate-200 pb-2">
-                <h4 className="font-bold text-slate-900 text-base">G. PERSONEL İNCELEME KANAATİ (Maksimum 20 Puan)</h4>
-                <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-2.5 py-1 rounded">Tavan: 20 Puan</span>
+            <div className="p-6 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
+              <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+                <h4 className="font-bold text-slate-900 text-base">G. PERSONEL İNCELEME KANAATİ PUANLAMA METODOLOJİSİ (Maksimum 20 Puan)</h4>
+                <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-3 py-1 rounded">Tavan: 20 Puan</span>
               </div>
-              <p className="text-xs text-slate-600">
-                Sosyal İnceleme Görevlisinin hane ortamını gözlemleyerek takdir ettiği kanaat puanları (0-5 Puan arası):
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-bold text-slate-800">
-                <div className="bg-white p-2.5 rounded border border-slate-200">Yaşam Koşulları (0-5)</div>
-                <div className="bg-white p-2.5 rounded border border-slate-200">Aciliyet Durumu (0-5)</div>
-                <div className="bg-white p-2.5 rounded border border-slate-200">Sosyal Destek (0-5)</div>
-                <div className="bg-white p-2.5 rounded border border-slate-200">Risk Değerlendirme (0-5)</div>
+              
+              <div className="bg-blue-100/70 border border-blue-200 p-3.5 rounded-lg text-xs text-blue-950 font-medium leading-relaxed">
+                <strong className="text-blue-900 font-extrabold block mb-1">0 - 5 Puanlama Ölçeği Temel Mantığı:</strong>
+                Sosyal yardım puanlama sisteminde amaç hanenin <strong>muhtaçlık derecesini tespit etmektir</strong>. Dolayısıyla;
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                  <li><strong>0 PUAN:</strong> Hanenin durumu olumludur, fiziki/sosyal şartları yeterlidir, aciliyeti veya riski yoktur. İlave puana ihtiyaç duyulmadığını ifade eder.</li>
+                  <li><strong>5 PUAN:</strong> Hane şartları aşırı olumsuzdur, fiziki durumu yaşanamaz haldedir, aciliyeti veya riski kriz seviyesindedir. Haneye ilave <strong>+5 Puan</strong> verilerek yardım alma önceliği en üst seviyeye çıkartılır.</li>
+                </ul>
+              </div>
+
+              {/* Detailed Breakdown for each 4 subfields */}
+              <div className="space-y-3 pt-2">
+                <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Kanaat Alanları ve Puan Karşılıkları:</h5>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200 text-xs space-y-2">
+                  <div className="font-extrabold text-slate-900 text-sm">1. Yaşam Koşulları (Fiziki Ev Yapısı, Hijyen, Isınma, Eşya Durumu)</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700">
+                    <div className="p-2 rounded bg-slate-50 border border-slate-200">
+                      <strong className="text-slate-900">0 Puan (İyi / Yeterli):</strong> Temiz, hijyenik, bakımlı, ısınması ve eşyaları tam, sağlıklı yaşam ortamı.
+                    </div>
+                    <div className="p-2 rounded bg-red-50 border border-red-200 text-red-950">
+                      <strong className="text-red-900">5 Puan (Çok Kötü / Harabe):</strong> Rutubetli, soğuk, bakımsız, eşyasız, insan onuruna aykırı, yaşanamaz ev koşulları.
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200 text-xs space-y-2">
+                  <div className="font-extrabold text-slate-900 text-sm">2. Aciliyet Durumu (Yardım İvediliği ve Kriz Boyutu)</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700">
+                    <div className="p-2 rounded bg-slate-50 border border-slate-200">
+                      <strong className="text-slate-900">0 Puan (Acil Değil / Rutin):</strong> Hanenin anlık bir kriz hali yoktur, rutin başvuru kategorisindedir.
+                    </div>
+                    <div className="p-2 rounded bg-red-50 border border-red-200 text-red-950">
+                      <strong className="text-red-900">5 Puan (Çok Acil / Kritik Kriz):</strong> Açlık, yakacaksız kalma, barınamama veya anlık sağlık krizi riski. Derhal yardım gerektirir.
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200 text-xs space-y-2">
+                  <div className="font-extrabold text-slate-900 text-sm">3. Sosyal Destek Yetersizliği (Akraba ve Çevre Dayanışması)</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700">
+                    <div className="p-2 rounded bg-slate-50 border border-slate-200">
+                      <strong className="text-slate-900">0 Puan (Desteği Var):</strong> Haneye bakacak, destek çıkacak yakın akraba veya çevre dayanışması mevcuttur.
+                    </div>
+                    <div className="p-2 rounded bg-red-50 border border-red-200 text-red-950">
+                      <strong className="text-red-900">5 Puan (Kimsesiz / Sıfır Destek):</strong> Hanenin sığınabileceği hiçbir yakını, akrabası veya komşu desteği bulunmamaktadır.
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200 text-xs space-y-2">
+                  <div className="font-extrabold text-slate-900 text-sm">4. Risk Değerlendirmesi (Güvenlik, İhmal, İstismar, Yaşlı/Çocuk Riski)</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700">
+                    <div className="p-2 rounded bg-slate-50 border border-slate-200">
+                      <strong className="text-slate-900">0 Puan (Güvenli / Risk Yok):</strong> Ortam güvenlidir, kriz veya istismar/ihmal riski tespit edilmemiştir.
+                    </div>
+                    <div className="p-2 rounded bg-red-50 border border-red-200 text-red-950">
+                      <strong className="text-red-900">5 Puan (Hayati Risk / Tehlike):</strong> Çocuk ihmali, şiddet tehlikesi, ağır bakımsızlık veya güvenlik tehdidi mevcuttur.
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 

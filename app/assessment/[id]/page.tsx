@@ -443,22 +443,53 @@ export default function AssessmentDetail() {
                   {calc.scoreG ?? 0} / 20 Puan
                 </span>
               </div>
-              <div className="p-5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Yaşam Koşulları</p>
-                  <p className="text-xl font-extrabold text-slate-800 mt-1">{state.f_yasamKosullari || 0} / 5</p>
+              <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">1. Yaşam Koşulları</p>
+                    <p className="text-xs font-semibold text-slate-700 mt-0.5">
+                      {state.f_yasamKosullari === 0 ? 'İyi / Yeterli Ev Koşulları' : state.f_yasamKosullari === 5 ? 'Aşırı Kötü / Harabe / Bakımsız' : `${state.f_yasamKosullari} Puan Kırılganlık`}
+                    </p>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_yasamKosullari >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                    {state.f_yasamKosullari || 0} / 5 Puan
+                  </span>
                 </div>
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Aciliyet Durumu</p>
-                  <p className="text-xl font-extrabold text-slate-800 mt-1">{state.f_aciliyet || 0} / 5</p>
+
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">2. Aciliyet Durumu</p>
+                    <p className="text-xs font-semibold text-slate-700 mt-0.5">
+                      {state.f_aciliyet === 0 ? 'Aciliyet Yok / Rutin' : state.f_aciliyet === 5 ? 'Çok Acil / Kritik Kriz Hali' : `${state.f_aciliyet} Puan Aciliyet`}
+                    </p>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_aciliyet >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                    {state.f_aciliyet || 0} / 5 Puan
+                  </span>
                 </div>
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Sosyal Destek</p>
-                  <p className="text-xl font-extrabold text-slate-800 mt-1">{state.f_sosyalDestek || 0} / 5</p>
+
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">3. Sosyal Destek Yetersizliği</p>
+                    <p className="text-xs font-semibold text-slate-700 mt-0.5">
+                      {state.f_sosyalDestek === 0 ? 'Akraba/Çevre Desteği Var' : state.f_sosyalDestek === 5 ? 'Tamamen Kimsesiz / Desteksiz' : `${state.f_sosyalDestek} Puan Yetersizlik`}
+                    </p>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_sosyalDestek >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                    {state.f_sosyalDestek || 0} / 5 Puan
+                  </span>
                 </div>
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Risk Değerlendirme</p>
-                  <p className="text-xl font-extrabold text-slate-800 mt-1">{state.f_risk || 0} / 5</p>
+
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">4. Risk Değerlendirmesi</p>
+                    <p className="text-xs font-semibold text-slate-700 mt-0.5">
+                      {state.f_risk === 0 ? 'Güvenli / Risk Tespit Edilmedi' : state.f_risk === 5 ? 'Hayati Risk / Yüksek Tehlike' : `${state.f_risk} Puan Risk`}
+                    </p>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_risk >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                    {state.f_risk || 0} / 5 Puan
+                  </span>
                 </div>
               </div>
             </div>

@@ -64,26 +64,58 @@ export const RadioItem = ({ label, name, checked, onChange, points }: any) => (
   </label>
 );
 
-export const ScoreButtons = ({ value, onChange, label }: any) => (
-  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-slate-100 last:border-0 print:border-slate-300">
-    <span className="text-sm font-medium text-slate-700 mb-2 sm:mb-0">{label}</span>
-    <div className="flex space-x-1">
-      {[0, 1, 2, 3, 4, 5].map((num) => (
-        <button
-          key={num}
-          onClick={() => onChange(num)}
-          className={`w-10 h-10 rounded-md text-sm font-bold transition-colors border ${
-            value === num
-              ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
-              : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-          } print:border-slate-400 print:text-black print:${value === num ? 'bg-slate-200' : 'bg-white'}`}
-        >
-          {num}
-        </button>
-      ))}
+export const ScoreButtons = ({ value, onChange, label, description }: any) => {
+  const scaleLabels: { [key: number]: { text: string; color: string } } = {
+    0: { text: "0 Puan: İyi / Yeterli / İhtiyaç Yok", color: "bg-slate-100 text-slate-700 border-slate-200" },
+    1: { text: "1 Puan: Az Kırılgan / Hafif Olumsuz", color: "bg-blue-50 text-blue-800 border-blue-200" },
+    2: { text: "2 Puan: Orta Seviye İhtiyaç / Kısmen Olumsuz", color: "bg-indigo-50 text-indigo-800 border-indigo-200" },
+    3: { text: "3 Puan: Belirgin İhtiyaç / Kötü Koşullar", color: "bg-amber-50 text-amber-800 border-amber-200" },
+    4: { text: "4 Puan: Yüksek Muhtaçlık / Çok Kötü", color: "bg-orange-50 text-orange-900 border-orange-200" },
+    5: { text: "5 Puan: Aşırı Kötü / Kritik Acil İhtiyaç", color: "bg-red-100 text-red-900 border-red-300 font-extrabold" },
+  };
+
+  const currentLabel = scaleLabels[value] || scaleLabels[0];
+
+  return (
+    <div className="p-3.5 bg-slate-50/70 border border-slate-200 rounded-xl mb-3 last:mb-0 print:border-slate-300">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2">
+        <div>
+          <span className="text-sm font-extrabold text-slate-800">{label}</span>
+          {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
+        </div>
+
+        {/* Selected Score Badge */}
+        <div className={`px-2.5 py-1 rounded-lg text-xs border font-bold flex items-center gap-1.5 self-start md:self-auto ${currentLabel.color}`}>
+          <span>{currentLabel.text}</span>
+        </div>
+      </div>
+
+      {/* Button Row with Labels */}
+      <div className="grid grid-cols-6 gap-1.5 mt-2">
+        {[0, 1, 2, 3, 4, 5].map((num) => {
+          const isSelected = value === num;
+          return (
+            <button
+              type="button"
+              key={num}
+              onClick={() => onChange(num)}
+              className={`flex flex-col items-center justify-center p-2 rounded-lg text-xs font-bold transition-all border ${
+                isSelected
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200 scale-105'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+              }`}
+            >
+              <span className="text-sm font-black">{num}</span>
+              <span className={`text-[9px] font-semibold mt-0.5 hidden sm:inline ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
+                {num === 0 ? 'İyi (0)' : num === 5 ? 'Kritik (5)' : `${num} Puan`}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const CounterItem = ({ label, value, onChange, pointsPerItem }: any) => (
   <div className="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-white print:border-slate-300 print:p-2">

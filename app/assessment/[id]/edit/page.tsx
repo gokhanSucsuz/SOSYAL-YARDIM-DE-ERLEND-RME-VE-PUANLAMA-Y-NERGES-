@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { 
-  ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2,
+  ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2, Info,
   Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug
 } from 'lucide-react';
 import { saveAssessment, getAssessmentById } from '@/lib/db';
@@ -581,15 +581,57 @@ export default function EditAssessmentWizard() {
               <div className="flex-1">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-slate-800">G. Sosyal İnceleme Kanaati</h2>
-                  <p className="text-slate-500 mt-1">Personelin genel kanaat puanları (Maksimum 20 Puan)</p>
+                  <p className="text-slate-500 mt-1">Sosyal inceleme görevlisinin saha gözlemine dayalı kanaat puanları (Maksimum 20 Puan)</p>
                 </div>
+
+                {/* Detailed Guidance Scale Card */}
+                <div className="bg-blue-50/80 border border-blue-200 rounded-xl p-4 mb-6 text-xs text-blue-950 space-y-2">
+                  <div className="flex items-center gap-2 font-black text-blue-900 text-sm">
+                    <Info size={18} className="text-blue-700 shrink-0" />
+                    <span>0 - 5 Puanlama Mantığı ve Anlam Rehberi</span>
+                  </div>
+                  <p className="leading-relaxed">
+                    Bu bölümde verilen puanlar hanenin <strong>muhtaçlık ve yardım alma ihtiyacını doğrudan artırır</strong>. Bu nedenle:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-medium">
+                    <div className="bg-white p-2.5 rounded-lg border border-blue-200">
+                      <span className="font-extrabold text-slate-800 block text-xs">0 PUAN: İYİ / YETERLİ (İHTİYAÇ YOK)</span>
+                      <p className="text-[11px] text-slate-600 mt-0.5">Hanenin durumu olumlu, yeterli ve stabildir. İlave yardım puanına ihtiyaç duyulmamaktadır.</p>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-lg border border-blue-200">
+                      <span className="font-extrabold text-red-800 block text-xs">5 PUAN: ÇOK KÖTÜ / KRİTİK ACİL İHTİYAÇ</span>
+                      <p className="text-[11px] text-slate-600 mt-0.5">Hane şartları aşırı olumsuz, kritik, acil veya risksizdir. Maksimum +5 puan eklenerek yardım önceliği yükseltilir.</p>
+                    </div>
+                  </div>
+                </div>
+
                 <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreG}>
-                   <p className="text-sm text-slate-500 mb-4 font-medium">Sosyal inceleme görevlisinin hanedeki genel kanaatine göre her alan için 0 ile 5 arası puanlama yapınız.</p>
-                   <div className="space-y-1">
-                     <ScoreButtons label="Yaşam Koşulları (Fiziki vb.)" value={state.f_yasamKosullari} onChange={(v:any) => set('f_yasamKosullari', v)} />
-                     <ScoreButtons label="Aciliyet Durumu" value={state.f_aciliyet} onChange={(v:any) => set('f_aciliyet', v)} />
-                     <ScoreButtons label="Sosyal Destek Yetersizliği" value={state.f_sosyalDestek} onChange={(v:any) => set('f_sosyalDestek', v)} />
-                     <ScoreButtons label="Risk Değerlendirmesi" value={state.f_risk} onChange={(v:any) => set('f_risk', v)} />
+                   <p className="text-xs text-slate-500 mb-4 font-semibold">Lütfen aşağıdaki 4 kriter için hanedeki saha gözleminize uygun olan 0 (İyi) ile 5 (Çok Kötü / Kritik) arası değeri seçiniz:</p>
+                   <div className="space-y-3">
+                     <ScoreButtons 
+                       label="1. Yaşam Koşulları (Fiziki Şartlar, Hijyen, Eşya)" 
+                       description="0 = Lüks/Yeterli Hijyenik Ev Koşulları • 5 = Aşırı Kötü/Harabe/Sağlıksız"
+                       value={state.f_yasamKosullari} 
+                       onChange={(v:any) => set('f_yasamKosullari', v)} 
+                     />
+                     <ScoreButtons 
+                       label="2. Aciliyet Durumu (İvedilik ve Kriz Hali)" 
+                       description="0 = Aciliyet Yok/Rutin • 5 = Çok Acil/Kritik Derhal Müdahale"
+                       value={state.f_aciliyet} 
+                       onChange={(v:any) => set('f_aciliyet', v)} 
+                     />
+                     <ScoreButtons 
+                       label="3. Sosyal Destek Yetersizliği (Akraba / Çevre Desteği)" 
+                       description="0 = Güçlü Akraba/Çevre Desteği Var • 5 = Tamamen Kimsesiz/Sıfır Destek"
+                       value={state.f_sosyalDestek} 
+                       onChange={(v:any) => set('f_sosyalDestek', v)} 
+                     />
+                     <ScoreButtons 
+                       label="4. Risk Değerlendirmesi (Güvenlik / İstismar / Kırılganlık)" 
+                       description="0 = Güvenli/Risk Yok • 5 = Hayati Risk/Tehlikeli Ortam/İhmal"
+                       value={state.f_risk} 
+                       onChange={(v:any) => set('f_risk', v)} 
+                     />
                    </div>
                 </SectionCard>
               </div>
