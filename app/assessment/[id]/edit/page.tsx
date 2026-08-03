@@ -402,11 +402,11 @@ export default function EditAssessmentWizard() {
                 </div>
                 <SectionCard title="Gelir Seviyesi" maxScore={40} currentScore={calc.scoreA}>
                   <div className="space-y-3">
-                    <RadioItem label="Kişi başına gelir açlık sınırının %25 altında" name="income" checked={state.income === 40} onChange={() => set('income', 40)} points={40} />
-                    <RadioItem label="Açlık sınırının %25 – 50 arasında" name="income" checked={state.income === 35} onChange={() => set('income', 35)} points={35} />
-                    <RadioItem label="Açlık sınırının %50 – 75 arasında" name="income" checked={state.income === 25} onChange={() => set('income', 25)} points={25} />
-                    <RadioItem label="Açlık sınırının %75 – 100 arasında" name="income" checked={state.income === 15} onChange={() => set('income', 15)} points={15} />
-                    <RadioItem label="Açlık sınırı üzerinde" name="income" checked={state.income === 0} onChange={() => set('income', 0)} points={0} />
+                    <RadioItem label="Kişi başına gelir muhtaçlık sınırının %25 altında" name="income" checked={state.income === 40} onChange={() => set('income', 40)} points={40} />
+                    <RadioItem label="Muhtaçlık sınırının %25 – 50 arasında" name="income" checked={state.income === 35} onChange={() => set('income', 35)} points={35} />
+                    <RadioItem label="Muhtaçlık sınırının %50 – 75 arasında" name="income" checked={state.income === 25} onChange={() => set('income', 25)} points={25} />
+                    <RadioItem label="Muhtaçlık sınırının %75 – 100 arasında" name="income" checked={state.income === 15} onChange={() => set('income', 15)} points={15} />
+                    <RadioItem label="Muhtaçlık sınırı üzerinde" name="income" checked={state.income === 0} onChange={() => set('income', 0)} points={0} />
                   </div>
                   <div className="mt-5 pt-4 border-t border-slate-100">
                     <h3 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">İlave Puanlar</h3>

@@ -168,12 +168,12 @@ export default function GuidePage() {
                 <h4 className="font-bold text-slate-900 text-base">A. EKONOMİK DURUM (Maksimum 40 Puan)</h4>
                 <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-2.5 py-1 rounded">Tavan: 40 Puan</span>
               </div>
-              <p className="text-xs text-slate-600">Hanedeki kişi başına düşen aylık net gelirin resmi Açlık Sınırı oranlarına göre puanlanması:</p>
+              <p className="text-xs text-slate-600">Hanedeki kişi başına düşen aylık net gelirin resmi Muhtaçlık Sınırı oranlarına göre puanlanması:</p>
               <ul className="text-xs space-y-1.5 text-slate-700 list-disc pl-5 font-medium">
-                <li><strong>Açlık Sınırının %25 Altı:</strong> +40 Puan</li>
-                <li><strong>Açlık Sınırının %25 – %50 Arası:</strong> +35 Puan</li>
-                <li><strong>Açlık Sınırının %50 – %75 Arası:</strong> +25 Puan</li>
-                <li><strong>Açlık Sınırının %75 – %100 Arası:</strong> +15 Puan</li>
+                <li><strong>Muhtaçlık Sınırının %25 Altı:</strong> +40 Puan</li>
+                <li><strong>Muhtaçlık Sınırının %25 – %50 Arası:</strong> +35 Puan</li>
+                <li><strong>Muhtaçlık Sınırının %50 – %75 Arası:</strong> +25 Puan</li>
+                <li><strong>Muhtaçlık Sınırının %75 – %100 Arası:</strong> +15 Puan</li>
                 <li><strong>İlave Puanlar:</strong> Hanede Çalışan Yok (+10 Puan) • Düzenli Gelir Yok (+5 Puan) • SGK Kaydı Yok (+5 Puan)</li>
               </ul>
             </div>

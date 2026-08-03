@@ -19,7 +19,7 @@ export default function Login() {
             <ShieldCheck className="w-8 h-8 text-white" />
           </div>
         </div>
-        <h1 className="text-xl font-bold mb-2 text-center text-slate-800 tracking-tight">Sosyal Yardım Sistemi</h1>
+        <h1 className="text-xl font-bold mb-2 text-center text-slate-800 tracking-tight">Sosyal İnceleme Puanlama Sistemi ve Yardım Kriterleri</h1>
         <p className="text-sm text-slate-500 text-center mb-8">Test hesabı seçerek giriş yapın</p>
         
         <div className="space-y-4">

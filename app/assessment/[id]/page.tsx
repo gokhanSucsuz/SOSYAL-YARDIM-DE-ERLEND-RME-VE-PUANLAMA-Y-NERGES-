@@ -67,11 +67,11 @@ export default function AssessmentDetail() {
 
   // Helper arrays for options checked
   const getIncomeText = (val: number) => {
-    if (val === 40) return "Kişi başına gelir açlık sınırının %25 altında (+40 Puan)";
-    if (val === 35) return "Açlık sınırının %25 – 50 arasında (+35 Puan)";
-    if (val === 25) return "Açlık sınırının %50 – 75 arasında (+25 Puan)";
-    if (val === 15) return "Açlık sınırının %75 – 100 arasında (+15 Puan)";
-    return "Açlık sınırı üzerinde (0 Puan)";
+    if (val === 40) return "Kişi başına gelir muhtaçlık sınırının %25 altında (+40 Puan)";
+    if (val === 35) return "Muhtaçlık sınırının %25 – 50 arasında (+35 Puan)";
+    if (val === 25) return "Muhtaçlık sınırının %50 – 75 arasında (+25 Puan)";
+    if (val === 15) return "Muhtaçlık sınırının %75 – 100 arasında (+15 Puan)";
+    return "Muhtaçlık sınırı üzerinde (0 Puan)";
   };
 
   const selectedDisadvantages = [];
