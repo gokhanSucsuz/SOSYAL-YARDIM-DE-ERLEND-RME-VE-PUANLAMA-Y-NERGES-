@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllAssessments, getAssessmentsByPersonnel, Assessment } from '@/lib/db';
-import { FileText, Plus, LogOut, Users, CheckCircle2, XCircle, ShieldCheck, Printer, Clock, Filter, Check } from 'lucide-react';
+import { FileText, Plus, LogOut, Users, CheckCircle2, XCircle, ShieldCheck, Printer, Clock, Filter, Check, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Dashboard() {
@@ -112,6 +112,14 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <Link
+            href="/guide"
+            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border border-slate-700 mr-2"
+            title="Puanlama ve İnceleme Kılavuzu"
+          >
+            <BookOpen size={16} className="text-blue-400" />
+            <span className="hidden sm:inline">Metodoloji Kılavuzu</span>
+          </Link>
           <div className="text-right border-r border-slate-700 pr-4 mr-1">
             <p className="text-xs text-slate-400">{user.role === 'manager' ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
             <p className="text-sm font-semibold">{user.name}</p>
