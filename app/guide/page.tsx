@@ -85,65 +85,76 @@ export default function GuidePage() {
         <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6">
           <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
             <Award className="text-emerald-600" size={22} />
-            2. Toplam Puan Tavanı ve Yardım Seviyeleri Skalası
+            2. Toplam Puan Tavanı ve Yardım Seviyeleri Skalası (Daraltılmış Tavan & Artan Aralık Mantığı)
           </h3>
 
-          <p className="text-sm text-slate-600">
-            Sosyal İnceleme Formu 7 ana kategoriden oluşmakta olup <strong>Maksimum Toplam Puan 130</strong>'dur. 
-            Hesaplanan puan doğrultusunda sistem tarafından tavsiye edilen nakdi yardım seviyeleri aşağıdadır:
+          <div className="bg-blue-50/80 border border-blue-200 p-4 rounded-xl text-xs text-blue-950 space-y-2">
+            <strong className="text-blue-900 font-extrabold text-sm block">Kademeli Değerlendirme ve Seçicilik Esası:</strong>
+            <p>
+              Sosyal yardım bütçesinin ve nakdi kaynakların en ağır durumdaki gerçek ihtiyaç sahiplerine adil dağıtılması amacıyla 
+              <strong> Progressive / Artan Aralık Metodolojisi</strong> uygulanmaktadır:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 font-medium">
+              <li><strong>1. Derece (Daraltılmış Tavan - 20 Puan):</strong> En yüksek derecedeki puan aralığı dar tutulmuştur (111-130 Puan). Böylece sadece aşırı çoklu kırılganlığı bulunan sınırlı sayıda hane bu banda ulaşabilir ve en yüksek yardımı alır.</li>
+              <li><strong>Genişleyen Aralıklar (25, 30, 35 Puan):</strong> Alt derecelere doğru inildikçe puan bantları kademeli olarak genişler (20 Puan → 25 Puan → 30 Puan → 35 Puan).</li>
+            </ul>
+          </div>
+
+          <p className="text-xs text-slate-500 font-medium">
+            Form 7 ana kategoride toplam <strong>Maksimum 130 Puan</strong> üzerinden hesaplanır. Tavsiye edilen yardım seviyeleri aşağıdadır:
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center">
             
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-emerald-800 uppercase block mb-1">1. Derece Yüksek</span>
-                <span className="text-2xl font-black text-emerald-900">91 - 130</span>
-                <p className="text-xs font-semibold text-emerald-700 mt-1">Puan Aralığı</p>
+                <span className="text-xs font-bold text-emerald-800 uppercase block mb-1">1. Derece Aşırı Muhtaç</span>
+                <span className="text-2xl font-black text-emerald-900">111 - 130</span>
+                <p className="text-[11px] font-semibold text-emerald-700 mt-1">20 Puanlık Dar Aralık</p>
               </div>
               <div className="mt-4 pt-3 border-t border-emerald-200 text-sm font-extrabold text-emerald-800">
-                10.000 TL Nakdi Yardım
+                12.500 TL Nakdi Yardım
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-blue-800 uppercase block mb-1">2. Derece Muhtaç</span>
-                <span className="text-2xl font-black text-blue-900">71 - 90</span>
-                <p className="text-xs font-semibold text-blue-700 mt-1">Puan Aralığı</p>
+                <span className="text-xs font-bold text-blue-800 uppercase block mb-1">2. Derece Ağır Muhtaç</span>
+                <span className="text-2xl font-black text-blue-900">86 - 110</span>
+                <p className="text-[11px] font-semibold text-blue-700 mt-1">25 Puanlık Genişleyen</p>
               </div>
               <div className="mt-4 pt-3 border-t border-blue-200 text-sm font-extrabold text-blue-800">
-                7.500 TL Nakdi Yardım
+                9.000 TL Nakdi Yardım
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-indigo-800 uppercase block mb-1">3. Derece Muhtaç</span>
-                <span className="text-2xl font-black text-indigo-900">51 - 70</span>
-                <p className="text-xs font-semibold text-indigo-700 mt-1">Puan Aralığı</p>
+                <span className="text-xs font-bold text-indigo-800 uppercase block mb-1">3. Derece Orta Muhtaç</span>
+                <span className="text-2xl font-black text-indigo-900">56 - 85</span>
+                <p className="text-[11px] font-semibold text-indigo-700 mt-1">30 Puanlık Aralık</p>
               </div>
               <div className="mt-4 pt-3 border-t border-indigo-200 text-sm font-extrabold text-indigo-800">
-                5.000 TL Nakdi Yardım
+                6.000 TL Nakdi Yardım
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-amber-800 uppercase block mb-1">4. Derece Destek</span>
-                <span className="text-2xl font-black text-amber-900">31 - 50</span>
-                <p className="text-xs font-semibold text-amber-700 mt-1">Puan Aralığı</p>
+                <span className="text-xs font-bold text-amber-800 uppercase block mb-1">4. Derece Temel Destek</span>
+                <span className="text-2xl font-black text-amber-900">21 - 55</span>
+                <p className="text-[11px] font-semibold text-amber-700 mt-1">35 Puanlık Geniş Aralık</p>
               </div>
               <div className="mt-4 pt-3 border-t border-amber-200 text-sm font-extrabold text-amber-800">
-                2.500 TL Nakdi Yardım
+                3.500 TL Nakdi Yardım
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-bold text-slate-700 uppercase block mb-1">Uygun Değil / Ayni</span>
-                <span className="text-2xl font-black text-slate-800">0 - 30</span>
-                <p className="text-xs font-semibold text-slate-600 mt-1">Puan Aralığı</p>
+                <span className="text-2xl font-black text-slate-800">0 - 20</span>
+                <p className="text-[11px] font-semibold text-slate-600 mt-1">Asgari Puan Bandı</p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-200 text-xs font-bold text-slate-700">
                 Ayni Yardım Yönlendirmesi
