@@ -109,6 +109,14 @@ export default function AssessmentDetail() {
   if (state.e_esiCezaevinde) selectedFragility.push("Eşi cezaevinde (+5 Puan)");
   if (state.e_afetGelirKaybi) selectedFragility.push("Afet nedeniyle gelir kaybı (+5 Puan)");
   if (state.e_bosanmis) selectedFragility.push("Boşanmış (+3 Puan)");
+  if (state.e_dul) selectedFragility.push("Dul (Eşi vefat etmiş) (+3 Puan)");
+
+  const hhSize = state.householdSize || 1;
+  if (hhSize >= 5) {
+    selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +3 Puan`);
+  } else if (hhSize >= 1) {
+    selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +1 Puan`);
+  }
 
   const appliancesList = [
     { label: 'Buzdolabı', val: state.appliance_buzdolabi || 'yeni' },

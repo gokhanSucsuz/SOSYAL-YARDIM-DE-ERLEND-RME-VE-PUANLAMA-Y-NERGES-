@@ -266,7 +266,7 @@ export default function GuidePage() {
             {/* Category F */}
             <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 pb-2">
-                <h4 className="font-bold text-slate-900 text-base">F. SOSYAL KIRILGANLIK (Maksimum 10 Puan)</h4>
+                <h4 className="font-bold text-slate-900 text-base">F. SOSYAL KIRILGANLIK VE NÜFUS ŞARTLARI (Maksimum 10 Puan)</h4>
                 <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
               </div>
               <ul className="text-xs space-y-1 text-slate-700 list-disc pl-5 font-medium">
@@ -275,6 +275,8 @@ export default function GuidePage() {
                 <li><strong>Eşi Cezaevinde:</strong> +5 Puan</li>
                 <li><strong>Afet Nedeniyle Gelir Kaybı:</strong> +5 Puan</li>
                 <li><strong>Boşanmış Ebeveyn:</strong> +3 Puan</li>
+                <li><strong>Dul (Eşi Vefat Etmiş):</strong> +3 Puan</li>
+                <li><strong>Hane Nüfusu Puanı:</strong> 1 - 4 Kişi Arası <strong>+1 Puan</strong> | 5 Kişi ve Üzeri <strong>+3 Puan</strong></li>
               </ul>
             </div>
 

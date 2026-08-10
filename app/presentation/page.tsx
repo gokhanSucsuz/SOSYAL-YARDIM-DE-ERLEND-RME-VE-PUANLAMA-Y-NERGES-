@@ -437,7 +437,7 @@ export default function PresentationPage() {
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">C. Çocuk ve Eğitim (10 Pn Tavan, Örgün, Mesleki Eğitim & Açık Lise)</div>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">D. Barınma ve Konut Şartları (10 Pn Tavan)</div>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">E. Temel Ev Eşyaları Durumu (10 Pn Tavan)</div>
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">F. Sosyal Kırılganlık Şartları (10 Pn Tavan)</div>
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">F. Sosyal Kırılganlık ve Nüfus (10 Pn Tavan, Dul, Boşanmış, Şiddet, Cezaevinde, Nüfus 1-4 K: +1 Pn / 5+ K: +3 Pn)</div>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium col-span-2">G. Sosyal İnceleme Görevlisi Kanaati (20 Pn Tavan)</div>
             </div>
           </div>

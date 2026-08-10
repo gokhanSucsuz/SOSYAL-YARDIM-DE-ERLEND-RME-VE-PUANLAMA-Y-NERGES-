@@ -69,6 +69,7 @@ export default function EditAssessmentWizard() {
     // F - Sosyal Kırılganlık
     e_kadinReis: false,
     e_bosanmis: false,
+    e_dul: false,
     e_esiCezaevinde: false,
     e_siddetMagduru: false,
     e_afetGelirKaybi: false,
@@ -210,9 +211,18 @@ export default function EditAssessmentWizard() {
     let scoreF = 0;
     if (state.e_kadinReis) scoreF += 5;
     if (state.e_bosanmis) scoreF += 3;
+    if (state.e_dul) scoreF += 3;
     if (state.e_esiCezaevinde) scoreF += 5;
     if (state.e_siddetMagduru) scoreF += 6;
     if (state.e_afetGelirKaybi) scoreF += 5;
+
+    const hhSize = state.householdSize || 1;
+    if (hhSize >= 5) {
+      scoreF += 3;
+    } else if (hhSize >= 1) {
+      scoreF += 1;
+    }
+
     scoreF = Math.min(scoreF, 10);
 
     // Section G: Sosyal İnceleme Kanaati (Maks 20 Puan)
@@ -619,11 +629,21 @@ export default function EditAssessmentWizard() {
                 </div>
                 <SectionCard title="F. Sosyal Kırılganlık" maxScore={10} currentScore={calc.scoreF}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 sm:col-span-2">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                        Hane Nüfusu Puanı ({state.householdSize || 1} Kişi)
+                      </span>
+                      <span className="bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-md">
+                        +{(state.householdSize || 1) >= 5 ? 3 : 1} Puan (Otomatik)
+                      </span>
+                    </div>
                     <CheckboxItem label="Aile içi şiddet mağduru" checked={state.e_siddetMagduru} onChange={(v:any) => set('e_siddetMagduru', v)} points={6} />
                     <CheckboxItem label="Kadın hane reisi" checked={state.e_kadinReis} onChange={(v:any) => set('e_kadinReis', v)} points={5} />
                     <CheckboxItem label="Eşi cezaevinde" checked={state.e_esiCezaevinde} onChange={(v:any) => set('e_esiCezaevinde', v)} points={5} />
                     <CheckboxItem label="Afet nedeniyle gelir kaybı" checked={state.e_afetGelirKaybi} onChange={(v:any) => set('e_afetGelirKaybi', v)} points={5} />
                     <CheckboxItem label="Boşanmış" checked={state.e_bosanmis} onChange={(v:any) => set('e_bosanmis', v)} points={3} />
+                    <CheckboxItem label="Dul (Eşi vefat etmiş)" checked={state.e_dul} onChange={(v:any) => set('e_dul', v)} points={3} />
                   </div>
                 </SectionCard>
               </div>
