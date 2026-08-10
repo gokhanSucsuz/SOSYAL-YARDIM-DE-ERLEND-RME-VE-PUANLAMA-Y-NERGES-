@@ -100,7 +100,7 @@ export default function EditAssessmentWizard() {
         const data = await getAssessmentById(id);
         if (data) {
           if (data.status === 'approved') {
-            alert('Onaylanmış incelemeler düzenlenemez.');
+            alert('Onaylanmış inceleme kayıtlarında düzenleme yapılamaz. Düzenleme yapabilmek için öncelikle müdürün onayı kaldırması gerekmektedir.');
             router.push(`/assessment/${id}`);
             return;
           }

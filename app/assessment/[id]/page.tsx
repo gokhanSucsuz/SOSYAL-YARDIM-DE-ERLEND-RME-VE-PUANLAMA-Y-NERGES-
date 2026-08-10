@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getAssessmentById, Assessment, saveAssessment } from '@/lib/db';
-import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, AlertTriangle, Check, X, FileText } from 'lucide-react';
+import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, AlertTriangle, Check, X, FileText, RotateCcw, Lock, Unlock } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AssessmentDetail() {
@@ -50,6 +50,27 @@ export default function AssessmentDetail() {
       setAssessment(updated);
     } catch (err) {
       alert('Onaylama sırasında bir hata oluştu.');
+    } finally {
+      setApproving(false);
+    }
+  };
+
+  const handleRevokeApproval = async () => {
+    if (!assessment) return;
+    if (!confirm('Bu inceleme kaydının onayını kaldırmak istediğinizden emin misiniz? Onay kaldırıldığında personel tarafından tekrar düzenleme yapılabilecektir.')) return;
+    
+    setApproving(true);
+    try {
+      const updated = { 
+        ...assessment, 
+        status: 'pending' as const,
+        managerName: undefined
+      };
+      await saveAssessment(updated);
+      setAssessment(updated);
+      alert('Müdür onayı kaldırıldı. Kayıt tekrar düzenlenebilir duruma getirildi.');
+    } catch (err) {
+      alert('Onay kaldırma sırasında bir hata oluştu.');
     } finally {
       setApproving(false);
     }
@@ -210,14 +231,33 @@ export default function AssessmentDetail() {
             </Link>
           )}
 
+          {user.role === 'personnel' && assessment.status === 'approved' && (
+            <div className="flex items-center space-x-2 bg-slate-100 text-slate-500 border border-slate-200 px-3.5 py-2 rounded-lg text-xs font-bold" title="Bu kayıt müdür tarafından onaylandığı için düzenlenemez.">
+              <Lock size={15} />
+              <span>Onaylı Kayıt (Düzenlenemez)</span>
+            </div>
+          )}
+
           {user.role === 'manager' && assessment.status !== 'approved' && (
             <button 
               onClick={handleApprove}
               disabled={approving}
-              className="flex items-center space-x-2 bg-emerald-600 text-white border border-emerald-700 px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-bold shadow-md shadow-emerald-900/20"
+              className="flex items-center space-x-2 bg-emerald-600 text-white border border-emerald-700 px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-bold shadow-md shadow-emerald-900/20 active:scale-95"
             >
               <CheckCircle2 size={18} />
               <span>{approving ? 'Onaylanıyor...' : 'İncelemeyi Onayla'}</span>
+            </button>
+          )}
+
+          {user.role === 'manager' && assessment.status === 'approved' && (
+            <button 
+              onClick={handleRevokeApproval}
+              disabled={approving}
+              className="flex items-center space-x-2 bg-amber-600 hover:bg-amber-700 text-white border border-amber-700 px-4 py-2 rounded-lg transition-colors text-sm font-bold shadow-md shadow-amber-900/20 active:scale-95"
+              title="Müdür Onayını Kaldır ve Düzenlemeye Aç"
+            >
+              <RotateCcw size={18} />
+              <span>{approving ? 'İşleniyor...' : 'Müdür Onayını Geri Al (Düzenlemeye Aç)'}</span>
             </button>
           )}
 
