@@ -52,6 +52,8 @@ export default function NewAssessmentWizard() {
     c_ilkokul: 0,
     c_ortaokul: 0,
     c_lise: 0,
+    c_meslekiEgitim: 0,
+    c_acikLise: 0,
     c_uni: 0,
     // D
     d_evsiz: false,
@@ -114,6 +116,8 @@ export default function NewAssessmentWizard() {
     scoreC += state.c_ilkokul * 1;
     scoreC += state.c_ortaokul * 2;
     scoreC += state.c_lise * 3;
+    scoreC += (state.c_meslekiEgitim || 0) * 3;
+    scoreC += (state.c_acikLise || 0) * 3;
     scoreC += state.c_uni * 4;
     scoreC = Math.min(scoreC, 10);
 
@@ -451,6 +455,8 @@ export default function NewAssessmentWizard() {
                     <CounterItem label="İlkokul öğrencisi" value={state.c_ilkokul} onChange={(v:any) => set('c_ilkokul', v)} pointsPerItem={1} />
                     <CounterItem label="Ortaokul öğrencisi" value={state.c_ortaokul} onChange={(v:any) => set('c_ortaokul', v)} pointsPerItem={2} />
                     <CounterItem label="Lise öğrencisi" value={state.c_lise} onChange={(v:any) => set('c_lise', v)} pointsPerItem={3} />
+                    <CounterItem label="Mesleki Eğitim Merkezi öğrencisi" value={state.c_meslekiEgitim || 0} onChange={(v:any) => set('c_meslekiEgitim', v)} pointsPerItem={3} />
+                    <CounterItem label="Açık Lise öğrencisi" value={state.c_acikLise || 0} onChange={(v:any) => set('c_acikLise', v)} pointsPerItem={3} />
                     <CounterItem label="Üniversite öğrencisi" value={state.c_uni} onChange={(v:any) => set('c_uni', v)} pointsPerItem={4} />
                   </div>
                 </SectionCard>

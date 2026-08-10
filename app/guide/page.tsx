@@ -228,6 +228,8 @@ export default function GuidePage() {
                 <li><strong>İlkokul Öğrencisi:</strong> Kişi başı +1 Puan</li>
                 <li><strong>Ortaokul Öğrencisi:</strong> Kişi başı +2 Puan</li>
                 <li><strong>Lise Öğrencisi:</strong> Kişi başı +3 Puan</li>
+                <li><strong>Mesleki Eğitim Merkezi Öğrencisi (Yaygın Eğitim):</strong> Kişi başı +3 Puan</li>
+                <li><strong>Açık Lise Öğrencisi (Yaygın Eğitim):</strong> Kişi başı +3 Puan</li>
                 <li><strong>Üniversite Öğrencisi:</strong> Kişi başı +4 Puan</li>
               </ul>
             </div>

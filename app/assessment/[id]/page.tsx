@@ -91,6 +91,8 @@ export default function AssessmentDetail() {
   if (state.c_ilkokul > 0) selectedEducation.push(`İlkokul Öğrencisi: ${state.c_ilkokul} kişi (+${state.c_ilkokul * 1} Puan)`);
   if (state.c_ortaokul > 0) selectedEducation.push(`Ortaokul Öğrencisi: ${state.c_ortaokul} kişi (+${state.c_ortaokul * 2} Puan)`);
   if (state.c_lise > 0) selectedEducation.push(`Lise Öğrencisi: ${state.c_lise} kişi (+${state.c_lise * 3} Puan)`);
+  if (state.c_meslekiEgitim > 0) selectedEducation.push(`Mesleki Eğitim Merkezi Öğrencisi: ${state.c_meslekiEgitim} kişi (+${state.c_meslekiEgitim * 3} Puan)`);
+  if (state.c_acikLise > 0) selectedEducation.push(`Açık Lise Öğrencisi: ${state.c_acikLise} kişi (+${state.c_acikLise * 3} Puan)`);
   if (state.c_uni > 0) selectedEducation.push(`Üniversite Öğrencisi: ${state.c_uni} kişi (+${state.c_uni * 4} Puan)`);
 
   const selectedHousing = [];
