@@ -171,9 +171,9 @@ export default function NewAssessmentWizard() {
 
     let assistance = { text: "Yardım uygun görülmez (veya Ayni)", amount: 0 };
     if (!state.falseStatement) {
-      if (totalScore >= 111) assistance = { text: "10.000 TL Nakdi Yardım", amount: 10000 };
-      else if (totalScore >= 86) assistance = { text: "7.500 TL Nakdi Yardım", amount: 7500 };
-      else if (totalScore >= 56) assistance = { text: "5.000 TL Nakdi Yardım", amount: 5000 };
+      if (totalScore >= 116) assistance = { text: "10.000 TL Nakdi Yardım", amount: 10000 };
+      else if (totalScore >= 96) assistance = { text: "7.500 TL Nakdi Yardım", amount: 7500 };
+      else if (totalScore >= 71) assistance = { text: "5.000 TL Nakdi Yardım", amount: 5000 };
       else if (totalScore >= 31) assistance = { text: "2.500 TL Nakdi Yardım", amount: 2500 };
     } else {
       assistance = { text: "REDDEDİLDİ", amount: 0 };

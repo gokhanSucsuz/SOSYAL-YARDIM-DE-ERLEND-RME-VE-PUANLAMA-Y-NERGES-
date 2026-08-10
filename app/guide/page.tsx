@@ -95,8 +95,8 @@ export default function GuidePage() {
               <strong> Progressive / Artan Aralık Metodolojisi</strong> uygulanmaktadır:
             </p>
             <ul className="list-disc pl-5 space-y-1 font-medium">
-              <li><strong>1. Derece (Daraltılmış Tavan - 20 Puan):</strong> En yüksek tavan aralığı dar tutulmuştur (111 - 130 Puan). Böylece sadece aşırı yüksek kırılganlığa sahip en mağdur ve sınırlı sayıda hane 10.000 TL yardım bandına ulaşır.</li>
-              <li><strong>Kademeli Genişleyen Aralıklar:</strong> Alt derecelere doğru inildikçe puan aralıkları genişler (20 Puan → 25 Puan → 30 Puan → 25 Puan → 31 Puan).</li>
+              <li><strong>1. Derece (Daraltılmış Tavan - 15 Puan):</strong> En yüksek tavan aralığı 15 puan olarak dar tutulmuştur (116 - 130 Puan). Böylece sadece aşırı yüksek kırılganlığa sahip en mağdur ve sınırlı sayıda hane 10.000 TL yardım bandına ulaşır.</li>
+              <li><strong>Kademeli Genişleyen Aralıklar (20, 25, 40 Puan):</strong> Alt derecelere doğru inildikçe puan aralıkları genişler (15 Puan → 20 Puan → 25 Puan → 40 Puan).</li>
             </ul>
           </div>
 
@@ -109,8 +109,8 @@ export default function GuidePage() {
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-bold text-emerald-800 uppercase block mb-1">1. Derece Aşırı Muhtaç</span>
-                <span className="text-2xl font-black text-emerald-900">111 - 130</span>
-                <p className="text-[11px] font-semibold text-emerald-700 mt-1">20 Puanlık Dar Tavan</p>
+                <span className="text-2xl font-black text-emerald-900">116 - 130</span>
+                <p className="text-[11px] font-semibold text-emerald-700 mt-1">15 Puanlık Dar Tavan</p>
               </div>
               <div className="mt-4 pt-3 border-t border-emerald-200 text-sm font-extrabold text-emerald-800">
                 10.000 TL Nakdi Yardım
@@ -120,8 +120,8 @@ export default function GuidePage() {
             <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-bold text-blue-800 uppercase block mb-1">2. Derece Ağır Muhtaç</span>
-                <span className="text-2xl font-black text-blue-900">86 - 110</span>
-                <p className="text-[11px] font-semibold text-blue-700 mt-1">25 Puanlık Genişleyen</p>
+                <span className="text-2xl font-black text-blue-900">96 - 115</span>
+                <p className="text-[11px] font-semibold text-blue-700 mt-1">20 Puanlık Aralık</p>
               </div>
               <div className="mt-4 pt-3 border-t border-blue-200 text-sm font-extrabold text-blue-800">
                 7.500 TL Nakdi Yardım
@@ -131,8 +131,8 @@ export default function GuidePage() {
             <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-bold text-indigo-800 uppercase block mb-1">3. Derece Orta Muhtaç</span>
-                <span className="text-2xl font-black text-indigo-900">56 - 85</span>
-                <p className="text-[11px] font-semibold text-indigo-700 mt-1">30 Puanlık Aralık</p>
+                <span className="text-2xl font-black text-indigo-900">71 - 95</span>
+                <p className="text-[11px] font-semibold text-indigo-700 mt-1">25 Puanlık Aralık</p>
               </div>
               <div className="mt-4 pt-3 border-t border-indigo-200 text-sm font-extrabold text-indigo-800">
                 5.000 TL Nakdi Yardım
@@ -142,8 +142,8 @@ export default function GuidePage() {
             <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-bold text-amber-800 uppercase block mb-1">4. Derece Temel Destek</span>
-                <span className="text-2xl font-black text-amber-900">31 - 55</span>
-                <p className="text-[11px] font-semibold text-amber-700 mt-1">25 Puanlık Aralık</p>
+                <span className="text-2xl font-black text-amber-900">31 - 70</span>
+                <p className="text-[11px] font-semibold text-amber-700 mt-1">40 Puanlık Kalan Aralık</p>
               </div>
               <div className="mt-4 pt-3 border-t border-amber-200 text-sm font-extrabold text-amber-800">
                 2.500 TL Nakdi Yardım
