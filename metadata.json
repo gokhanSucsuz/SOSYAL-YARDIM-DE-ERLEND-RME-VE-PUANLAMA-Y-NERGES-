@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "SOSYAL YARDIM DEĞERLENDİRME VE İNCELEME SİSTEMİ",
+  "description": "Sosyal Yardım Değerlendirme ve İnceleme Sistemi",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
