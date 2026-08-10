@@ -6,7 +6,7 @@ import { getAllAssessments, getAssessmentsByPersonnel, Assessment, saveAssessmen
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
-  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check 
+  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check, CheckSquare 
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -42,6 +42,7 @@ export default function Dashboard() {
 
   // Multi-selection
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [printOnlySelected, setPrintOnlySelected] = useState<boolean>(false);
 
   // Modal State for Batch Approval / Revocation
   const [batchModal, setBatchModal] = useState<BatchModalState>({
@@ -379,12 +380,25 @@ export default function Dashboard() {
   };
 
   const handlePrintCurrentList = () => {
+    setPrintOnlySelected(false);
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
+
+  const handlePrintSelectedList = () => {
+    if (selectedIds.length === 0) {
+      alert('Lütfen PDF çıktısını almak istediğiniz kayıtları listeden seçiniz.');
+      return;
+    }
+    setPrintOnlySelected(true);
     setTimeout(() => {
       window.print();
     }, 150);
   };
 
   const handlePrintApprovedList = () => {
+    setPrintOnlySelected(false);
     setFilterStatus('approved');
     setTimeout(() => {
       window.print();
@@ -401,6 +415,10 @@ export default function Dashboard() {
 
   const selectedPendingCount = assessments.filter(a => selectedIds.includes(a.id) && a.status !== 'approved').length;
   const selectedApprovedCount = assessments.filter(a => selectedIds.includes(a.id) && a.status === 'approved').length;
+
+  const printableRecords = printOnlySelected
+    ? filteredAndSortedAssessments.filter(a => selectedIds.includes(a.id))
+    : filteredAndSortedAssessments;
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
@@ -685,10 +703,21 @@ export default function Dashboard() {
                 </button>
               )}
 
+              {selectedIds.length > 0 && (
+                <button
+                  onClick={handlePrintSelectedList}
+                  className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95 animate-fadeIn"
+                  title="Sadece seçilen kayıtların PDF / Yazıcı çıktısını al"
+                >
+                  <CheckSquare size={14} />
+                  <span>Seçilenleri PDF Yazdır ({selectedIds.length})</span>
+                </button>
+              )}
+
               <button
                 onClick={handlePrintCurrentList}
                 className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
-                title="Mevcut sıralama ve filtreye göre PDF / Yazıcı çıktısı al"
+                title="Mevcut sıralama ve filtreye göre tüm listeyi PDF / Yazıcı çıktısı al"
               >
                 <Printer size={14} />
                 <span>Listeyi Yazdır / PDF</span>
@@ -702,22 +731,56 @@ export default function Dashboard() {
 
           </div>
 
+          {/* Selected Items Highlight Bar */}
+          {selectedIds.length > 0 && (
+            <div className="bg-slate-900 text-white px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs font-bold animate-fadeIn border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <CheckSquare size={16} className="text-emerald-400" />
+                <span>Toplam <strong className="text-emerald-300 text-sm">{selectedIds.length}</strong> adet kayıt seçildi</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handlePrintSelectedList}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
+                >
+                  <Printer size={14} />
+                  <span>Sadece Seçilenleri PDF Yazdır ({selectedIds.length})</span>
+                </button>
+
+                {user.role === 'manager' && selectedPendingCount > 0 && (
+                  <button
+                    onClick={openApproveSelectedModal}
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
+                  >
+                    <CheckCircle2 size={14} />
+                    <span>Seçilen Bekleyenleri Onayla ({selectedPendingCount})</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={() => setSelectedIds([])}
+                  className="text-slate-400 hover:text-white underline px-2 py-0.5 transition-colors text-[11px]"
+                >
+                  Seçimi Temizle
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Single-Row Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse table-auto">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 text-[10px] uppercase tracking-wider border-b border-slate-200">
-                  {user.role === 'manager' && (
-                    <th className="px-3 py-3 font-black text-center w-10">
-                      <input
-                        type="checkbox"
-                        checked={filteredAndSortedAssessments.length > 0 && selectedIds.length === filteredAndSortedAssessments.length}
-                        onChange={toggleSelectAll}
-                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                        title="Tümünü Seç / Kaldır"
-                      />
-                    </th>
-                  )}
+                  <th className="px-3 py-3 font-black text-center w-10">
+                    <input
+                      type="checkbox"
+                      checked={filteredAndSortedAssessments.length > 0 && selectedIds.length === filteredAndSortedAssessments.length}
+                      onChange={toggleSelectAll}
+                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      title="Tümünü Seç / Kaldır"
+                    />
+                  </th>
 
                   <th 
                     onClick={() => handleSort('date')} 
@@ -810,7 +873,7 @@ export default function Dashboard() {
               <tbody className="divide-y divide-slate-100 text-xs">
                 {filteredAndSortedAssessments.length === 0 ? (
                   <tr>
-                    <td colSpan={user.role === 'manager' ? 10 : 8} className="px-6 py-12 text-center text-slate-500 bg-slate-50/50 font-medium">
+                    <td colSpan={user.role === 'manager' ? 10 : 9} className="px-6 py-12 text-center text-slate-500 bg-slate-50/50 font-medium">
                       Arama ve filtreleme kriterlerine uygun sosyal inceleme kaydı bulunamadı.
                     </td>
                   </tr>
@@ -824,16 +887,14 @@ export default function Dashboard() {
                         key={item.id} 
                         className={`transition-colors ${isSelected ? 'bg-blue-50/80 font-medium' : 'hover:bg-slate-50/80'}`}
                       >
-                        {user.role === 'manager' && (
-                          <td className="px-3 py-3 text-center align-middle whitespace-nowrap">
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => toggleSelectId(item.id)}
-                              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                            />
-                          </td>
-                        )}
+                        <td className="px-3 py-3 text-center align-middle whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleSelectId(item.id)}
+                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          />
+                        </td>
 
                         {/* Date */}
                         <td className="px-3 sm:px-4 py-3 font-semibold text-slate-600 whitespace-nowrap align-middle">
@@ -1089,7 +1150,9 @@ export default function Dashboard() {
           <p className="text-xs font-bold uppercase tracking-widest">T.C.</p>
           <p className="text-sm font-black uppercase tracking-wider">SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI BAŞKANLIĞI</p>
           <p className="text-xs font-extrabold tracking-widest uppercase mt-0.5">
-            {filterStatus === 'approved' 
+            {printOnlySelected
+              ? `SEÇİLEN SOSYAL İNCELEME KAYITLARI LİSTESİ (${printableRecords.length} KAYIT)`
+              : filterStatus === 'approved' 
               ? 'MÜDÜR TARAFINDAN ONAYLANAN SOSYAL İNCELEME KAYITLARI LİSTESİ' 
               : filterStatus === 'pending'
               ? 'ONAY BEKLEYEN SOSYAL İNCELEME KAYITLARI LİSTESİ'
@@ -1098,10 +1161,10 @@ export default function Dashboard() {
           <p className="text-[9px] text-slate-700 mt-1 flex items-center justify-center gap-3">
             <span>Rapor Tarihi: {new Date().toLocaleDateString('tr-TR')}</span>
             <span>•</span>
-            <span>Toplam Kayıt: <strong>{filteredAndSortedAssessments.length}</strong></span>
+            <span>Toplam Kayıt: <strong>{printableRecords.length}</strong></span>
             <span>•</span>
             <span>
-              Sıralama Krteri: <strong>
+              Sıralama Kriteri: <strong>
                 {sortField === 'date' ? 'Ziyaret Tarihi' :
                  sortField === 'applicantTc' ? 'T.C. Kimlik No' :
                  sortField === 'applicantName' ? 'Başvuru Sahibi Adı' :
@@ -1112,12 +1175,17 @@ export default function Dashboard() {
                 ({sortOrder === 'asc' ? 'Artan' : 'Azalan'})
               </strong>
             </span>
-            {searchQuery && (
+            {printOnlySelected ? (
+              <>
+                <span>•</span>
+                <span>Filtre: <strong>Özel Seçilmiş Kayıtlar ({printableRecords.length})</strong></span>
+              </>
+            ) : searchQuery ? (
               <>
                 <span>•</span>
                 <span>Arama: <strong>"{searchQuery}"</strong></span>
               </>
-            )}
+            ) : null}
           </p>
         </div>
 
@@ -1138,14 +1206,14 @@ export default function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {filteredAndSortedAssessments.length === 0 ? (
+            {printableRecords.length === 0 ? (
               <tr>
                 <td colSpan={10} className="p-4 text-center font-bold text-slate-500">
-                  Arama ve filtreleme kriterlerine uygun kayıt bulunmamaktadır.
+                  {printOnlySelected ? 'Seçilen herhangi bir sosyal inceleme kaydı bulunmamaktadır.' : 'Arama ve filtreleme kriterlerine uygun kayıt bulunmamaktadır.'}
                 </td>
               </tr>
             ) : (
-              filteredAndSortedAssessments.map((item, idx) => (
+              printableRecords.map((item, idx) => (
                 <tr key={item.id} className="border-b border-black">
                   <td className="p-1 text-center font-bold">{idx + 1}</td>
                   <td className="p-1 text-center font-bold">{item.applicantTc || '-'}</td>
