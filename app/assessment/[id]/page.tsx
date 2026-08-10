@@ -86,6 +86,10 @@ export default function AssessmentDetail() {
   if (state.b_yetim) selectedDisadvantages.push("Yetim / Öksüz çocuk (+5 Puan)");
   if (state.b_koruyucuAile) selectedDisadvantages.push("Koruyucu aile (+5 Puan)");
   if (state.b_yabanciUyruklu) selectedDisadvantages.push("Yabancı uyruklu / Sığınmacı (Suriyeli, Afgan vb.) (+3 Puan)");
+  if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
+    const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : "";
+    selectedDisadvantages.push(`Özel Sebep${reasonText} (+${state.b_ozelSebepPuan} Puan)`);
+  }
 
   const selectedEducation = [];
   if (state.c_0_6yas > 0) selectedEducation.push(`0-6 Yaş Çocuk: ${state.c_0_6yas} kişi (+${state.c_0_6yas * 2} Puan)`);

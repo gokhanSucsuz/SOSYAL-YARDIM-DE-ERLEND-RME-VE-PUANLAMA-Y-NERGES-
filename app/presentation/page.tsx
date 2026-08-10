@@ -433,7 +433,7 @@ export default function PresentationPage() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">A. Ekonomik Durum (40 Pn Tavan, Gelir, SGK & Son 3 Ay Vakıf Yardım Düşümü)</div>
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">B. Dezavantajlı Bireyler (30 Pn Tavan, Engelli, Yaşlı, Yabancı Uyruklu / Sığınmacı)</div>
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">B. Dezavantajlı Bireyler (30 Pn Tavan, Engelli, Yaşlı, Yabancı Uyruklu / Sığınmacı & Özel Sebep: +10 / +15 / +20 / +25 Pn)</div>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">C. Çocuk ve Eğitim (10 Pn Tavan, Örgün, Mesleki Eğitim & Açık Lise)</div>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">D. Barınma ve Konut Şartları (10 Pn Tavan)</div>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">E. Temel Ev Eşyaları Durumu (10 Pn Tavan)</div>

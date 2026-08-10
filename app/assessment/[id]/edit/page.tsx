@@ -43,6 +43,8 @@ export default function EditAssessmentWizard() {
     b_yetim: false,
     b_koruyucuAile: false,
     b_yabanciUyruklu: false,
+    b_ozelSebepMetin: "",
+    b_ozelSebepPuan: 0,
     // C
     c_0_6yas: 0,
     c_ilkokul: 0,
@@ -157,6 +159,7 @@ export default function EditAssessmentWizard() {
     if (state.b_yetim) scoreB += 5;
     if (state.b_koruyucuAile) scoreB += 5;
     if (state.b_yabanciUyruklu) scoreB += 3;
+    if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) scoreB += Number(state.b_ozelSebepPuan);
     scoreB = Math.min(scoreB, 30);
 
     // Section C
@@ -498,6 +501,46 @@ export default function EditAssessmentWizard() {
                     <CheckboxItem label="Yetim/öksüz çocuk" checked={state.b_yetim} onChange={(v:any) => set('b_yetim', v)} points={5} />
                     <CheckboxItem label="Koruyucu aile" checked={state.b_koruyucuAile} onChange={(v:any) => set('b_koruyucuAile', v)} points={5} />
                     <CheckboxItem label="Yabancı uyruklu / Sığınmacı (Suriyeli, Afgan vb.)" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={3} />
+                  </div>
+
+                  <div className="mt-5 pt-4 border-t border-slate-100">
+                    <h3 className="text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                      <Sparkles size={14} className="text-amber-500" />
+                      Özel Sebep / Özel Durum Tanımlama
+                    </h3>
+                    <p className="text-xs text-slate-500 mb-3">
+                      Yukarıdaki standart kriterlerin dışındaki özel dezavantaj durumları için açıklama girip 10, 15, 20 veya 25 puan ilave edebilirsiniz.
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                          Özel Sebep / Durum Açıklaması
+                        </label>
+                        <input
+                          type="text"
+                          value={state.b_ozelSebepMetin || ''}
+                          onChange={(e) => set('b_ozelSebepMetin', e.target.value)}
+                          placeholder="Örn: Nadir kronik hastalık, organ nakli bekleme, ağır ameliyat vb."
+                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-slate-800"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                          İlave Puan Seçimi
+                        </label>
+                        <select
+                          value={state.b_ozelSebepPuan || 0}
+                          onChange={(e) => set('b_ozelSebepPuan', Number(e.target.value))}
+                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-bold text-slate-800"
+                        >
+                          <option value={0}>Puan Yok (0 Puan)</option>
+                          <option value={10}>+10 Puan</option>
+                          <option value={15}>+15 Puan</option>
+                          <option value={20}>+20 Puan</option>
+                          <option value={25}>+25 Puan</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </SectionCard>
               </div>

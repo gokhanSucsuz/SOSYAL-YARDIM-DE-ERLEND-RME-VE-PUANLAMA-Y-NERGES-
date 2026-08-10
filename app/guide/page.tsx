@@ -215,6 +215,7 @@ export default function GuidePage() {
                 <div className="bg-white p-2 rounded border border-slate-200">Şehit Yakını / Gazi: <strong>+8 Puan</strong></div>
                 <div className="bg-white p-2 rounded border border-slate-200">Yetim/Öksüz veya Koruyucu Aile: <strong>+5 Puan</strong></div>
                 <div className="bg-white p-2 rounded border border-slate-200">Yabancı Uyruklu / Sığınmacı (Suriyeli, Afgan vb.): <strong>+3 Puan</strong></div>
+                <div className="bg-white p-2 rounded border border-slate-200 sm:col-span-2">Özel Sebep / Özel Durum Tanımlama: <strong>+10 / +15 / +20 / +25 Puan</strong> (Açıklama girilerek seçime göre eklenir)</div>
               </div>
             </div>
 
