@@ -193,7 +193,8 @@ export default function GuidePage() {
                 <li><strong>Muhtaçlık Sınırının %25 – %50 Arası:</strong> +35 Puan</li>
                 <li><strong>Muhtaçlık Sınırının %50 – %75 Arası:</strong> +25 Puan</li>
                 <li><strong>Muhtaçlık Sınırının %75 – %100 Arası:</strong> +15 Puan</li>
-                <li><strong>İlave Puanlar:</strong> Hanede Çalışan Yok (+10 Puan) • Düzenli Gelir Yok (+5 Puan) • SGK Kaydı Yok (+5 Puan)</li>
+                <li><strong>İlave / Düzeltme Puanları:</strong> Hanede Çalışan Yok (+10 Puan) • Düzenli Gelir Yok (+5 Puan) • SGK Kaydı Yok (+5 Puan)</li>
+                <li><strong>Son 3 Ayda Vakıf Nakdi Yardım Alınması:</strong> Kişi başı <strong>-5 Puan Düşüm</strong> uygulanır (Mükerrer ve sık yardımları engelleme dengesi).</li>
               </ul>
             </div>
 
@@ -213,6 +214,7 @@ export default function GuidePage() {
                 <div className="bg-white p-2 rounded border border-slate-200">65 Yaş Üstü Yalnız Yaşayan: <strong>+8 Puan</strong></div>
                 <div className="bg-white p-2 rounded border border-slate-200">Şehit Yakını / Gazi: <strong>+8 Puan</strong></div>
                 <div className="bg-white p-2 rounded border border-slate-200">Yetim/Öksüz veya Koruyucu Aile: <strong>+5 Puan</strong></div>
+                <div className="bg-white p-2 rounded border border-slate-200">Yabancı Uyruklu / Sığınmacı (Suriyeli, Afgan vb.): <strong>+3 Puan</strong></div>
               </div>
             </div>
 

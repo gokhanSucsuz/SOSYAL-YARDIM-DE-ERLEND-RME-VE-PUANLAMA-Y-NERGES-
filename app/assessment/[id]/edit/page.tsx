@@ -30,6 +30,7 @@ export default function EditAssessmentWizard() {
     noWorker: false,
     noRegularIncome: false,
     noSgk: false,
+    a_son3AyYardimKisi: 0,
     // B
     b_agirEngelli: false,
     b_engelli: false,
@@ -41,6 +42,7 @@ export default function EditAssessmentWizard() {
     b_gazi: false,
     b_yetim: false,
     b_koruyucuAile: false,
+    b_yabanciUyruklu: false,
     // C
     c_0_6yas: 0,
     c_ilkokul: 0,
@@ -136,7 +138,10 @@ export default function EditAssessmentWizard() {
     if (state.noWorker) scoreA += 10;
     if (state.noRegularIncome) scoreA += 5;
     if (state.noSgk) scoreA += 5;
-    scoreA = Math.min(scoreA, 40);
+    if (state.a_son3AyYardimKisi && state.a_son3AyYardimKisi > 0) {
+      scoreA -= state.a_son3AyYardimKisi * 5;
+    }
+    scoreA = Math.max(0, Math.min(scoreA, 40));
 
     // Section B
     let scoreB = 0;
@@ -150,6 +155,7 @@ export default function EditAssessmentWizard() {
     if (state.b_gazi) scoreB += 8;
     if (state.b_yetim) scoreB += 5;
     if (state.b_koruyucuAile) scoreB += 5;
+    if (state.b_yabanciUyruklu) scoreB += 3;
     scoreB = Math.min(scoreB, 30);
 
     // Section C
@@ -451,11 +457,12 @@ export default function EditAssessmentWizard() {
                     <RadioItem label="Muhtaçlık sınırı üzerinde" name="income" checked={state.income === 0} onChange={() => set('income', 0)} points={0} />
                   </div>
                   <div className="mt-5 pt-4 border-t border-slate-100">
-                    <h3 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">İlave Puanlar</h3>
+                    <h3 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">İlave / Düzeltme Puanları</h3>
                     <div className="grid grid-cols-1 gap-3">
                       <CheckboxItem label="Hanede çalışan yok" checked={state.noWorker} onChange={(v:any) => set('noWorker', v)} points={10} />
                       <CheckboxItem label="Düzenli gelir bulunmuyor" checked={state.noRegularIncome} onChange={(v:any) => set('noRegularIncome', v)} points={5} />
                       <CheckboxItem label="SGK kaydı yok" checked={state.noSgk} onChange={(v:any) => set('noSgk', v)} points={5} />
+                      <CounterItem label="Son 3 ay içinde Vakıf'tan nakdi/maddi yardım alan kişi sayısı" value={state.a_son3AyYardimKisi || 0} onChange={(v:any) => set('a_son3AyYardimKisi', v)} pointsPerItem={-5} />
                     </div>
                   </div>
                 </SectionCard>
@@ -480,6 +487,7 @@ export default function EditAssessmentWizard() {
                     <CheckboxItem label="Gazi" checked={state.b_gazi} onChange={(v:any) => set('b_gazi', v)} points={8} />
                     <CheckboxItem label="Yetim/öksüz çocuk" checked={state.b_yetim} onChange={(v:any) => set('b_yetim', v)} points={5} />
                     <CheckboxItem label="Koruyucu aile" checked={state.b_koruyucuAile} onChange={(v:any) => set('b_koruyucuAile', v)} points={5} />
+                    <CheckboxItem label="Yabancı uyruklu / Sığınmacı (Suriyeli, Afgan vb.)" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={3} />
                   </div>
                 </SectionCard>
               </div>

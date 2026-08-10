@@ -431,14 +431,14 @@ export default function PresentationPage() {
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               Puanlamayı Oluşturan 7 Ana İnceleme Kategorisi:
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">1. Barınma ve Konut (20 Pn)</div>
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">2. Gelir ve Ekonomik (25 Pn)</div>
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">3. Sağlık ve Kronik Hastalık (20 Pn)</div>
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">4. Eğitim Durumu (15 Pn)</div>
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">5. Engellilik / Yaşlılık (20 Pn)</div>
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">6. Nüfus ve Bağımlılık (15 Pn)</div>
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium col-span-2 sm:col-span-2">7. Özel Kırılganlık Şartları (Afet, Yetim vb. - 15 Pn)</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">A. Ekonomik Durum (40 Pn Tavan, Gelir, SGK & Son 3 Ay Vakıf Yardım Düşümü)</div>
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">B. Dezavantajlı Bireyler (30 Pn Tavan, Engelli, Yaşlı, Yabancı Uyruklu / Sığınmacı)</div>
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">C. Çocuk ve Eğitim (10 Pn Tavan, Örgün, Mesleki Eğitim & Açık Lise)</div>
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">D. Barınma ve Konut Şartları (10 Pn Tavan)</div>
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">E. Temel Ev Eşyaları Durumu (10 Pn Tavan)</div>
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">F. Sosyal Kırılganlık Şartları (10 Pn Tavan)</div>
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium col-span-2">G. Sosyal İnceleme Görevlisi Kanaati (20 Pn Tavan)</div>
             </div>
           </div>
         </section>

@@ -85,6 +85,7 @@ export default function AssessmentDetail() {
   if (state.b_gazi) selectedDisadvantages.push("Gazi (+8 Puan)");
   if (state.b_yetim) selectedDisadvantages.push("Yetim / Öksüz çocuk (+5 Puan)");
   if (state.b_koruyucuAile) selectedDisadvantages.push("Koruyucu aile (+5 Puan)");
+  if (state.b_yabanciUyruklu) selectedDisadvantages.push("Yabancı uyruklu / Sığınmacı (Suriyeli, Afgan vb.) (+3 Puan)");
 
   const selectedEducation = [];
   if (state.c_0_6yas > 0) selectedEducation.push(`0-6 Yaş Çocuk: ${state.c_0_6yas} kişi (+${state.c_0_6yas * 2} Puan)`);
@@ -303,8 +304,8 @@ export default function AssessmentDetail() {
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">İlave Gelir / Çalışma Durumları</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">İlave Gelir / Çalışma / Yardım Geçmişi Durumları</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                     <div className={`p-2.5 rounded-lg border text-xs font-bold flex items-center justify-between ${state.noWorker ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
                       <span>Hanede Çalışan Yok</span>
                       {state.noWorker ? <Check size={16} className="text-amber-600" /> : <X size={14} />}
@@ -316,6 +317,10 @@ export default function AssessmentDetail() {
                     <div className={`p-2.5 rounded-lg border text-xs font-bold flex items-center justify-between ${state.noSgk ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
                       <span>SGK Kaydı Yok</span>
                       {state.noSgk ? <Check size={16} className="text-amber-600" /> : <X size={14} />}
+                    </div>
+                    <div className={`p-2.5 rounded-lg border text-xs font-bold flex items-center justify-between ${state.a_son3AyYardimKisi > 0 ? 'bg-red-50 border-red-200 text-red-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
+                      <span>Son 3 Ayda Vakıf Yardımı: {state.a_son3AyYardimKisi || 0} Kişi (-{(state.a_son3AyYardimKisi || 0) * 5} Pn)</span>
+                      {state.a_son3AyYardimKisi > 0 ? <Check size={16} className="text-red-600" /> : <X size={14} />}
                     </div>
                   </div>
                 </div>
@@ -632,6 +637,7 @@ export default function AssessmentDetail() {
                   {state.noWorker && " • Hanede çalışan yok (+10)"}
                   {state.noRegularIncome && " • Düzenli gelir yok (+5)"}
                   {state.noSgk && " • SGK kaydı yok (+5)"}
+                  {state.a_son3AyYardimKisi > 0 && ` • Son 3 ayda Vakıf yardımı alan: ${state.a_son3AyYardimKisi} kişi (-${state.a_son3AyYardimKisi * 5})`}
                 </td>
                 <td className="p-1 text-center font-bold">{calc.scoreA} / 40</td>
               </tr>
