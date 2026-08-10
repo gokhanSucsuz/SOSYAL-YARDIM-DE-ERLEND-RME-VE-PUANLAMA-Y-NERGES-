@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, ArrowLeft, BookOpen, Scale, Award, AlertTriangle, FileText, CheckCircle2, Home, HeartHandshake, HelpCircle, Layers, Check } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, BookOpen, Scale, Award, AlertTriangle, FileText, CheckCircle2, Home, HeartHandshake, HelpCircle, Layers, Check, Presentation } from 'lucide-react';
 
 export default function GuidePage() {
   return (
@@ -24,12 +24,20 @@ export default function GuidePage() {
           </div>
         </div>
 
-        <Link
-          href="/"
-          className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 border border-slate-700"
-        >
-          <Home size={16} /> Panele Dön
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/presentation"
+            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
+          >
+            <Presentation size={16} /> Sunum (PDF)
+          </Link>
+          <Link
+            href="/"
+            className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 border border-slate-700"
+          >
+            <Home size={16} /> Panele Dön
+          </Link>
+        </div>
       </header>
 
       {/* Main Content */}

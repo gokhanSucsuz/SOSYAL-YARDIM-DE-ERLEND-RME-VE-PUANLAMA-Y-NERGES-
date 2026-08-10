@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllAssessments, getAssessmentsByPersonnel, Assessment } from '@/lib/db';
-import { FileText, Plus, LogOut, Users, CheckCircle2, XCircle, ShieldCheck, Printer, Clock, Filter, Check, BookOpen } from 'lucide-react';
+import { FileText, Plus, LogOut, Users, CheckCircle2, XCircle, ShieldCheck, Printer, Clock, Filter, Check, BookOpen, Presentation } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Dashboard() {
@@ -111,7 +111,15 @@ export default function Dashboard() {
             </p>
           </div>
         </div>
-        <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end w-full sm:w-auto gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+          <Link
+            href="/presentation"
+            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors shadow-sm"
+            title="Proje Sunumu ve PDF Raporu"
+          >
+            <Presentation size={16} className="shrink-0" />
+            <span>Proje Sunumu (PDF)</span>
+          </Link>
           <Link
             href="/guide"
             className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-bold px-3 py-2 rounded-xl transition-colors border border-slate-700"
