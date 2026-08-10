@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllAssessments, getAssessmentsByPersonnel, Assessment, saveAssessment } from '@/lib/db';
 import { 
-  FileText, Plus, LogOut, Users, CheckCircle2, XCircle, ShieldCheck, 
-  Printer, Clock, Filter, Check, BookOpen, Presentation, RotateCcw, 
-  Lock, Unlock, AlertTriangle, CheckSquare, Square, RefreshCw, Edit3, Sparkles 
+  FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
+  Printer, Clock, BookOpen, Presentation, RotateCcw, 
+  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check 
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -22,12 +22,25 @@ interface BatchModalState {
   totalCount: number;
 }
 
+type SortField = 'date' | 'applicantTc' | 'applicantName' | 'householdSize' | 'personnelName' | 'totalScore' | 'status' | 'decision';
+type SortOrder = 'asc' | 'desc';
+
 export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Search & Filter States
+  const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved'>('all');
+  const [filterDecision, setFilterDecision] = useState<'all' | 'accepted' | 'rejected'>('all');
+  
+  // Sort States
+  const [sortField, setSortField] = useState<SortField>('date');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+  // Multi-selection
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   // Modal State for Batch Approval / Revocation
@@ -99,18 +112,109 @@ export default function Dashboard() {
   const approvedList = assessments.filter(a => a.status === 'approved');
   const approvedCount = approvedList.length;
 
-  const filteredAssessments = assessments.filter(item => {
-    if (filterStatus === 'pending') return item.status !== 'approved';
-    if (filterStatus === 'approved') return item.status === 'approved';
-    return true;
-  });
+  // Search & Filter & Sort Pipeline
+  const filteredAndSortedAssessments = assessments
+    .filter(item => {
+      // Status Filter
+      if (filterStatus === 'pending' && item.status === 'approved') return false;
+      if (filterStatus === 'approved' && item.status !== 'approved') return false;
+
+      // Decision Filter
+      if (filterDecision === 'accepted' && item.result.isRejected) return false;
+      if (filterDecision === 'rejected' && !item.result.isRejected) return false;
+
+      // Search Query Filter
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const name = (item.applicantName || '').toLowerCase();
+        const tc = (item.applicantTc || '').toLowerCase();
+        const address = (item.applicantAddress || '').toLowerCase();
+        const phone = (item.phoneNumber || '').toLowerCase();
+        const personnel = (item.personnelName || '').toLowerCase();
+        const decisionText = item.result.isRejected 
+          ? 'reddedildi red kapsam dışı' 
+          : (item.result.assistance?.text || '').toLowerCase();
+
+        const isMatch = name.includes(q) || tc.includes(q) || address.includes(q) || phone.includes(q) || personnel.includes(q) || decisionText.includes(q);
+        if (!isMatch) return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+
+      switch (sortField) {
+        case 'date':
+          aVal = new Date(a.date).getTime();
+          bVal = new Date(b.date).getTime();
+          break;
+        case 'applicantTc':
+          aVal = a.applicantTc || '';
+          bVal = b.applicantTc || '';
+          break;
+        case 'applicantName':
+          aVal = (a.applicantName || '').toLowerCase();
+          bVal = (b.applicantName || '').toLowerCase();
+          break;
+        case 'householdSize':
+          aVal = a.householdSize || 0;
+          bVal = b.householdSize || 0;
+          break;
+        case 'personnelName':
+          aVal = (a.personnelName || '').toLowerCase();
+          bVal = (b.personnelName || '').toLowerCase();
+          break;
+        case 'totalScore':
+          aVal = a.result.totalScore || 0;
+          bVal = b.result.totalScore || 0;
+          break;
+        case 'status':
+          aVal = a.status === 'approved' ? 1 : 0;
+          bVal = b.status === 'approved' ? 1 : 0;
+          break;
+        case 'decision':
+          aVal = a.result.isRejected ? 'RED' : (a.result.assistance?.text || '');
+          bVal = b.result.isRejected ? 'RED' : (b.result.assistance?.text || '');
+          break;
+        default:
+          aVal = new Date(a.date).getTime();
+          bVal = new Date(b.date).getTime();
+      }
+
+      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+  // Sorting Helper
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const renderSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown size={12} className="text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />;
+    }
+    return sortOrder === 'asc' ? (
+      <ArrowUp size={12} className="text-blue-600 font-black shrink-0" />
+    ) : (
+      <ArrowDown size={12} className="text-blue-600 font-black shrink-0" />
+    );
+  };
 
   // Multi-selection helper functions
   const toggleSelectAll = () => {
-    if (selectedIds.length === filteredAssessments.length) {
+    if (selectedIds.length === filteredAndSortedAssessments.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(filteredAssessments.map(a => a.id));
+      setSelectedIds(filteredAndSortedAssessments.map(a => a.id));
     }
   };
 
@@ -220,7 +324,7 @@ export default function Dashboard() {
       await saveAssessment(updated);
 
       // Short delay for visual progress bar animation smoothing
-      await new Promise(res => setTimeout(res, 120));
+      await new Promise(res => setTimeout(res, 100));
 
       const count = i + 1;
       const pct = Math.round((count / totalItems) * 100);
@@ -279,6 +383,14 @@ export default function Dashboard() {
     setTimeout(() => {
       window.print();
     }, 150);
+  };
+
+  const resetAllFilters = () => {
+    setSearchQuery('');
+    setFilterStatus('all');
+    setFilterDecision('all');
+    setSortField('date');
+    setSortOrder('desc');
   };
 
   const selectedPendingCount = assessments.filter(a => selectedIds.includes(a.id) && a.status !== 'approved').length;
@@ -366,7 +478,7 @@ export default function Dashboard() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900">Gösterge Paneli</h2>
-            <p className="text-slate-500 text-xs sm:text-sm font-medium">Hane inceleme ziyaretleri, onay süreçleri ve toplu yönetim araçları.</p>
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">Hane inceleme ziyaretleri, gelişmiş arama/sıralama ve onay süreçleri.</p>
           </div>
           
           <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
@@ -481,15 +593,17 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Filter Tabs & List Header */}
+        {/* Filter, Search & Records Section */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          
+          {/* Section Title & Primary Tabs */}
           <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
                 <FileText size={16} className="text-blue-600" />
                 Sosyal İnceleme Kayıtları
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">Tüm inceleme detaylarını tek satırda görüntüleyebilir, detayına girebilir veya onay süreçlerini yönetebilirsiniz.</p>
+              <p className="text-xs text-slate-500 mt-0.5">Arama, filtreleme ve sütun bazlı sıralama ile tüm kayıtları inceleyip yönetebilirsiniz.</p>
             </div>
 
             {/* Filter Tabs */}
@@ -515,51 +629,188 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Search Bar & Secondary Filters */}
+          <div className="p-4 border-b border-slate-200 bg-slate-100/50 flex flex-col md:flex-row items-center justify-between gap-3">
+            
+            {/* Live Search Input */}
+            <div className="relative w-full md:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Ad soyad, TC kimlik, personel, karar..."
+                className="w-full pl-9 pr-8 py-2 text-xs font-medium rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-800 shadow-sm"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                  title="Aramayı Temizle"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* Decision Filter & Counter / Reset */}
+            <div className="flex flex-wrap items-center justify-between md:justify-end gap-2.5 w-full md:w-auto">
+              
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
+                <Filter size={14} className="text-slate-500 shrink-0" />
+                <span>Karar Filtresi:</span>
+                <select
+                  value={filterDecision}
+                  onChange={(e: any) => setFilterDecision(e.target.value)}
+                  className="bg-white border border-slate-300 text-slate-800 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                >
+                  <option value="all">Tüm Kararlar</option>
+                  <option value="accepted">Kapsam İçi (Kabul)</option>
+                  <option value="rejected">Kapsam Dışı (Red)</option>
+                </select>
+              </div>
+
+              {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
+                <button
+                  onClick={resetAllFilters}
+                  className="text-xs text-blue-700 hover:text-blue-900 font-bold underline flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                >
+                  <X size={12} /> Filtreleri Sıfırla
+                </button>
+              )}
+
+              <div className="text-[11px] font-bold text-slate-500 bg-slate-200 px-2.5 py-1 rounded-md">
+                Gösterilen: <strong className="text-slate-900 font-extrabold">{filteredAndSortedAssessments.length}</strong> / {total}
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Single-Row Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse table-auto">
               <thead>
-                <tr className="bg-slate-100 text-slate-600 text-[10px] uppercase tracking-wider border-b border-slate-200">
+                <tr className="bg-slate-100 text-slate-700 text-[10px] uppercase tracking-wider border-b border-slate-200">
                   {user.role === 'manager' && (
-                    <th className="px-3 py-3.5 font-extrabold text-center w-10">
+                    <th className="px-3 py-3 font-black text-center w-10">
                       <input
                         type="checkbox"
-                        checked={filteredAssessments.length > 0 && selectedIds.length === filteredAssessments.length}
+                        checked={filteredAndSortedAssessments.length > 0 && selectedIds.length === filteredAndSortedAssessments.length}
                         onChange={toggleSelectAll}
                         className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         title="Tümünü Seç / Kaldır"
                       />
                     </th>
                   )}
-                  <th className="px-4 py-3.5 font-extrabold whitespace-nowrap">Tarih</th>
-                  <th className="px-4 py-3.5 font-extrabold whitespace-nowrap">T.C. Kimlik</th>
-                  <th className="px-4 py-3.5 font-extrabold">Başvuru Sahibi Adı Soyadı</th>
-                  <th className="px-4 py-3.5 font-extrabold whitespace-nowrap">Hane Kişi</th>
-                  {user.role === 'manager' && <th className="px-4 py-3.5 font-extrabold">İnceleyen Personel</th>}
-                  <th className="px-4 py-3.5 font-extrabold text-center whitespace-nowrap">Toplam Puan</th>
-                  <th className="px-4 py-3.5 font-extrabold whitespace-nowrap">Onay Durumu</th>
-                  <th className="px-4 py-3.5 font-extrabold">Karar / Yardım Tipi</th>
-                  <th className="px-4 py-3.5 font-extrabold text-right whitespace-nowrap">İşlem</th>
+
+                  <th 
+                    onClick={() => handleSort('date')} 
+                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Ziyaret Tarihi</span>
+                      {renderSortIcon('date')}
+                    </div>
+                  </th>
+
+                  <th 
+                    onClick={() => handleSort('applicantTc')} 
+                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>T.C. Kimlik</span>
+                      {renderSortIcon('applicantTc')}
+                    </div>
+                  </th>
+
+                  <th 
+                    onClick={() => handleSort('applicantName')} 
+                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Başvuru Sahibi Adı Soyadı</span>
+                      {renderSortIcon('applicantName')}
+                    </div>
+                  </th>
+
+                  <th 
+                    onClick={() => handleSort('householdSize')} 
+                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap text-center"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Hane Kişi</span>
+                      {renderSortIcon('householdSize')}
+                    </div>
+                  </th>
+
+                  {user.role === 'manager' && (
+                    <th 
+                      onClick={() => handleSort('personnelName')} 
+                      className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                    >
+                      <div className="flex items-center gap-1">
+                        <span>İnceleyen Personel</span>
+                        {renderSortIcon('personnelName')}
+                      </div>
+                    </th>
+                  )}
+
+                  <th 
+                    onClick={() => handleSort('totalScore')} 
+                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap text-center"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Toplam Puan</span>
+                      {renderSortIcon('totalScore')}
+                    </div>
+                  </th>
+
+                  <th 
+                    onClick={() => handleSort('status')} 
+                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Onay Durumu</span>
+                      {renderSortIcon('status')}
+                    </div>
+                  </th>
+
+                  <th 
+                    onClick={() => handleSort('decision')} 
+                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Karar / Yardım Tipi</span>
+                      {renderSortIcon('decision')}
+                    </div>
+                  </th>
+
+                  <th className="px-3 sm:px-4 py-3 font-extrabold text-right whitespace-nowrap">
+                    İşlem
+                  </th>
                 </tr>
               </thead>
+              
               <tbody className="divide-y divide-slate-100 text-xs">
-                {filteredAssessments.length === 0 ? (
+                {filteredAndSortedAssessments.length === 0 ? (
                   <tr>
                     <td colSpan={user.role === 'manager' ? 10 : 8} className="px-6 py-12 text-center text-slate-500 bg-slate-50/50 font-medium">
-                      Seçilen filtreye uygun sosyal inceleme kaydı bulunmuyor.
+                      Arama ve filtreleme kriterlerine uygun sosyal inceleme kaydı bulunamadı.
                     </td>
                   </tr>
                 ) : (
-                  filteredAssessments.map((item) => {
+                  filteredAndSortedAssessments.map((item) => {
                     const isSelected = selectedIds.includes(item.id);
                     const isApproved = item.status === 'approved';
 
                     return (
                       <tr 
                         key={item.id} 
-                        className={`transition-colors ${isSelected ? 'bg-blue-50/80 font-medium' : 'hover:bg-slate-50'}`}
+                        className={`transition-colors ${isSelected ? 'bg-blue-50/80 font-medium' : 'hover:bg-slate-50/80'}`}
                       >
                         {user.role === 'manager' && (
-                          <td className="px-3 py-3 text-center">
+                          <td className="px-3 py-3 text-center align-middle whitespace-nowrap">
                             <input
                               type="checkbox"
                               checked={isSelected}
@@ -568,29 +819,43 @@ export default function Dashboard() {
                             />
                           </td>
                         )}
-                        <td className="px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">
+
+                        {/* Date */}
+                        <td className="px-3 sm:px-4 py-3 font-semibold text-slate-600 whitespace-nowrap align-middle">
                           {new Date(item.date).toLocaleDateString('tr-TR')}
                         </td>
-                        <td className="px-4 py-3 font-bold text-slate-700 tracking-wider whitespace-nowrap">
+
+                        {/* TC */}
+                        <td className="px-3 sm:px-4 py-3 font-bold text-slate-700 tracking-wider whitespace-nowrap align-middle">
                           {item.applicantTc || '-'}
                         </td>
-                        <td className="px-4 py-3 font-extrabold text-slate-900 whitespace-nowrap">
+
+                        {/* Name - Max Width Truncate for Single Line */}
+                        <td className="px-3 sm:px-4 py-3 font-extrabold text-slate-900 whitespace-nowrap align-middle max-w-[200px] truncate" title={item.applicantName}>
                           {item.applicantName}
                         </td>
-                        <td className="px-4 py-3 font-semibold text-slate-700 whitespace-nowrap text-center">
+
+                        {/* Household Size */}
+                        <td className="px-3 sm:px-4 py-3 font-semibold text-slate-700 whitespace-nowrap text-center align-middle">
                           {item.householdSize} kişi
                         </td>
+
+                        {/* Personnel Name */}
                         {user.role === 'manager' && (
-                          <td className="px-4 py-3 font-medium text-slate-700 whitespace-nowrap">
+                          <td className="px-3 sm:px-4 py-3 font-medium text-slate-700 whitespace-nowrap align-middle max-w-[150px] truncate" title={item.personnelName}>
                             {item.personnelName}
                           </td>
                         )}
-                        <td className="px-4 py-3 text-center whitespace-nowrap">
+
+                        {/* Total Score */}
+                        <td className="px-3 sm:px-4 py-3 text-center whitespace-nowrap align-middle">
                           <span className={`inline-block px-2 py-0.5 rounded font-black text-xs ${item.result.isRejected ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-900'}`}>
                             {item.result.totalScore} Puan
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+
+                        {/* Approval Status */}
+                        <td className="px-3 sm:px-4 py-3 whitespace-nowrap align-middle">
                           {isApproved ? (
                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
                               <CheckCircle2 size={12} /> ONAYLANDI
@@ -601,16 +866,20 @@ export default function Dashboard() {
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-3 font-bold whitespace-nowrap">
+
+                        {/* Decision */}
+                        <td className="px-3 sm:px-4 py-3 font-bold whitespace-nowrap align-middle max-w-[220px] truncate" title={item.result.isRejected ? 'REDDEDİLDİ' : item.result.assistance?.text}>
                           {item.result.isRejected ? (
                             <span className="text-red-600 uppercase">REDDEDİLDİ</span>
                           ) : (
                             <span className="text-emerald-700 uppercase">
-                              {item.result.assistance.text}
+                              {item.result.assistance?.text}
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-right whitespace-nowrap space-x-1.5">
+
+                        {/* Actions */}
+                        <td className="px-3 sm:px-4 py-3 text-right whitespace-nowrap align-middle space-x-1.5">
                           {/* Manager Quick Actions */}
                           {user.role === 'manager' && (
                             <>
@@ -841,7 +1110,7 @@ export default function Dashboard() {
                   <td className="p-1 font-medium">{item.personnelName}</td>
                   <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
                   <td className="p-1 text-center font-black">{item.result.totalScore} / 130</td>
-                  <td className="p-1 font-bold uppercase">{item.result.isRejected ? 'REDDEDİLDİ' : item.result.assistance.text}</td>
+                  <td className="p-1 font-bold uppercase">{item.result.isRejected ? 'REDDEDİLDİ' : item.result.assistance?.text}</td>
                 </tr>
               ))
             )}
