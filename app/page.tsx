@@ -378,6 +378,12 @@ export default function Dashboard() {
     }
   };
 
+  const handlePrintCurrentList = () => {
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
+
   const handlePrintApprovedList = () => {
     setFilterStatus('approved');
     setTimeout(() => {
@@ -678,6 +684,15 @@ export default function Dashboard() {
                   <X size={12} /> Filtreleri Sıfırla
                 </button>
               )}
+
+              <button
+                onClick={handlePrintCurrentList}
+                className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
+                title="Mevcut sıralama ve filtreye göre PDF / Yazıcı çıktısı al"
+              >
+                <Printer size={14} />
+                <span>Listeyi Yazdır / PDF</span>
+              </button>
 
               <div className="text-[11px] font-bold text-slate-500 bg-slate-200 px-2.5 py-1 rounded-md">
                 Gösterilen: <strong className="text-slate-900 font-extrabold">{filteredAndSortedAssessments.length}</strong> / {total}
@@ -1065,7 +1080,7 @@ export default function Dashboard() {
       )}
 
       {/* ========================================================================= */}
-      {/* PRINT-ONLY APPROVED RECORDS SUMMARY LIST (LANDSCAPE OFFICIAL PDF OUTPUT)   */}
+      {/* PRINT-ONLY RECORDS SUMMARY LIST (LANDSCAPE DYNAMIC PDF OUTPUT)            */}
       {/* ========================================================================= */}
       <div className="print-only w-full bg-white text-black p-0 m-0 leading-tight">
         
@@ -1073,11 +1088,40 @@ export default function Dashboard() {
         <div className="text-center border-b-2 border-black pb-2 mb-3">
           <p className="text-xs font-bold uppercase tracking-widest">T.C.</p>
           <p className="text-sm font-black uppercase tracking-wider">SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI BAŞKANLIĞI</p>
-          <p className="text-xs font-extrabold tracking-widest uppercase mt-0.5">MÜDÜR TARAFINDAN ONAYLANAN SOSYAL İNCELEME KAYITLARI TOPLU LİSTESİ</p>
-          <p className="text-[9px] text-slate-600 mt-1">Rapor Tarihi: {new Date().toLocaleDateString('tr-TR')} • Toplam Onaylı Kayıt: {approvedList.length}</p>
+          <p className="text-xs font-extrabold tracking-widest uppercase mt-0.5">
+            {filterStatus === 'approved' 
+              ? 'MÜDÜR TARAFINDAN ONAYLANAN SOSYAL İNCELEME KAYITLARI LİSTESİ' 
+              : filterStatus === 'pending'
+              ? 'ONAY BEKLEYEN SOSYAL İNCELEME KAYITLARI LİSTESİ'
+              : 'SOSYAL İNCELEME KAYITLARI DİNAMİK LİSTESİ'}
+          </p>
+          <p className="text-[9px] text-slate-700 mt-1 flex items-center justify-center gap-3">
+            <span>Rapor Tarihi: {new Date().toLocaleDateString('tr-TR')}</span>
+            <span>•</span>
+            <span>Toplam Kayıt: <strong>{filteredAndSortedAssessments.length}</strong></span>
+            <span>•</span>
+            <span>
+              Sıralama Krteri: <strong>
+                {sortField === 'date' ? 'Ziyaret Tarihi' :
+                 sortField === 'applicantTc' ? 'T.C. Kimlik No' :
+                 sortField === 'applicantName' ? 'Başvuru Sahibi Adı' :
+                 sortField === 'householdSize' ? 'Hane Kişi Sayısı' :
+                 sortField === 'personnelName' ? 'İnceleyen Personel' :
+                 sortField === 'totalScore' ? 'Toplam Puan' :
+                 sortField === 'status' ? 'Onay Durumu' : 'Karar / Yardım Tipi'} 
+                ({sortOrder === 'asc' ? 'Artan' : 'Azalan'})
+              </strong>
+            </span>
+            {searchQuery && (
+              <>
+                <span>•</span>
+                <span>Arama: <strong>"{searchQuery}"</strong></span>
+              </>
+            )}
+          </p>
         </div>
 
-        {/* Table - Strictly Single Row per record */}
+        {/* Table - Strictly Single Row per record matching active screen order */}
         <table className="w-full border-collapse border border-black text-[9px] mb-6 print-table">
           <thead>
             <tr className="bg-slate-200 text-black font-extrabold uppercase border-b border-black">
@@ -1089,27 +1133,29 @@ export default function Dashboard() {
               <th className="p-1 text-left w-32">İNCELEYEN PERSONEL</th>
               <th className="p-1 text-center w-20">ZİYARET TARİHİ</th>
               <th className="p-1 text-center w-16">PUAN</th>
-              <th className="p-1 text-left w-36">ONAYLANAN DEĞERLENDİRME KARARI</th>
+              <th className="p-1 text-center w-24">ONAY DURUMU</th>
+              <th className="p-1 text-left w-36">KARAR / YARDIM TİPİ</th>
             </tr>
           </thead>
           <tbody>
-            {approvedList.length === 0 ? (
+            {filteredAndSortedAssessments.length === 0 ? (
               <tr>
-                <td colSpan={9} className="p-4 text-center font-bold text-slate-500">
-                  Onaylanmış sosyal inceleme kaydı bulunmamaktadır.
+                <td colSpan={10} className="p-4 text-center font-bold text-slate-500">
+                  Arama ve filtreleme kriterlerine uygun kayıt bulunmamaktadır.
                 </td>
               </tr>
             ) : (
-              approvedList.map((item, idx) => (
+              filteredAndSortedAssessments.map((item, idx) => (
                 <tr key={item.id} className="border-b border-black">
                   <td className="p-1 text-center font-bold">{idx + 1}</td>
-                  <td className="p-1 text-center font-bold">{item.applicantTc}</td>
+                  <td className="p-1 text-center font-bold">{item.applicantTc || '-'}</td>
                   <td className="p-1 font-black uppercase">{item.applicantName}</td>
                   <td className="p-1 text-center font-bold">{item.householdSize} kişi</td>
-                  <td className="p-1 truncate max-w-[150px]">{item.applicantAddress || '-'}</td>
+                  <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
                   <td className="p-1 font-medium">{item.personnelName}</td>
                   <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
-                  <td className="p-1 text-center font-black">{item.result.totalScore} / 130</td>
+                  <td className="p-1 text-center font-black">{item.result.totalScore} Puan</td>
+                  <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
                   <td className="p-1 font-bold uppercase">{item.result.isRejected ? 'REDDEDİLDİ' : item.result.assistance?.text}</td>
                 </tr>
               ))
