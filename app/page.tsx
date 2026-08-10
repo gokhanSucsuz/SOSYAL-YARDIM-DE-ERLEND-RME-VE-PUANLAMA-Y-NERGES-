@@ -368,15 +368,19 @@ export default function Dashboard() {
 
           <div className="flex justify-between items-start text-[10px] px-8 pt-2">
             <div className="text-center w-5/12">
-              <p className="font-bold uppercase tracking-wider">LİSTE BİLGİSAYAR ÇIKTISI / HAZIRLAYAN</p>
-              <p className="font-semibold mt-1">Sistem Otomatik Kaydı</p>
+              <p className="font-bold uppercase tracking-wider">SOSYAL YARDIM VE İNCELEME GÖREVLİSİ</p>
+              <p className="font-semibold mt-2">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
+              <p className="text-[9px] text-slate-600 mt-1">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
               <p className="text-[9px] text-slate-600 mt-0.5">Tarih: {new Date().toLocaleDateString('tr-TR')}</p>
+              <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
+                İmza / Mühür
+              </div>
             </div>
 
             <div className="text-center w-5/12">
-              <p className="font-bold uppercase tracking-wider">MÜDÜR YETKİLİSİ / VAKIF MÜDÜRÜ</p>
-              <p className="font-semibold mt-1">Adı Soyadı: <span className="underline">{user.role === 'manager' ? user.name : 'Ahmet Yılmaz (Vakıf Müdürü)'}</span></p>
-              <p className="text-[9px] text-slate-600">Unvan: SYDV Vakıf Müdürü</p>
+              <p className="font-bold uppercase tracking-wider">VAKIF MÜDÜRÜ</p>
+              <p className="font-semibold mt-2">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
+              <p className="text-[9px] text-slate-600 mt-1">Unvan: SYDV Vakıf Müdürü</p>
               <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
                 İmza / Mühür
               </div>

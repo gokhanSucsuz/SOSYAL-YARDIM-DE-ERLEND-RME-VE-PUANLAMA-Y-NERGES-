@@ -24,7 +24,7 @@ export default function Login() {
         
         <div className="space-y-4">
           <button 
-            onClick={() => handleLogin('personnel', 'Ahmet Yılmaz', 'p1')}
+            onClick={() => handleLogin('personnel', 'Sosyal Yardım ve İnceleme Görevlisi', 'p1')}
             className="w-full flex items-center p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-colors group text-left"
           >
             <div className="bg-slate-100 p-2 rounded-lg group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors mr-4 text-slate-500">
@@ -32,12 +32,12 @@ export default function Login() {
             </div>
             <div>
               <p className="font-semibold text-slate-800 group-hover:text-blue-800">Personel Girişi</p>
-              <p className="text-xs text-slate-500 group-hover:text-blue-600">Sosyal İnceleme Görevlisi (Ahmet Yılmaz)</p>
+              <p className="text-xs text-slate-500 group-hover:text-blue-600">Sosyal Yardım ve İnceleme Görevlisi</p>
             </div>
           </button>
           
           <button 
-            onClick={() => handleLogin('manager', 'Ayşe Demir', 'm1')}
+            onClick={() => handleLogin('manager', 'Vakıf Müdürü', 'm1')}
             className="w-full flex items-center p-4 bg-white border border-slate-200 rounded-xl hover:border-amber-300 hover:bg-amber-50 transition-colors group text-left"
           >
             <div className="bg-slate-100 p-2 rounded-lg group-hover:bg-amber-100 group-hover:text-amber-600 transition-colors mr-4 text-slate-500">
@@ -45,7 +45,7 @@ export default function Login() {
             </div>
             <div>
               <p className="font-semibold text-slate-800 group-hover:text-amber-800">Müdür Girişi</p>
-              <p className="text-xs text-slate-500 group-hover:text-amber-600">Vakıf Müdürü Yetkisi (Ayşe Demir)</p>
+              <p className="text-xs text-slate-500 group-hover:text-amber-600">Vakıf Müdürü Yetkilisi</p>
             </div>
           </button>
         </div>

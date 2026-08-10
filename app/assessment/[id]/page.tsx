@@ -126,7 +126,7 @@ export default function AssessmentDetail() {
 
   const managerDisplayName = user.role === 'manager' 
     ? user.name 
-    : (assessment.managerName || 'Ahmet Yılmaz (Vakıf Müdürü)');
+    : (assessment.managerName || 'Vakıf Müdürü');
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
@@ -714,9 +714,9 @@ export default function AssessmentDetail() {
             
             {/* Personnel Signature */}
             <div className="text-center w-5/12">
-              <p className="font-bold uppercase tracking-wider">İNCELEMEYİ YAPAN PERSONEL</p>
-              <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="underline">{assessment.personnelName}</span></p>
-              <p className="text-[9px] text-slate-600">Unvan: Sosyal İnceleme Görevlisi</p>
+              <p className="font-bold uppercase tracking-wider">SOSYAL YARDIM VE İNCELEME GÖREVLİSİ</p>
+              <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
+              <p className="text-[9px] text-slate-600">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
               <p className="text-[9px] text-slate-600 mt-0.5">Tarih: {new Date(assessment.date).toLocaleDateString('tr-TR')}</p>
               <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
                 İmza / Mühür
@@ -725,8 +725,8 @@ export default function AssessmentDetail() {
 
             {/* Manager Signature */}
             <div className="text-center w-5/12">
-              <p className="font-bold uppercase tracking-wider">MÜDÜR YETKİLİSİ / VAKIF MÜDÜRÜ</p>
-              <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="underline">{managerDisplayName}</span></p>
+              <p className="font-bold uppercase tracking-wider">VAKIF MÜDÜRÜ</p>
+              <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
               <p className="text-[9px] text-slate-600">Unvan: SYDV Vakıf Müdürü</p>
               <p className="text-[9px] text-slate-600 mt-0.5">Onay Durumu: {assessment.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLİYOR'}</p>
               <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
