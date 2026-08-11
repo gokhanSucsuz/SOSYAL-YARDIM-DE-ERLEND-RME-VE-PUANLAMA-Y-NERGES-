@@ -1107,32 +1107,32 @@ export default function Dashboard() {
       `}</style>
 
       {/* Screen Header */}
-      <header className="bg-slate-900 text-white px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shrink-0 z-10 no-print">
+      <header className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shrink-0 z-10 no-print shadow-md border-b border-red-900">
         <div className="flex items-center gap-3">
           <LogoImage 
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl shadow-md border-2 border-white/30 object-cover shrink-0" 
           />
           <div>
-            <h1 className="text-sm sm:text-lg font-bold leading-tight">SOSYAL YARDIM DEĞERLENDİRME VE İNCELEME SİSTEMİ</h1>
-            <p className="text-[10px] sm:text-xs text-slate-400 font-medium tracking-widest uppercase">
+            <h1 className="text-sm sm:text-lg font-extrabold leading-tight tracking-wide">T.C. SYDV SOSYAL YARDIM DEĞERLENDİRME SİSTEMİ</h1>
+            <p className="text-[10px] sm:text-xs text-red-100 font-bold tracking-widest uppercase">
               {user.role === 'manager' ? 'Müdür Yetkilisi Yönetim Paneli' : 'Personel Paneli'}
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-between sm:justify-end w-full sm:w-auto gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end w-full sm:w-auto gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-red-600/50">
           <button
             onClick={handleInstallClick}
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-sm border border-blue-400/30"
+            className="flex items-center gap-1.5 bg-white text-red-800 hover:bg-red-50 active:scale-95 text-xs font-black px-3.5 py-2 rounded-xl transition-all shadow-md border border-white/80"
             title="Mobil Uygulama Olarak Telefonunuza Yükleyin"
           >
-            <Smartphone size={16} className="shrink-0" />
+            <Smartphone size={16} className="shrink-0 text-red-700" />
             <span>Mobil Uygulamayı İndir</span>
-            <Download size={13} className="opacity-80" />
+            <Download size={13} className="opacity-80 text-red-700" />
           </button>
           {user?.role === 'manager' && (
             <Link
               href="/settings"
-              className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 text-xs font-black px-3 py-2 rounded-xl transition-colors shadow-sm"
+              className="flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 text-xs font-black px-3 py-2 rounded-xl transition-colors shadow-sm"
               title="Sistem ve Yardım Kriter Ayarları (Müdür Paneli)"
             >
               <Settings size={16} className="shrink-0" />
@@ -1141,26 +1141,26 @@ export default function Dashboard() {
           )}
           <Link
             href="/presentation"
-            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors shadow-sm"
+            className="flex items-center gap-1.5 bg-red-900/80 hover:bg-red-900 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors shadow-sm border border-red-500/30"
             title="Proje Sunumu ve PDF Raporu"
           >
-            <Presentation size={16} className="shrink-0" />
+            <Presentation size={16} className="shrink-0 text-red-200" />
             <span>Proje Sunumu (PDF)</span>
           </Link>
           <Link
             href="/guide"
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-bold px-3 py-2 rounded-xl transition-colors border border-slate-700"
+            className="flex items-center gap-1.5 bg-red-900/80 hover:bg-red-900 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors border border-red-500/30"
             title="Puanlama ve İnceleme Kılavuzu"
           >
-            <BookOpen size={16} className="text-blue-400 shrink-0" />
+            <BookOpen size={16} className="text-red-200 shrink-0" />
             <span>Kılavuz & Metodoloji</span>
           </Link>
           <div className="flex items-center gap-3">
-            <div className="text-right border-r border-slate-700 pr-3">
-              <p className="text-[10px] text-slate-400">{user.role === 'manager' ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
+            <div className="text-right border-r border-red-600/60 pr-3">
+              <p className="text-[10px] text-red-100">{user.role === 'manager' ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
               <p className="text-xs sm:text-sm font-semibold truncate max-w-[120px]">{user.name}</p>
             </div>
-            <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-white transition-colors active:scale-95 touch-manipulation" title="Çıkış Yap">
+            <button onClick={handleLogout} className="p-2 text-red-100 hover:text-white transition-colors active:scale-95 touch-manipulation" title="Çıkış Yap">
               <LogOut size={20} />
             </button>
           </div>

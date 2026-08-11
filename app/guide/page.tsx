@@ -7,24 +7,24 @@ export const dynamic = "force-dynamic";
 import React from 'react';
 import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
-import { ShieldCheck, ArrowLeft, BookOpen, Scale, Award, AlertTriangle, FileText, CheckCircle2, Home, HeartHandshake, HelpCircle, Layers, Check, Presentation } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, BookOpen, Scale, Award, AlertTriangle, FileText, CheckCircle2, Home, HeartHandshake, HelpCircle, Layers, Check, Presentation, BarChart3, Smartphone, Download, Printer } from 'lucide-react';
 
 export default function GuidePage() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
       {/* Header */}
-      <header className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shrink-0 z-10">
+      <header className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white px-6 py-4 flex justify-between items-center shrink-0 z-10 shadow-md border-b border-red-900">
         <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-1">
+          <Link href="/" className="p-2 hover:bg-white/20 rounded-xl transition-colors mr-1">
             <ArrowLeft size={20} />
           </Link>
           <LogoImage 
-            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0 hidden sm:block" 
+            className="w-10 h-10 rounded-2xl shadow-md border-2 border-white/30 object-cover shrink-0 hidden sm:block" 
           />
           <div>
-            <h1 className="text-lg font-bold leading-tight">SOSYAL İNCELEME VE PUANLAMA KILAVUZU</h1>
-            <p className="text-xs text-slate-400 font-medium tracking-widest uppercase">
-              T.C. Sosyal Yardımlaşma ve Dayanışma Vakfı Standart Metodoloji Rehberi
+            <h1 className="text-lg font-black leading-tight tracking-wide">T.C. SYDV SOSYAL İNCELEME VE PUANLAMA KILAVUZU</h1>
+            <p className="text-xs text-red-100 font-bold tracking-widest uppercase">
+              Sosyal Yardımlaşma ve Dayanışma Vakfı Standart Metodoloji Rehberi
             </p>
           </div>
         </div>
@@ -32,13 +32,13 @@ export default function GuidePage() {
         <div className="flex items-center gap-2">
           <Link
             href="/presentation"
-            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
+            className="bg-white text-red-800 hover:bg-red-50 text-xs font-black px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm border border-white/80"
           >
             <Presentation size={16} /> Sunum (PDF)
           </Link>
           <Link
             href="/"
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 border border-slate-700"
+            className="bg-red-900/80 hover:bg-red-900 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5 border border-red-500/30"
           >
             <Home size={16} /> Panele Dön
           </Link>
@@ -50,11 +50,11 @@ export default function GuidePage() {
         
         {/* Banner Section */}
         <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -z-0 opacity-70 transform translate-x-20 -translate-y-20"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl -z-0 opacity-70 transform translate-x-20 -translate-y-20"></div>
           
           <div className="relative z-10 space-y-4">
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-900 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider border border-blue-200">
-              <BookOpen size={14} className="text-blue-700" /> RESMİ UYGULAMA MEVZUATI VE METODOLOJİ REHBERİ
+            <div className="inline-flex items-center gap-2 bg-red-100 text-red-900 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider border border-red-200">
+              <BookOpen size={14} className="text-red-700" /> RESMİ UYGULAMA MEVZUATI VE METODOLOJİ REHBERİ
             </div>
 
             <h2 className="text-3xl font-black text-slate-900 leading-tight">
@@ -69,11 +69,90 @@ export default function GuidePage() {
           </div>
         </div>
 
+        {/* Mobile PWA Installation Guide Section */}
+        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6">
+          <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+            <Smartphone className="text-red-600" size={22} />
+            1. Mobil Uygulama İndirme ve Telefondan Kurulum Kılavuzu (PWA)
+          </h3>
+
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Sistem, akıllı cep telefonlarına ve tabletlere herhangi bir uygulama mağazasına (Google Play Store / App Store) ihtiyaç duymaksızın doğrudan <strong>PWA (Progressive Web App)</strong> olarak yüklenebilir. İnceleme görevlileri sahada internet bağlantısı olmadan da formu mobil uygulamada doldurabilirler.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex items-center gap-2 text-slate-900 font-extrabold text-sm">
+                <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">1</span>
+                <span>Android Cihazlarda Kurulum (Google Chrome)</span>
+              </div>
+              <ol className="text-xs text-slate-700 space-y-2 list-decimal pl-5 font-medium leading-relaxed">
+                <li>Sitedeki <strong>&quot;Mobil Uygulamayı İndir&quot;</strong> butonuna veya Chrome sağ üstteki <strong>3 nokta (⋮)</strong> menüsüne dokunun.</li>
+                <li>Açılan menüde <strong>&quot;Uygulamayı Yükle&quot;</strong> veya <strong>&quot;Ana Ekrana Ekle&quot;</strong> seçeneğini belirleyin.</li>
+                <li>Ekrana gelen onay penceresinde <strong>&quot;Yükle&quot;</strong> butonuna basın. Uygulama telefonunuzun ana ekranına T.C. SYDV logosuyla eklenecektir.</li>
+              </ol>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex items-center gap-2 text-slate-900 font-extrabold text-sm">
+                <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">2</span>
+                <span>iOS / iPhone Cihazlarda Kurulum (Safari)</span>
+              </div>
+              <ol className="text-xs text-slate-700 space-y-2 list-decimal pl-5 font-medium leading-relaxed">
+                <li>Safari tarayıcısında alt barda yer alan <strong>Paylaş (Share / Yukarı Ok)</strong> simgesine dokunun.</li>
+                <li>Menüyü aşağı kaydırarak <strong>&quot;Ana Ekrana Ekle&quot; (Add to Home Screen)</strong> seçeneğini seçin.</li>
+                <li>Sağ üstteki <strong>&quot;Ekle&quot;</strong> butonuna basarak kurulumu tamamlayın. Artık tam ekran mobil uygulama şeklinde kullanabilirsiniz.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        {/* Manager Stats & Printable PDF Report Guide */}
+        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6">
+          <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+            <BarChart3 className="text-red-700" size={22} />
+            2. Görsel Grafik Gösterimli PDF İstatistik ve Bütçe Raporlama Modülü
+          </h3>
+
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Müdür Yetkilisi panelinde yer alan <strong>İstatistik & Analiz Merkezi</strong>; her bir toplantı dosyası için ayrı ayrı veya tüm toplantı dosyaları dahil konsolide olarak <strong>görsel grafiklerle zenginleştirilmiş PDF çıktısı</strong> üretir.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-medium">
+            <div className="p-4 rounded-xl bg-red-50/60 border border-red-200 space-y-1.5">
+              <h4 className="font-extrabold text-red-900 text-sm flex items-center gap-1.5">
+                <Printer size={16} /> Grafik Gösterimli PDF
+              </h4>
+              <p className="text-slate-600">
+                PDF çıktısında Bütçe Kullanım Çubukları, Karar Dağılım Oran Bantları, Kategori Dağılımları ve Hane Risk Puan Grafikleri tam renkli ve yüksek çözünürlüklü olarak basılır.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <h4 className="font-extrabold text-slate-900 text-sm flex items-center gap-1.5">
+                <Layers size={16} /> Özel ve Konsolide Raporlama
+              </h4>
+              <p className="text-slate-600">
+                Açılır menüden belirli bir toplantı dosyası seçilerek o toplantıya özel veya &quot;Tüm Toplantı Dosyaları&quot; seçilerek genel Vakıf performansı raporlanabilir.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <h4 className="font-extrabold text-slate-900 text-sm flex items-center gap-1.5">
+                <FileText size={16} /> Excel (.xlsx) Dışa Aktarım
+              </h4>
+              <p className="text-slate-600">
+                Çoklu sekme yapısında (Özet Metrikler, Kategori Kırılımları, Detaylı Hane Kayıtları) resmi formatlanmış Excel dosyası tek tıkla indirilebilir.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* System Purpose */}
         <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-4">
           <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
-            <Scale className="text-blue-600" size={22} />
-            1. Sistem Amacı ve Yasal Dayanak
+            <Scale className="text-red-700" size={22} />
+            3. Sistem Amacı ve Yasal Dayanak
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-600 leading-relaxed pt-2">
@@ -98,11 +177,11 @@ export default function GuidePage() {
         <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6">
           <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
             <Award className="text-emerald-600" size={22} />
-            2. Toplam Puan Tavanı ve Yardım Seviyeleri Skalası (Daraltılmış Tavan & Artan Aralık Mantığı)
+            4. Toplam Puan Tavanı ve Yardım Seviyeleri Skalası (Daraltılmış Tavan & Artan Aralık Mantığı)
           </h3>
 
-          <div className="bg-blue-50/80 border border-blue-200 p-4 rounded-xl text-xs text-blue-950 space-y-2">
-            <strong className="text-blue-900 font-extrabold text-sm block">Kademeli Değerlendirme ve Seçicilik Esası:</strong>
+          <div className="bg-red-50/80 border border-red-200 p-4 rounded-xl text-xs text-red-950 space-y-2">
+            <strong className="text-red-900 font-extrabold text-sm block">Kademeli Değerlendirme ve Seçicilik Esası:</strong>
             <p>
               Sosyal yardım bütçesinin ve nakdi kaynakların en ağır durumdaki gerçek ihtiyaç sahiplerine adil dağıtılması amacıyla 
               <strong> Progressive / Artan Aralık Metodolojisi</strong> uygulanmaktadır:
@@ -181,7 +260,7 @@ export default function GuidePage() {
         <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6">
           <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
             <Layers className="text-indigo-600" size={22} />
-            3. Değerlendirme Kriterleri ve Hesaplama Detayları
+            5. Değerlendirme Kriterleri ve Hesaplama Detayları
           </h3>
 
           <div className="space-y-6">
@@ -190,7 +269,7 @@ export default function GuidePage() {
             <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 pb-2">
                 <h4 className="font-bold text-slate-900 text-base">A. EKONOMİK DURUM (Maksimum 40 Puan)</h4>
-                <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-2.5 py-1 rounded">Tavan: 40 Puan</span>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 40 Puan</span>
               </div>
               <p className="text-xs text-slate-600">Hanedeki kişi başına düşen aylık net gelirin resmi Muhtaçlık Sınırı oranlarına göre puanlanması:</p>
               <ul className="text-xs space-y-1.5 text-slate-700 list-disc pl-5 font-medium">
@@ -207,7 +286,7 @@ export default function GuidePage() {
             <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 pb-2">
                 <h4 className="font-bold text-slate-900 text-base">B. DEZAVANTAJLI BİREYLER (Maksimum 30 Puan)</h4>
-                <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-2.5 py-1 rounded">Tavan: 30 Puan</span>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 30 Puan</span>
               </div>
               <p className="text-xs text-slate-600">Hanede bakıma muhtaç, engelli veya özel hassasiyeti bulunan bireylerin mevcudiyeti:</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium">
@@ -219,8 +298,8 @@ export default function GuidePage() {
                 <div className="bg-white p-2 rounded border border-slate-200">65 Yaş Üstü Yalnız Yaşayan: <strong>+8 Puan</strong></div>
                 <div className="bg-white p-2 rounded border border-slate-200">Şehit Yakını / Gazi: <strong>+8 Puan</strong></div>
                 <div className="bg-white p-2 rounded border border-slate-200">Yetim/Öksüz veya Koruyucu Aile: <strong>+5 Puan</strong></div>
-                <div className="bg-white p-2 rounded border border-slate-200">Yabancı Uyruklu / Sığınmacı (Suriyeli, Afgan vb.): <strong>+3 Puan</strong></div>
-                <div className="bg-white p-2 rounded border border-slate-200 sm:col-span-2">Özel Sebep / Özel Durum Tanımlama: <strong>+10 / +15 / +20 / +25 Puan</strong> (Açıklama girilerek seçime göre eklenir)</div>
+                <div className="bg-white p-2 rounded border border-slate-200">Yabancı Uyruklu / Sığınmacı: <strong>+3 Puan</strong></div>
+                <div className="bg-white p-2 rounded border border-slate-200 sm:col-span-2">Özel Sebep / Özel Durum Tanımlama: <strong>+10 / +15 / +20 / +25 Puan</strong></div>
               </div>
             </div>
 
@@ -228,7 +307,7 @@ export default function GuidePage() {
             <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 pb-2">
                 <h4 className="font-bold text-slate-900 text-base">C. ÇOCUK VE EĞİTİM DURUMU (Maksimum 10 Puan)</h4>
-                <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
               </div>
               <p className="text-xs text-slate-600">Hanedeki öğrenim gören çocuk sayısı üzerinden hesaplanır:</p>
               <ul className="text-xs space-y-1 text-slate-700 list-disc pl-5 font-medium">
@@ -236,8 +315,8 @@ export default function GuidePage() {
                 <li><strong>İlkokul Öğrencisi:</strong> Kişi başı +1 Puan</li>
                 <li><strong>Ortaokul Öğrencisi:</strong> Kişi başı +2 Puan</li>
                 <li><strong>Lise Öğrencisi:</strong> Kişi başı +3 Puan</li>
-                <li><strong>Mesleki Eğitim Merkezi Öğrencisi (Yaygın Eğitim):</strong> Kişi başı +3 Puan</li>
-                <li><strong>Açık Lise Öğrencisi (Yaygın Eğitim):</strong> Kişi başı +3 Puan</li>
+                <li><strong>Mesleki Eğitim Merkezi Öğrencisi:</strong> Kişi başı +3 Puan</li>
+                <li><strong>Açık Lise Öğrencisi:</strong> Kişi başı +3 Puan</li>
                 <li><strong>Üniversite Öğrencisi:</strong> Kişi başı +4 Puan</li>
               </ul>
             </div>
@@ -246,7 +325,7 @@ export default function GuidePage() {
             <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 pb-2">
                 <h4 className="font-bold text-slate-900 text-base">D. BARINMA DURUMU (Maksimum 10 Puan)</h4>
-                <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-700 font-medium">
                 <div className="bg-white p-2 rounded border border-slate-200">Evsiz / Afetzede: <strong>+10 Puan</strong></div>
@@ -259,7 +338,7 @@ export default function GuidePage() {
             <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 pb-2">
                 <h4 className="font-bold text-slate-900 text-base">E. BEYAZ EŞYA VE EV ALETLERİ KONTROLÜ (Maksimum 10 Puan)</h4>
-                <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
               </div>
               <p className="text-xs text-slate-600">Eşyanın hanedeki varlık ve arıza/eskime durumuna göre puan verilir:</p>
               <div className="text-xs text-slate-700 space-y-1 font-medium">
@@ -273,7 +352,7 @@ export default function GuidePage() {
             <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 pb-2">
                 <h4 className="font-bold text-slate-900 text-base">F. SOSYAL KIRILGANLIK VE NÜFUS ŞARTLARI (Maksimum 10 Puan)</h4>
-                <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
               </div>
               <ul className="text-xs space-y-1 text-slate-700 list-disc pl-5 font-medium">
                 <li><strong>Aile İçi Şiddet Mağduru:</strong> +6 Puan</li>
@@ -290,11 +369,11 @@ export default function GuidePage() {
             <div className="p-6 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
               <div className="flex justify-between items-center border-b border-slate-200 pb-3">
                 <h4 className="font-bold text-slate-900 text-base">G. PERSONEL İNCELEME KANAATİ PUANLAMA METODOLOJİSİ (Maksimum 20 Puan)</h4>
-                <span className="text-xs font-extrabold bg-blue-100 text-blue-900 px-3 py-1 rounded">Tavan: 20 Puan</span>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-3 py-1 rounded">Tavan: 20 Puan</span>
               </div>
               
-              <div className="bg-blue-100/70 border border-blue-200 p-3.5 rounded-lg text-xs text-blue-950 font-medium leading-relaxed">
-                <strong className="text-blue-900 font-extrabold block mb-1">0 - 5 Puanlama Ölçeği Temel Mantığı:</strong>
+              <div className="bg-red-50/80 border border-red-200 p-3.5 rounded-lg text-xs text-red-950 font-medium leading-relaxed">
+                <strong className="text-red-900 font-extrabold block mb-1">0 - 5 Puanlama Ölçeği Temel Mantığı:</strong>
                 Sosyal yardım puanlama sisteminde amaç hanenin <strong>muhtaçlık derecesini tespit etmektir</strong>. Dolayısıyla;
                 <ul className="list-disc pl-5 mt-1 space-y-1">
                   <li><strong>0 PUAN:</strong> Hanenin durumu olumludur, fiziki/sosyal şartları yeterlidir, aciliyeti veya riski yoktur. İlave puana ihtiyaç duyulmadığını ifade eder.</li>
@@ -364,7 +443,7 @@ export default function GuidePage() {
         <div className="bg-red-50 rounded-2xl p-8 border border-red-200 shadow-sm space-y-4">
           <h3 className="text-xl font-extrabold text-red-900 flex items-center gap-2 border-b border-red-200 pb-3">
             <AlertTriangle className="text-red-600" size={22} />
-            4. Zorunlu Sistem Kontrolleri ve Beyan Aşımı
+            6. Zorunlu Sistem Kontrolleri ve Beyan Aşımı
           </h3>
 
           <div className="space-y-3 text-sm text-red-950 leading-relaxed">

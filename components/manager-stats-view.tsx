@@ -423,7 +423,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         {/* Print Categories Table */}
         <div className="mb-4">
           <h3 className="text-xs font-black uppercase mb-1 border-b border-black">2. YARDIM TÜR VE KATEGORİ DAĞILIMI</h3>
-          <table className="w-full border-collapse border border-black text-[9px]">
+          <table className="w-full border-collapse border border-black text-[9px] mb-3">
             <thead>
               <tr className="bg-gray-200 border-b border-black font-bold">
                 <th className="p-1 border-r border-black text-left">Yardım Türü / Kategorisi</th>
@@ -443,8 +443,128 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
           </table>
         </div>
 
+        {/* Print Graphic Charts Section */}
+        <div className="mb-4 page-break-inside-avoid">
+          <h3 className="text-xs font-black uppercase mb-2 border-b border-black">3. İSTATİSTİKİ VE GÖRSEL GRAFİK ANALİZİ</h3>
+          
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            {/* Visual Bar 1: Budget Utilization */}
+            <div className="border border-black p-2 rounded bg-gray-50">
+              <p className="text-[10px] font-bold mb-1 uppercase">A. Bütçe Kullanım & Karar Görsel Oranı</p>
+              <div className="space-y-1.5 text-[9px]">
+                <div>
+                  <div className="flex justify-between font-semibold mb-0.5">
+                    <span>Vakıf Bütçesi (100% Base):</span>
+                    <span>{stats.totalBudgetTL.toLocaleString('tr-TR')} ₺</span>
+                  </div>
+                  <div className="w-full bg-gray-200 h-3 border border-black rounded-xs overflow-hidden">
+                    <div className="bg-blue-700 h-full w-full print-exact"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between font-semibold mb-0.5">
+                    <span>Planlanan Yardım ({stats.totalBudgetTL > 0 ? Math.round((stats.plannedAidTL / stats.totalBudgetTL) * 100) : 0}%):</span>
+                    <span>{stats.plannedAidTL.toLocaleString('tr-TR')} ₺</span>
+                  </div>
+                  <div className="w-full bg-gray-200 h-3 border border-black rounded-xs overflow-hidden">
+                    <div 
+                      className={`${stats.isExceeded ? 'bg-red-600' : 'bg-indigo-600'} h-full print-exact`} 
+                      style={{ width: `${Math.min(100, stats.totalBudgetTL > 0 ? (stats.plannedAidTL / stats.totalBudgetTL) * 100 : 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between font-semibold mb-0.5">
+                    <span>Müdür Onaylı Yardım ({stats.totalBudgetTL > 0 ? Math.round((stats.approvedAidTL / stats.totalBudgetTL) * 100) : 0}%):</span>
+                    <span>{stats.approvedAidTL.toLocaleString('tr-TR')} ₺</span>
+                  </div>
+                  <div className="w-full bg-gray-200 h-3 border border-black rounded-xs overflow-hidden">
+                    <div 
+                      className="bg-emerald-600 h-full print-exact" 
+                      style={{ width: `${Math.min(100, stats.totalBudgetTL > 0 ? (stats.approvedAidTL / stats.totalBudgetTL) * 100 : 0)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Visual Bar 2: Decision Ratio Breakdown */}
+            <div className="border border-black p-2 rounded bg-gray-50">
+              <p className="text-[10px] font-bold mb-1 uppercase">B. Karar Dağılım Görsel Oran Grafiği</p>
+              <div className="space-y-1.5 text-[9px]">
+                <div className="flex justify-between font-bold border-b border-gray-300 pb-1">
+                  <span>Toplam Hane: {stats.totalCount}</span>
+                  <span>Onay: %{stats.totalCount > 0 ? Math.round((stats.approvedCount / stats.totalCount) * 100) : 0}</span>
+                </div>
+
+                {/* Stacked Percentage Bar */}
+                <div className="w-full h-4 border border-black flex rounded-xs overflow-hidden my-1">
+                  {stats.totalCount > 0 ? (
+                    <>
+                      <div className="bg-emerald-600 h-full print-exact text-[8px] text-white font-bold flex items-center justify-center" style={{ width: `${(stats.approvedCount / stats.totalCount) * 100}%` }}>
+                        {stats.approvedCount > 0 ? `${stats.approvedCount}` : ''}
+                      </div>
+                      <div className="bg-amber-500 h-full print-exact text-[8px] text-black font-bold flex items-center justify-center" style={{ width: `${(stats.pendingCount / stats.totalCount) * 100}%` }}>
+                        {stats.pendingCount > 0 ? `${stats.pendingCount}` : ''}
+                      </div>
+                      <div className="bg-red-600 h-full print-exact text-[8px] text-white font-bold flex items-center justify-center" style={{ width: `${(stats.rejectedCount / stats.totalCount) * 100}%` }}>
+                        {stats.rejectedCount > 0 ? `${stats.rejectedCount}` : ''}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="bg-gray-200 h-full w-full"></div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 text-[8px] font-bold text-center pt-0.5">
+                  <span className="text-emerald-800">■ Onaylı ({stats.approvedCount})</span>
+                  <span className="text-amber-800">■ Bekleyen ({stats.pendingCount})</span>
+                  <span className="text-red-800">■ Red ({stats.rejectedCount})</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Visual Bar 3: Risk Level Distribution */}
+          <div className="border border-black p-2 rounded bg-gray-50 mb-2">
+            <p className="text-[10px] font-bold mb-1 uppercase">C. Hane Risk Seviyesi Puan Dağılım Grafiği</p>
+            <div className="grid grid-cols-4 gap-2 text-[8px] font-bold text-center">
+              <div>
+                <span className="block text-red-700">Çok Yüksek (&gt;80 Pn)</span>
+                <div className="w-full bg-gray-200 h-2.5 border border-black rounded-xs overflow-hidden my-0.5">
+                  <div className="bg-red-600 h-full print-exact" style={{ width: `${Math.min(100, stats.totalCount > 0 ? (stats.score80Plus / stats.totalCount) * 100 : 0)}%` }}></div>
+                </div>
+                <span>{stats.score80Plus} Hane</span>
+              </div>
+              <div>
+                <span className="block text-amber-700">Yüksek (60-79 Pn)</span>
+                <div className="w-full bg-gray-200 h-2.5 border border-black rounded-xs overflow-hidden my-0.5">
+                  <div className="bg-amber-500 h-full print-exact" style={{ width: `${Math.min(100, stats.totalCount > 0 ? (stats.score60To79 / stats.totalCount) * 100 : 0)}%` }}></div>
+                </div>
+                <span>{stats.score60To79} Hane</span>
+              </div>
+              <div>
+                <span className="block text-blue-700">Orta (40-59 Pn)</span>
+                <div className="w-full bg-gray-200 h-2.5 border border-black rounded-xs overflow-hidden my-0.5">
+                  <div className="bg-blue-600 h-full print-exact" style={{ width: `${Math.min(100, stats.totalCount > 0 ? (stats.score40To59 / stats.totalCount) * 100 : 0)}%` }}></div>
+                </div>
+                <span>{stats.score40To59} Hane</span>
+              </div>
+              <div>
+                <span className="block text-emerald-700">Düşük (&lt;40 Pn)</span>
+                <div className="w-full bg-gray-200 h-2.5 border border-black rounded-xs overflow-hidden my-0.5">
+                  <div className="bg-emerald-600 h-full print-exact" style={{ width: `${Math.min(100, stats.totalCount > 0 ? (stats.scoreBelow40 / stats.totalCount) * 100 : 0)}%` }}></div>
+                </div>
+                <span>{stats.scoreBelow40} Hane</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Print Signature Block */}
-        <div className="mt-12 grid grid-cols-2 text-center text-xs font-bold">
+        <div className="mt-8 grid grid-cols-2 text-center text-xs font-bold page-break-inside-avoid">
           <div>
             <p className="mb-8">Raporu Hazırlayan / İnceleyen</p>
             <p className="uppercase">{user.name}</p>
@@ -459,15 +579,15 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       </div>
 
       {/* Screen Interactive Controls and Header */}
-      <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl no-print relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+      <div className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white rounded-3xl p-6 sm:p-8 shadow-xl no-print relative overflow-hidden border border-red-600">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             {onBack && (
               <button
                 onClick={onBack}
-                className="p-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-2xl transition-all shrink-0 border border-slate-700"
+                className="p-2.5 bg-white/15 hover:bg-white/25 active:scale-95 text-white rounded-2xl transition-all shrink-0 border border-white/20"
                 title="Ana Ekrana Dön"
               >
                 <ArrowLeft size={22} />
@@ -475,15 +595,15 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
             )}
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">
-                  Müdür Paneli İstatistik & Analiz Merkezi
+                <span className="bg-white/20 text-white border border-white/30 text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">
+                  T.C. SYDV MÜDÜR PANELİ İSTATİSTİK VE ANALİZ MERKEZİ
                 </span>
               </div>
               <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-                <BarChart3 className="text-blue-400" size={28} />
+                <BarChart3 className="text-red-200" size={28} />
                 <span>Sosyal Yardım ve Bütçe İstatistik Raporları</span>
               </h1>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-red-100 mt-1">
                 Her toplantı dosyası için Vakıf Bütçesi, karar dağılımları ve hane özellikleri istatistiklerini canlı inceleyin.
               </p>
             </div>

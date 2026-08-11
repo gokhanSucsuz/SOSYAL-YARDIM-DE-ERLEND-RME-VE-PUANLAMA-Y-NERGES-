@@ -26,7 +26,9 @@ import {
   PieChart, 
   Clock, 
   AlertTriangle,
-  HelpCircle
+  Smartphone,
+  BarChart3,
+  Download
 } from 'lucide-react';
 
 export default function PresentationPage() {
@@ -35,7 +37,7 @@ export default function PresentationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 font-sans text-slate-900 flex flex-col print:bg-white print:p-0">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col print:bg-white print:p-0">
       <style jsx global>{`
         @media print {
           @page {
@@ -67,18 +69,18 @@ export default function PresentationPage() {
         }
       `}</style>
 
-      {/* Screen Top Navigation / Bar */}
-      <header className="bg-slate-900 text-white px-4 sm:px-8 py-4 flex flex-wrap justify-between items-center gap-4 shrink-0 shadow-md no-print sticky top-0 z-50">
+      {/* Screen Top Navigation / Bar in Red & White Theme */}
+      <header className="bg-red-800 text-white px-4 sm:px-8 py-4 flex flex-wrap justify-between items-center gap-4 shrink-0 shadow-md no-print sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-300 hover:text-white" title="Ana Sayfaya Dön">
+          <Link href="/" className="p-2 hover:bg-red-700 rounded-lg transition-colors text-red-100 hover:text-white" title="Ana Sayfaya Dön">
             <ArrowLeft size={20} />
           </Link>
           <LogoImage 
-            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
+            className="w-10 h-10 rounded-2xl shadow-md border-2 border-red-600 object-cover shrink-0" 
           />
           <div>
-            <h1 className="text-base sm:text-lg font-extrabold leading-tight">PROJE TANITIM VE YÖNETİM SUNUMU (PDF)</h1>
-            <p className="text-[11px] text-slate-400 font-medium">
+            <h1 className="text-base sm:text-lg font-black leading-tight tracking-wide">T.C. PROJE TANITIM VE YÖNETİM SUNUMU (PDF)</h1>
+            <p className="text-[11px] text-red-100 font-medium">
               SYD-NDS: Sosyal Yardım İnceleme ve Nesnel Değerlendirme Sistemi
             </p>
           </div>
@@ -87,23 +89,23 @@ export default function PresentationPage() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/guide"
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 py-2 rounded-lg transition-colors border border-slate-700 flex items-center gap-1.5"
+            className="bg-red-900/60 hover:bg-red-900 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors border border-red-600 flex items-center gap-1.5"
           >
-            <FileText size={15} className="text-blue-400" />
+            <FileText size={15} className="text-red-200" />
             <span className="hidden sm:inline">Puan Kılavuzu</span>
           </Link>
           <Link
             href="/"
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 py-2 rounded-lg transition-colors border border-slate-700 flex items-center gap-1.5"
+            className="bg-red-900/60 hover:bg-red-900 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors border border-red-600 flex items-center gap-1.5"
           >
             <Home size={15} />
             <span className="hidden sm:inline">Panele Dön</span>
           </Link>
           <button
             onClick={handlePrint}
-            className="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-extrabold px-4 py-2.5 rounded-lg transition-all shadow-lg flex items-center gap-2 cursor-pointer"
+            className="bg-white hover:bg-red-50 text-red-900 text-xs font-extrabold px-4 py-2.5 rounded-lg transition-all shadow-md border border-red-200 flex items-center gap-2 cursor-pointer"
           >
-            <Printer size={16} />
+            <Printer size={16} className="text-red-700" />
             <span>PDF İNDİR / YAZDIR</span>
           </button>
         </div>
@@ -114,12 +116,12 @@ export default function PresentationPage() {
         
         {/* ==================== COVER / SLIDE 1 ==================== */}
         <section className="bg-white rounded-2xl p-8 sm:p-12 border border-slate-200 shadow-sm relative overflow-hidden print-shadow-none print:p-8">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-100 rounded-full blur-3xl -z-0 opacity-60 transform translate-x-20 -translate-y-20 no-print"></div>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-red-50 rounded-full blur-3xl -z-0 opacity-80 transform translate-x-20 -translate-y-20 no-print"></div>
           
           <div className="relative z-10 space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-2 text-blue-900 font-extrabold text-xs uppercase tracking-widest bg-blue-50 px-3.5 py-1.5 rounded-full border border-blue-200">
-                <Building2 size={15} className="text-blue-700" />
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-red-100 pb-4">
+              <div className="flex items-center gap-2 text-red-900 font-extrabold text-xs uppercase tracking-widest bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200">
+                <Building2 size={15} className="text-red-700" />
                 T.C. SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI (SYDV)
               </div>
               <span className="text-xs font-bold text-slate-500">
@@ -131,13 +133,13 @@ export default function PresentationPage() {
               <h1 className="text-3xl sm:text-4xl font-black text-slate-900 leading-tight">
                 Sosyal Yardım İnceleme ve Nesnel Değerlendirme Sistemi (SYD-NDS)
               </h1>
-              <p className="text-lg font-bold text-blue-700 leading-snug">
-                Sosyal Adalet, Hakkaniyetli Kaynak Dağıtımı ve Dijital Dönüşüm Projesi
+              <p className="text-lg font-extrabold text-red-700 leading-snug">
+                Sosyal Adalet, Hakkaniyetli Kaynak Dağıtımı, Mobil Kurulum ve Grafikli İstatistik Dönüşümü
               </p>
             </div>
 
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              Bu proje sunum dokümanı; Sosyal Yardımlaşma ve Dayanışma Vakıfları bünyesinde yürütülen hane sosyal inceleme, muhtaçlık tespit ve nakdi/ayni yardım kararlarının <strong>subjektif değerlendirmelerden arındırılarak</strong>, 3294 Sayılı Kanun ruhuna uygun <strong>matematiksel, bilimsel ve denetlenebilir bir algoritmayla</strong> dijitalleştirilmesi amacını taşımaktadır.
+              Bu proje sunum dokümanı; Sosyal Yardımlaşma ve Dayanışma Vakıfları bünyesinde yürütülen hane sosyal inceleme, muhtaçlık tespit, müdür alanındaki grafikli toplantı istatistikleri ve nakdi/ayni yardım kararlarının <strong>subjektif değerlendirmelerden arındırılarak</strong>, 3294 Sayılı Kanun ruhuna uygun <strong>matematiksel, bilimsel ve denetlenebilir bir algoritmayla</strong> dijitalleştirilmesi amacını taşımaktadır. Ayrıca sistem responsive ve PWA mobil uyumlu olarak geliştirilmiştir.
             </p>
 
             {/* Quick Metrics Cards */}
@@ -146,17 +148,17 @@ export default function PresentationPage() {
                 <span className="text-2xl font-black text-slate-900 block">%100</span>
                 <span className="text-xs font-semibold text-slate-600">Nesnel & Şeffaf Değerlendirme</span>
               </div>
-              <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-center">
-                <span className="text-2xl font-black text-blue-900 block">130 Puan</span>
-                <span className="text-xs font-semibold text-blue-700">7 Kategori Algoritmik Tavan</span>
+              <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-center">
+                <span className="text-2xl font-black text-red-900 block">130 Puan</span>
+                <span className="text-xs font-semibold text-red-700">7 Kategori Algoritmik Tavan</span>
               </div>
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
                 <span className="text-2xl font-black text-emerald-900 block">%60</span>
                 <span className="text-xs font-semibold text-emerald-700">İnceleme Süresi Tasarrufu</span>
               </div>
-              <div className="p-4 rounded-xl bg-purple-50 border border-purple-200 text-center">
-                <span className="text-2xl font-black text-purple-900 block">Sıfır</span>
-                <span className="text-xs font-semibold text-purple-700">Manuel Hesaplama Hatası</span>
+              <div className="p-4 rounded-xl bg-red-800 text-white text-center">
+                <span className="text-2xl font-black block">PWA / Mobil</span>
+                <span className="text-xs font-medium text-red-100">Telefondan Yüklenip Kullanılabilir</span>
               </div>
             </div>
           </div>
