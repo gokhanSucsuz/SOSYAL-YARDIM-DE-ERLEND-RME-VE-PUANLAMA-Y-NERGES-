@@ -43,6 +43,7 @@ export default function Dashboard() {
   // Multi-selection
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [printOnlySelected, setPrintOnlySelected] = useState<boolean>(false);
+  const [printMode, setPrintMode] = useState<'summary' | 'detailed'>('summary');
 
   // Modal State for Batch Approval / Revocation
   const [batchModal, setBatchModal] = useState<BatchModalState>({
@@ -379,7 +380,90 @@ export default function Dashboard() {
     }
   };
 
+  const getIncomeText = (val: number) => {
+    if (val === 40) return "Kişi başına gelir muhtaçlık sınırının %25 altında (+40 Pn)";
+    if (val === 35) return "Muhtaçlık sınırının %25 – 50 arasında (+35 Pn)";
+    if (val === 25) return "Muhtaçlık sınırının %50 – 75 arasında (+25 Pn)";
+    if (val === 15) return "Muhtaçlık sınırının %75 – 100 arasında (+15 Pn)";
+    return "Muhtaçlık sınırı üzerinde (0 Pn)";
+  };
+
+  const getDisadvantagesList = (state: any) => {
+    if (!state) return [];
+    const list = [];
+    if (state.b_agirEngelli) list.push("Ağır engelli (%70+) (+15 Pn)");
+    if (state.b_engelli) list.push("Engelli (%40-69) (+10 Pn)");
+    if (state.b_evdeBakim) list.push("Evde bakım hastası (+10 Pn)");
+    if (state.b_kanser) list.push("Kanser tedavisi gören (+10 Pn)");
+    if (state.b_kronik) list.push("Kronik hastalık (+6 Pn)");
+    if (state.b_yasliYalniz) list.push("65 yaş üstü yalnız yaşayan (+8 Pn)");
+    if (state.b_sehitYakini) list.push("Şehit yakını (+8 Pn)");
+    if (state.b_gazi) list.push("Gazi (+8 Pn)");
+    if (state.b_yetim) list.push("Yetim / Öksüz çocuk (+5 Pn)");
+    if (state.b_koruyucuAile) list.push("Koruyucu aile (+5 Pn)");
+    if (state.b_yabanciUyruklu) list.push("Yabancı uyruklu / Sığınmacı (+3 Pn)");
+    if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
+      const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : "";
+      list.push(`Özel Sebep${reasonText} (+${state.b_ozelSebepPuan} Pn)`);
+    }
+    return list;
+  };
+
+  const getEducationList = (state: any) => {
+    if (!state) return [];
+    const list = [];
+    if (state.c_0_6yas > 0) list.push(`0-6 Yaş: ${state.c_0_6yas} çck (+${state.c_0_6yas * 2} Pn)`);
+    if (state.c_ilkokul > 0) list.push(`İlkokul: ${state.c_ilkokul} öğr (+${state.c_ilkokul * 1} Pn)`);
+    if (state.c_ortaokul > 0) list.push(`Ortaokul: ${state.c_ortaokul} öğr (+${state.c_ortaokul * 2} Pn)`);
+    if (state.c_lise > 0) list.push(`Lise: ${state.c_lise} öğr (+${state.c_lise * 3} Pn)`);
+    if (state.c_meslekiEgitim > 0) list.push(`Mesleki Eğt: ${state.c_meslekiEgitim} öğr (+${state.c_meslekiEgitim * 3} Pn)`);
+    if (state.c_acikLise > 0) list.push(`Açık Lise: ${state.c_acikLise} öğr (+${state.c_acikLise * 3} Pn)`);
+    if (state.c_uni > 0) list.push(`Üniversite: ${state.c_uni} öğr (+${state.c_uni * 4} Pn)`);
+    return list;
+  };
+
+  const getHousingList = (state: any) => {
+    if (!state) return [];
+    const list = [];
+    if (state.d_evsiz) list.push("Evsiz (+10 Pn)");
+    if (state.d_afetzede) list.push("Afetzede (+10 Pn)");
+    if (state.d_agirHasarli) list.push("Konut ağır hasarlı (+8 Pn)");
+    if (state.d_sagliksiz) list.push("Sağlıksız konut (+6 Pn)");
+    if (state.d_kiraci) list.push("Kiracı (+5 Pn)");
+    return list;
+  };
+
+  const getFragilityList = (state: any) => {
+    if (!state) return [];
+    const list = [];
+    if (state.e_siddetMagduru) list.push("Şiddet mağduru (+6 Pn)");
+    if (state.e_kadinReis) list.push("Kadın hane reisi (+5 Pn)");
+    if (state.e_esiCezaevinde) list.push("Eşi cezaevinde (+5 Pn)");
+    if (state.e_afetGelirKaybi) list.push("Afet gelir kaybı (+5 Pn)");
+    if (state.e_bosanmis) list.push("Boşanmış (+3 Pn)");
+    if (state.e_dul) list.push("Dul (+3 Pn)");
+    const hhSize = state.householdSize || 1;
+    if (hhSize >= 5) list.push(`Hane Nüfusu ${hhSize} kişi (+3 Pn)`);
+    else if (hhSize >= 1) list.push(`Hane Nüfusu ${hhSize} kişi (+1 Pn)`);
+    return list;
+  };
+
+  const getAppliancesText = (state: any) => {
+    if (!state) return "Eşya bilgisi girilmedi";
+    const items = [
+      { name: 'Buzdolabı', val: state.appliance_buzdolabi },
+      { name: 'Çamaşır M.', val: state.appliance_camasir },
+      { name: 'Fırın', val: state.appliance_firin },
+      { name: 'Bulaşık M.', val: state.appliance_bulasik },
+      { name: 'TV', val: state.appliance_tv },
+      { name: 'Telefon', val: state.appliance_telefon },
+      { name: 'Klima/Isıtıcı', val: state.appliance_klima },
+    ];
+    return items.map(i => `${i.name}: ${i.val === 'yok' ? 'YOK' : (i.val === 'eski' ? 'ESKİ' : 'TAM')}`).join(" • ");
+  };
+
   const handlePrintCurrentList = () => {
+    setPrintMode('summary');
     setPrintOnlySelected(false);
     setTimeout(() => {
       window.print();
@@ -388,9 +472,31 @@ export default function Dashboard() {
 
   const handlePrintSelectedList = () => {
     if (selectedIds.length === 0) {
-      alert('Lütfen PDF çıktısını almak istediğiniz kayıtları listeden seçiniz.');
+      alert('Lütfen liste çıktısını almak istediğiniz kayıtları listeden seçiniz.');
       return;
     }
+    setPrintMode('summary');
+    setPrintOnlySelected(true);
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
+
+  const handlePrintSelectedDetailed = () => {
+    if (selectedIds.length === 0) {
+      alert('Lütfen tek sayfalık ayrıntılı raporunu almak istediğiniz kayıtları listeden seçiniz.');
+      return;
+    }
+    setPrintMode('detailed');
+    setPrintOnlySelected(true);
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
+
+  const handlePrintSingleDetailed = (item: Assessment) => {
+    setSelectedIds([item.id]);
+    setPrintMode('detailed');
     setPrintOnlySelected(true);
     setTimeout(() => {
       window.print();
@@ -398,6 +504,7 @@ export default function Dashboard() {
   };
 
   const handlePrintApprovedList = () => {
+    setPrintMode('summary');
     setPrintOnlySelected(false);
     setFilterStatus('approved');
     setTimeout(() => {
@@ -422,12 +529,12 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
-      {/* Print Specific Styles for Approved List PDF */}
+      {/* Print Specific Styles for Approved List / Detailed Report PDF */}
       <style>{`
         @media print {
           @page {
-            size: A4 landscape;
-            margin: 10mm 12mm;
+            size: ${printMode === 'detailed' ? 'A4 portrait' : 'A4 landscape'};
+            margin: ${printMode === 'detailed' ? '6mm 8mm' : '10mm 12mm'};
           }
           body {
             background: #ffffff !important;
@@ -442,8 +549,20 @@ export default function Dashboard() {
           .print-only {
             display: block !important;
           }
+          .page-break {
+            page-break-after: always;
+            break-after: page;
+          }
+          .page-break:last-child {
+            page-break-after: avoid;
+            break-after: avoid;
+          }
           .print-table td, .print-table th {
             padding: 5px 8px !important;
+            border: 1px solid #000000 !important;
+          }
+          .print-compact-table td, .print-compact-table th {
+            padding: 3px 5px !important;
             border: 1px solid #000000 !important;
           }
         }
@@ -578,18 +697,37 @@ export default function Dashboard() {
         </div>
 
         {/* Multi-Select Toolbar for Manager */}
-        {user.role === 'manager' && selectedIds.length > 0 && (
+        {/* Multi-Select Toolbar for Manager & Personnel */}
+        {selectedIds.length > 0 && (
           <div className="bg-slate-900 text-white p-3.5 rounded-xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center gap-2.5 font-bold text-xs sm:text-sm">
               <span className="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">
                 {selectedIds.length} Kayıt Seçildi
               </span>
               <span className="text-slate-300 text-xs font-normal hidden sm:inline">
-                Toplu onay veya onay geri alma işlemlerini uygulayabilirsiniz.
+                Seçilen kayıtların tek sayfalık ayrıntılı A4 raporunu veya özet listesini yazdırabilirsiniz.
               </span>
             </div>
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-              {selectedPendingCount > 0 && (
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+              <button
+                onClick={handlePrintSelectedDetailed}
+                className="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+                title="Seçilen her bir kaydın tek sayfalık resmi A4 detaylı raporunu yazdır"
+              >
+                <FileText size={15} />
+                <span>Detaylı A4 Rapor Yazdır ({selectedIds.length})</span>
+              </button>
+
+              <button
+                onClick={handlePrintSelectedList}
+                className="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
+                title="Seçilen kayıtların özet tablosunu yazdır"
+              >
+                <Printer size={15} />
+                <span>Özet Liste</span>
+              </button>
+
+              {user.role === 'manager' && selectedPendingCount > 0 && (
                 <button
                   onClick={openApproveSelectedModal}
                   className="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
@@ -598,13 +736,13 @@ export default function Dashboard() {
                   <span>Seçilenleri Onayla ({selectedPendingCount})</span>
                 </button>
               )}
-              {selectedApprovedCount > 0 && (
+              {user.role === 'manager' && selectedApprovedCount > 0 && (
                 <button
                   onClick={openRevokeSelectedModal}
                   className="bg-amber-600 hover:bg-amber-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
                 >
                   <RotateCcw size={15} />
-                  <span>Seçilenlerin Onayını Kaldır ({selectedApprovedCount})</span>
+                  <span>Onayı Kaldır ({selectedApprovedCount})</span>
                 </button>
               )}
               <button
@@ -703,14 +841,23 @@ export default function Dashboard() {
                 </button>
               )}
 
+              <button
+                onClick={handlePrintSelectedDetailed}
+                className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
+                title="Seçilen kayıtların (veya seçilen tek kaydın) 1 sayfalık resmi A4 ayrıntılı raporunu yazdır/PDF yap"
+              >
+                <FileText size={14} />
+                <span>Seçilenlerin Detaylı Raporu (A4) {selectedIds.length > 0 ? `(${selectedIds.length})` : ''}</span>
+              </button>
+
               {selectedIds.length > 0 && (
                 <button
                   onClick={handlePrintSelectedList}
                   className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95 animate-fadeIn"
-                  title="Sadece seçilen kayıtların PDF / Yazıcı çıktısını al"
+                  title="Sadece seçilen kayıtların özet liste PDF çıktısını al"
                 >
                   <CheckSquare size={14} />
-                  <span>Seçilenleri PDF Yazdır ({selectedIds.length})</span>
+                  <span>Seçilen Liste ({selectedIds.length})</span>
                 </button>
               )}
 
@@ -720,7 +867,7 @@ export default function Dashboard() {
                 title="Mevcut sıralama ve filtreye göre tüm listeyi PDF / Yazıcı çıktısı al"
               >
                 <Printer size={14} />
-                <span>Listeyi Yazdır / PDF</span>
+                <span>Tüm Listeyi Yazdır</span>
               </button>
 
               <div className="text-[11px] font-bold text-slate-500 bg-slate-200 px-2.5 py-1 rounded-md">
@@ -738,13 +885,22 @@ export default function Dashboard() {
                 <CheckSquare size={16} className="text-emerald-400" />
                 <span>Toplam <strong className="text-emerald-300 text-sm">{selectedIds.length}</strong> adet kayıt seçildi</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handlePrintSelectedDetailed}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
+                  title="Seçilen her bir kaydın tek sayfalık A4 ayrıntılı raporunu yazdır/PDF yap"
+                >
+                  <FileText size={14} />
+                  <span>Seçilenlerin Ayrıntılı Raporunu Yazdır (A4) ({selectedIds.length})</span>
+                </button>
+
                 <button
                   onClick={handlePrintSelectedList}
                   className="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
                 >
                   <Printer size={14} />
-                  <span>Sadece Seçilenleri PDF Yazdır ({selectedIds.length})</span>
+                  <span>Özet Liste Yazdır ({selectedIds.length})</span>
                 </button>
 
                 {user.role === 'manager' && selectedPendingCount > 0 && (
@@ -1000,6 +1156,15 @@ export default function Dashboard() {
                             </>
                           )}
 
+                          {/* Single Detailed Report Print Button */}
+                          <button
+                            onClick={() => handlePrintSingleDetailed(item)}
+                            className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                            title="Bu kaydın tek sayfalık ayrıntılı A4 resmi raporunu yazdır/PDF yap"
+                          >
+                            <Printer size={13} /> Rapor (A4)
+                          </button>
+
                           {/* View Detail Link */}
                           <Link 
                             href={`/assessment/${item.id}`} 
@@ -1141,124 +1306,315 @@ export default function Dashboard() {
       )}
 
       {/* ========================================================================= */}
-      {/* PRINT-ONLY RECORDS SUMMARY LIST (LANDSCAPE DYNAMIC PDF OUTPUT)            */}
+      {/* PRINT-ONLY SECTIONS (SUMMARY LIST OR DETAILED SINGLE A4 REPORTS)          */}
       {/* ========================================================================= */}
       <div className="print-only w-full bg-white text-black p-0 m-0 leading-tight">
-        
-        {/* Official Document Header */}
-        <div className="text-center border-b-2 border-black pb-2 mb-3">
-          <p className="text-xs font-bold uppercase tracking-widest">T.C.</p>
-          <p className="text-sm font-black uppercase tracking-wider">SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI BAŞKANLIĞI</p>
-          <p className="text-xs font-extrabold tracking-widest uppercase mt-0.5">
-            {printOnlySelected
-              ? `SEÇİLEN SOSYAL İNCELEME KAYITLARI LİSTESİ (${printableRecords.length} KAYIT)`
-              : filterStatus === 'approved' 
-              ? 'MÜDÜR TARAFINDAN ONAYLANAN SOSYAL İNCELEME KAYITLARI LİSTESİ' 
-              : filterStatus === 'pending'
-              ? 'ONAY BEKLEYEN SOSYAL İNCELEME KAYITLARI LİSTESİ'
-              : 'SOSYAL İNCELEME KAYITLARI DİNAMİK LİSTESİ'}
-          </p>
-          <p className="text-[9px] text-slate-700 mt-1 flex items-center justify-center gap-3">
-            <span>Rapor Tarihi: {new Date().toLocaleDateString('tr-TR')}</span>
-            <span>•</span>
-            <span>Toplam Kayıt: <strong>{printableRecords.length}</strong></span>
-            <span>•</span>
-            <span>
-              Sıralama Kriteri: <strong>
-                {sortField === 'date' ? 'Ziyaret Tarihi' :
-                 sortField === 'applicantTc' ? 'T.C. Kimlik No' :
-                 sortField === 'applicantName' ? 'Başvuru Sahibi Adı' :
-                 sortField === 'householdSize' ? 'Hane Kişi Sayısı' :
-                 sortField === 'personnelName' ? 'İnceleyen Personel' :
-                 sortField === 'totalScore' ? 'Toplam Puan' :
-                 sortField === 'status' ? 'Onay Durumu' : 'Karar / Yardım Tipi'} 
-                ({sortOrder === 'asc' ? 'Artan' : 'Azalan'})
-              </strong>
-            </span>
-            {printOnlySelected ? (
-              <>
+        {printMode === 'summary' ? (
+          /* SUMMARY TABLE PRINT LAYOUT */
+          <div>
+            {/* Official Document Header */}
+            <div className="text-center border-b-2 border-black pb-2 mb-3">
+              <p className="text-xs font-bold uppercase tracking-widest">T.C.</p>
+              <p className="text-sm font-black uppercase tracking-wider">SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI BAŞKANLIĞI</p>
+              <p className="text-xs font-extrabold tracking-widest uppercase mt-0.5">
+                {printOnlySelected
+                  ? `SEÇİLEN SOSYAL İNCELEME KAYITLARI LİSTESİ (${printableRecords.length} KAYIT)`
+                  : filterStatus === 'approved' 
+                  ? 'MÜDÜR TARAFINDAN ONAYLANAN SOSYAL İNCELEME KAYITLARI LİSTESİ' 
+                  : filterStatus === 'pending'
+                  ? 'ONAY BEKLEYEN SOSYAL İNCELEME KAYITLARI LİSTESİ'
+                  : 'SOSYAL İNCELEME KAYITLARI DİNAMİK LİSTESİ'}
+              </p>
+              <p className="text-[9px] text-slate-700 mt-1 flex items-center justify-center gap-3">
+                <span>Rapor Tarihi: {new Date().toLocaleDateString('tr-TR')}</span>
                 <span>•</span>
-                <span>Filtre: <strong>Özel Seçilmiş Kayıtlar ({printableRecords.length})</strong></span>
-              </>
-            ) : searchQuery ? (
-              <>
+                <span>Toplam Kayıt: <strong>{printableRecords.length}</strong></span>
                 <span>•</span>
-                <span>Arama: <strong>"{searchQuery}"</strong></span>
-              </>
-            ) : null}
-          </p>
-        </div>
-
-        {/* Table - Strictly Single Row per record matching active screen order */}
-        <table className="w-full border-collapse border border-black text-[9px] mb-6 print-table">
-          <thead>
-            <tr className="bg-slate-200 text-black font-extrabold uppercase border-b border-black">
-              <th className="p-1 text-center w-8">NO</th>
-              <th className="p-1 text-center w-24">T.C. KİMLİK NO</th>
-              <th className="p-1 text-left">BAŞVURU SAHİBİ ADI SOYADI</th>
-              <th className="p-1 text-center w-14">HANE KİŞİ</th>
-              <th className="p-1 text-left w-36">İNCELENEN ADRES / MAH.</th>
-              <th className="p-1 text-left w-32">İNCELEYEN PERSONEL</th>
-              <th className="p-1 text-center w-20">ZİYARET TARİHİ</th>
-              <th className="p-1 text-center w-16">PUAN</th>
-              <th className="p-1 text-center w-24">ONAY DURUMU</th>
-              <th className="p-1 text-left w-36">KARAR / YARDIM TİPİ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {printableRecords.length === 0 ? (
-              <tr>
-                <td colSpan={10} className="p-4 text-center font-bold text-slate-500">
-                  {printOnlySelected ? 'Seçilen herhangi bir sosyal inceleme kaydı bulunmamaktadır.' : 'Arama ve filtreleme kriterlerine uygun kayıt bulunmamaktadır.'}
-                </td>
-              </tr>
-            ) : (
-              printableRecords.map((item, idx) => (
-                <tr key={item.id} className="border-b border-black">
-                  <td className="p-1 text-center font-bold">{idx + 1}</td>
-                  <td className="p-1 text-center font-bold">{item.applicantTc || '-'}</td>
-                  <td className="p-1 font-black uppercase">{item.applicantName}</td>
-                  <td className="p-1 text-center font-bold">{item.householdSize} kişi</td>
-                  <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
-                  <td className="p-1 font-medium">{item.personnelName}</td>
-                  <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
-                  <td className="p-1 text-center font-black">{item.result.totalScore} Puan</td>
-                  <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
-                  <td className="p-1 font-bold uppercase">{item.result.isRejected ? 'REDDEDİLDİ' : item.result.assistance?.text}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-
-        {/* Signature Block at Bottom */}
-        <div className="border border-black p-3 mt-8">
-          <p className="text-[9px] italic text-slate-700 mb-4">
-            * İşbu liste Sosyal Yardımlaşma ve Dayanışma Vakfı Yönetim Paneli üzerinden müdür yetkilisi tarafından onaylanan resmi hane inceleme sonuçlarını içermekte olup onaylı belgedir.
-          </p>
-
-          <div className="flex justify-between items-start text-[10px] px-8 pt-2">
-            <div className="text-center w-5/12">
-              <p className="font-bold uppercase tracking-wider">SOSYAL YARDIM VE İNCELEME GÖREVLİSİ</p>
-              <p className="font-semibold mt-2">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
-              <p className="text-[9px] text-slate-600 mt-1">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
-              <p className="text-[9px] text-slate-600 mt-0.5">Tarih: {new Date().toLocaleDateString('tr-TR')}</p>
-              <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
-                İmza / Mühür
-              </div>
+                <span>
+                  Sıralama Kriteri: <strong>
+                    {sortField === 'date' ? 'Ziyaret Tarihi' :
+                     sortField === 'applicantTc' ? 'T.C. Kimlik No' :
+                     sortField === 'applicantName' ? 'Başvuru Sahibi Adı' :
+                     sortField === 'householdSize' ? 'Hane Kişi Sayısı' :
+                     sortField === 'personnelName' ? 'İnceleyen Personel' :
+                     sortField === 'totalScore' ? 'Toplam Puan' :
+                     sortField === 'status' ? 'Onay Durumu' : 'Karar / Yardım Tipi'} 
+                    ({sortOrder === 'asc' ? 'Artan' : 'Azalan'})
+                  </strong>
+                </span>
+                {printOnlySelected ? (
+                  <>
+                    <span>•</span>
+                    <span>Filtre: <strong>Özel Seçilmiş Kayıtlar ({printableRecords.length})</strong></span>
+                  </>
+                ) : searchQuery ? (
+                  <>
+                    <span>•</span>
+                    <span>Arama: <strong>"{searchQuery}"</strong></span>
+                  </>
+                ) : null}
+              </p>
             </div>
 
-            <div className="text-center w-5/12">
-              <p className="font-bold uppercase tracking-wider">VAKIF MÜDÜRÜ</p>
-              <p className="font-semibold mt-2">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
-              <p className="text-[9px] text-slate-600 mt-1">Unvan: SYDV Vakıf Müdürü</p>
-              <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
-                İmza / Mühür
+            {/* Table - Strictly Single Row per record matching active screen order */}
+            <table className="w-full border-collapse border border-black text-[9px] mb-6 print-table">
+              <thead>
+                <tr className="bg-slate-200 text-black font-extrabold uppercase border-b border-black">
+                  <th className="p-1 text-center w-8">NO</th>
+                  <th className="p-1 text-center w-24">T.C. KİMLİK NO</th>
+                  <th className="p-1 text-left">BAŞVURU SAHİBİ ADI SOYADI</th>
+                  <th className="p-1 text-center w-14">HANE KİŞİ</th>
+                  <th className="p-1 text-left w-36">İNCELENEN ADRES / MAH.</th>
+                  <th className="p-1 text-left w-32">İNCELEYEN PERSONEL</th>
+                  <th className="p-1 text-center w-20">ZİYARET TARİHİ</th>
+                  <th className="p-1 text-center w-16">PUAN</th>
+                  <th className="p-1 text-center w-24">ONAY DURUMU</th>
+                  <th className="p-1 text-left w-36">KARAR / YARDIM TİPİ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {printableRecords.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="p-4 text-center font-bold text-slate-500">
+                      {printOnlySelected ? 'Seçilen herhangi bir sosyal inceleme kaydı bulunmamaktadır.' : 'Arama ve filtreleme kriterlerine uygun kayıt bulunmamaktadır.'}
+                    </td>
+                  </tr>
+                ) : (
+                  printableRecords.map((item, idx) => (
+                    <tr key={item.id} className="border-b border-black">
+                      <td className="p-1 text-center font-bold">{idx + 1}</td>
+                      <td className="p-1 text-center font-bold">{item.applicantTc || '-'}</td>
+                      <td className="p-1 font-black uppercase">{item.applicantName}</td>
+                      <td className="p-1 text-center font-bold">{item.householdSize} kişi</td>
+                      <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
+                      <td className="p-1 font-medium">{item.personnelName}</td>
+                      <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
+                      <td className="p-1 text-center font-black">{item.result.totalScore} Puan</td>
+                      <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
+                      <td className="p-1 font-bold uppercase">{item.result.isRejected ? 'REDDEDİLDİ' : item.result.assistance?.text}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+
+            {/* Signature Block at Bottom */}
+            <div className="border border-black p-3 mt-8">
+              <p className="text-[9px] italic text-slate-700 mb-4">
+                * İşbu liste Sosyal Yardımlaşma ve Dayanışmayı Teşvik Kanunu kapsamında oluşturulan resmi özet inceleme belgesidir.
+              </p>
+
+              <div className="flex justify-between items-start text-[10px] px-8 pt-2">
+                <div className="text-center w-5/12">
+                  <p className="font-bold uppercase tracking-wider">SOSYAL YARDIM VE İNCELEME GÖREVLİSİ</p>
+                  <p className="font-semibold mt-2">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
+                  <p className="text-[9px] text-slate-600 mt-1">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
+                  <p className="text-[9px] text-slate-600 mt-0.5">Tarih: {new Date().toLocaleDateString('tr-TR')}</p>
+                  <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
+                    İmza / Mühür
+                  </div>
+                </div>
+
+                <div className="text-center w-5/12">
+                  <p className="font-bold uppercase tracking-wider">VAKIF MÜDÜRÜ</p>
+                  <p className="font-semibold mt-2">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
+                  <p className="text-[9px] text-slate-600 mt-1">Unvan: SYDV Vakıf Müdürü</p>
+                  <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
+                    İmza / Mühür
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          /* DETAILED 1-PAGE PER RECORD PRINT LAYOUT */
+          <div>
+            {printableRecords.length === 0 ? (
+              <div className="p-8 text-center font-bold text-slate-500">
+                Detaylı raporu yazdırılacak seçili kayıt bulunmamaktadır.
+              </div>
+            ) : (
+              printableRecords.map((item) => {
+                const state = item.data || {};
+                const calc = item.result || {};
+                const disadvantages = getDisadvantagesList(state);
+                const education = getEducationList(state);
+                const housing = getHousingList(state);
+                const fragility = getFragilityList(state);
+                const appliances = getAppliancesText(state);
 
+                return (
+                  <div key={item.id} className="page-break w-full bg-white text-black p-0 m-0 leading-tight pb-4">
+                    {/* Official Letterhead */}
+                    <div className="text-center border-b-2 border-black pb-1.5 mb-2">
+                      <p className="text-[9px] font-bold uppercase tracking-widest">T.C.</p>
+                      <p className="text-xs font-black uppercase tracking-wider">SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI BAŞKANLIĞI</p>
+                      <p className="text-[10px] font-extrabold tracking-widest uppercase mt-0.5">RESMİ SOSYAL İNCELEME VE DEĞERLENDİRME RAPORU</p>
+                    </div>
+
+                    {/* Top Info Table */}
+                    <table className="w-full border-collapse border border-black text-[9px] mb-2 print-compact-table">
+                      <tbody>
+                        <tr className="border-b border-black bg-slate-100">
+                          <td className="border-r border-black font-bold p-1 w-1/4">T.C. KİMLİK NO:</td>
+                          <td className="border-r border-black p-1 w-1/4 font-bold">{item.applicantTc || '-'}</td>
+                          <td className="border-r border-black font-bold p-1 w-1/4">BAŞVURU SAHİBİ:</td>
+                          <td className="p-1 w-1/4 font-black uppercase">{item.applicantName}</td>
+                        </tr>
+                        <tr className="border-b border-black">
+                          <td className="border-r border-black font-bold p-1">TELEFON:</td>
+                          <td className="border-r border-black p-1">{item.phoneNumber || '-'}</td>
+                          <td className="border-r border-black font-bold p-1">HANE KİŞİ SAYISI:</td>
+                          <td className="p-1 font-bold">{item.householdSize} kişi</td>
+                        </tr>
+                        <tr className="border-b border-black">
+                          <td className="border-r border-black font-bold p-1">HANE REF NO:</td>
+                          <td className="border-r border-black p-1">{item.householdNo || '-'}</td>
+                          <td className="border-r border-black font-bold p-1">ZİYARET TARİHİ:</td>
+                          <td className="p-1 font-bold">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
+                        </tr>
+                        <tr>
+                          <td className="border-r border-black font-bold p-1">İKAMET ADRESİ:</td>
+                          <td colSpan={3} className="p-1">{item.applicantAddress || '-'}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    {/* Evaluation Criteria Matrix */}
+                    <div className="mb-2">
+                      <div className="bg-slate-200 border border-black font-bold p-1 text-[8.5px] text-center uppercase tracking-wide mb-1">
+                        SOSYAL İNCELEME SEÇENEKLERİ VE PUANLAMA KRİTERLERİ DETAYI
+                      </div>
+
+                      <table className="w-full border-collapse border border-black text-[8px] print-compact-table">
+                        <thead>
+                          <tr className="bg-slate-100 border-b border-black">
+                            <th className="border-r border-black p-1 text-left w-1/5">KATEGORİ</th>
+                            <th className="border-r border-black p-1 text-left">İŞARETLENEN / TESPİT EDİLEN SEÇENEKLER</th>
+                            <th className="p-1 text-center w-14">PUAN</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-black">
+                            <td className="border-r border-black p-1 font-bold">A. Ekonomik Durum</td>
+                            <td className="border-r border-black p-1">
+                              {getIncomeText(state.income)}
+                              {state.noWorker && " • Hanede çalışan yok"}
+                              {state.noRegularIncome && " • Düzenli gelir yok"}
+                              {state.noSgk && " • SGK kaydı yok"}
+                              {state.a_son3AyYardimKisi > 0 && ` • Son 3 ayda yardım alan: ${state.a_son3AyYardimKisi} kişi (-${state.a_son3AyYardimKisi * 5})`}
+                            </td>
+                            <td className="p-1 text-center font-bold">{calc.scoreA} / 40</td>
+                          </tr>
+
+                          <tr className="border-b border-black">
+                            <td className="border-r border-black p-1 font-bold">B. Dezavantajlılık</td>
+                            <td className="border-r border-black p-1">
+                              {disadvantages.length > 0 ? disadvantages.join(" • ") : "Mevcut Değil"}
+                            </td>
+                            <td className="p-1 text-center font-bold">{calc.scoreB} / 30</td>
+                          </tr>
+
+                          <tr className="border-b border-black">
+                            <td className="border-r border-black p-1 font-bold">C. Çocuk ve Eğitim</td>
+                            <td className="border-r border-black p-1">
+                              {education.length > 0 ? education.join(" • ") : "Eğitim gören çocuk kaydı yok"}
+                            </td>
+                            <td className="p-1 text-center font-bold">{calc.scoreC} / 10</td>
+                          </tr>
+
+                          <tr className="border-b border-black">
+                            <td className="border-r border-black p-1 font-bold">D. Barınma Durumu</td>
+                            <td className="border-r border-black p-1">
+                              {housing.length > 0 ? housing.join(" • ") : "Standart konut"}
+                            </td>
+                            <td className="p-1 text-center font-bold">{calc.scoreD} / 10</td>
+                          </tr>
+
+                          <tr className="border-b border-black">
+                            <td className="border-r border-black p-1 font-bold">E. Ev Eşyaları</td>
+                            <td className="border-r border-black p-1">
+                              {appliances}
+                            </td>
+                            <td className="p-1 text-center font-bold">{calc.scoreE} / 10</td>
+                          </tr>
+
+                          <tr className="border-b border-black">
+                            <td className="border-r border-black p-1 font-bold">F. Kırılganlık</td>
+                            <td className="border-r border-black p-1">
+                              {fragility.length > 0 ? fragility.join(" • ") : "Özel kırılganlık maddesi yok"}
+                            </td>
+                            <td className="p-1 text-center font-bold">{calc.scoreF} / 10</td>
+                          </tr>
+
+                          <tr className="border-b border-black">
+                            <td className="border-r border-black p-1 font-bold">G. İnceleme Kanaati</td>
+                            <td className="border-r border-black p-1">
+                              Yaşam Koşulları: {state.f_yasamKosullari || 0}/5 • Aciliyet: {state.f_aciliyet || 0}/5 • Sosyal Destek: {state.f_sosyalDestek || 0}/5 • Risk: {state.f_risk || 0}/5
+                            </td>
+                            <td className="p-1 text-center font-bold">{calc.scoreG ?? 0} / 20</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* System Check & Final Decision Box */}
+                    <table className="w-full border-collapse border border-black text-[8.5px] mb-2 print-compact-table">
+                      <tbody>
+                        <tr className="border-b border-black bg-slate-100">
+                          <td className="border-r border-black font-bold p-1 w-1/3">ZORUNLU KONTROLLER (SGK/TAPU/ARAÇ):</td>
+                          <td className="border-r border-black p-1 font-bold text-emerald-800">YAPILDI (EKSİKSİZ)</td>
+                          <td className="border-r border-black font-bold p-1 w-1/4">GERÇEĞE AYKIRI BEYAN:</td>
+                          <td className="p-1 font-bold">{state.falseStatement ? 'TESPİT EDİLDİ (RED)' : 'YOK'}</td>
+                        </tr>
+                        <tr className="border-b border-black">
+                          <td className="border-r border-black font-bold p-1">HESAPLANAN TOPLAM PUAN:</td>
+                          <td className="border-r border-black p-1 text-xs font-black">{calc.totalScore} / 130</td>
+                          <td className="border-r border-black font-bold p-1">TAVSİYE EDİLEN KARAR:</td>
+                          <td className="p-1 font-extrabold text-[10px] uppercase">{calc.isRejected ? 'REDDEDİLDİ' : calc.assistance?.text}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    {/* Official Note */}
+                    <p className="text-[7.5px] italic text-slate-700 mb-3">
+                      * Bu rapor, 3294 Sayılı Sosyal Yardımlaşma ve Dayanışmayı Teşvik Kanunu kapsamında SYDV Sosyal İnceleme Görevlisi ({item.personnelName}) tarafından yerinde yapılan ev ziyareti neticesinde düzenlenmiş resmi inceleme belgesidir.
+                    </p>
+
+                    {/* OFFICIAL SIGNATURE BLOCK */}
+                    <div className="border border-black p-2 rounded-none mt-2">
+                      <div className="flex justify-between items-start text-[8.5px] pt-1 px-4">
+                        
+                        {/* Personnel Signature */}
+                        <div className="text-center w-5/12">
+                          <p className="font-bold uppercase tracking-wider">SOSYAL YARDIM VE İNCELEME GÖREVLİSİ</p>
+                          <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="font-bold uppercase">{item.personnelName}</span></p>
+                          <p className="text-[7.5px] text-slate-600">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
+                          <p className="text-[7.5px] text-slate-600 mt-0.5">Tarih: {new Date(item.date).toLocaleDateString('tr-TR')}</p>
+                          <div className="mt-5 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[8px] font-bold">
+                            İmza / Mühür
+                          </div>
+                        </div>
+
+                        {/* Manager Signature */}
+                        <div className="text-center w-5/12">
+                          <p className="font-bold uppercase tracking-wider">VAKIF MÜDÜRÜ</p>
+                          <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="font-bold uppercase">{item.managerName || 'VAKIF MÜDÜRÜ'}</span></p>
+                          <p className="text-[7.5px] text-slate-600">Unvan: SYDV Vakıf Müdürü</p>
+                          <p className="text-[7.5px] text-slate-600 mt-0.5">Onay Durumu: {item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLİYOR'}</p>
+                          <div className="mt-5 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[8px] font-bold">
+                            İmza / Mühür
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
       </div>
 
     </div>
