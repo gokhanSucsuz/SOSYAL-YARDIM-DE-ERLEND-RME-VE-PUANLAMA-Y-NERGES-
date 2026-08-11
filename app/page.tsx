@@ -1,5 +1,5 @@
 "use client";
-"use client";
+/* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
 
@@ -16,10 +16,11 @@ import {
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
   Lock, Unlock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
   X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar, ArrowLeft, ArrowRight, Settings,
-  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck
+  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { InstallPwaModal } from '@/components/install-pwa-modal';
 
 interface BatchModalState {
   isOpen: boolean;
@@ -42,6 +43,40 @@ export default function Dashboard() {
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // PWA Install State
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult: any) => {
+          if (choiceResult.outcome === 'accepted') {
+            setDeferredPrompt(null);
+          } else {
+            setIsInstallModalOpen(true);
+          }
+        }).catch(() => {
+          setIsInstallModalOpen(true);
+        });
+      } catch (err) {
+        setIsInstallModalOpen(true);
+      }
+    } else {
+      setIsInstallModalOpen(true);
+    }
+  };
 
   // New Assessment Modal State
   const [newAssessmentModalOpen, setNewAssessmentModalOpen] = useState(false);
@@ -933,9 +968,11 @@ export default function Dashboard() {
       {/* Screen Header */}
       <header className="bg-slate-900 text-white px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shrink-0 z-10 no-print">
         <div className="flex items-center gap-3">
-          <div className="bg-blue-600 p-2 rounded-xl shrink-0">
-            <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-          </div>
+          <img 
+            src="/logo.jpg" 
+            alt="Sosyal İnceleme Logo" 
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
+          />
           <div>
             <h1 className="text-sm sm:text-lg font-bold leading-tight">SOSYAL YARDIM DEĞERLENDİRME VE İNCELEME SİSTEMİ</h1>
             <p className="text-[10px] sm:text-xs text-slate-400 font-medium tracking-widest uppercase">
@@ -944,6 +981,15 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between sm:justify-end w-full sm:w-auto gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+          <button
+            onClick={handleInstallClick}
+            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-sm border border-blue-400/30"
+            title="Mobil Uygulama Olarak Telefonunuza Yükleyin"
+          >
+            <Smartphone size={16} className="shrink-0" />
+            <span>Mobil Uygulamayı İndir</span>
+            <Download size={13} className="opacity-80" />
+          </button>
           {user?.role === 'manager' && (
             <Link
               href="/settings"
@@ -2769,6 +2815,12 @@ export default function Dashboard() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <InstallPwaModal 
+        isOpen={isInstallModalOpen} 
+        onClose={() => setIsInstallModalOpen(false)} 
+        deferredPrompt={deferredPrompt} 
+      />
 
     </div>
   );

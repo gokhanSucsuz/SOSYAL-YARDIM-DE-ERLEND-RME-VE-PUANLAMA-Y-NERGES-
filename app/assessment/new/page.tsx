@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
 
@@ -278,9 +279,11 @@ function NewAssessmentContent() {
           <Link href="/" className="p-2 hover:bg-slate-800 rounded-xl transition-all active:scale-95 touch-manipulation text-slate-300 hover:text-white">
             <ArrowLeft size={20} />
           </Link>
-          <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 p-2.5 rounded-2xl shadow-lg shadow-blue-600/30">
-            <ShieldCheck className="w-5 h-5 text-white" />
-          </div>
+          <img 
+            src="/logo.jpg" 
+            alt="Logo" 
+            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
+          />
           <div>
             <h1 className="text-xs sm:text-base font-black tracking-tight uppercase bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
               Saha İnceleme Sihirbazı

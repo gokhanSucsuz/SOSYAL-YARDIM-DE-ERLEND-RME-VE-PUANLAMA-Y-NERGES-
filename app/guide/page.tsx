@@ -1,5 +1,5 @@
 "use client";
-"use client";
+/* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +17,11 @@ export default function GuidePage() {
           <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-1">
             <ArrowLeft size={20} />
           </Link>
-          <div className="bg-blue-600 p-2 rounded hidden sm:block">
-            <ShieldCheck className="w-5 h-5 text-white" />
-          </div>
+          <img 
+            src="/logo.jpg" 
+            alt="Logo" 
+            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0 hidden sm:block" 
+          />
           <div>
             <h1 className="text-lg font-bold leading-tight">SOSYAL İNCELEME VE PUANLAMA KILAVUZU</h1>
             <p className="text-xs text-slate-400 font-medium tracking-widest uppercase">

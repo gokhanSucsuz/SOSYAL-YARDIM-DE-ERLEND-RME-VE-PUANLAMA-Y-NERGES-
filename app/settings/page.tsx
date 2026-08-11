@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
 
@@ -149,9 +150,11 @@ export default function SettingsPage() {
           <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-1">
             <ArrowLeft size={20} />
           </Link>
-          <div className="bg-amber-500 p-2 rounded text-slate-950">
-            <Settings className="w-5 h-5" />
-          </div>
+          <img 
+            src="/logo.jpg" 
+            alt="Logo" 
+            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
+          />
           <div>
             <h1 className="text-lg font-bold leading-tight flex items-center gap-2">
               SİSTEM VE YARDIM KRİTER AYARLARI

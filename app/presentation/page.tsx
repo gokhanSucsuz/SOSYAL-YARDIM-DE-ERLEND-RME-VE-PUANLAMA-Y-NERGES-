@@ -1,5 +1,5 @@
 "use client";
-"use client";
+/* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
 
@@ -72,9 +72,11 @@ export default function PresentationPage() {
           <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-300 hover:text-white" title="Ana Sayfaya Dön">
             <ArrowLeft size={20} />
           </Link>
-          <div className="bg-blue-600 p-2 rounded-lg">
-            <ShieldCheck className="w-5 h-5 text-white" />
-          </div>
+          <img 
+            src="/logo.jpg" 
+            alt="Logo" 
+            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
+          />
           <div>
             <h1 className="text-base sm:text-lg font-extrabold leading-tight">PROJE TANITIM VE YÖNETİM SUNUMU (PDF)</h1>
             <p className="text-[11px] text-slate-400 font-medium">
