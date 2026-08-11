@@ -9,6 +9,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { getAssessmentById, Assessment, saveAssessment, deleteAssessment } from '@/lib/db';
 import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, AlertTriangle, Check, X, FileText, RotateCcw, Lock, Unlock, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { LogoImage } from '@/components/logo-image';
 
 export default function AssessmentDetail() {
   const router = useRouter();
@@ -233,9 +234,7 @@ export default function AssessmentDetail() {
           <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-1">
             <ArrowLeft size={20} />
           </Link>
-          <img 
-            src="/logo.jpg" 
-            alt="Logo" 
+          <LogoImage 
             className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0 hidden sm:block" 
           />
           <div>

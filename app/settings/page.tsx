@@ -14,6 +14,7 @@ import {
   CheckCircle2, AlertTriangle, Settings, Sliders, Info, ShieldAlert, Award
 } from 'lucide-react';
 import Link from 'next/link';
+import { LogoImage } from '@/components/logo-image';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -150,9 +151,7 @@ export default function SettingsPage() {
           <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-1">
             <ArrowLeft size={20} />
           </Link>
-          <img 
-            src="/logo.jpg" 
-            alt="Logo" 
+          <LogoImage 
             className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
           />
           <div>

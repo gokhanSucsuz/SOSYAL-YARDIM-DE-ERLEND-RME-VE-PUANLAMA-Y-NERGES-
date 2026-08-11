@@ -13,6 +13,7 @@ import {
 import { saveAssessment, getAssessmentById, calculateAssistanceFromScore } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
+import { LogoImage } from '@/components/logo-image';
 
 export default function EditAssessmentWizard() {
   const router = useRouter();
@@ -343,9 +344,7 @@ export default function EditAssessmentWizard() {
           <Link href={`/assessment/${assessmentId}`} className="p-2 hover:bg-slate-800 rounded-xl transition-colors active:scale-95 touch-manipulation">
             <ArrowLeft size={20} />
           </Link>
-          <img 
-            src="/logo.jpg" 
-            alt="Logo" 
+          <LogoImage 
             className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0 hidden sm:block" 
           />
           <div>

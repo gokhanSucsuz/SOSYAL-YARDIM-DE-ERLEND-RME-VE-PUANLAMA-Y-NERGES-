@@ -13,6 +13,7 @@ import {
 import { saveAssessment, calculateAssistanceFromScore } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
+import { LogoImage } from '@/components/logo-image';
 
 function NewAssessmentContent() {
   const router = useRouter();
@@ -318,9 +319,7 @@ function NewAssessmentContent() {
           <Link href="/" className="p-2 hover:bg-slate-800 rounded-xl transition-all active:scale-95 touch-manipulation text-slate-300 hover:text-white">
             <ArrowLeft size={20} />
           </Link>
-          <img 
-            src="/logo.jpg" 
-            alt="Logo" 
+          <LogoImage 
             className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
           />
           <div>

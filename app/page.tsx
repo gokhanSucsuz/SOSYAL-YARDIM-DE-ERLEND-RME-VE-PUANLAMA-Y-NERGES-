@@ -16,11 +16,13 @@ import {
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
   Lock, Unlock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
   X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar, ArrowLeft, ArrowRight, Settings,
-  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone, Wallet, Banknote, Pencil
+  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone, Wallet, Banknote, Pencil, BarChart3
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { InstallPwaModal } from '@/components/install-pwa-modal';
+import { LogoImage } from '@/components/logo-image';
+import { ManagerStatsView } from '@/components/manager-stats-view';
 
 interface BatchModalState {
   isOpen: boolean;
@@ -94,6 +96,7 @@ export default function Dashboard() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved'>('all');
   const [filterDecision, setFilterDecision] = useState<'all' | 'accepted' | 'rejected'>('all');
   const [filterMeetingId, setFilterMeetingId] = useState<string | null>(null);
+  const [activeViewTab, setActiveViewTab] = useState<'operations' | 'statistics'>('operations');
   
   // Sort States
   const [sortField, setSortField] = useState<SortField>('date');
@@ -1106,9 +1109,7 @@ export default function Dashboard() {
       {/* Screen Header */}
       <header className="bg-slate-900 text-white px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shrink-0 z-10 no-print">
         <div className="flex items-center gap-3">
-          <img 
-            src="/logo.jpg" 
-            alt="Sosyal İnceleme Logo" 
+          <LogoImage 
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
           />
           <div>
@@ -1216,6 +1217,20 @@ export default function Dashboard() {
                   <Printer size={18} />
                   <span>Onaylı Liste PDF ({approvedCount})</span>
                 </button>
+
+                {/* Manager Statistics & Budget Reports Button */}
+                <button
+                  onClick={() => setActiveViewTab(activeViewTab === 'statistics' ? 'operations' : 'statistics')}
+                  className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 text-white px-4 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm transition-all active:scale-95 shadow-md touch-manipulation ${
+                    activeViewTab === 'statistics'
+                      ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/30 ring-2 ring-blue-400'
+                      : 'bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 shadow-indigo-900/20'
+                  }`}
+                  title="Toplantı Bütçeleri ve İstatistik Raporları"
+                >
+                  <BarChart3 size={18} />
+                  <span>{activeViewTab === 'statistics' ? '📋 Gösterge Paneline Dön' : '📊 İstatistik ve Bütçe Raporları'}</span>
+                </button>
               </>
             )}
 
@@ -1231,6 +1246,15 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {activeViewTab === 'statistics' ? (
+          <ManagerStatsView 
+            meetings={meetings} 
+            assessments={assessments} 
+            user={user} 
+            onBack={() => setActiveViewTab('operations')} 
+          />
+        ) : (
+          <>
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center space-x-3.5">
@@ -2560,6 +2584,8 @@ export default function Dashboard() {
             </table>
           </div>
         </div>
+        )}
+        </>
         )}
 
       </main>

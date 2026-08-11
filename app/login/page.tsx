@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { User, Smartphone, Download, ShieldCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { InstallPwaModal } from '@/components/install-pwa-modal';
+import { LogoImage } from '@/components/logo-image';
 
 export default function Login() {
   const router = useRouter();
@@ -70,9 +71,7 @@ export default function Login() {
         <div className="flex justify-center mb-6 mt-2">
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl blur opacity-40 group-hover:opacity-75 transition duration-300"></div>
-            <img 
-              src="/logo.jpg" 
-              alt="Sosyal İnceleme Sistemi Logo" 
+            <LogoImage 
               className="relative w-20 h-20 rounded-2xl shadow-xl border-2 border-slate-700 object-cover" 
             />
           </div>

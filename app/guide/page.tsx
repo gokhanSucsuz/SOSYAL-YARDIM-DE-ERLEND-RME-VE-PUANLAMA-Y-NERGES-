@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 
 import React from 'react';
 import Link from 'next/link';
+import { LogoImage } from '@/components/logo-image';
 import { ShieldCheck, ArrowLeft, BookOpen, Scale, Award, AlertTriangle, FileText, CheckCircle2, Home, HeartHandshake, HelpCircle, Layers, Check, Presentation } from 'lucide-react';
 
 export default function GuidePage() {
@@ -17,9 +18,7 @@ export default function GuidePage() {
           <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-1">
             <ArrowLeft size={20} />
           </Link>
-          <img 
-            src="/logo.jpg" 
-            alt="Logo" 
+          <LogoImage 
             className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0 hidden sm:block" 
           />
           <div>

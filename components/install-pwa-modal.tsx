@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect } from 'react';
 import { Smartphone, Download, X, Share, PlusSquare, MoreVertical, CheckCircle2, ExternalLink, Sparkles } from 'lucide-react';
+import { LogoImage } from './logo-image';
 
 interface InstallPwaModalProps {
   isOpen: boolean;
@@ -54,9 +55,7 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-900/60 to-indigo-900/60 border-b border-slate-800 p-5 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img 
-              src="/logo.jpg" 
-              alt="Sosyal İnceleme Logo" 
+            <LogoImage 
               className="w-12 h-12 rounded-2xl shadow-md border-2 border-blue-400/30 object-cover shrink-0" 
             />
             <div>
