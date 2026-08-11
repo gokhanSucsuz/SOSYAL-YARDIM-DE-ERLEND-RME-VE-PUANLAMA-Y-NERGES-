@@ -25,6 +25,7 @@ export interface Assessment {
   phoneNumber?: string;
   householdNo?: string;
   status?: 'pending' | 'approved';
+  customOrder?: number;
   data: any; // Raw state data
   result: AssessmentResult;
 }

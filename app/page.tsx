@@ -6,7 +6,7 @@ import { getAllAssessments, getAssessmentsByPersonnel, Assessment, saveAssessmen
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
-  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check, CheckSquare 
+  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check, CheckSquare, ListOrdered 
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -22,7 +22,7 @@ interface BatchModalState {
   totalCount: number;
 }
 
-type SortField = 'date' | 'applicantTc' | 'applicantName' | 'householdSize' | 'personnelName' | 'totalScore' | 'status' | 'decision';
+type SortField = 'customOrder' | 'date' | 'applicantTc' | 'applicantName' | 'householdSize' | 'personnelName' | 'totalScore' | 'status' | 'decision';
 type SortOrder = 'asc' | 'desc';
 
 export default function Dashboard() {
@@ -148,6 +148,10 @@ export default function Dashboard() {
       let bVal: any;
 
       switch (sortField) {
+        case 'customOrder':
+          aVal = a.customOrder !== undefined && a.customOrder !== null ? a.customOrder : 999999;
+          bVal = b.customOrder !== undefined && b.customOrder !== null ? b.customOrder : 999999;
+          break;
         case 'date':
           aVal = new Date(a.date).getTime();
           bVal = new Date(b.date).getTime();
@@ -189,6 +193,56 @@ export default function Dashboard() {
       if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
       return 0;
     });
+
+  // Custom Order Handler Functions
+  const handleUpdateCustomOrder = async (item: Assessment, newOrder: number | undefined) => {
+    try {
+      const updated: Assessment = {
+        ...item,
+        customOrder: newOrder,
+      };
+      await saveAssessment(updated);
+      setAssessments(prev => prev.map(a => a.id === item.id ? updated : a));
+    } catch (err) {
+      console.error('Sıra numarası güncellenirken hata oluştu:', err);
+    }
+  };
+
+  const handleAutoAssignCustomOrders = async () => {
+    if (filteredAndSortedAssessments.length === 0) return;
+    if (!confirm(`Ekranda listelenen ${filteredAndSortedAssessments.length} adet kayda 1'den başlayarak sırasıyla (1, 2, 3...) özel sıra numarası atansın mı?`)) return;
+
+    try {
+      const updatedMap = new Map<string, Assessment>();
+      for (let i = 0; i < filteredAndSortedAssessments.length; i++) {
+        const item = filteredAndSortedAssessments[i];
+        const updatedItem: Assessment = {
+          ...item,
+          customOrder: i + 1,
+        };
+        await saveAssessment(updatedItem);
+        updatedMap.set(item.id, updatedItem);
+      }
+      setAssessments(prev => prev.map(a => updatedMap.get(a.id) || a));
+      setSortField('customOrder');
+      setSortOrder('asc');
+    } catch (err) {
+      alert('Sıra numaraları atanırken hata oluştu.');
+    }
+  };
+
+  const handleClearAllCustomOrders = async () => {
+    if (!confirm('Tüm kayıtların özel sıra numaraları temizlenecektir. Emin misiniz?')) return;
+    try {
+      const updatedList = assessments.map(a => ({ ...a, customOrder: undefined }));
+      for (const item of updatedList) {
+        await saveAssessment(item);
+      }
+      setAssessments(updatedList);
+    } catch (err) {
+      alert('Sıra numaraları temizlenirken hata oluştu.');
+    }
+  };
 
   // Sorting Helper
   const handleSort = (field: SortField) => {
@@ -878,6 +932,54 @@ export default function Dashboard() {
 
           </div>
 
+          {/* Custom Sequence Control Toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-indigo-50/70 border-b border-indigo-100 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-indigo-900 flex items-center gap-1.5">
+                <ListOrdered size={15} className="text-indigo-600 shrink-0" />
+                <span>Özel Sıralama Yönetimi:</span>
+              </span>
+              <span className="text-slate-600 hidden md:inline text-[11px]">
+                Kayıtlara istediğiniz sıra numarasını verip bu sıralamaya göre listeleyebilir ve çıktı alabilirsiniz.
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => {
+                  setSortField('customOrder');
+                  setSortOrder('asc');
+                }}
+                className={`px-2.5 py-1 rounded-md font-bold text-xs flex items-center gap-1 transition-all border ${
+                  sortField === 'customOrder'
+                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                    : 'bg-white text-indigo-800 border-indigo-200 hover:bg-indigo-100'
+                }`}
+                title="Listeyi verilen özel sıra numarasına (1, 2, 3...) göre sırala"
+              >
+                <ArrowUpDown size={12} />
+                <span>Özel Sıraya Göre Listele</span>
+              </button>
+
+              <button
+                onClick={handleAutoAssignCustomOrders}
+                className="bg-white hover:bg-indigo-100 text-indigo-900 border border-indigo-300 px-2.5 py-1 rounded-md font-bold text-xs flex items-center gap-1 shadow-sm transition-all active:scale-95"
+                title="Şu an gösterilen kayıtların hepsine 1, 2, 3... şeklinde otomatik sıra numarası ver"
+              >
+                <ListOrdered size={13} />
+                <span>1..N Otomatik Sıra Ver</span>
+              </button>
+
+              <button
+                onClick={handleClearAllCustomOrders}
+                className="text-slate-500 hover:text-red-600 underline text-[11px] px-1 py-0.5"
+                title="Tüm özel sıra numaralarını temizle"
+              >
+                Sıraları Temizle
+              </button>
+            </div>
+          </div>
+
           {/* Selected Items Highlight Bar */}
           {selectedIds.length > 0 && (
             <div className="bg-slate-900 text-white px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs font-bold animate-fadeIn border-b border-slate-800">
@@ -936,6 +1038,17 @@ export default function Dashboard() {
                       className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                       title="Tümünü Seç / Kaldır"
                     />
+                  </th>
+
+                  <th 
+                    onClick={() => handleSort('customOrder')} 
+                    className="px-2 sm:px-3 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap text-center w-20"
+                    title="İstediğiniz özel sıra numarasına göre sırala"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Sıra No</span>
+                      {renderSortIcon('customOrder')}
+                    </div>
                   </th>
 
                   <th 
@@ -1029,12 +1142,12 @@ export default function Dashboard() {
               <tbody className="divide-y divide-slate-100 text-xs">
                 {filteredAndSortedAssessments.length === 0 ? (
                   <tr>
-                    <td colSpan={user.role === 'manager' ? 10 : 9} className="px-6 py-12 text-center text-slate-500 bg-slate-50/50 font-medium">
+                    <td colSpan={user.role === 'manager' ? 11 : 10} className="px-6 py-12 text-center text-slate-500 bg-slate-50/50 font-medium">
                       Arama ve filtreleme kriterlerine uygun sosyal inceleme kaydı bulunamadı.
                     </td>
                   </tr>
                 ) : (
-                  filteredAndSortedAssessments.map((item) => {
+                  filteredAndSortedAssessments.map((item, idx) => {
                     const isSelected = selectedIds.includes(item.id);
                     const isApproved = item.status === 'approved';
 
@@ -1049,6 +1162,24 @@ export default function Dashboard() {
                             checked={isSelected}
                             onChange={() => toggleSelectId(item.id)}
                             className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          />
+                        </td>
+
+                        {/* Custom Order Input Cell */}
+                        <td className="px-2 py-2 text-center align-middle whitespace-nowrap">
+                          <input
+                            type="number"
+                            min={1}
+                            max={9999}
+                            value={item.customOrder ?? ''}
+                            placeholder={(idx + 1).toString()}
+                            onChange={(e) => {
+                              const val = e.target.value === '' ? undefined : parseInt(e.target.value, 10);
+                              handleUpdateCustomOrder(item, val);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-16 text-center py-1 px-1 text-xs font-black rounded border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500 bg-white text-indigo-950 shadow-inner"
+                            title="Bu kayda özel sıra numarası verin"
                           />
                         </td>
 
@@ -1332,7 +1463,8 @@ export default function Dashboard() {
                 <span>•</span>
                 <span>
                   Sıralama Kriteri: <strong>
-                    {sortField === 'date' ? 'Ziyaret Tarihi' :
+                    {sortField === 'customOrder' ? 'Özel Sıra No' :
+                     sortField === 'date' ? 'Ziyaret Tarihi' :
                      sortField === 'applicantTc' ? 'T.C. Kimlik No' :
                      sortField === 'applicantName' ? 'Başvuru Sahibi Adı' :
                      sortField === 'householdSize' ? 'Hane Kişi Sayısı' :
@@ -1360,7 +1492,7 @@ export default function Dashboard() {
             <table className="w-full border-collapse border border-black text-[9px] mb-6 print-table">
               <thead>
                 <tr className="bg-slate-200 text-black font-extrabold uppercase border-b border-black">
-                  <th className="p-1 text-center w-8">NO</th>
+                  <th className="p-1 text-center w-12">SIRA NO</th>
                   <th className="p-1 text-center w-24">T.C. KİMLİK NO</th>
                   <th className="p-1 text-left">BAŞVURU SAHİBİ ADI SOYADI</th>
                   <th className="p-1 text-center w-14">HANE KİŞİ</th>
@@ -1382,7 +1514,7 @@ export default function Dashboard() {
                 ) : (
                   printableRecords.map((item, idx) => (
                     <tr key={item.id} className="border-b border-black">
-                      <td className="p-1 text-center font-bold">{idx + 1}</td>
+                      <td className="p-1 text-center font-bold">{item.customOrder !== undefined && item.customOrder !== null ? item.customOrder : idx + 1}</td>
                       <td className="p-1 text-center font-bold">{item.applicantTc || '-'}</td>
                       <td className="p-1 font-black uppercase">{item.applicantName}</td>
                       <td className="p-1 text-center font-bold">{item.householdSize} kişi</td>
@@ -1456,24 +1588,24 @@ export default function Dashboard() {
                     <table className="w-full border-collapse border border-black text-[9px] mb-2 print-compact-table">
                       <tbody>
                         <tr className="border-b border-black bg-slate-100">
-                          <td className="border-r border-black font-bold p-1 w-1/4">T.C. KİMLİK NO:</td>
-                          <td className="border-r border-black p-1 w-1/4 font-bold">{item.applicantTc || '-'}</td>
-                          <td className="border-r border-black font-bold p-1 w-1/4">BAŞVURU SAHİBİ:</td>
-                          <td className="p-1 w-1/4 font-black uppercase">{item.applicantName}</td>
+                          <td className="border-r border-black font-bold p-1 w-1/6">SIRA NO:</td>
+                          <td className="border-r border-black p-1 w-1/6 font-black">{item.customOrder !== undefined && item.customOrder !== null ? item.customOrder : '-'}</td>
+                          <td className="border-r border-black font-bold p-1 w-1/6">T.C. KİMLİK NO:</td>
+                          <td className="border-r border-black p-1 w-1/6 font-bold">{item.applicantTc || '-'}</td>
+                          <td className="border-r border-black font-bold p-1 w-1/6">BAŞVURU SAHİBİ:</td>
+                          <td className="p-1 w-1/6 font-black uppercase">{item.applicantName}</td>
                         </tr>
                         <tr className="border-b border-black">
                           <td className="border-r border-black font-bold p-1">TELEFON:</td>
                           <td className="border-r border-black p-1">{item.phoneNumber || '-'}</td>
                           <td className="border-r border-black font-bold p-1">HANE KİŞİ SAYISI:</td>
-                          <td className="p-1 font-bold">{item.householdSize} kişi</td>
+                          <td className="border-r border-black p-1 font-bold">{item.householdSize} kişi</td>
+                          <td className="border-r border-black font-bold p-1">ZİYARET TARİHİ:</td>
+                          <td className="p-1 font-bold">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
                         </tr>
                         <tr className="border-b border-black">
                           <td className="border-r border-black font-bold p-1">HANE REF NO:</td>
                           <td className="border-r border-black p-1">{item.householdNo || '-'}</td>
-                          <td className="border-r border-black font-bold p-1">ZİYARET TARİHİ:</td>
-                          <td className="p-1 font-bold">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
-                        </tr>
-                        <tr>
                           <td className="border-r border-black font-bold p-1">İKAMET ADRESİ:</td>
                           <td colSpan={3} className="p-1">{item.applicantAddress || '-'}</td>
                         </tr>
