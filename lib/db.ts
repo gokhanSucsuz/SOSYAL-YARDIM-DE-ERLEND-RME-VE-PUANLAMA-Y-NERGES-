@@ -96,6 +96,7 @@ export interface Meeting {
   description?: string; // Toplantı açıklaması
   isClosed?: boolean; // Toplantı müdür tarafından sonlandırıldı mı?
   forceOpen?: boolean; // Geçmiş tarihli olmasına rağmen müdür tarafından yeniden açıldı mı?
+  budgetTL?: number; // Toplantı Vakıf Bütçesi (Harcanabilir Kaynak Tutarı - TL)
 }
 
 /**

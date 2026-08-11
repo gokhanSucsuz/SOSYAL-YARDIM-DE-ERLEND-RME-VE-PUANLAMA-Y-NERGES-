@@ -16,7 +16,7 @@ import {
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
   Lock, Unlock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
   X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar, ArrowLeft, ArrowRight, Settings,
-  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone
+  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone, Wallet, Banknote, Pencil
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -78,11 +78,15 @@ export default function Dashboard() {
     }
   };
 
-  // New Assessment Modal State
+  // New & Edit Meeting Modal State
   const [newAssessmentModalOpen, setNewAssessmentModalOpen] = useState(false);
   const [selectedMeetingId, setSelectedMeetingId] = useState<string>('');
   const [newMeetingModalOpen, setNewMeetingModalOpen] = useState(false);
-  const [newMeetingData, setNewMeetingData] = useState({ meetingNo: '', date: '', description: '' });
+  const [newMeetingData, setNewMeetingData] = useState({ meetingNo: '', date: '', description: '', budgetTL: '' });
+
+  const [editMeetingModalOpen, setEditMeetingModalOpen] = useState(false);
+  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
+  const [editMeetingData, setEditMeetingData] = useState({ meetingNo: '', date: '', description: '', budgetTL: '' });
 
   // Search & Filter States
   const [householdSearchQuery, setHouseholdSearchQuery] = useState('');
@@ -184,6 +188,86 @@ export default function Dashboard() {
     return Array.from(map.values());
   }, [householdSearchQuery, assessments]);
 
+  // Toplantı Bazlı Bütçe ve İstatistik Hesaplamaları
+  const meetingStatsMap = useMemo(() => {
+    const map = new Map<string, {
+      totalCount: number;
+      pendingCount: number;
+      approvedCount: number;
+      plannedAidTL: number;
+      approvedAidTL: number;
+      rejectedCount: number;
+    }>();
+
+    meetings.forEach(m => {
+      const mAssessments = assessments.filter(a => a.meetingId === m.id);
+      let plannedAidTL = 0;
+      let approvedAidTL = 0;
+      let pendingCount = 0;
+      let approvedCount = 0;
+      let rejectedCount = 0;
+
+      mAssessments.forEach(a => {
+        const aidAmount = a.result?.assistance?.amount || 0;
+        if (a.result?.isRejected) {
+          rejectedCount++;
+        } else {
+          plannedAidTL += aidAmount;
+          if (a.status === 'approved') {
+            approvedCount++;
+            approvedAidTL += aidAmount;
+          } else {
+            pendingCount++;
+          }
+        }
+      });
+
+      map.set(m.id, {
+        totalCount: mAssessments.length,
+        pendingCount,
+        approvedCount,
+        plannedAidTL,
+        approvedAidTL,
+        rejectedCount,
+      });
+    });
+
+    return map;
+  }, [meetings, assessments]);
+
+  // Genel Bütçe ve Yardım Özeti (Müdür Paneli için)
+  const globalBudgetStats = useMemo(() => {
+    let totalBudgetTL = 0;
+    let totalPlannedAidTL = 0;
+    let totalApprovedAidTL = 0;
+
+    meetings.forEach(m => {
+      totalBudgetTL += (m.budgetTL || 0);
+    });
+
+    assessments.forEach(a => {
+      if (!a.result?.isRejected) {
+        const aidAmount = a.result?.assistance?.amount || 0;
+        totalPlannedAidTL += aidAmount;
+        if (a.status === 'approved') {
+          totalApprovedAidTL += aidAmount;
+        }
+      }
+    });
+
+    const isGlobalExceeded = totalBudgetTL > 0 && totalPlannedAidTL > totalBudgetTL;
+    const globalExcessTL = isGlobalExceeded ? totalPlannedAidTL - totalBudgetTL : 0;
+
+    return {
+      totalBudgetTL,
+      totalPlannedAidTL,
+      totalApprovedAidTL,
+      remainingBudgetTL: totalBudgetTL - totalPlannedAidTL,
+      isGlobalExceeded,
+      globalExcessTL,
+    };
+  }, [meetings, assessments]);
+
   if (!user || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -234,6 +318,44 @@ export default function Dashboard() {
       setMeetings(prev => prev.map(m => m.id === meeting.id ? updatedMeeting : m));
     } catch (err) {
       alert('Toplantı kilit durumu güncellenirken bir hata oluştu.');
+    }
+  };
+
+  const handleOpenEditMeeting = (m: Meeting, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setEditingMeeting(m);
+    setEditMeetingData({
+      meetingNo: m.meetingNo || '',
+      date: m.date || '',
+      description: m.description || '',
+      budgetTL: m.budgetTL !== undefined && m.budgetTL !== null ? m.budgetTL.toString() : '',
+    });
+    setEditMeetingModalOpen(true);
+  };
+
+  const handleSaveEditMeeting = async () => {
+    if (!editingMeeting) return;
+    if (!editMeetingData.meetingNo || !editMeetingData.date) {
+      alert('Lütfen toplantı dosya numarası ve tarihini giriniz.');
+      return;
+    }
+
+    const updated: Meeting = {
+      ...editingMeeting,
+      meetingNo: editMeetingData.meetingNo,
+      date: editMeetingData.date,
+      description: editMeetingData.description,
+      budgetTL: editMeetingData.budgetTL ? Number(editMeetingData.budgetTL) : 0,
+    };
+
+    try {
+      await saveMeeting(updated);
+      const allM = await getAllMeetings();
+      setMeetings(allM);
+      setEditMeetingModalOpen(false);
+      setEditingMeeting(null);
+    } catch (err) {
+      alert('Toplantı güncellenirken hata oluştu.');
     }
   };
 
@@ -557,7 +679,23 @@ export default function Dashboard() {
 
   // Quick Single Item Action
   const handleSingleApprove = async (item: Assessment) => {
-    if (!confirm(`${item.applicantName} isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`)) return;
+    const meeting = meetings.find(m => m.id === item.meetingId);
+    if (meeting && meeting.budgetTL && meeting.budgetTL > 0) {
+      const stats = meetingStatsMap.get(meeting.id);
+      const currentPlanned = stats?.plannedAidTL || 0;
+      const mBudget = meeting.budgetTL;
+      if (currentPlanned > mBudget) {
+        const confirmExceeded = confirm(
+          `🚨 BÜTÇE AŞIMI UYARISI:\n\nBu toplantı için ayrılan Vakıf bütçesi (${mBudget.toLocaleString('tr-TR')} ₺) aşılmaktadır. Toplam yapılacak yardım (${currentPlanned.toLocaleString('tr-TR')} ₺) bütçeyi ${(currentPlanned - mBudget).toLocaleString('tr-TR')} ₺ geçmektedir.\n\nYine de "${item.applicantName}" isimli kaydı onaylamak istediğinizden emin misiniz?`
+        );
+        if (!confirmExceeded) return;
+      } else {
+        if (!confirm(`${item.applicantName} isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`)) return;
+      }
+    } else {
+      if (!confirm(`${item.applicantName} isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`)) return;
+    }
+
     try {
       const updated: Assessment = {
         ...item,
@@ -1094,28 +1232,70 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-            <div className="p-3.5 bg-slate-100 text-slate-700 rounded-xl"><Users size={26} /></div>
-            <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Toplam İnceleme</p>
-              <p className="text-2xl font-black text-slate-900 leading-none">{total}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center space-x-3.5">
+            <div className="p-3 bg-slate-100 text-slate-700 rounded-xl shrink-0"><Users size={22} /></div>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5 truncate">Toplam İnceleme</p>
+              <p className="text-xl sm:text-2xl font-black text-slate-900 leading-none">{total}</p>
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-            <div className="p-3.5 bg-emerald-50 text-emerald-600 rounded-xl"><CheckCircle2 size={26} /></div>
-            <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Müdür Tarafından Onaylanan</p>
-              <p className="text-2xl font-black text-emerald-600 leading-none">{approvedCount}</p>
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center space-x-3.5">
+            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl shrink-0"><CheckCircle2 size={22} /></div>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5 truncate">Müdür Onaylı</p>
+              <p className="text-xl sm:text-2xl font-black text-emerald-600 leading-none">{approvedCount}</p>
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-            <div className="p-3.5 bg-amber-50 text-amber-600 rounded-xl"><Clock size={26} /></div>
-            <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Onay Bekleyen İnceleme</p>
-              <p className="text-2xl font-black text-amber-600 leading-none">{pendingCount}</p>
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center space-x-3.5">
+            <div className="p-3 bg-amber-50 text-amber-600 rounded-xl shrink-0"><Clock size={22} /></div>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5 truncate">Onay Bekleyen</p>
+              <p className="text-xl sm:text-2xl font-black text-amber-600 leading-none">{pendingCount}</p>
+            </div>
+          </div>
+
+          {/* Budget Metrics for Manager & Overall System */}
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-blue-200 shadow-xs flex items-center space-x-3.5 bg-gradient-to-br from-blue-50/40 to-white">
+            <div className="p-3 bg-blue-100 text-blue-700 rounded-xl shrink-0"><Wallet size={22} /></div>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-[11px] font-bold text-blue-600 uppercase tracking-wider mb-0.5 truncate">Vakıf Bütçesi (Toplam)</p>
+              <p className="text-lg sm:text-xl font-black text-slate-900 leading-none truncate">
+                {globalBudgetStats.totalBudgetTL > 0 ? `${globalBudgetStats.totalBudgetTL.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-200 shadow-xs flex items-center space-x-3.5 bg-gradient-to-br from-indigo-50/40 to-white">
+            <div className="p-3 bg-indigo-100 text-indigo-700 rounded-xl shrink-0"><Banknote size={22} /></div>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-[11px] font-bold text-indigo-600 uppercase tracking-wider mb-0.5 truncate">Yapılacak Toplam Yardım</p>
+              <p className="text-lg sm:text-xl font-black text-indigo-900 leading-none truncate">
+                {globalBudgetStats.totalPlannedAidTL.toLocaleString('tr-TR')} ₺
+              </p>
+              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Onaylanan: {globalBudgetStats.totalApprovedAidTL.toLocaleString('tr-TR')} ₺</p>
+            </div>
+          </div>
+
+          <div className={`p-4 sm:p-5 rounded-2xl border shadow-xs flex items-center space-x-3.5 ${
+            globalBudgetStats.isGlobalExceeded 
+              ? 'bg-red-50 border-red-300 animate-pulse' 
+              : 'bg-emerald-50/50 border-emerald-200'
+          }`}>
+            <div className={`p-3 rounded-xl shrink-0 ${globalBudgetStats.isGlobalExceeded ? 'bg-red-600 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
+              <AlertCircle size={22} />
+            </div>
+            <div className="min-w-0">
+              <p className={`text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider mb-0.5 truncate ${globalBudgetStats.isGlobalExceeded ? 'text-red-700' : 'text-emerald-700'}`}>
+                {globalBudgetStats.isGlobalExceeded ? '🚨 BÜTÇE AŞILIYOR' : 'Kalan Vakıf Bütçesi'}
+              </p>
+              <p className={`text-lg sm:text-xl font-black leading-none truncate ${globalBudgetStats.isGlobalExceeded ? 'text-red-700' : 'text-emerald-900'}`}>
+                {globalBudgetStats.isGlobalExceeded 
+                  ? `+${globalBudgetStats.globalExcessTL.toLocaleString('tr-TR')} ₺ Aşım` 
+                  : `${globalBudgetStats.remainingBudgetTL.toLocaleString('tr-TR')} ₺`}
+              </p>
             </div>
           </div>
         </div>
@@ -1388,14 +1568,86 @@ export default function Dashboard() {
                           )}
                         </div>
 
-                        <div className="text-xs text-slate-500 font-semibold mb-3 flex items-center gap-1">
-                          <Calendar size={13} className="text-slate-400" />
-                          <span>Toplantı Tarihi: <strong className="text-slate-800 font-extrabold">{new Date(m.date).toLocaleDateString('tr-TR')}</strong></span>
+                        <div className="text-xs text-slate-500 font-semibold mb-2 flex items-center justify-between gap-1">
+                          <span className="flex items-center gap-1">
+                            <Calendar size={13} className="text-slate-400" />
+                            Toplantı Tarihi: <strong className="text-slate-800 font-extrabold">{new Date(m.date).toLocaleDateString('tr-TR')}</strong>
+                          </span>
+                          {user.role === 'manager' && (
+                            <button
+                              type="button"
+                              onClick={(e) => handleOpenEditMeeting(m, e)}
+                              className="text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 transition-colors border border-blue-200"
+                              title="Toplantı Bütçesini ve Bilgilerini Düzenle"
+                            >
+                              <Pencil size={12} /> Bütçe / Düzenle
+                            </button>
+                          )}
                         </div>
                         
-                        <p className="text-xs text-slate-600 mb-4 line-clamp-2 h-8">
+                        <p className="text-xs text-slate-600 mb-3 line-clamp-2 h-8">
                           {m.description || "Açıklama girilmemiş."}
                         </p>
+
+                        {/* Meeting Budget & Assistance Breakdown Card */}
+                        {(() => {
+                          const stats = meetingStatsMap.get(m.id);
+                          const mBudget = m.budgetTL || 0;
+                          const mPlanned = stats?.plannedAidTL || 0;
+                          const mApproved = stats?.approvedAidTL || 0;
+                          const isExceeded = mBudget > 0 && mPlanned > mBudget;
+                          const excessTL = isExceeded ? mPlanned - mBudget : 0;
+                          const pct = mBudget > 0 ? Math.min(100, Math.round((mPlanned / mBudget) * 100)) : 0;
+
+                          return (
+                            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 mb-3 space-y-2">
+                              <div className="flex items-center justify-between text-xs font-bold">
+                                <span className="text-slate-500 flex items-center gap-1">
+                                  <Wallet size={13} className="text-blue-600" /> Vakıf Bütçesi:
+                                </span>
+                                <span className="text-slate-900 font-extrabold">
+                                  {mBudget > 0 ? `${mBudget.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center justify-between text-xs font-bold">
+                                <span className="text-slate-500 flex items-center gap-1">
+                                  <Banknote size={13} className="text-indigo-600" /> Yapılacak Yardım:
+                                </span>
+                                <span className="text-indigo-900 font-extrabold">
+                                  {mPlanned.toLocaleString('tr-TR')} ₺
+                                </span>
+                              </div>
+
+                              {mBudget > 0 && (
+                                <div className="space-y-1 pt-1">
+                                  <div className="flex justify-between items-center text-[10px] font-extrabold">
+                                    <span className={isExceeded ? 'text-red-600' : 'text-slate-500'}>
+                                      Bütçe Kullanımı: %{pct}
+                                    </span>
+                                    <span className={isExceeded ? 'text-red-600 font-black' : 'text-emerald-700'}>
+                                      {isExceeded ? `+${excessTL.toLocaleString('tr-TR')} ₺ Aşım` : `${(mBudget - mPlanned).toLocaleString('tr-TR')} ₺ Kalan`}
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                    <div 
+                                      className={`h-full rounded-full transition-all duration-300 ${
+                                        isExceeded ? 'bg-red-600' : pct > 80 ? 'bg-amber-500' : 'bg-emerald-500'
+                                      }`}
+                                      style={{ width: `${pct}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+
+                              {isExceeded && (
+                                <div className="bg-red-100 text-red-800 text-[10px] font-black p-1.5 rounded-lg border border-red-300 text-center animate-pulse flex items-center justify-center gap-1">
+                                  <AlertCircle size={12} /> VAKIF BÜTÇESİ AŞILIYOR!
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       <div>
@@ -1465,22 +1717,118 @@ export default function Dashboard() {
         ) : (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
           
-          {/* Header of Table view with Back button */}
-          <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between gap-4">
-             <div className="flex items-center gap-3">
-               <button 
-                 onClick={() => setFilterMeetingId(null)}
-                 className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"
-                 title="Toplantı Listesine Dön"
-               >
-                 <ArrowLeft size={20} />
-               </button>
-               <div>
-                 <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                   {meetings.find(m => m.id === filterMeetingId)?.meetingNo} <span className="text-slate-400 font-medium text-sm">Toplantı Kayıtları</span>
-                 </h2>
+          {/* Header of Table view with Back button & Meeting Budget Banner */}
+          <div className="px-6 py-4 border-b border-slate-200 bg-white space-y-4">
+             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+               <div className="flex items-center gap-3">
+                 <button 
+                   onClick={() => setFilterMeetingId(null)}
+                   className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors shrink-0"
+                   title="Toplantı Listesine Dön"
+                 >
+                   <ArrowLeft size={20} />
+                 </button>
+                 <div>
+                   <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                     {meetings.find(m => m.id === filterMeetingId)?.meetingNo} <span className="text-slate-400 font-medium text-sm">Toplantı Kayıtları</span>
+                   </h2>
+                   <p className="text-xs text-slate-500">
+                     Toplantı Tarihi: {meetings.find(m => m.id === filterMeetingId)?.date ? new Date(meetings.find(m => m.id === filterMeetingId)!.date).toLocaleDateString('tr-TR') : '-'}
+                   </p>
+                 </div>
                </div>
+
+               {/* Quick Edit Budget Button for Manager */}
+               {user.role === 'manager' && filterMeetingId && (
+                 <button
+                   onClick={() => {
+                     const currentM = meetings.find(m => m.id === filterMeetingId);
+                     if (currentM) handleOpenEditMeeting(currentM);
+                   }}
+                   className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm shrink-0 self-start md:self-center"
+                 >
+                   <Pencil size={15} />
+                   <span>Toplantı Bütçesini Düzenle</span>
+                 </button>
+               )}
              </div>
+
+             {/* Selected Meeting Budget Breakdown Box */}
+             {(() => {
+               const currentM = meetings.find(m => m.id === filterMeetingId);
+               if (!currentM) return null;
+
+               const stats = meetingStatsMap.get(currentM.id);
+               const mBudget = currentM.budgetTL || 0;
+               const mPlanned = stats?.plannedAidTL || 0;
+               const mApproved = stats?.approvedAidTL || 0;
+               const isExceeded = mBudget > 0 && mPlanned > mBudget;
+               const excessTL = isExceeded ? mPlanned - mBudget : 0;
+               const remainingTL = mBudget - mPlanned;
+
+               return (
+                 <div className={`p-4 rounded-2xl border transition-all ${
+                   isExceeded ? 'bg-red-50/80 border-red-300' : 'bg-slate-50 border-slate-200'
+                 }`}>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                     <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+                       <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
+                         <Wallet size={12} className="text-blue-600" /> Vakıf Bütçesi
+                       </span>
+                       <p className="text-base font-black text-slate-900 mt-0.5">
+                         {mBudget > 0 ? `${mBudget.toLocaleString('tr-TR')} ₺` : 'Bütçe Girilmemiş'}
+                       </p>
+                     </div>
+
+                     <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+                       <span className="text-[10px] uppercase font-bold text-indigo-500 flex items-center gap-1">
+                         <Banknote size={12} className="text-indigo-600" /> Yapılacak Toplam Yardım
+                       </span>
+                       <p className="text-base font-black text-indigo-900 mt-0.5">
+                         {mPlanned.toLocaleString('tr-TR')} ₺
+                       </p>
+                       <p className="text-[10px] text-slate-500 font-semibold">Onaylanan: {mApproved.toLocaleString('tr-TR')} ₺</p>
+                     </div>
+
+                     <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+                       <span className="text-[10px] uppercase font-bold text-slate-400">Değerlendirilen Hane</span>
+                       <p className="text-base font-black text-slate-800 mt-0.5">
+                         {stats?.totalCount || 0} Hane
+                       </p>
+                       <p className="text-[10px] text-emerald-600 font-semibold">{stats?.approvedCount || 0} Onaylı / {stats?.pendingCount || 0} Bekleyen</p>
+                     </div>
+
+                     <div className={`p-3 rounded-xl border shadow-2xs ${
+                       isExceeded ? 'bg-red-600 text-white border-red-700' : 'bg-white border-slate-200'
+                     }`}>
+                       <span className={`text-[10px] uppercase font-extrabold ${isExceeded ? 'text-red-100' : 'text-slate-400'}`}>
+                         {isExceeded ? '🚨 Bütçe Aşım Miktarı' : 'Kalan Kullanılabilir Bütçe'}
+                       </span>
+                       <p className={`text-base font-black mt-0.5 ${isExceeded ? 'text-white' : 'text-emerald-700'}`}>
+                         {mBudget === 0 
+                           ? 'Sınırsız' 
+                           : isExceeded 
+                           ? `+${excessTL.toLocaleString('tr-TR')} ₺` 
+                           : `${remainingTL.toLocaleString('tr-TR')} ₺`}
+                       </p>
+                     </div>
+                   </div>
+
+                   {/* Exceeded Warning Banner */}
+                   {isExceeded && (
+                     <div className="mt-3 bg-red-600 text-white p-3 rounded-xl text-xs font-bold flex items-center gap-2 shadow-md animate-pulse">
+                       <AlertCircle size={18} className="shrink-0" />
+                       <div>
+                         <p className="font-extrabold text-sm">🚨 VAKIF BÜTÇESİ AŞILIYOR UYARISI!</p>
+                         <p className="text-red-100 font-medium text-xs mt-0.5">
+                           Bu toplantı için belirlenen harcanabilir bütçe ({mBudget.toLocaleString('tr-TR')} ₺), yapılması planlanan toplam yardım tutarı ({mPlanned.toLocaleString('tr-TR')} ₺) nedeniyle <strong>{excessTL.toLocaleString('tr-TR')} ₺</strong> tutarında AŞILMAKTADIR.
+                         </p>
+                       </div>
+                     </div>
+                   )}
+                 </div>
+               );
+             })()}
           </div>
 
           {/* Section Title & Primary Tabs */}
@@ -2681,7 +3029,7 @@ export default function Dashboard() {
                     type="text"
                     value={newMeetingData.meetingNo}
                     onChange={(e) => setNewMeetingData({ ...newMeetingData, meetingNo: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-bold"
                     placeholder="2026/01"
                   />
                 </div>
@@ -2691,15 +3039,29 @@ export default function Dashboard() {
                     type="date"
                     value={newMeetingData.date}
                     onChange={(e) => setNewMeetingData({ ...newMeetingData, date: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-bold"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <Wallet size={15} className="text-blue-600" />
+                    <span>Harcanabilir Vakıf Bütçesi Tutarı (TL)</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={newMeetingData.budgetTL}
+                    onChange={(e) => setNewMeetingData({ ...newMeetingData, budgetTL: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-black text-slate-900"
+                    placeholder="Örn: 250000"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">Bu toplantı için ayrılan harcanabilir Vakıf kaynağı. Belirtilmezse sınırsız kabul edilir.</p>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-1">Açıklama (İsteğe Bağlı)</label>
                   <textarea
                     value={newMeetingData.description}
                     onChange={(e) => setNewMeetingData({ ...newMeetingData, description: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 min-h-[80px]"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 min-h-[70px]"
                     placeholder="Toplantı içeriği vb."
                   />
                 </div>
@@ -2723,7 +3085,8 @@ export default function Dashboard() {
                       date: newMeetingData.date,
                       createdAt: new Date().toISOString(),
                       managerName: user.name,
-                      description: newMeetingData.description
+                      description: newMeetingData.description,
+                      budgetTL: newMeetingData.budgetTL ? Number(newMeetingData.budgetTL) : 0,
                     };
                     await saveMeeting(newMeeting);
                     if (meetings.length === 0) {
@@ -2734,11 +3097,98 @@ export default function Dashboard() {
                     const updated = await getAllMeetings();
                     setMeetings(updated);
                     setNewMeetingModalOpen(false);
-                    setNewMeetingData({ meetingNo: '', date: '', description: '' });
+                    setNewMeetingData({ meetingNo: '', date: '', description: '', budgetTL: '' });
                   }}
                   className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-900/20 active:scale-95 transition-all"
                 >
                   Kaydet ve Oluştur
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Existing Meeting Modal (Manager) */}
+      <AnimatePresence>
+        {editMeetingModalOpen && editingMeeting && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
+            >
+              <div className="bg-gradient-to-r from-blue-700 to-indigo-700 px-6 py-4 flex items-center justify-between text-white">
+                <h3 className="text-lg font-bold flex items-center gap-2">
+                  <Pencil size={18} />
+                  Toplantı Bütçesi ve Bilgilerini Düzenle
+                </h3>
+                <button onClick={() => setEditMeetingModalOpen(false)} className="text-white/80 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Toplantı No (Örn: 2026/01)</label>
+                  <input
+                    type="text"
+                    value={editMeetingData.meetingNo}
+                    onChange={(e) => setEditMeetingData({ ...editMeetingData, meetingNo: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Toplantı Tarihi</label>
+                  <input
+                    type="date"
+                    value={editMeetingData.date}
+                    onChange={(e) => setEditMeetingData({ ...editMeetingData, date: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <Wallet size={15} className="text-blue-600" />
+                    <span>Harcanabilir Vakıf Bütçesi Tutarı (TL)</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={editMeetingData.budgetTL}
+                    onChange={(e) => setEditMeetingData({ ...editMeetingData, budgetTL: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-black text-slate-900"
+                    placeholder="Örn: 250000"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">Toplantı boyunca onaylanacak veya planlanacak tüm yardım tutarlarının üst sınırı.</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Açıklama</label>
+                  <textarea
+                    value={editMeetingData.description}
+                    onChange={(e) => setEditMeetingData({ ...editMeetingData, description: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 min-h-[70px]"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-slate-50 px-6 py-4 flex justify-end gap-3 border-t border-slate-100">
+                <button
+                  onClick={() => setEditMeetingModalOpen(false)}
+                  className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={handleSaveEditMeeting}
+                  className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-900/20 active:scale-95 transition-all"
+                >
+                  Guncelle ve Kaydet
                 </button>
               </div>
             </motion.div>
