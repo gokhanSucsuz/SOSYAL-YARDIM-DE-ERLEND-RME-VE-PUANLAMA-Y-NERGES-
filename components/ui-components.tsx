@@ -1,16 +1,15 @@
 "use client";
-"use client";
 
 import React from 'react';
 
-export const SectionCard = ({ title, icon: Icon, maxScore, currentScore, children, className = "" }: any) => (
+export const SectionCard = ({ title, icon: Icon, maxScore, currentScore, children, className = "", hideScore = false }: any) => (
   <div className={`bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-5 print:border-slate-300 print:shadow-none print:mb-4 ${className}`}>
     <div className="bg-slate-50/80 border-b border-slate-200 px-4 sm:px-5 py-3.5 flex flex-wrap items-center justify-between gap-2 print:bg-white">
       <div className="flex items-center space-x-2.5">
         {Icon && <Icon size={18} className="text-blue-600 shrink-0" />}
         <h2 className="text-xs sm:text-sm font-extrabold text-slate-800 uppercase tracking-wide">{title}</h2>
       </div>
-      {maxScore > 0 && (
+      {!hideScore && maxScore > 0 && currentScore !== undefined && (
         <div className="flex items-center gap-1.5 ml-auto">
           <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider hidden sm:inline">Bölüm Puanı</span>
           <span className={`bg-blue-50 text-blue-800 border border-blue-200 text-xs px-2.5 py-1 rounded-full font-black ${currentScore === maxScore ? 'bg-blue-600 text-white border-blue-600' : ''} print:bg-transparent print:p-0`}>

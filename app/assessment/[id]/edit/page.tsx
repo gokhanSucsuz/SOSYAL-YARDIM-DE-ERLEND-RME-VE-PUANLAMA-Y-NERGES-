@@ -34,7 +34,6 @@ export default function EditAssessmentWizard() {
     noWorker: false,
     noRegularIncome: false,
     noSgk: false,
-    a_son3AyYardimKisi: 0,
     // B
     b_agirEngelli: false,
     b_engelli: false,
@@ -63,6 +62,12 @@ export default function EditAssessmentWizard() {
     d_kiraci: false,
     d_agirHasarli: false,
     d_sagliksiz: false,
+    d_dereYatagi: false,
+    d_tahliyeBaskisi: false,
+    d_isinmaProblem: false,
+    d_gecekondu: false,
+    d_asansorsuzYuksek: false,
+    d_tuvaletBanyoYetersiz: false,
     // E - Beyaz Eşya
     appliance_buzdolabi: 'yeni',
     appliance_camasir: 'yeni',
@@ -79,6 +84,11 @@ export default function EditAssessmentWizard() {
     e_esiCezaevinde: false,
     e_siddetMagduru: false,
     e_afetGelirKaybi: false,
+    e_maddeBagimliligi: false,
+    e_sosyalGuvencesiz: false,
+    e_icraBorcBaskisi: false,
+    e_gebelikBebek: false,
+    e_hukumluYakin: false,
     // G - Kanaat
     f_yasamKosullari: 0,
     f_aciliyet: 0,
@@ -146,46 +156,56 @@ export default function EditAssessmentWizard() {
     if (state.noWorker) scoreA += 10;
     if (state.noRegularIncome) scoreA += 5;
     if (state.noSgk) scoreA += 5;
-    if (state.a_son3AyYardimKisi && state.a_son3AyYardimKisi > 0) {
-      scoreA -= state.a_son3AyYardimKisi * 5;
-    }
     scoreA = Math.max(0, Math.min(scoreA, 40));
 
     // Section B
     let scoreB = 0;
-    if (state.b_agirEngelli) scoreB += 15;
-    if (state.b_engelli) scoreB += 10;
-    if (state.b_evdeBakim) scoreB += 10;
-    if (state.b_kanser) scoreB += 10;
-    if (state.b_kronik) scoreB += 6;
-    if (state.b_yasliYalniz) scoreB += 8;
-    if (state.b_sehitYakini) scoreB += 8;
-    if (state.b_gazi) scoreB += 8;
-    if (state.b_yetim) scoreB += 5;
-    if (state.b_koruyucuAile) scoreB += 5;
-    if (state.b_yabanciUyruklu) scoreB += 3;
-    if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) scoreB += Number(state.b_ozelSebepPuan);
-    scoreB = Math.min(scoreB, 30);
+    let disadvantageCount = 0;
+    if (state.b_agirEngelli) { scoreB += 15; disadvantageCount++; }
+    if (state.b_engelli) { scoreB += 10; disadvantageCount++; }
+    if (state.b_evdeBakim) { scoreB += 10; disadvantageCount++; }
+    if (state.b_kanser) { scoreB += 10; disadvantageCount++; }
+    if (state.b_kronik) { scoreB += 6; disadvantageCount++; }
+    if (state.b_yasliYalniz) { scoreB += 8; disadvantageCount++; }
+    if (state.b_sehitYakini) { scoreB += 8; disadvantageCount++; }
+    if (state.b_gazi) { scoreB += 8; disadvantageCount++; }
+    if (state.b_yetim) { scoreB += 5; disadvantageCount++; }
+    if (state.b_koruyucuAile) { scoreB += 5; disadvantageCount++; }
+    if (state.b_yabanciUyruklu) { scoreB += 3; disadvantageCount++; }
+    if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
+      scoreB += Number(state.b_ozelSebepPuan);
+      disadvantageCount++;
+    }
+    if (disadvantageCount >= 2) {
+      scoreB += 5; // Hanede birden fazla dezavantajlı durum varsa +5 puan bonus
+    }
+    scoreB = Math.min(scoreB, 35);
 
-    // Section C
+    // Section C (Eşit +3 Puan Uygulaması)
     let scoreC = 0;
-    scoreC += state.c_0_6yas * 2;
-    scoreC += state.c_ilkokul * 1;
-    scoreC += state.c_ortaokul * 2;
+    scoreC += state.c_0_6yas * 3;
+    scoreC += state.c_ilkokul * 3;
+    scoreC += state.c_ortaokul * 3;
     scoreC += state.c_lise * 3;
     scoreC += (state.c_meslekiEgitim || 0) * 3;
     scoreC += (state.c_acikLise || 0) * 3;
-    scoreC += state.c_uni * 4;
-    scoreC = Math.min(scoreC, 10);
+    scoreC += state.c_uni * 3;
+    scoreC = Math.min(scoreC, 15);
 
-    // Section D
+    // Section D (Genişletilmiş Barınma Durumu)
     let scoreD = 0;
     if (state.d_evsiz) scoreD += 10;
     if (state.d_afetzede) scoreD += 10;
-    if (state.d_kiraci) scoreD += 5;
     if (state.d_agirHasarli) scoreD += 8;
     if (state.d_sagliksiz) scoreD += 6;
-    scoreD = Math.min(scoreD, 10);
+    if (state.d_dereYatagi) scoreD += 6;
+    if (state.d_kiraci) scoreD += 5;
+    if (state.d_tahliyeBaskisi) scoreD += 5;
+    if (state.d_isinmaProblem) scoreD += 4;
+    if (state.d_gecekondu) scoreD += 4;
+    if (state.d_asansorsuzYuksek) scoreD += 4;
+    if (state.d_tuvaletBanyoYetersiz) scoreD += 4;
+    scoreD = Math.min(scoreD, 15);
 
     // Section E: Beyaz Eşya Durumu (Maks 10 Puan)
     let rawScoreE = 0;
@@ -215,14 +235,19 @@ export default function EditAssessmentWizard() {
 
     let scoreE = Math.min(10, Math.round(rawScoreE));
 
-    // Section F: Sosyal Kırılganlık (Maks 10 Puan)
+    // Section F: Sosyal Kırılganlık (Literatür Seçenekleri)
     let scoreF = 0;
+    if (state.e_siddetMagduru) scoreF += 6;
     if (state.e_kadinReis) scoreF += 5;
+    if (state.e_esiCezaevinde) scoreF += 5;
+    if (state.e_afetGelirKaybi) scoreF += 5;
+    if (state.e_maddeBagimliligi) scoreF += 5;
+    if (state.e_sosyalGuvencesiz) scoreF += 5;
+    if (state.e_icraBorcBaskisi) scoreF += 4;
+    if (state.e_gebelikBebek) scoreF += 4;
     if (state.e_bosanmis) scoreF += 3;
     if (state.e_dul) scoreF += 3;
-    if (state.e_esiCezaevinde) scoreF += 5;
-    if (state.e_siddetMagduru) scoreF += 6;
-    if (state.e_afetGelirKaybi) scoreF += 5;
+    if (state.e_hukumluYakin) scoreF += 3;
 
     const hhSize = state.householdSize || 1;
     if (hhSize >= 5) {
@@ -231,7 +256,7 @@ export default function EditAssessmentWizard() {
       scoreF += 1;
     }
 
-    scoreF = Math.min(scoreF, 10);
+    scoreF = Math.min(scoreF, 15);
 
     // Section G: Sosyal İnceleme Kanaati (Maks 20 Puan)
     let scoreG = state.f_yasamKosullari + state.f_aciliyet + state.f_sosyalDestek + state.f_risk;
@@ -250,7 +275,7 @@ export default function EditAssessmentWizard() {
       priorities.push("Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)");
     }
 
-    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scoreG, totalScore, assistance, priorities, isRejected: state.falseStatement };
+    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scoreG, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
   }, [state]);
 
   const stepsCount = 10;
@@ -457,9 +482,9 @@ export default function EditAssessmentWizard() {
               <div className="flex-1">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-slate-800">A. Ekonomik Durum</h2>
-                  <p className="text-slate-500 mt-1">Hane halkı gelir ve sigorta durumuna göre puanlama (Maksimum 40 Puan)</p>
+                  <p className="text-slate-500 mt-1">Hane halkı gelir ve sigorta durumuna göre değerlendirme</p>
                 </div>
-                <SectionCard title="Gelir Seviyesi" maxScore={40} currentScore={calc.scoreA}>
+                <SectionCard title="Gelir Seviyesi" maxScore={40} currentScore={calc.scoreA} hideScore={true}>
                   <div className="space-y-3">
                     <RadioItem label="Kişi başına gelir muhtaçlık sınırının %25 altında" name="income" checked={state.income === 40} onChange={() => set('income', 40)} points={40} />
                     <RadioItem label="Muhtaçlık sınırının %25 – 50 arasında" name="income" checked={state.income === 35} onChange={() => set('income', 35)} points={35} />
@@ -468,12 +493,11 @@ export default function EditAssessmentWizard() {
                     <RadioItem label="Muhtaçlık sınırı üzerinde" name="income" checked={state.income === 0} onChange={() => set('income', 0)} points={0} />
                   </div>
                   <div className="mt-5 pt-4 border-t border-slate-100">
-                    <h3 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">İlave / Düzeltme Puanları</h3>
+                    <h3 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">İlave / Düzeltme Kriterleri</h3>
                     <div className="grid grid-cols-1 gap-3">
                       <CheckboxItem label="Hanede çalışan yok" checked={state.noWorker} onChange={(v:any) => set('noWorker', v)} points={10} />
                       <CheckboxItem label="Düzenli gelir bulunmuyor" checked={state.noRegularIncome} onChange={(v:any) => set('noRegularIncome', v)} points={5} />
                       <CheckboxItem label="SGK kaydı yok" checked={state.noSgk} onChange={(v:any) => set('noSgk', v)} points={5} />
-                      <CounterItem label="Son 3 ay içinde Vakıf'tan nakdi/maddi yardım alan kişi sayısı" value={state.a_son3AyYardimKisi || 0} onChange={(v:any) => set('a_son3AyYardimKisi', v)} pointsPerItem={-5} />
                     </div>
                   </div>
                 </SectionCard>
@@ -484,9 +508,16 @@ export default function EditAssessmentWizard() {
               <div className="flex-1">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-slate-800">B. Dezavantajlı Bireyler</h2>
-                  <p className="text-slate-500 mt-1">Hanedeki sağlık ve durum özellikleri (Maksimum 30 Puan)</p>
+                  <p className="text-slate-500 mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
                 </div>
-                <SectionCard title="Hanehalkı Durumları" maxScore={30} currentScore={calc.scoreB}>
+                <SectionCard title="Hanehalkı Özel Durumları" maxScore={35} currentScore={calc.scoreB} hideScore={true}>
+                  {calc.disadvantageCount >= 2 && (
+                    <div className="mb-4 bg-amber-50 border border-amber-300 p-3.5 rounded-xl flex items-center justify-between text-xs font-bold text-amber-900">
+                      <span>Hanede Birden Fazla ({calc.disadvantageCount} Adet) Dezavantajlı Durum Mevcut</span>
+                      <span className="bg-amber-200 text-amber-950 px-2.5 py-1 rounded-md font-extrabold">+5 Ek Bonus Puan</span>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <CheckboxItem label="Ağır engelli (%70+)" checked={state.b_agirEngelli} onChange={(v:any) => set('b_agirEngelli', v)} points={15} />
                     <CheckboxItem label="Engelli (%40-69)" checked={state.b_engelli} onChange={(v:any) => set('b_engelli', v)} points={10} />
@@ -498,7 +529,7 @@ export default function EditAssessmentWizard() {
                     <CheckboxItem label="Gazi" checked={state.b_gazi} onChange={(v:any) => set('b_gazi', v)} points={8} />
                     <CheckboxItem label="Yetim/öksüz çocuk" checked={state.b_yetim} onChange={(v:any) => set('b_yetim', v)} points={5} />
                     <CheckboxItem label="Koruyucu aile" checked={state.b_koruyucuAile} onChange={(v:any) => set('b_koruyucuAile', v)} points={5} />
-                    <CheckboxItem label="Yabancı uyruklu / Sığınmacı (Suriyeli, Afgan vb.)" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={3} />
+                    <CheckboxItem label="Yabancı uyruklu / Sığınmacı" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={3} />
                   </div>
 
                   <div className="mt-5 pt-4 border-t border-slate-100">
@@ -507,35 +538,35 @@ export default function EditAssessmentWizard() {
                       Özel Sebep / Özel Durum Tanımlama
                     </h3>
                     <p className="text-xs text-slate-500 mb-3">
-                      Yukarıdaki standart kriterlerin dışındaki özel dezavantaj durumları için açıklama girip 10, 15, 20 veya 25 puan ilave edebilirsiniz.
+                      Standart kriterlerin dışındaki özel durumlara ilave değer ekleyebilirsiniz.
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                       <div className="sm:col-span-2">
                         <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                          Özel Sebep / Durum Açıklaması
+                          Özel Sebep Açıklaması
                         </label>
                         <input
                           type="text"
                           value={state.b_ozelSebepMetin || ''}
                           onChange={(e) => set('b_ozelSebepMetin', e.target.value)}
-                          placeholder="Örn: Nadir kronik hastalık, organ nakli bekleme, ağır ameliyat vb."
+                          placeholder="Örn: Organ nakli, nadir hastalık vb."
                           className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-slate-800"
                         />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                          İlave Puan Seçimi
+                          İlave Değer
                         </label>
                         <select
                           value={state.b_ozelSebepPuan || 0}
                           onChange={(e) => set('b_ozelSebepPuan', Number(e.target.value))}
                           className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-bold text-slate-800"
                         >
-                          <option value={0}>Puan Yok (0 Puan)</option>
-                          <option value={10}>+10 Puan</option>
-                          <option value={15}>+15 Puan</option>
-                          <option value={20}>+20 Puan</option>
-                          <option value={25}>+25 Puan</option>
+                          <option value={0}>Ekleme Yok</option>
+                          <option value={10}>+10 Kademe</option>
+                          <option value={15}>+15 Kademe</option>
+                          <option value={20}>+20 Kademe</option>
+                          <option value={25}>+25 Kademe</option>
                         </select>
                       </div>
                     </div>
@@ -548,17 +579,17 @@ export default function EditAssessmentWizard() {
               <div className="flex-1">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-slate-800">C. Çocuk ve Eğitim</h2>
-                  <p className="text-slate-500 mt-1">Hanedeki eğitim gören bireyler (Maksimum 10 Puan)</p>
+                  <p className="text-slate-500 mt-1">Hanedeki eğitim gören tüm kademelerdeki çocuklar ve öğrenciler (Tüm Kademeler Eşit)</p>
                 </div>
-                <SectionCard title="Eğitim Durumu" maxScore={10} currentScore={calc.scoreC}>
+                <SectionCard title="Eğitim Durumu" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <CounterItem label="0-6 yaş çocuk" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={2} />
-                    <CounterItem label="İlkokul öğrencisi" value={state.c_ilkokul} onChange={(v:any) => set('c_ilkokul', v)} pointsPerItem={1} />
-                    <CounterItem label="Ortaokul öğrencisi" value={state.c_ortaokul} onChange={(v:any) => set('c_ortaokul', v)} pointsPerItem={2} />
+                    <CounterItem label="0-6 yaş çocuk" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={3} />
+                    <CounterItem label="İlkokul öğrencisi" value={state.c_ilkokul} onChange={(v:any) => set('c_ilkokul', v)} pointsPerItem={3} />
+                    <CounterItem label="Ortaokul öğrencisi" value={state.c_ortaokul} onChange={(v:any) => set('c_ortaokul', v)} pointsPerItem={3} />
                     <CounterItem label="Lise öğrencisi" value={state.c_lise} onChange={(v:any) => set('c_lise', v)} pointsPerItem={3} />
-                    <CounterItem label="Mesleki Eğitim Merkezi öğrencisi" value={state.c_meslekiEgitim || 0} onChange={(v:any) => set('c_meslekiEgitim', v)} pointsPerItem={3} />
+                    <CounterItem label="Mesleki Eğitim Merkezi" value={state.c_meslekiEgitim || 0} onChange={(v:any) => set('c_meslekiEgitim', v)} pointsPerItem={3} />
                     <CounterItem label="Açık Lise öğrencisi" value={state.c_acikLise || 0} onChange={(v:any) => set('c_acikLise', v)} pointsPerItem={3} />
-                    <CounterItem label="Üniversite öğrencisi" value={state.c_uni} onChange={(v:any) => set('c_uni', v)} pointsPerItem={4} />
+                    <CounterItem label="Üniversite öğrencisi" value={state.c_uni} onChange={(v:any) => set('c_uni', v)} pointsPerItem={3} />
                   </div>
                 </SectionCard>
               </div>
@@ -568,15 +599,21 @@ export default function EditAssessmentWizard() {
               <div className="flex-1">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-slate-800">D. Barınma Durumu</h2>
-                  <p className="text-slate-500 mt-1">Fiziki yaşam alanları (Maksimum 10 Puan)</p>
+                  <p className="text-slate-500 mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
                 </div>
-                <SectionCard title="Barınma Şartları" maxScore={10} currentScore={calc.scoreD}>
+                <SectionCard title="Barınma Şartları" maxScore={15} currentScore={calc.scoreD} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <CheckboxItem label="Evsiz" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={10} />
-                    <CheckboxItem label="Afetzede" checked={state.d_afetzede} onChange={(v:any) => set('d_afetzede', v)} points={10} />
-                    <CheckboxItem label="Konut ağır hasarlı" checked={state.d_agirHasarli} onChange={(v:any) => set('d_agirHasarli', v)} points={8} />
-                    <CheckboxItem label="Sağlıksız konut" checked={state.d_sagliksiz} onChange={(v:any) => set('d_sagliksiz', v)} points={6} />
-                    <CheckboxItem label="Kiracı" checked={state.d_kiraci} onChange={(v:any) => set('d_kiraci', v)} points={5} />
+                    <CheckboxItem label="Evsiz / Barınaksız / Geçici Sığınma" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={10} />
+                    <CheckboxItem label="Afetzede (Yangın / Deprem / Su Baskını)" checked={state.d_afetzede} onChange={(v:any) => set('d_afetzede', v)} points={10} />
+                    <CheckboxItem label="Konut ağır hasarlı / Yıkılma riski var" checked={state.d_agirHasarli} onChange={(v:any) => set('d_agirHasarli', v)} points={8} />
+                    <CheckboxItem label="Sağlıksız konut (Rutubetli / Havalandırmasız)" checked={state.d_sagliksiz} onChange={(v:any) => set('d_sagliksiz', v)} points={6} />
+                    <CheckboxItem label="Bodrum kat / Sığınak / Dere yatağı" checked={state.d_dereYatagi} onChange={(v:any) => set('d_dereYatagi', v)} points={6} />
+                    <CheckboxItem label="Kiracı (Kira ödemekte zorlanan)" checked={state.d_kiraci} onChange={(v:any) => set('d_kiraci', v)} points={5} />
+                    <CheckboxItem label="Ev sahibinin tahliye / icra baskısı altında" checked={state.d_tahliyeBaskisi} onChange={(v:any) => set('d_tahliyeBaskisi', v)} points={5} />
+                    <CheckboxItem label="Sobalı / Isınma ve yakacak sıkıntısı var" checked={state.d_isinmaProblem} onChange={(v:any) => set('d_isinmaProblem', v)} points={4} />
+                    <CheckboxItem label="Gecekondu / İmar sıkıntılı / Hisseli tapu" checked={state.d_gecekondu} onChange={(v:any) => set('d_gecekondu', v)} points={4} />
+                    <CheckboxItem label="Asansörsüz yüksek kat (Engelli/Yaşlı/Bakıma muhtaç)" checked={state.d_asansorsuzYuksek} onChange={(v:any) => set('d_asansorsuzYuksek', v)} points={4} />
+                    <CheckboxItem label="Hijyen / Islak hacim (Banyo/Tuvalet) ortak veya yetersiz" checked={state.d_tuvaletBanyoYetersiz} onChange={(v:any) => set('d_tuvaletBanyoYetersiz', v)} points={4} />
                   </div>
                 </SectionCard>
               </div>
@@ -586,9 +623,9 @@ export default function EditAssessmentWizard() {
               <div className="flex-1">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-slate-800">E. Beyaz Eşya ve Ev Aletleri Durumu</h2>
-                  <p className="text-slate-500 mt-1">Hanedeki temel ev eşyalarının varlık ve yıpranma durumu (Maksimum 10 Puan)</p>
+                  <p className="text-slate-500 mt-1">Hanedeki temel ev eşyalarının varlık ve yıpranma durumu</p>
                 </div>
-                <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE}>
+                <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE} hideScore={true}>
                   <p className="text-xs text-slate-500 mb-4 font-medium">
                     Her bir eşya için hanedeki mevcudiyet durumunu &quot;Yok&quot;, &quot;Var (Eski/Arızalı)&quot; veya &quot;Var (Yeni/İyi)&quot; olarak belirleyiniz.
                   </p>
@@ -666,25 +703,30 @@ export default function EditAssessmentWizard() {
               <div className="flex-1">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-slate-800">F. Sosyal Kırılganlık</h2>
-                  <p className="text-slate-500 mt-1">Aile içi kırılganlık durumları (Maksimum 10 Puan)</p>
+                  <p className="text-slate-500 mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
                 </div>
-                <SectionCard title="F. Sosyal Kırılganlık" maxScore={10} currentScore={calc.scoreF}>
+                <SectionCard title="Sosyal Kırılganlık" maxScore={15} currentScore={calc.scoreF} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 sm:col-span-2">
                       <span className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-blue-600"></span>
-                        Hane Nüfusu Puanı ({state.householdSize || 1} Kişi)
+                        Hane Nüfusu Etkisi ({state.householdSize || 1} Kişi)
                       </span>
                       <span className="bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-md">
-                        +{(state.householdSize || 1) >= 5 ? 3 : 1} Puan (Otomatik)
+                        {(state.householdSize || 1) >= 5 ? 'Kalabalık Hane' : 'Standart Hane'}
                       </span>
                     </div>
                     <CheckboxItem label="Aile içi şiddet mağduru" checked={state.e_siddetMagduru} onChange={(v:any) => set('e_siddetMagduru', v)} points={6} />
                     <CheckboxItem label="Kadın hane reisi" checked={state.e_kadinReis} onChange={(v:any) => set('e_kadinReis', v)} points={5} />
-                    <CheckboxItem label="Eşi cezaevinde" checked={state.e_esiCezaevinde} onChange={(v:any) => set('e_esiCezaevinde', v)} points={5} />
-                    <CheckboxItem label="Afet nedeniyle gelir kaybı" checked={state.e_afetGelirKaybi} onChange={(v:any) => set('e_afetGelirKaybi', v)} points={5} />
-                    <CheckboxItem label="Boşanmış" checked={state.e_bosanmis} onChange={(v:any) => set('e_bosanmis', v)} points={3} />
+                    <CheckboxItem label="Eşi / Bakmakla yükümlü kişi cezaevinde" checked={state.e_esiCezaevinde} onChange={(v:any) => set('e_esiCezaevinde', v)} points={5} />
+                    <CheckboxItem label="Afet / Kaza nedeniyle gelir kaybı" checked={state.e_afetGelirKaybi} onChange={(v:any) => set('e_afetGelirKaybi', v)} points={5} />
+                    <CheckboxItem label="Hane içinde madde / alkol bağımlısı birey" checked={state.e_maddeBagimliligi} onChange={(v:any) => set('e_maddeBagimliligi', v)} points={5} />
+                    <CheckboxItem label="Sosyal güvencesiz ve aile desteğinden yoksun" checked={state.e_sosyalGuvencesiz} onChange={(v:any) => set('e_sosyalGuvencesiz', v)} points={5} />
+                    <CheckboxItem label="Yüksek borç / icra / haciz baskısı altında" checked={state.e_icraBorcBaskisi} onChange={(v:any) => set('e_icraBorcBaskisi', v)} points={4} />
+                    <CheckboxItem label="Bakıma muhtaç bebek (0-1 Yaş) veya riskli gebelik" checked={state.e_gebelikBebek} onChange={(v:any) => set('e_gebelikBebek', v)} points={4} />
+                    <CheckboxItem label="Boşanmış / Terk edilmiş eş" checked={state.e_bosanmis} onChange={(v:any) => set('e_bosanmis', v)} points={3} />
                     <CheckboxItem label="Dul (Eşi vefat etmiş)" checked={state.e_dul} onChange={(v:any) => set('e_dul', v)} points={3} />
+                    <CheckboxItem label="Denetimli serbestlik / Eski hükümlü ikameti" checked={state.e_hukumluYakin} onChange={(v:any) => set('e_hukumluYakin', v)} points={3} />
                   </div>
                 </SectionCard>
               </div>
@@ -718,7 +760,7 @@ export default function EditAssessmentWizard() {
                   </div>
                 </div>
 
-                <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreG}>
+                <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreG} hideScore={true}>
                    <p className="text-xs text-slate-500 mb-4 font-semibold">Lütfen aşağıdaki 4 kriter için hanedeki saha gözleminize uygun olan 0 (İyi) ile 5 (Çok Kötü / Kritik) arası değeri seçiniz:</p>
                    <div className="space-y-3">
                      <ScoreButtons 
@@ -756,7 +798,7 @@ export default function EditAssessmentWizard() {
                   <h2 className="text-2xl font-bold text-slate-800">Sistem Kontrolleri</h2>
                   <p className="text-slate-500 mt-1">Kayıt öncesi zorunlu inceleme başlıkları.</p>
                 </div>
-                <SectionCard title="Kontrol Listesi" maxScore={0} currentScore={0} className="border-orange-200">
+                <SectionCard title="Kontrol Listesi" maxScore={0} currentScore={0} className="border-orange-200" hideScore={true}>
                    <p className="text-sm text-slate-500 mb-4">Yardım yapılmadan önce ilgili kurumlardan (Araç, Tapu, SGK vb.) zorunlu kontrollerin yapılması gerekmektedir.</p>
                    <div className="mb-6">
                       <label className={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${state.systemChecksDone ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-200 hover:bg-slate-50'}`}>
@@ -790,7 +832,7 @@ export default function EditAssessmentWizard() {
                          <div className="ml-3 flex flex-col">
                            <span className="text-sm font-bold text-red-700">DİKKAT: Gerçeğe Aykırı Beyan TESPİT EDİLDİ!</span>
                            <span className="text-xs font-semibold text-red-500 mt-1">
-                             (İşaretlenirse başvuruyu doğrudan reddeder ve tüm puanı sıfırlar)
+                             (İşaretlenirse başvuruyu doğrudan reddeder ve onay sürecinde işleme alınmaz)
                            </span>
                          </div>
                        </label>
@@ -811,11 +853,13 @@ export default function EditAssessmentWizard() {
                     Değişiklikleri kaydederek inceleme bilgilerini güncelleyebilirsiniz.
                   </p>
                   
-                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 mb-8">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Hesaplanan Puan</p>
-                    <div className={`text-5xl font-black ${state.falseStatement ? 'text-red-500' : 'text-slate-800'}`}>{calc.totalScore}</div>
-                    <p className={`text-sm font-bold mt-2 uppercase ${state.falseStatement ? 'text-red-500' : 'text-blue-600'}`}>
-                      {state.falseStatement ? 'REDDEDİLDİ' : calc.assistance.text}
+                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 mb-8 text-center space-y-2">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
+                      <ShieldCheck size={16} /> Saha Güvenlik Protokolü Etkin
+                    </div>
+                    <h3 className="text-sm font-extrabold text-slate-800">Gizli Değerlendirme Modu</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed max-w-md mx-auto">
+                      Saha ziyareti sırasında hane halkı gizliliği gereği puan sonucu ekranda gösterilmemektedir.
                     </p>
                   </div>
 
@@ -847,8 +891,8 @@ export default function EditAssessmentWizard() {
         </button>
         
         <div className="text-center">
-          <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Anlık Puan</span>
-          <span className="text-sm sm:text-base font-black text-blue-700">{calc.totalScore} Puan</span>
+          <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">İnceleme Düzenleme</span>
+          <span className="text-xs sm:text-sm font-black text-slate-700">Adım {step + 1} / {stepsCount}</span>
         </div>
 
         {step < stepsCount - 1 ? (
