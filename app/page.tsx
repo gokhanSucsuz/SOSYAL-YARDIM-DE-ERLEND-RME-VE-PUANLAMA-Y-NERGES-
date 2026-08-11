@@ -16,7 +16,7 @@ import {
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
   Lock, Unlock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
   X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar, ArrowLeft, ArrowRight, Settings,
-  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone, Wallet, Banknote, Pencil, BarChart3
+  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone, Wallet, Banknote, Pencil, BarChart3, Home
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -1170,10 +1170,71 @@ export default function Dashboard() {
       {/* Screen Main */}
       <main className="flex-1 w-full max-w-[1920px] mx-auto p-3 sm:p-6 lg:p-8 space-y-5 no-print">
         
+        {/* Top View Switcher & Mobile App Download Banner */}
+        <div className="space-y-3">
+          {/* Prominent Mobile App Install Notification Bar */}
+          <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-3.5 sm:p-4 rounded-2xl border border-blue-800/50 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-blue-600/30 text-blue-400 rounded-xl shrink-0 border border-blue-500/30">
+                <Smartphone size={22} className="animate-bounce" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold text-xs sm:text-sm text-blue-100">📲 T.C. Edirne SYDV Mobil Uygulama Modu</span>
+                  <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/30">PWA Destekli</span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">
+                  Sistemi telefonunuzun ana ekranına yükleyerek sahadayken uygulama mantığında internetli/internetsiz hızlıca kullanabilirsiniz.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleInstallClick}
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-2.5 rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-900/30 shrink-0 transition-all active:scale-95 border border-blue-400/30 cursor-pointer"
+            >
+              <Download size={16} />
+              <span>Telefona Yükle / Rehber</span>
+            </button>
+          </div>
+
+          {/* Primary View Segmented Navigation Bar */}
+          <div className="bg-slate-200/80 p-1.5 rounded-2xl flex flex-wrap sm:flex-nowrap items-center gap-2 border border-slate-300/70 shadow-xs">
+            <button
+              onClick={() => setActiveViewTab('operations')}
+              className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
+                activeViewTab === 'operations'
+                  ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              }`}
+            >
+              <Home size={18} className={activeViewTab === 'operations' ? 'text-blue-600' : 'text-slate-400'} />
+              <span>📋 İnceleme Listesi &amp; Hane İşlemleri</span>
+            </button>
+
+            <button
+              onClick={() => setActiveViewTab('statistics')}
+              className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
+                activeViewTab === 'statistics'
+                  ? 'bg-gradient-to-r from-blue-700 to-indigo-700 text-white shadow-lg shadow-blue-950/20 ring-2 ring-blue-400/50'
+                  : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
+              }`}
+            >
+              <BarChart3 size={18} className={activeViewTab === 'statistics' ? 'text-blue-200' : 'text-blue-600'} />
+              <span>📊 Detaylı İstatistik ve Bütçe Raporları</span>
+            </button>
+          </div>
+        </div>
+
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900">Gösterge Paneli</h2>
-            <p className="text-slate-500 text-xs sm:text-sm font-medium">Hane inceleme ziyaretleri, gelişmiş arama/sıralama ve onay süreçleri.</p>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+              {activeViewTab === 'statistics' ? 'İstatistik ve Analiz Raporları' : 'Gösterge Paneli'}
+            </h2>
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">
+              {activeViewTab === 'statistics' 
+                ? 'Mali bütçe verileri, hane risk dağılımları ve dönem raporlamaları.' 
+                : 'Hane inceleme ziyaretleri, gelişmiş arama/sıralama ve onay süreçleri.'}
+            </p>
           </div>
           
           <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
@@ -1217,22 +1278,22 @@ export default function Dashboard() {
                   <Printer size={18} />
                   <span>Onaylı Liste PDF ({approvedCount})</span>
                 </button>
-
-                {/* Manager Statistics & Budget Reports Button */}
-                <button
-                  onClick={() => setActiveViewTab(activeViewTab === 'statistics' ? 'operations' : 'statistics')}
-                  className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 text-white px-4 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm transition-all active:scale-95 shadow-md touch-manipulation ${
-                    activeViewTab === 'statistics'
-                      ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/30 ring-2 ring-blue-400'
-                      : 'bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 shadow-indigo-900/20'
-                  }`}
-                  title="Toplantı Bütçeleri ve İstatistik Raporları"
-                >
-                  <BarChart3 size={18} />
-                  <span>{activeViewTab === 'statistics' ? '📋 Gösterge Paneline Dön' : '📊 İstatistik ve Bütçe Raporları'}</span>
-                </button>
               </>
             )}
+
+            {/* View Statistics Toggle Button available to ALL roles */}
+            <button
+              onClick={() => setActiveViewTab(activeViewTab === 'statistics' ? 'operations' : 'statistics')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 text-white px-4 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm transition-all active:scale-95 shadow-md touch-manipulation cursor-pointer ${
+                activeViewTab === 'statistics'
+                  ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/30 ring-2 ring-blue-400'
+                  : 'bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 shadow-indigo-900/20'
+              }`}
+              title="Toplantı Bütçeleri ve İstatistik Raporları"
+            >
+              <BarChart3 size={18} />
+              <span>{activeViewTab === 'statistics' ? '📋 Gösterge Paneline Dön' : '📊 Detaylı İstatistik Raporları'}</span>
+            </button>
 
             {user.role === 'personnel' && (
               <button 

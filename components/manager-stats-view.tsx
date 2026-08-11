@@ -34,6 +34,58 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
   const isManager = user?.role === 'manager';
   const [selectedMeetingId, setSelectedMeetingId] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+
+  const applyDatePreset = (preset: 'today' | 'thisMonth' | 'last30' | 'thisYear' | 'all') => {
+    const today = new Date();
+    if (preset === 'all') {
+      setStartDate('');
+      setEndDate('');
+      return;
+    }
+    if (preset === 'today') {
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const formatted = `${yyyy}-${mm}-${dd}`;
+      setStartDate(formatted);
+      setEndDate(formatted);
+      return;
+    }
+    if (preset === 'thisMonth') {
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const firstDay = `${yyyy}-${mm}-01`;
+      const lastDayObj = new Date(yyyy, today.getMonth() + 1, 0);
+      const lastDd = String(lastDayObj.getDate()).padStart(2, '0');
+      const lastDay = `${yyyy}-${mm}-${lastDd}`;
+      setStartDate(firstDay);
+      setEndDate(lastDay);
+      return;
+    }
+    if (preset === 'last30') {
+      const past = new Date();
+      past.setDate(past.getDate() - 30);
+      const y1 = past.getFullYear();
+      const m1 = String(past.getMonth() + 1).padStart(2, '0');
+      const d1 = String(past.getDate()).padStart(2, '0');
+
+      const y2 = today.getFullYear();
+      const m2 = String(today.getMonth() + 1).padStart(2, '0');
+      const d2 = String(today.getDate()).padStart(2, '0');
+
+      setStartDate(`${y1}-${m1}-${d1}`);
+      setEndDate(`${y2}-${m2}-${d2}`);
+      return;
+    }
+    if (preset === 'thisYear') {
+      const yyyy = today.getFullYear();
+      setStartDate(`${yyyy}-01-01`);
+      setEndDate(`${yyyy}-12-31`);
+      return;
+    }
+  };
 
   const reportMeta = useMemo(() => {
     return {
@@ -48,13 +100,26 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
     return meetings.find(m => m.id === selectedMeetingId) || null;
   }, [meetings, selectedMeetingId]);
 
-  // Filtered Assessments based on selected scope
+  // Filtered Assessments based on selected scope & date range
   const filteredAssessments = useMemo(() => {
-    if (selectedMeetingId === 'ALL') {
-      return assessments;
+    let list = assessments;
+    if (selectedMeetingId !== 'ALL') {
+      list = list.filter(a => a.meetingId === selectedMeetingId);
     }
-    return assessments.filter(a => a.meetingId === selectedMeetingId);
-  }, [assessments, selectedMeetingId]);
+    if (startDate) {
+      list = list.filter(a => {
+        if (!a.date) return false;
+        return a.date.slice(0, 10) >= startDate;
+      });
+    }
+    if (endDate) {
+      list = list.filter(a => {
+        if (!a.date) return false;
+        return a.date.slice(0, 10) <= endDate;
+      });
+    }
+    return list;
+  }, [assessments, selectedMeetingId, startDate, endDate]);
 
   // Search filtered assessments for the detail table
   const tableAssessments = useMemo(() => {
@@ -228,7 +293,13 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
   // Meeting comparison chart data (if ALL is selected)
   const meetingComparisonData = useMemo(() => {
     return meetings.map(m => {
-      const mAssessments = assessments.filter(a => a.meetingId === m.id);
+      let mAssessments = assessments.filter(a => a.meetingId === m.id);
+      if (startDate) {
+        mAssessments = mAssessments.filter(a => a.date && a.date.slice(0, 10) >= startDate);
+      }
+      if (endDate) {
+        mAssessments = mAssessments.filter(a => a.date && a.date.slice(0, 10) <= endDate);
+      }
       let plannedAid = 0;
       let approvedAid = 0;
       mAssessments.forEach(a => {
@@ -247,7 +318,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         HaneSayisi: mAssessments.length,
       };
     });
-  }, [meetings, assessments]);
+  }, [meetings, assessments, startDate, endDate]);
 
   // Excel Export Handler using ExcelJS
   const handleExportExcelReport = async () => {
@@ -666,6 +737,103 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
               <Printer size={16} />
               <span className="hidden sm:inline">Resmi PDF / Yazdır</span>
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Date Range & Quick Preset Filter Bar */}
+      <div className="no-print bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-blue-50 text-blue-700 rounded-xl">
+              <Calendar size={18} />
+            </div>
+            <div>
+              <h4 className="text-xs font-black uppercase text-slate-800 tracking-wider">
+                Raporlama Tarih Aralığı Filtresi
+              </h4>
+              <p className="text-[11px] text-slate-500 font-medium">
+                Rapor ve istatistik verilerini seçilen tarihler arasına göre filtrelersiniz
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Presets */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button
+              onClick={() => applyDatePreset('all')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                !startDate && !endDate
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              Tüm Dönem
+            </button>
+            <button
+              onClick={() => applyDatePreset('today')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                startDate && startDate === endDate && startDate === new Date().toISOString().slice(0, 10)
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              Bugün
+            </button>
+            <button
+              onClick={() => applyDatePreset('thisMonth')}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all"
+            >
+              Bu Ay
+            </button>
+            <button
+              onClick={() => applyDatePreset('last30')}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all"
+            >
+              Son 30 Gün
+            </button>
+            <button
+              onClick={() => applyDatePreset('thisYear')}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all"
+            >
+              Bu Yıl
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2">
+            <span className="text-xs font-bold text-slate-500 shrink-0">Başlangıç Tarihi:</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="bg-transparent text-xs font-extrabold text-slate-800 focus:outline-none w-full cursor-pointer"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2">
+            <span className="text-xs font-bold text-slate-500 shrink-0">Bitiş Tarihi:</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="bg-transparent text-xs font-extrabold text-slate-800 focus:outline-none w-full cursor-pointer"
+            />
+          </div>
+
+          <div className="flex items-center justify-between bg-blue-50/70 border border-blue-200 rounded-2xl px-3.5 py-2">
+            <div className="text-xs font-bold text-blue-900">
+              Bulunan Kayıt: <span className="font-extrabold text-blue-700">{filteredAssessments.length} Hane Dosyası</span>
+            </div>
+            {(startDate || endDate) && (
+              <button
+                onClick={() => { setStartDate(''); setEndDate(''); }}
+                className="text-xs font-extrabold text-red-600 hover:text-red-700 underline cursor-pointer"
+              >
+                Filtreyi Temizle
+              </button>
+            )}
           </div>
         </div>
       </div>
