@@ -909,7 +909,7 @@ export default function Dashboard() {
       </header>
       
       {/* Screen Main */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-5 no-print">
+      <main className="flex-1 w-full max-w-[1920px] mx-auto p-3 sm:p-6 lg:p-8 space-y-5 no-print">
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
@@ -1426,8 +1426,170 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Single-Row Table */}
-          <div className="w-full overflow-x-auto">
+          {/* Mobile & Tablet Card View (< md screens) */}
+          <div className="md:hidden divide-y divide-slate-200 bg-white">
+            {filteredAndSortedAssessments.length === 0 ? (
+              <div className="p-8 text-center text-slate-500 font-medium">
+                Arama ve filtreleme kriterlerine uygun sosyal inceleme kaydı bulunamadı.
+              </div>
+            ) : (
+              filteredAndSortedAssessments.map((item, idx) => {
+                const isSelected = selectedIds.includes(item.id);
+                const isApproved = item.status === 'approved';
+
+                return (
+                  <div 
+                    key={item.id} 
+                    className={`p-4 transition-colors space-y-3 ${isSelected ? 'bg-blue-50/80' : 'hover:bg-slate-50'}`}
+                  >
+                    {/* Top Row: Checkbox, Custom Sequence, Approval Badge */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelectId(item.id)}
+                          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
+                        />
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] font-black text-slate-400 uppercase">Sıra:</span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={9999}
+                            value={item.customOrder ?? ''}
+                            placeholder={(idx + 1).toString()}
+                            onChange={(e) => {
+                              const val = e.target.value === '' ? undefined : parseInt(e.target.value, 10);
+                              handleUpdateCustomOrder(item, val);
+                            }}
+                            className="w-12 text-center py-0.5 px-1 text-xs font-black rounded border border-slate-300 focus:border-indigo-600 bg-white text-indigo-950"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Approval Status Badge */}
+                      {isApproved ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+                          <CheckCircle2 size={12} /> ONAYLANDI
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-amber-100 text-amber-800 border border-amber-200 shrink-0">
+                          <Clock size={12} /> ONAY BEKLİYOR
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Applicant Name & Identity Details */}
+                    <div>
+                      <h4 className="text-sm font-extrabold text-slate-900 leading-snug">
+                        {item.applicantName}
+                      </h4>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500 font-medium mt-1">
+                        <span>TC: <strong className="text-slate-800 font-bold">{item.applicantTc || '-'}</strong></span>
+                        <span>•</span>
+                        <span>Ziyaret: <strong className="text-slate-800 font-bold">{new Date(item.date).toLocaleDateString('tr-TR')}</strong></span>
+                      </div>
+                    </div>
+
+                    {/* Metrics Grid */}
+                    <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Hane Büyüklüğü</span>
+                        <span className="font-extrabold text-slate-800">{item.householdSize} kişi</span>
+                      </div>
+
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Puan</span>
+                        <span className={`font-black ${item.result.isRejected ? 'text-red-700' : 'text-blue-700'}`}>
+                          {item.result.totalScore} Puan
+                        </span>
+                      </div>
+
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-200 col-span-2">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Karar / Yardım Tipi</span>
+                        <span className={`font-black text-xs ${item.result.isRejected ? 'text-red-600' : 'text-emerald-700'}`}>
+                          {item.result.isRejected ? 'REDDEDİLDİ' : (item.result.assistance?.text || '-')}
+                        </span>
+                      </div>
+                    </div>
+
+                    {user.role === 'manager' && (
+                      <div className="text-[11px] text-slate-500 font-medium">
+                        İnceleyen Personel: <strong className="text-slate-800 font-bold">{item.personnelName}</strong>
+                      </div>
+                    )}
+
+                    {/* Action Buttons Row */}
+                    <div className="flex flex-wrap items-center justify-end gap-1.5 pt-2 border-t border-slate-100">
+                      {user.role === 'manager' && (
+                        <>
+                          {!isApproved ? (
+                            <button
+                              onClick={() => handleSingleApprove(item)}
+                              className="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                            >
+                              <Check size={14} /> Onayla
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleSingleRevoke(item)}
+                              className="inline-flex items-center gap-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                            >
+                              <RotateCcw size={14} /> Onayı Kaldır
+                            </button>
+                          )}
+                        </>
+                      )}
+
+                      {user.role === 'personnel' && (
+                        <>
+                          {!isApproved ? (
+                            <Link
+                              href={`/assessment/${item.id}/edit`}
+                              className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors"
+                            >
+                              <Edit3 size={13} /> Düzenle
+                            </Link>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-400 border border-slate-200 text-[10px] font-bold px-2 py-1 rounded-md cursor-not-allowed">
+                              <Lock size={12} /> Kilitli
+                            </span>
+                          )}
+                        </>
+                      )}
+
+                      <button
+                        onClick={() => handlePrintSingleDetailed(item)}
+                        className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                      >
+                        <Printer size={13} /> Rapor (A4)
+                      </button>
+
+                      <Link 
+                        href={`/assessment/${item.id}`} 
+                        className="inline-flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+                      >
+                        <FileText size={14} /> Detaylar
+                      </Link>
+
+                      {!isApproved && (
+                        <button
+                          onClick={() => handleDeleteSingle(item)}
+                          className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 text-xs font-bold px-2 py-1.5 rounded-lg transition-colors active:scale-95"
+                        >
+                          <Trash2 size={13} /> Sil
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Full-Width Desktop Table (>= md screens) */}
+          <div className="hidden md:block w-full overflow-x-auto xl:overflow-x-visible">
             <table className="w-full text-left border-collapse table-auto">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 text-[10px] uppercase tracking-wider border-b border-slate-200">
@@ -1651,20 +1813,20 @@ export default function Dashboard() {
                                 {!isApproved ? (
                                   <button
                                     onClick={() => handleSingleApprove(item)}
-                                    className="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                                    className="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
                                     title="Bu Kaydı Hızlı Onayla"
                                   >
                                     <Check size={14} />
-                                    <span className="hidden 2xl:inline">Onayla</span>
+                                    <span className="hidden lg:inline">Onayla</span>
                                   </button>
                                 ) : (
                                   <button
                                     onClick={() => handleSingleRevoke(item)}
-                                    className="inline-flex items-center gap-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                                    className="inline-flex items-center gap-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
                                     title="Müdür Onayını Kaldır ve Düzenlemeye Aç"
                                   >
                                     <RotateCcw size={14} />
-                                    <span className="hidden 2xl:inline">Onayı Kaldır</span>
+                                    <span className="hidden lg:inline">Onayı Kaldır</span>
                                   </button>
                                 )}
                               </>
@@ -1676,19 +1838,19 @@ export default function Dashboard() {
                                 {!isApproved ? (
                                   <Link
                                     href={`/assessment/${item.id}/edit`}
-                                    className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors"
+                                    className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors"
                                     title="Sosyal İnceleme Kaydını Düzenle"
                                   >
                                     <Edit3 size={13} />
-                                    <span className="hidden 2xl:inline">Düzenle</span>
+                                    <span className="hidden lg:inline">Düzenle</span>
                                   </Link>
                                 ) : (
                                   <span 
-                                    className="inline-flex items-center gap-1 bg-slate-100 text-slate-400 border border-slate-200 text-[10px] font-bold p-1.5 2xl:px-2 2xl:py-1 rounded-md cursor-not-allowed"
+                                    className="inline-flex items-center gap-1 bg-slate-100 text-slate-400 border border-slate-200 text-[10px] font-bold p-1.5 lg:px-2 lg:py-1 rounded-md cursor-not-allowed"
                                     title="Onaylı veriler düzenlenemez. İzin için müdürün onayı kaldırması gerekmektedir."
                                   >
                                     <Lock size={12} />
-                                    <span className="hidden 2xl:inline">Kilitli</span>
+                                    <span className="hidden lg:inline">Kilitli</span>
                                   </span>
                                 )}
                               </>
@@ -1697,32 +1859,32 @@ export default function Dashboard() {
                             {/* Single Detailed Report Print Button */}
                             <button
                               onClick={() => handlePrintSingleDetailed(item)}
-                              className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                              className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
                               title="Tek Sayfa Resmi A4 Raporu Yazdır / PDF Yap"
                             >
                               <Printer size={13} />
-                              <span className="hidden 2xl:inline">Rapor</span>
+                              <span className="hidden lg:inline">Rapor</span>
                             </button>
 
                             {/* View Detail Link */}
                             <Link 
                               href={`/assessment/${item.id}`} 
-                              className="inline-flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold p-1.5 2xl:px-3 2xl:py-1.5 rounded-lg transition-colors shadow-sm"
+                              className="inline-flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold p-1.5 lg:px-3 lg:py-1.5 rounded-lg transition-colors shadow-sm"
                               title="Tüm Ayrıntıları ve Sosyal İnceleme Detaylarını Gör"
                             >
                               <FileText size={14} />
-                              <span className="hidden 2xl:inline">Detaylar</span>
+                              <span className="hidden lg:inline">Detaylar</span>
                             </Link>
 
                             {/* Delete Button for Non-Approved Records */}
                             {!isApproved && (
                               <button
                                 onClick={() => handleDeleteSingle(item)}
-                                className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors active:scale-95"
+                                className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors active:scale-95"
                                 title="Onaylanmamış İnceleme Kaydını Sil"
                               >
                                 <Trash2 size={13} />
-                                <span className="hidden 2xl:inline">Sil</span>
+                                <span className="hidden lg:inline">Sil</span>
                               </button>
                             )}
                           </div>
