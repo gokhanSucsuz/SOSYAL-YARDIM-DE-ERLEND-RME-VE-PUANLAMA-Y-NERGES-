@@ -208,7 +208,7 @@ function NewAssessmentContent() {
 
     let scoreE = Math.min(10, Math.round(rawScoreE));
 
-    // Section F: Sosyal Kırılganlık (Genişletilmiş Literatür Seçenekleri - Maksimum 15 Puan)
+    // Section F: Sosyal Kırılganlık ve Nüfus (Maksimum 30 Puan)
     let scoreF = 0;
     if (state.e_siddetMagduru) scoreF += 6;
     if (state.e_kadinReis) scoreF += 5;
@@ -229,7 +229,7 @@ function NewAssessmentContent() {
       scoreF += 1;
     }
 
-    scoreF = Math.min(scoreF, 15);
+    scoreF = Math.min(scoreF, 30);
 
     // Section G: Sosyal İnceleme Kanaati (Maksimum 20 Puan)
     let scoreG = state.f_yasamKosullari + state.f_aciliyet + state.f_sosyalDestek + state.f_risk;
@@ -695,7 +695,7 @@ function NewAssessmentContent() {
                       <p className="text-slate-400 text-xs mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
                     </div>
                     <div className="text-slate-900">
-                      <SectionCard title="Sosyal Kırılganlık" maxScore={15} currentScore={calc.scoreF} hideScore={true}>
+                      <SectionCard title="Sosyal Kırılganlık ve Nüfus" maxScore={30} currentScore={calc.scoreF} hideScore={true}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 sm:col-span-2">
                             <span className="flex items-center gap-2">

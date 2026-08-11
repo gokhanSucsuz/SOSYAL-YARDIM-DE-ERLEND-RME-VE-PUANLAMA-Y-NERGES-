@@ -122,7 +122,7 @@ export default function PresentationPage() {
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-red-100 pb-4">
               <div className="flex items-center gap-2 text-red-900 font-extrabold text-xs uppercase tracking-widest bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200">
                 <Building2 size={15} className="text-red-700" />
-                T.C. SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI (SYDV)
+                T.C. EDİRNE SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI (EDİRNE SYDV)
               </div>
               <span className="text-xs font-bold text-slate-500">
                 Doküman No: SYD-NDS-2026-SUNUM
@@ -444,7 +444,7 @@ export default function PresentationPage() {
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">C. Çocuk ve Eğitim (10 Pn Tavan, Örgün, Mesleki Eğitim & Açık Lise)</div>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">D. Barınma ve Konut Şartları (10 Pn Tavan)</div>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">E. Temel Ev Eşyaları Durumu (10 Pn Tavan)</div>
-              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">F. Sosyal Kırılganlık ve Nüfus (10 Pn Tavan, Dul, Boşanmış, Şiddet, Cezaevinde, Nüfus 1-4 K: +1 Pn / 5+ K: +3 Pn)</div>
+              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium">F. Sosyal Kırılganlık ve Nüfus (30 Pn Tavan, Dul, Boşanmış, Şiddet, Cezaevinde, Nüfus 1-4 K: +1 Pn / 5+ K: +3 Pn)</div>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-medium col-span-2">G. Sosyal İnceleme Görevlisi Kanaati (20 Pn Tavan)</div>
             </div>
           </div>

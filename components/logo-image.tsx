@@ -8,39 +8,42 @@ interface LogoImageProps {
 }
 
 export function LogoImage({ 
-  className = "w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0", 
-  alt = "Sosyal İnceleme Logo" 
+  className = "w-10 h-10 rounded-2xl shadow-md border-2 border-red-700 shrink-0", 
+  alt = "T.C. Edirne Valiliği Sosyal Yardımlaşma ve Dayanışma Vakfı Logo" 
 }: LogoImageProps) {
-  const [imgSrc, setImgSrc] = useState<string>('/logo.jpg');
+  const [imgSrc, setImgSrc] = useState<string>('/logo.svg');
   const [hasError, setHasError] = useState<boolean>(false);
 
   const handleError = () => {
-    if (imgSrc === '/logo.jpg') {
+    if (imgSrc === '/logo.svg') {
       setImgSrc('/logo.png');
     } else if (imgSrc === '/logo.png') {
-      setImgSrc('/icon.png');
+      setImgSrc('/logo.jpg');
     } else {
       setHasError(true);
     }
   };
 
-  if (hasError) {
+  if (!hasError) {
     return (
-      <div className={`${className} bg-gradient-to-br from-red-900 via-slate-900 to-blue-900 text-white flex items-center justify-center font-black text-xs tracking-tighter border-2 border-amber-500/50 shrink-0 shadow-md`}>
-        <div className="text-center leading-none">
-          <span className="block text-[8px] text-amber-300 font-extrabold tracking-wider">T.C.</span>
-          <span className="text-[10px] font-black text-white">SYDV</span>
-        </div>
-      </div>
+      <img
+        src={imgSrc}
+        alt={alt}
+        onError={handleError}
+        className={`${className} object-cover`}
+      />
     );
   }
 
   return (
-    <img
-      src={imgSrc}
-      alt={alt}
-      onError={handleError}
-      className={className}
-    />
+    <div className={`relative flex items-center justify-center shrink-0 overflow-hidden bg-red-900 rounded-2xl border-2 border-red-700 shadow-md ${className}`} title={alt}>
+      <svg viewBox="0 0 100 100" className="w-full h-full p-1">
+        <circle cx="50" cy="50" r="46" fill="#991b1b" stroke="#fef08a" strokeWidth="2" />
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#fef08a" strokeWidth="1" strokeDasharray="3 2" />
+        <path d="M 44 32 A 18 18 0 1 0 62 68 A 15 15 0 1 1 44 32 Z" fill="#ffffff" />
+        <polygon points="60,44 62,49 67,49 63,52 64,57 60,54 56,57 57,52 53,49 58,49" fill="#ffffff" />
+        <text x="50" y="80" textAnchor="middle" fill="#fef08a" fontSize="8" fontWeight="bold">EDİRNE SYDV</text>
+      </svg>
+    </div>
   );
 }

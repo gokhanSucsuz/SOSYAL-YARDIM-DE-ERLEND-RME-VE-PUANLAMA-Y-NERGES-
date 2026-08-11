@@ -236,7 +236,7 @@ export default function EditAssessmentWizard() {
 
     let scoreE = Math.min(10, Math.round(rawScoreE));
 
-    // Section F: Sosyal Kırılganlık (Literatür Seçenekleri)
+    // Section F: Sosyal Kırılganlık ve Nüfus (Maksimum 30 Puan)
     let scoreF = 0;
     if (state.e_siddetMagduru) scoreF += 6;
     if (state.e_kadinReis) scoreF += 5;
@@ -257,7 +257,7 @@ export default function EditAssessmentWizard() {
       scoreF += 1;
     }
 
-    scoreF = Math.min(scoreF, 15);
+    scoreF = Math.min(scoreF, 30);
 
     // Section G: Sosyal İnceleme Kanaati (Maks 20 Puan)
     let scoreG = state.f_yasamKosullari + state.f_aciliyet + state.f_sosyalDestek + state.f_risk;
@@ -704,7 +704,7 @@ export default function EditAssessmentWizard() {
                   <h2 className="text-2xl font-bold text-slate-800">F. Sosyal Kırılganlık</h2>
                   <p className="text-slate-500 mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
                 </div>
-                <SectionCard title="Sosyal Kırılganlık" maxScore={15} currentScore={calc.scoreF} hideScore={true}>
+                <SectionCard title="Sosyal Kırılganlık ve Nüfus" maxScore={30} currentScore={calc.scoreF} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 sm:col-span-2">
                       <span className="flex items-center gap-2">

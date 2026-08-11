@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <path id="textArcTop" d="M 50,200 A 150,150 0 1,1 350,200" />
+    <path id="textArcBottom" d="M 350,200 A 150,150 0 0,1 50,200" />
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b91c1c" />
+      <stop offset="100%" stop-color="#7f1d1d" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#eab308" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Circle Background -->
+  <circle cx="200" cy="200" r="195" fill="url(#redGrad)" stroke="#991b1b" stroke-width="6" />
+  <circle cx="200" cy="200" r="185" fill="none" stroke="url(#goldGrad)" stroke-width="4" />
+  <circle cx="200" cy="200" r="140" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-dasharray="8 4" />
+
+  <!-- Top Text -->
+  <text font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="22" letter-spacing="3" fill="#fef08a">
+    <textPath href="#textArcTop" startOffset="50%" text-anchor="middle">
+      T.C. EDİRNE VALİLİĞİ
+    </textPath>
+  </text>
+
+  <!-- Center Crescent & Star -->
+  <g transform="translate(10, -5)">
+    <!-- Crescent -->
+    <path d="M 180 125 A 65 65 0 1 0 245 255 A 55 55 0 1 1 180 125 Z" fill="#ffffff" />
+    <!-- Star -->
+    <polygon points="240,170 248,188 268,188 252,200 258,218 240,206 222,218 228,200 212,188 232,188" fill="#ffffff" />
+  </g>
+
+  <!-- Bridge / Selimiye Motif Accent -->
+  <path d="M 100 260 Q 200 300 300 260" fill="none" stroke="url(#goldGrad)" stroke-width="4" />
+
+  <!-- Bottom Text -->
+  <text font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="16" letter-spacing="2" fill="#ffffff">
+    <textPath href="#textArcBottom" startOffset="50%" text-anchor="middle">
+      SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI
+    </textPath>
+  </text>
+</svg>

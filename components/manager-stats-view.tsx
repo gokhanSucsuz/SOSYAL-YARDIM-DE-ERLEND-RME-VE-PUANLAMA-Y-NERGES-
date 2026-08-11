@@ -31,6 +31,7 @@ const COLORS = {
 };
 
 export function ManagerStatsView({ meetings, assessments, user, onBack }: ManagerStatsViewProps) {
+  const isManager = user?.role === 'manager';
   const [selectedMeetingId, setSelectedMeetingId] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -378,10 +379,10 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
           <div className="flex justify-between items-center mb-2">
             <LogoImage className="w-14 h-14 border border-black" />
             <div className="text-center flex-1 mx-4">
-              <h1 className="text-sm font-bold uppercase tracking-wider">T.C. GOVERNORSHIP / KAYMAKAMLIK</h1>
+              <h1 className="text-sm font-bold uppercase tracking-wider">T.C. EDİRNE VALİLİĞİ</h1>
               <h2 className="text-base font-black uppercase">SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI BAŞKANLIĞI</h2>
               <p className="text-xs font-bold mt-1 underline">
-                {selectedMeetingId === 'ALL' ? 'TÜM TOPLANTI DOSYALARI KONSOLİDE İSTATİSTİK VE BÜTÇE RAPORU' : `TOPLANTI DOSYASI (${selectedMeeting?.meetingNo}) İSTATİSTİKİ RAPORU`}
+                {selectedMeetingId === 'ALL' ? 'TÜM TOPLANTI DOSYALARI KONSOLİDE İSTATİSTİK RAPORU' : `TOPLANTI DOSYASI (${selectedMeeting?.meetingNo}) İSTATİSTİKİ RAPORU`}
               </p>
             </div>
             <div className="text-[10px] text-right font-mono">
@@ -393,29 +394,50 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
 
         {/* Print Summary Table */}
         <div className="mb-4">
-          <h3 className="text-xs font-black uppercase mb-1 border-b border-black">1. BÜTÇE VE FİNANSAL PERFORMANS İSTATİSTİKLERİ</h3>
+          <h3 className="text-xs font-black uppercase mb-1 border-b border-black">
+            1. {isManager ? 'BÜTÇE VE FİNANSAL PERFORMANS İSTATİSTİKLERİ' : 'HANE DEĞERLENDİRME İSTATİSTİKLERİ'}
+          </h3>
           <table className="w-full border-collapse border border-black text-[10px] mb-3">
             <tbody>
-              <tr className="border-b border-black bg-gray-100 font-bold">
-                <td className="p-1.5 border-r border-black">Harcanabilir Vakıf Bütçesi:</td>
-                <td className="p-1.5 border-r border-black">{stats.totalBudgetTL > 0 ? `${stats.totalBudgetTL.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}</td>
-                <td className="p-1.5 border-r border-black">Karar Bağlanan Toplam Yardım:</td>
-                <td className="p-1.5">{stats.plannedAidTL.toLocaleString('tr-TR')} ₺</td>
-              </tr>
-              <tr className="border-b border-black font-bold">
-                <td className="p-1.5 border-r border-black">Müdür Onaylı Yardım Tutarı:</td>
-                <td className="p-1.5 border-r border-black">{stats.approvedAidTL.toLocaleString('tr-TR')} ₺</td>
-                <td className="p-1.5 border-r border-black">Kalan / Aşım Durumu:</td>
-                <td className={`p-1.5 font-black ${stats.isExceeded ? 'text-red-700' : ''}`}>
-                  {stats.isExceeded ? `+${stats.excessTL.toLocaleString('tr-TR')} ₺ (BÜTÇE AŞILMIŞTIR)` : `${stats.remainingBudgetTL.toLocaleString('tr-TR')} ₺`}
-                </td>
-              </tr>
-              <tr className="border-b border-black">
-                <td className="p-1.5 border-r border-black font-bold">Toplam İnceleme Yapılan Hane:</td>
-                <td className="p-1.5 border-r border-black">{stats.totalCount} Hane</td>
-                <td className="p-1.5 border-r border-black font-bold">Ortalama Hane Başı Yardım:</td>
-                <td className="p-1.5">{stats.avgAidPerHousehold.toLocaleString('tr-TR')} ₺</td>
-              </tr>
+              {isManager ? (
+                <>
+                  <tr className="border-b border-black bg-gray-100 font-bold">
+                    <td className="p-1.5 border-r border-black">Harcanabilir Vakıf Bütçesi:</td>
+                    <td className="p-1.5 border-r border-black">{stats.totalBudgetTL > 0 ? `${stats.totalBudgetTL.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}</td>
+                    <td className="p-1.5 border-r border-black">Karar Bağlanan Toplam Yardım:</td>
+                    <td className="p-1.5">{stats.plannedAidTL.toLocaleString('tr-TR')} ₺</td>
+                  </tr>
+                  <tr className="border-b border-black font-bold">
+                    <td className="p-1.5 border-r border-black">Müdür Onaylı Yardım Tutarı:</td>
+                    <td className="p-1.5 border-r border-black">{stats.approvedAidTL.toLocaleString('tr-TR')} ₺</td>
+                    <td className="p-1.5 border-r border-black">Kalan / Aşım Durumu:</td>
+                    <td className={`p-1.5 font-black ${stats.isExceeded ? 'text-red-700' : ''}`}>
+                      {stats.isExceeded ? `+${stats.excessTL.toLocaleString('tr-TR')} ₺ (BÜTÇE AŞILMIŞTIR)` : `${stats.remainingBudgetTL.toLocaleString('tr-TR')} ₺`}
+                    </td>
+                  </tr>
+                  <tr className="border-b border-black">
+                    <td className="p-1.5 border-r border-black font-bold">Toplam İnceleme Yapılan Hane:</td>
+                    <td className="p-1.5 border-r border-black">{stats.totalCount} Hane</td>
+                    <td className="p-1.5 border-r border-black font-bold">Ortalama Hane Başı Yardım:</td>
+                    <td className="p-1.5">{stats.avgAidPerHousehold.toLocaleString('tr-TR')} ₺</td>
+                  </tr>
+                </>
+              ) : (
+                <>
+                  <tr className="border-b border-black bg-gray-100 font-bold">
+                    <td className="p-1.5 border-r border-black">Toplam İnceleme Dosyası:</td>
+                    <td className="p-1.5 border-r border-black">{stats.totalCount} Hane</td>
+                    <td className="p-1.5 border-r border-black">Müdür Onaylı Hane Sayısı:</td>
+                    <td className="p-1.5 text-emerald-800">{stats.approvedCount} Hane</td>
+                  </tr>
+                  <tr className="border-b border-black font-bold">
+                    <td className="p-1.5 border-r border-black">Onay Bekleyen Hane Sayısı:</td>
+                    <td className="p-1.5 border-r border-black text-amber-800">{stats.pendingCount} Hane</td>
+                    <td className="p-1.5 border-r border-black">Reddedilen Hane Sayısı:</td>
+                    <td className="p-1.5 text-red-800">{stats.rejectedCount} Hane</td>
+                  </tr>
+                </>
+              )}
             </tbody>
           </table>
         </div>
@@ -649,7 +671,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       </div>
 
       {/* Exceeded Budget Alert Banner if Applicable */}
-      {stats.isExceeded && (
+      {isManager && stats.isExceeded && (
         <div className="no-print bg-red-600 text-white p-4 sm:p-5 rounded-3xl shadow-lg border-2 border-red-400 flex items-center gap-4 animate-pulse">
           <div className="p-3 bg-white/20 rounded-2xl shrink-0">
             <AlertCircle size={28} />
@@ -665,117 +687,197 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
 
       {/* KPI Cards Grid */}
       <div className="no-print grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Vakıf Bütçesi */}
-        <div className="bg-white p-5 rounded-3xl border border-blue-200 shadow-xs space-y-2 bg-gradient-to-br from-blue-50/50 to-white relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-600">Vakıf Bütçesi (Harcanabilir)</span>
-            <div className="p-2 bg-blue-100 text-blue-700 rounded-2xl"><Wallet size={20} /></div>
-          </div>
-          <p className="text-2xl font-black text-slate-900 leading-none">
-            {stats.totalBudgetTL > 0 ? `${stats.totalBudgetTL.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
-          </p>
-          <p className="text-xs text-slate-500 font-semibold pt-1">
-            {selectedMeetingId === 'ALL' ? 'Tüm toplantı bütçeleri toplamı' : `${selectedMeeting?.meetingNo} Toplantısı Bütçesi`}
-          </p>
-        </div>
-
-        {/* Yapılacak Toplam Yardım */}
-        <div className="bg-white p-5 rounded-3xl border border-indigo-200 shadow-xs space-y-2 bg-gradient-to-br from-indigo-50/50 to-white">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">Planlanan Toplam Yardım</span>
-            <div className="p-2 bg-indigo-100 text-indigo-700 rounded-2xl"><Banknote size={20} /></div>
-          </div>
-          <p className="text-2xl font-black text-indigo-950 leading-none">
-            {stats.plannedAidTL.toLocaleString('tr-TR')} ₺
-          </p>
-          <div className="flex items-center justify-between text-xs text-slate-500 font-semibold pt-1">
-            <span>Onaylanan: <strong>{stats.approvedAidTL.toLocaleString('tr-TR')} ₺</strong></span>
-          </div>
-        </div>
-
-        {/* Kalan Bütçe / Aşım */}
-        <div className={`p-5 rounded-3xl border shadow-xs space-y-2 ${
-          stats.isExceeded ? 'bg-red-50 border-red-300' : 'bg-emerald-50/60 border-emerald-200'
-        }`}>
-          <div className="flex items-center justify-between">
-            <span className={`text-[11px] font-extrabold uppercase tracking-wider ${stats.isExceeded ? 'text-red-700' : 'text-emerald-700'}`}>
-              {stats.isExceeded ? '🚨 BÜTÇE AŞIM MİKTARI' : 'Kalan Kullanılabilir Bütçe'}
-            </span>
-            <div className={`p-2 rounded-2xl ${stats.isExceeded ? 'bg-red-600 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
-              <TrendingUp size={20} />
+        {isManager ? (
+          <>
+            {/* Vakıf Bütçesi */}
+            <div className="bg-white p-5 rounded-3xl border border-blue-200 shadow-xs space-y-2 bg-gradient-to-br from-blue-50/50 to-white relative overflow-hidden">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-600">Vakıf Bütçesi (Harcanabilir)</span>
+                <div className="p-2 bg-blue-100 text-blue-700 rounded-2xl"><Wallet size={20} /></div>
+              </div>
+              <p className="text-2xl font-black text-slate-900 leading-none">
+                {stats.totalBudgetTL > 0 ? `${stats.totalBudgetTL.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
+              </p>
+              <p className="text-xs text-slate-500 font-semibold pt-1">
+                {selectedMeetingId === 'ALL' ? 'Tüm toplantı bütçeleri toplamı' : `${selectedMeeting?.meetingNo} Toplantısı Bütçesi`}
+              </p>
             </div>
-          </div>
-          <p className={`text-2xl font-black leading-none ${stats.isExceeded ? 'text-red-700' : 'text-emerald-950'}`}>
-            {stats.totalBudgetTL === 0 
-              ? 'Sınırsız' 
-              : stats.isExceeded 
-              ? `+${stats.excessTL.toLocaleString('tr-TR')} ₺` 
-              : `${stats.remainingBudgetTL.toLocaleString('tr-TR')} ₺`}
-          </p>
-          <p className="text-xs font-semibold text-slate-600 pt-1">
-            Ortalama Hane Başı: <strong>{stats.avgAidPerHousehold.toLocaleString('tr-TR')} ₺</strong>
-          </p>
-        </div>
 
-        {/* İnceleme Hane Sayıları */}
-        <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Değerlendirilen Hane Sayısı</span>
-            <div className="p-2 bg-slate-100 text-slate-700 rounded-2xl"><Users size={20} /></div>
-          </div>
-          <p className="text-2xl font-black text-slate-900 leading-none">
-            {stats.totalCount} Hane
-          </p>
-          <div className="flex items-center gap-3 text-xs font-bold pt-1">
-            <span className="text-emerald-600">{stats.approvedCount} Onay</span>
-            <span className="text-amber-600">{stats.pendingCount} Bekleyen</span>
-            <span className="text-red-600">{stats.rejectedCount} Red</span>
-          </div>
-        </div>
+            {/* Yapılacak Toplam Yardım */}
+            <div className="bg-white p-5 rounded-3xl border border-indigo-200 shadow-xs space-y-2 bg-gradient-to-br from-indigo-50/50 to-white">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">Planlanan Toplam Yardım</span>
+                <div className="p-2 bg-indigo-100 text-indigo-700 rounded-2xl"><Banknote size={20} /></div>
+              </div>
+              <p className="text-2xl font-black text-indigo-950 leading-none">
+                {stats.plannedAidTL.toLocaleString('tr-TR')} ₺
+              </p>
+              <div className="flex items-center justify-between text-xs text-slate-500 font-semibold pt-1">
+                <span>Onaylanan: <strong>{stats.approvedAidTL.toLocaleString('tr-TR')} ₺</strong></span>
+              </div>
+            </div>
+
+            {/* Kalan Bütçe / Aşım */}
+            <div className={`p-5 rounded-3xl border shadow-xs space-y-2 ${
+              stats.isExceeded ? 'bg-red-50 border-red-300' : 'bg-emerald-50/60 border-emerald-200'
+            }`}>
+              <div className="flex items-center justify-between">
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider ${stats.isExceeded ? 'text-red-700' : 'text-emerald-700'}`}>
+                  {stats.isExceeded ? '🚨 BÜTÇE AŞIM MİKTARI' : 'Kalan Kullanılabilir Bütçe'}
+                </span>
+                <div className={`p-2 rounded-2xl ${stats.isExceeded ? 'bg-red-600 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
+                  <TrendingUp size={20} />
+                </div>
+              </div>
+              <p className={`text-2xl font-black leading-none ${stats.isExceeded ? 'text-red-700' : 'text-emerald-950'}`}>
+                {stats.totalBudgetTL === 0 
+                  ? 'Sınırsız' 
+                  : stats.isExceeded 
+                  ? `+${stats.excessTL.toLocaleString('tr-TR')} ₺` 
+                  : `${stats.remainingBudgetTL.toLocaleString('tr-TR')} ₺`}
+              </p>
+              <p className="text-xs font-semibold text-slate-600 pt-1">
+                Ortalama Hane Başı: <strong>{stats.avgAidPerHousehold.toLocaleString('tr-TR')} ₺</strong>
+              </p>
+            </div>
+
+            {/* İnceleme Hane Sayıları */}
+            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Değerlendirilen Hane Sayısı</span>
+                <div className="p-2 bg-slate-100 text-slate-700 rounded-2xl"><Users size={20} /></div>
+              </div>
+              <p className="text-2xl font-black text-slate-900 leading-none">
+                {stats.totalCount} Hane
+              </p>
+              <div className="flex items-center gap-3 text-xs font-bold pt-1">
+                <span className="text-emerald-600">{stats.approvedCount} Onay</span>
+                <span className="text-amber-600">{stats.pendingCount} Bekleyen</span>
+                <span className="text-red-600">{stats.rejectedCount} Red</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Toplam Hane */}
+            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">Toplam İnceleme Dosyası</span>
+                <div className="p-2 bg-slate-100 text-slate-700 rounded-2xl"><Users size={20} /></div>
+              </div>
+              <p className="text-2xl font-black text-slate-900 leading-none">
+                {stats.totalCount} Hane
+              </p>
+              <p className="text-xs text-slate-500 font-semibold pt-1">İnceleme Görevlisi Dosya Takibi</p>
+            </div>
+
+            {/* Onaylanan Hane */}
+            <div className="bg-white p-5 rounded-3xl border border-emerald-200 shadow-xs space-y-2 bg-gradient-to-br from-emerald-50/50 to-white">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700">Müdür Onaylı Hane</span>
+                <div className="p-2 bg-emerald-100 text-emerald-700 rounded-2xl"><CheckCircle2 size={20} /></div>
+              </div>
+              <p className="text-2xl font-black text-emerald-950 leading-none">
+                {stats.approvedCount} Hane
+              </p>
+              <p className="text-xs text-emerald-700 font-semibold pt-1">Onaylanan yardım kararları</p>
+            </div>
+
+            {/* Onay Bekleyen Hane */}
+            <div className="bg-white p-5 rounded-3xl border border-amber-200 shadow-xs space-y-2 bg-gradient-to-br from-amber-50/50 to-white">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-700">Onay Bekleyen Hane</span>
+                <div className="p-2 bg-amber-100 text-amber-700 rounded-2xl"><Clock size={20} /></div>
+              </div>
+              <p className="text-2xl font-black text-amber-950 leading-none">
+                {stats.pendingCount} Hane
+              </p>
+              <p className="text-xs text-amber-700 font-semibold pt-1">Müdür değerlendirmesindeki dosyalar</p>
+            </div>
+
+            {/* Reddedilen Hane */}
+            <div className="bg-white p-5 rounded-3xl border border-red-200 shadow-xs space-y-2 bg-gradient-to-br from-red-50/50 to-white">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-red-700">Reddedilen Hane</span>
+                <div className="p-2 bg-red-100 text-red-700 rounded-2xl"><XCircle size={20} /></div>
+              </div>
+              <p className="text-2xl font-black text-red-950 leading-none">
+                {stats.rejectedCount} Hane
+              </p>
+              <p className="text-xs text-red-700 font-semibold pt-1">Uygun görülmeyen incelemeler</p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Main Charts Section */}
       <div className="no-print grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Chart 1: Bütçe vs Harcama Analizi */}
+        {/* Chart 1: Bütçe vs Harcama Analizi veya Hane Sayısı Analizi */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
               <Wallet className="text-blue-600" size={20} />
               <span>
-                {selectedMeetingId === 'ALL' ? 'Toplantı Bazında Bütçe ve Yardım Karşılaştırması' : 'Bütçe ve Karar Bağlanan Yardım Oranı'}
+                {isManager 
+                  ? (selectedMeetingId === 'ALL' ? 'Toplantı Bazında Bütçe ve Yardım Karşılaştırması' : 'Bütçe ve Karar Bağlanan Yardım Oranı')
+                  : (selectedMeetingId === 'ALL' ? 'Toplantı Bazında İnceleme Yapılan Hane Sayıları' : 'Hane Risk Seviyeleri Dağılımı')}
               </span>
             </h3>
-            <span className="text-xs text-slate-400 font-bold">Mali Analiz</span>
+            <span className="text-xs text-slate-400 font-bold">{isManager ? 'Mali Analiz' : 'Dosya Analizi'}</span>
           </div>
 
           <div className="h-72 w-full pt-2">
-            {selectedMeetingId === 'ALL' ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={meetingComparisonData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#64748b" fontSize={11} tickLine={false} tickFormatter={(v) => `${v / 1000}k₺`} />
-                  <Tooltip formatter={(value: any) => [`${Number(value).toLocaleString('tr-TR')} ₺`]} />
-                  <Legend wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
-                  <Bar dataKey="Bütçe" fill="#3b82f6" radius={[6, 6, 0, 0]} name="Vakıf Bütçesi" />
-                  <Bar dataKey="Planlanan" fill="#6366f1" radius={[6, 6, 0, 0]} name="Planlanan Yardım" />
-                  <Bar dataKey="Onaylanan" fill="#10b981" radius={[6, 6, 0, 0]} name="Müdür Onaylı" />
-                </BarChart>
-              </ResponsiveContainer>
+            {isManager ? (
+              selectedMeetingId === 'ALL' ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={meetingComparisonData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
+                    <YAxis stroke="#64748b" fontSize={11} tickLine={false} tickFormatter={(v) => `${v / 1000}k₺`} />
+                    <Tooltip formatter={(value: any) => [`${Number(value).toLocaleString('tr-TR')} ₺`]} />
+                    <Legend wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
+                    <Bar dataKey="Bütçe" fill="#3b82f6" radius={[6, 6, 0, 0]} name="Vakıf Bütçesi" />
+                    <Bar dataKey="Planlanan" fill="#6366f1" radius={[6, 6, 0, 0]} name="Planlanan Yardım" />
+                    <Bar dataKey="Onaylanan" fill="#10b981" radius={[6, 6, 0, 0]} name="Müdür Onaylı" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={[
+                    { name: 'Vakıf Bütçesi', Tutar: stats.totalBudgetTL, fill: '#3b82f6' },
+                    { name: 'Planlanan Yardım', Tutar: stats.plannedAidTL, fill: stats.isExceeded ? '#dc2626' : '#6366f1' },
+                    { name: 'Onaylanan Yardım', Tutar: stats.approvedAidTL, fill: '#10b981' },
+                  ]}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
+                    <YAxis stroke="#64748b" fontSize={11} tickLine={false} tickFormatter={(v) => `${v.toLocaleString('tr-TR')} ₺`} />
+                    <Tooltip formatter={(value: any) => [`${Number(value).toLocaleString('tr-TR')} ₺`, 'Tutar']} />
+                    <Bar dataKey="Tutar" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={[
-                  { name: 'Vakıf Bütçesi', Tutar: stats.totalBudgetTL, fill: '#3b82f6' },
-                  { name: 'Planlanan Yardım', Tutar: stats.plannedAidTL, fill: stats.isExceeded ? '#dc2626' : '#6366f1' },
-                  { name: 'Onaylanan Yardım', Tutar: stats.approvedAidTL, fill: '#10b981' },
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#64748b" fontSize={11} tickLine={false} tickFormatter={(v) => `${v.toLocaleString('tr-TR')} ₺`} />
-                  <Tooltip formatter={(value: any) => [`${Number(value).toLocaleString('tr-TR')} ₺`, 'Tutar']} />
-                  <Bar dataKey="Tutar" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              selectedMeetingId === 'ALL' ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={meetingComparisonData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
+                    <YAxis stroke="#64748b" fontSize={11} tickLine={false} allowDecimals={false} />
+                    <Tooltip formatter={(value: any) => [`${value} Hane`, 'Hane Sayısı']} />
+                    <Bar dataKey="HaneSayisi" fill="#3b82f6" radius={[6, 6, 0, 0]} name="İnceleme Yapılan Hane" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={riskScoreData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
+                    <YAxis stroke="#64748b" fontSize={11} tickLine={false} allowDecimals={false} />
+                    <Tooltip formatter={(value: any) => [`${value} Hane`, 'Hane Sayısı']} />
+                    <Bar dataKey="Hane" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )
             )}
           </div>
         </div>

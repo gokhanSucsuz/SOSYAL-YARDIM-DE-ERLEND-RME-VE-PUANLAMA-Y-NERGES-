@@ -526,9 +526,9 @@ export default function AssessmentDetail() {
             {/* F. Sosyal Kırılganlık */}
             <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
               <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
-                <h3 className="font-bold text-slate-800 text-sm">F. SOSYAL KIRILGANLIK SEÇENEKLERİ</h3>
+                <h3 className="font-bold text-slate-800 text-sm">F. SOSYAL KIRILGANLIK VE NÜFUS</h3>
                 <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
-                  {calc.scoreF} / 10 Puan
+                  {calc.scoreF} / 30 Puan
                 </span>
               </div>
               <div className="p-5">
@@ -783,7 +783,7 @@ export default function AssessmentDetail() {
                 <td className="border-r border-black p-1">
                   {selectedFragility.length > 0 ? selectedFragility.join(" • ") : "Özel kırılganlık maddesi bulunmuyor"}
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreF} / 10</td>
+                <td className="p-1 text-center font-bold">{calc.scoreF} / 30</td>
               </tr>
 
               <tr className="border-b border-black">

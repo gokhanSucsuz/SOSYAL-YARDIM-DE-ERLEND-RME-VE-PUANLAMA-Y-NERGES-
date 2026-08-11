@@ -22,9 +22,9 @@ export default function GuidePage() {
             className="w-10 h-10 rounded-2xl shadow-md border-2 border-white/30 object-cover shrink-0 hidden sm:block" 
           />
           <div>
-            <h1 className="text-lg font-black leading-tight tracking-wide">T.C. SYDV SOSYAL İNCELEME VE PUANLAMA KILAVUZU</h1>
+            <h1 className="text-lg font-black leading-tight tracking-wide">T.C. EDİRNE SYDV SOSYAL İNCELEME VE PUANLAMA KILAVUZU</h1>
             <p className="text-xs text-red-100 font-bold tracking-widest uppercase">
-              Sosyal Yardımlaşma ve Dayanışma Vakfı Standart Metodoloji Rehberi
+              T.C. Edirne Valiliği Sosyal Yardımlaşma ve Dayanışma Vakfı Standart Metodoloji Rehberi
             </p>
           </div>
         </div>
@@ -351,8 +351,8 @@ export default function GuidePage() {
             {/* Category F */}
             <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 pb-2">
-                <h4 className="font-bold text-slate-900 text-base">F. SOSYAL KIRILGANLIK VE NÜFUS ŞARTLARI (Maksimum 10 Puan)</h4>
-                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
+                <h4 className="font-bold text-slate-900 text-base">F. SOSYAL KIRILGANLIK VE NÜFUS ŞARTLARI (Maksimum 30 Puan)</h4>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 30 Puan</span>
               </div>
               <ul className="text-xs space-y-1 text-slate-700 list-disc pl-5 font-medium">
                 <li><strong>Aile İçi Şiddet Mağduru:</strong> +6 Puan</li>

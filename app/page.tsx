@@ -1113,7 +1113,7 @@ export default function Dashboard() {
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl shadow-md border-2 border-white/30 object-cover shrink-0" 
           />
           <div>
-            <h1 className="text-sm sm:text-lg font-extrabold leading-tight tracking-wide">T.C. SYDV SOSYAL YARDIM DEĞERLENDİRME SİSTEMİ</h1>
+            <h1 className="text-sm sm:text-lg font-extrabold leading-tight tracking-wide">T.C. EDİRNE SYDV SOSYAL YARDIM DEĞERLENDİRME SİSTEMİ</h1>
             <p className="text-[10px] sm:text-xs text-red-100 font-bold tracking-widest uppercase">
               {user.role === 'manager' ? 'Müdür Yetkilisi Yönetim Paneli' : 'Personel Paneli'}
             </p>
@@ -1282,46 +1282,50 @@ export default function Dashboard() {
           </div>
 
           {/* Budget Metrics for Manager & Overall System */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-blue-200 shadow-xs flex items-center space-x-3.5 bg-gradient-to-br from-blue-50/40 to-white">
-            <div className="p-3 bg-blue-100 text-blue-700 rounded-xl shrink-0"><Wallet size={22} /></div>
-            <div className="min-w-0">
-              <p className="text-[10px] sm:text-[11px] font-bold text-blue-600 uppercase tracking-wider mb-0.5 truncate">Vakıf Bütçesi (Toplam)</p>
-              <p className="text-lg sm:text-xl font-black text-slate-900 leading-none truncate">
-                {globalBudgetStats.totalBudgetTL > 0 ? `${globalBudgetStats.totalBudgetTL.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
-              </p>
-            </div>
-          </div>
+          {user?.role === 'manager' && (
+            <>
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-blue-200 shadow-xs flex items-center space-x-3.5 bg-gradient-to-br from-blue-50/40 to-white">
+                <div className="p-3 bg-blue-100 text-blue-700 rounded-xl shrink-0"><Wallet size={22} /></div>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-[11px] font-bold text-blue-600 uppercase tracking-wider mb-0.5 truncate">Vakıf Bütçesi (Toplam)</p>
+                  <p className="text-lg sm:text-xl font-black text-slate-900 leading-none truncate">
+                    {globalBudgetStats.totalBudgetTL > 0 ? `${globalBudgetStats.totalBudgetTL.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
+                  </p>
+                </div>
+              </div>
 
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-200 shadow-xs flex items-center space-x-3.5 bg-gradient-to-br from-indigo-50/40 to-white">
-            <div className="p-3 bg-indigo-100 text-indigo-700 rounded-xl shrink-0"><Banknote size={22} /></div>
-            <div className="min-w-0">
-              <p className="text-[10px] sm:text-[11px] font-bold text-indigo-600 uppercase tracking-wider mb-0.5 truncate">Yapılacak Toplam Yardım</p>
-              <p className="text-lg sm:text-xl font-black text-indigo-900 leading-none truncate">
-                {globalBudgetStats.totalPlannedAidTL.toLocaleString('tr-TR')} ₺
-              </p>
-              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Onaylanan: {globalBudgetStats.totalApprovedAidTL.toLocaleString('tr-TR')} ₺</p>
-            </div>
-          </div>
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-200 shadow-xs flex items-center space-x-3.5 bg-gradient-to-br from-indigo-50/40 to-white">
+                <div className="p-3 bg-indigo-100 text-indigo-700 rounded-xl shrink-0"><Banknote size={22} /></div>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-[11px] font-bold text-indigo-600 uppercase tracking-wider mb-0.5 truncate">Yapılacak Toplam Yardım</p>
+                  <p className="text-lg sm:text-xl font-black text-indigo-900 leading-none truncate">
+                    {globalBudgetStats.totalPlannedAidTL.toLocaleString('tr-TR')} ₺
+                  </p>
+                  <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Onaylanan: {globalBudgetStats.totalApprovedAidTL.toLocaleString('tr-TR')} ₺</p>
+                </div>
+              </div>
 
-          <div className={`p-4 sm:p-5 rounded-2xl border shadow-xs flex items-center space-x-3.5 ${
-            globalBudgetStats.isGlobalExceeded 
-              ? 'bg-red-50 border-red-300 animate-pulse' 
-              : 'bg-emerald-50/50 border-emerald-200'
-          }`}>
-            <div className={`p-3 rounded-xl shrink-0 ${globalBudgetStats.isGlobalExceeded ? 'bg-red-600 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
-              <AlertCircle size={22} />
-            </div>
-            <div className="min-w-0">
-              <p className={`text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider mb-0.5 truncate ${globalBudgetStats.isGlobalExceeded ? 'text-red-700' : 'text-emerald-700'}`}>
-                {globalBudgetStats.isGlobalExceeded ? '🚨 BÜTÇE AŞILIYOR' : 'Kalan Vakıf Bütçesi'}
-              </p>
-              <p className={`text-lg sm:text-xl font-black leading-none truncate ${globalBudgetStats.isGlobalExceeded ? 'text-red-700' : 'text-emerald-900'}`}>
-                {globalBudgetStats.isGlobalExceeded 
-                  ? `+${globalBudgetStats.globalExcessTL.toLocaleString('tr-TR')} ₺ Aşım` 
-                  : `${globalBudgetStats.remainingBudgetTL.toLocaleString('tr-TR')} ₺`}
-              </p>
-            </div>
-          </div>
+              <div className={`p-4 sm:p-5 rounded-2xl border shadow-xs flex items-center space-x-3.5 ${
+                globalBudgetStats.isGlobalExceeded 
+                  ? 'bg-red-50 border-red-300 animate-pulse' 
+                  : 'bg-emerald-50/50 border-emerald-200'
+              }`}>
+                <div className={`p-3 rounded-xl shrink-0 ${globalBudgetStats.isGlobalExceeded ? 'bg-red-600 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
+                  <AlertCircle size={22} />
+                </div>
+                <div className="min-w-0">
+                  <p className={`text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider mb-0.5 truncate ${globalBudgetStats.isGlobalExceeded ? 'text-red-700' : 'text-emerald-700'}`}>
+                    {globalBudgetStats.isGlobalExceeded ? '🚨 BÜTÇE AŞILIYOR' : 'Kalan Vakıf Bütçesi'}
+                  </p>
+                  <p className={`text-lg sm:text-xl font-black leading-none truncate ${globalBudgetStats.isGlobalExceeded ? 'text-red-700' : 'text-emerald-900'}`}>
+                    {globalBudgetStats.isGlobalExceeded 
+                      ? `+${globalBudgetStats.globalExcessTL.toLocaleString('tr-TR')} ₺ Aşım` 
+                      : `${globalBudgetStats.remainingBudgetTL.toLocaleString('tr-TR')} ₺`}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Multi-Select Toolbar for Manager */}
@@ -1614,7 +1618,7 @@ export default function Dashboard() {
                         </p>
 
                         {/* Meeting Budget & Assistance Breakdown Card */}
-                        {(() => {
+                        {user?.role === 'manager' && (() => {
                           const stats = meetingStatsMap.get(m.id);
                           const mBudget = m.budgetTL || 0;
                           const mPlanned = stats?.plannedAidTL || 0;
@@ -1789,6 +1793,20 @@ export default function Dashboard() {
                const isExceeded = mBudget > 0 && mPlanned > mBudget;
                const excessTL = isExceeded ? mPlanned - mBudget : 0;
                const remainingTL = mBudget - mPlanned;
+
+               if (user?.role !== 'manager') {
+                 return (
+                   <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
+                     <div className="flex items-center gap-2">
+                       <span className="text-xs font-bold text-slate-700">Toplantı Hane Durumu:</span>
+                       <span className="text-xs font-extrabold text-slate-900">{stats?.totalCount || 0} İnceleme Dosyası</span>
+                     </div>
+                     <div className="text-xs font-bold text-emerald-700">
+                       {stats?.approvedCount || 0} Onaylı / {stats?.pendingCount || 0} Bekleyen
+                     </div>
+                   </div>
+                 );
+               }
 
                return (
                  <div className={`p-4 rounded-2xl border transition-all ${
@@ -2951,7 +2969,7 @@ export default function Dashboard() {
                             <td className="border-r border-black p-1">
                               {fragility.length > 0 ? fragility.join(" • ") : "Özel kırılganlık maddesi yok"}
                             </td>
-                            <td className="p-1 text-center font-bold">{calc.scoreF} / 10</td>
+                            <td className="p-1 text-center font-bold">{calc.scoreF} / 30</td>
                           </tr>
 
                           <tr className="border-b border-black">
