@@ -6,7 +6,7 @@ import { getAllAssessments, getAssessmentsByPersonnel, Assessment, saveAssessmen
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
-  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check, CheckSquare, ListOrdered, Trash2 
+  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download 
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -586,6 +586,192 @@ export default function Dashboard() {
     }, 150);
   };
 
+  const handleExportExcel = async (exportOnlySelected: boolean = false) => {
+    const targetRecords = exportOnlySelected
+      ? filteredAndSortedAssessments.filter(a => selectedIds.includes(a.id))
+      : filteredAndSortedAssessments;
+
+    if (!targetRecords || targetRecords.length === 0) {
+      alert('Dışa aktarılacak hane sosyal inceleme kaydı bulunamadı.');
+      return;
+    }
+
+    try {
+      const ExcelJS = (await import('exceljs')).default;
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'Sosyal Yardım ve İnceleme Sistemi';
+      workbook.lastModifiedBy = user?.name || 'Sistem Görevlisi';
+      workbook.created = new Date();
+
+      const worksheet = workbook.addWorksheet('Hane Kayıtları', {
+        pageSetup: { paperSize: 9, orientation: 'landscape' },
+      });
+
+      // Title
+      worksheet.mergeCells('A1', 'M1');
+      const titleCell = worksheet.getCell('A1');
+      titleCell.value = 'T.C. SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI HANE SOSYAL İNCELEME KADROSU LİSTESİ';
+      titleCell.font = { name: 'Calibri', size: 13, bold: true, color: { argb: 'FFFFFFFF' } };
+      titleCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF1E3A8A' },
+      };
+      titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.getRow(1).height = 30;
+
+      // Meta info
+      worksheet.mergeCells('A2', 'M2');
+      const metaCell = worksheet.getCell('A2');
+      metaCell.value = `Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')} | Kayıt Sayısı: ${targetRecords.length} | Oluşturan: ${user?.name || 'Sistem Görevlisi'}`;
+      metaCell.font = { name: 'Calibri', size: 10, italic: true, color: { argb: 'FF475569' } };
+      metaCell.alignment = { horizontal: 'left', vertical: 'middle' };
+      worksheet.getRow(2).height = 20;
+
+      worksheet.getRow(3).height = 8;
+
+      // Table Headers
+      const headers = [
+        'SIRA NO',
+        'ZİYARET TARİHİ',
+        'T.C. KİMLİK NO',
+        'BAŞVURU SAHİBİ ADI SOYADI',
+        'TELEFON NO',
+        'HANE KİŞİ',
+        'İKAMET ADRESİ',
+        'HANE REF NO',
+        'GÖREVLİ İNCELEYEN',
+        'TOPLAM PUAN',
+        'DEĞERLENDİRME KARARI',
+        'ONAY DURUMU',
+        'ONAYLAYAN MÜDÜR'
+      ];
+
+      const headerRow = worksheet.getRow(4);
+      headerRow.values = headers;
+      headerRow.height = 26;
+
+      headerRow.eachCell((cell) => {
+        cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF334155' },
+        };
+        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FF94A3B8' } },
+          left: { style: 'thin', color: { argb: 'FF94A3B8' } },
+          bottom: { style: 'medium', color: { argb: 'FF0F172A' } },
+          right: { style: 'thin', color: { argb: 'FF94A3B8' } },
+        };
+      });
+
+      // Rows
+      targetRecords.forEach((item, idx) => {
+        const rowNum = idx + 5;
+        const row = worksheet.getRow(rowNum);
+
+        const isAccepted = item.result ? !item.result.isRejected : true;
+        const isApproved = item.status === 'approved';
+        const sequenceNo = item.customOrder !== undefined && item.customOrder !== null ? item.customOrder : idx + 1;
+
+        row.values = [
+          sequenceNo,
+          new Date(item.date).toLocaleDateString('tr-TR'),
+          item.applicantTc || '-',
+          item.applicantName,
+          item.phoneNumber || '-',
+          `${item.householdSize} kişi`,
+          item.applicantAddress || '-',
+          item.householdNo || '-',
+          item.personnelName,
+          item.result?.totalScore ?? 0,
+          isAccepted ? 'KAPSAM İÇİ (KABUL)' : 'KAPSAM DIŞI (RED)',
+          isApproved ? 'ONAYLANDI' : 'ONAY BEKLİYOR',
+          item.managerName || '-'
+        ];
+
+        row.height = 22;
+
+        row.eachCell((cell, colNum) => {
+          cell.font = { name: 'Calibri', size: 10 };
+          cell.alignment = {
+            vertical: 'middle',
+            horizontal: (colNum === 4 || colNum === 7) ? 'left' : 'center',
+            wrapText: colNum === 7,
+          };
+
+          const bgColor = idx % 2 === 0 ? 'FFFFFFFF' : 'FFF8FAFC';
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: bgColor },
+          };
+
+          cell.border = {
+            top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+          };
+
+          if (colNum === 1) {
+            cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF4338CA' } };
+          }
+          if (colNum === 4) {
+            cell.font = { name: 'Calibri', size: 10, bold: true };
+          }
+          if (colNum === 10) {
+            cell.font = { name: 'Calibri', size: 10, bold: true };
+          }
+          if (colNum === 11) {
+            cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: isAccepted ? 'FF15803D' : 'FFB91C1C' } };
+          }
+          if (colNum === 12) {
+            cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: isApproved ? 'FF047857' : 'FFD97706' } };
+          }
+        });
+      });
+
+      worksheet.columns = [
+        { width: 10 },
+        { width: 14 },
+        { width: 16 },
+        { width: 28 },
+        { width: 16 },
+        { width: 13 },
+        { width: 36 },
+        { width: 15 },
+        { width: 22 },
+        { width: 13 },
+        { width: 22 },
+        { width: 16 },
+        { width: 20 },
+      ];
+
+      worksheet.autoFilter = {
+        from: { row: 4, column: 1 },
+        to: { row: targetRecords.length + 4, column: 13 },
+      };
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const dateStr = new Date().toISOString().slice(0, 10);
+      link.download = `Hane_Kayitlari_${exportOnlySelected ? 'Secilenler_' : ''}${dateStr}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Excel indirilirken hata oluştu:', err);
+      alert('Excel dosyası oluşturulurken bir hata oluştu.');
+    }
+  };
+
   const resetAllFilters = () => {
     setSearchQuery('');
     setFilterStatus('all');
@@ -936,6 +1122,15 @@ export default function Dashboard() {
               )}
 
               <button
+                onClick={() => handleExportExcel(false)}
+                className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
+                title="Mevcut filtrelenmiş ve sıralanmış hane listesini Excel (.xlsx) olarak indir"
+              >
+                <FileSpreadsheet size={15} />
+                <span>Excel İndir (.xlsx)</span>
+              </button>
+
+              <button
                 onClick={handlePrintCurrentList}
                 className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
                 title="Mevcut sıralama ve filtreye göre tüm listeyi PDF / Yazıcı çıktısı al"
@@ -991,6 +1186,15 @@ export default function Dashboard() {
               </button>
 
               <button
+                onClick={() => handleExportExcel(false)}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white border border-emerald-800 px-2.5 py-1 rounded-md font-bold text-xs flex items-center gap-1 shadow-sm transition-all active:scale-95"
+                title="Sıralanmış hane listesini Excel (.xlsx) olarak indir"
+              >
+                <FileSpreadsheet size={13} />
+                <span>Excel Çıktısı Al (.xlsx)</span>
+              </button>
+
+              <button
                 onClick={handleClearAllCustomOrders}
                 className="text-slate-500 hover:text-red-600 underline text-[11px] px-1 py-0.5"
                 title="Tüm özel sıra numaralarını temizle"
@@ -1008,6 +1212,15 @@ export default function Dashboard() {
                 <span>Toplam <strong className="text-emerald-300 text-sm">{selectedIds.length}</strong> adet kayıt seçildi</span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={() => handleExportExcel(true)}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
+                  title="Seçilen kayıtları Excel (.xlsx) formatında indir"
+                >
+                  <FileSpreadsheet size={14} />
+                  <span>Seçilenleri Excel'e Aktar ({selectedIds.length})</span>
+                </button>
+
                 <button
                   onClick={handlePrintSelectedDetailed}
                   className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
