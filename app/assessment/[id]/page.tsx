@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { getAssessmentById, Assessment, saveAssessment } from '@/lib/db';
-import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, AlertTriangle, Check, X, FileText, RotateCcw, Lock, Unlock } from 'lucide-react';
+import { getAssessmentById, Assessment, saveAssessment, deleteAssessment } from '@/lib/db';
+import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, AlertTriangle, Check, X, FileText, RotateCcw, Lock, Unlock, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AssessmentDetail() {
@@ -13,6 +13,7 @@ export default function AssessmentDetail() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [approving, setApproving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
@@ -73,6 +74,29 @@ export default function AssessmentDetail() {
       alert('Onay kaldırma sırasında bir hata oluştu.');
     } finally {
       setApproving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!assessment) return;
+    if (assessment.status === 'approved') {
+      alert('Onaylanmış sosyal inceleme kayıtları silinemez.');
+      return;
+    }
+
+    if (!confirm(`"${assessment.applicantName}" isimli başvuru sahibine ait sosyal inceleme kaydını SILMEK istediğinizden emin misiniz?\n\nBu işlem kalıcıdır ve geri alınamaz!`)) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      await deleteAssessment(assessment.id);
+      alert('Sosyal inceleme kaydı başarıyla silindi.');
+      router.push('/');
+    } catch (err) {
+      console.error('Silme işlemi sırasında hata oluştu:', err);
+      alert('Kayıt silinirken bir hata oluştu.');
+      setDeleting(false);
     }
   };
 
@@ -268,6 +292,27 @@ export default function AssessmentDetail() {
             <Printer size={18} />
             <span>Resmi Çıktı / Yazdır</span>
           </button>
+
+          {/* Delete Record Button */}
+          {assessment.status !== 'approved' ? (
+            <button 
+              onClick={handleDelete}
+              disabled={deleting}
+              className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white border border-red-700 px-4 py-2 rounded-lg transition-colors text-sm font-bold shadow-md shadow-red-900/20 active:scale-95"
+              title="Onaylanmamış inceleme kaydını kalıcı olarak sil"
+            >
+              <Trash2 size={18} />
+              <span>{deleting ? 'Siliniyor...' : 'Kaydı Sil'}</span>
+            </button>
+          ) : (
+            <div 
+              className="flex items-center space-x-1.5 bg-slate-800 text-slate-400 border border-slate-700 px-3 py-2 rounded-lg text-xs font-bold cursor-not-allowed" 
+              title="Onaylı sosyal inceleme kayıtları silinemez. Silme işlemi için öncelikle müdür onayının kaldırılması gerekir."
+            >
+              <Lock size={14} />
+              <span>Onaylı (Silinemez)</span>
+            </div>
+          )}
         </div>
       </header>
 

@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAllAssessments, getAssessmentsByPersonnel, Assessment, saveAssessment } from '@/lib/db';
+import { getAllAssessments, getAssessmentsByPersonnel, Assessment, saveAssessment, deleteAssessment } from '@/lib/db';
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
-  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check, CheckSquare, ListOrdered 
+  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check, CheckSquare, ListOrdered, Trash2 
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -241,6 +241,26 @@ export default function Dashboard() {
       setAssessments(updatedList);
     } catch (err) {
       alert('Sıra numaraları temizlenirken hata oluştu.');
+    }
+  };
+
+  const handleDeleteSingle = async (item: Assessment) => {
+    if (item.status === 'approved') {
+      alert('Onaylanmış sosyal inceleme kayıtları silinemez.');
+      return;
+    }
+
+    if (!confirm(`"${item.applicantName}" isimli başvuru sahibine ait sosyal inceleme kaydını SILMEK istediğinizden emin misiniz?\n\nBu işlem kalıcıdır ve geri alınamaz!`)) {
+      return;
+    }
+
+    try {
+      await deleteAssessment(item.id);
+      setAssessments(prev => prev.filter(a => a.id !== item.id));
+      setSelectedIds(prev => prev.filter(id => id !== item.id));
+    } catch (err) {
+      console.error('Silme hatası:', err);
+      alert('Kayıt silinirken bir hata oluştu.');
     }
   };
 
@@ -1303,6 +1323,17 @@ export default function Dashboard() {
                           >
                             <FileText size={14} /> Detaylar
                           </Link>
+
+                          {/* Delete Button for Non-Approved Records */}
+                          {!isApproved && (
+                            <button
+                              onClick={() => handleDeleteSingle(item)}
+                              className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 text-xs font-bold px-2 py-1.5 rounded-lg transition-colors active:scale-95"
+                              title="Onaylanmamış İnceleme Kaydını Sil"
+                            >
+                              <Trash2 size={13} /> Sil
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );
