@@ -191,7 +191,7 @@ export default function PresentationPage() {
                 <li className="flex items-start gap-2.5 bg-red-50/50 p-3 rounded-xl border border-red-100">
                   <span className="text-red-500 font-bold shrink-0">✕</span>
                   <div>
-                    <strong>Bütçe Dağıtımında Odaklanma Güçlüğü:</strong> Sınırlı nakdi yardım bütçesinin "en ağır durumdaki" gerçek muhtaçlara ulaştırılmasında standart eksikliği.
+                    <strong>Bütçe Dağıtımında Odaklanma Güçlüğü:</strong> Sınırlı nakdi yardım bütçesinin &quot;en ağır durumdaki&quot; gerçek muhtaçlara ulaştırılmasında standart eksikliği.
                   </div>
                 </li>
                 <li className="flex items-start gap-2.5 bg-red-50/50 p-3 rounded-xl border border-red-100">

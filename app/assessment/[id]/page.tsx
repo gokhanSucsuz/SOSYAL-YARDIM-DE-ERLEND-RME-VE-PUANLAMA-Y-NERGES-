@@ -365,7 +365,7 @@ export default function AssessmentDetail() {
               <div className="p-2 bg-amber-500 text-white rounded-lg"><AlertTriangle size={20} /></div>
               <div>
                 <h3 className="font-bold text-amber-900 text-sm">Müdür Onayı Bekleniyor</h3>
-                <p className="text-xs text-amber-700">İncelemeyi yapan personel tarafından hazırlanan formu kontrol ettikten sonra yukarıdaki "İncelemeyi Onayla" butonuna basarak onaylayabilirsiniz.</p>
+                <p className="text-xs text-amber-700">İncelemeyi yapan personel tarafından hazırlanan formu kontrol ettikten sonra yukarıdaki &quot;İncelemeyi Onayla&quot; butonuna basarak onaylayabilirsiniz.</p>
               </div>
             </div>
             <button 

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2, Info,
   Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug
@@ -10,8 +10,11 @@ import { saveAssessment } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
 
-export default function NewAssessmentWizard() {
+function NewAssessmentContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const meetingId = searchParams.get('meetingId') || undefined;
+  
   const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(0);
 
@@ -237,6 +240,7 @@ export default function NewAssessmentWizard() {
     try {
       const assessmentData = {
         id: crypto.randomUUID(),
+        meetingId: meetingId,
         date: new Date().toISOString(),
         personnelId: user.id,
         personnelName: user.name,
@@ -550,7 +554,7 @@ export default function NewAssessmentWizard() {
                 </div>
                 <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE}>
                   <p className="text-xs text-slate-500 mb-4 font-medium">
-                    Her bir eşya için hanedeki mevcudiyet durumunu "Yok", "Var (Eski/Arızalı)" veya "Var (Yeni/İyi)" olarak belirleyiniz.
+                    Her bir eşya için hanedeki mevcudiyet durumunu &quot;Yok&quot;, &quot;Var (Eski/Arızalı)&quot; veya &quot;Var (Yeni/İyi)&quot; olarak belirleyiniz.
                   </p>
                   <div className="space-y-3">
                     <ApplianceStatusItem 
@@ -835,5 +839,13 @@ export default function NewAssessmentWizard() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function NewAssessmentWizard() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>}>
+      <NewAssessmentContent />
+    </Suspense>
   );
 }

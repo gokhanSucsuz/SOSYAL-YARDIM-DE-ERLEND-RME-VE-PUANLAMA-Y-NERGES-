@@ -2,13 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAllAssessments, getAssessmentsByPersonnel, Assessment, saveAssessment, deleteAssessment } from '@/lib/db';
+import { 
+  getAllAssessments, getAssessmentsByPersonnel, Assessment, 
+  saveAssessment, deleteAssessment, Meeting, getAllMeetings, 
+  saveMeeting, deleteMeeting 
+} from '@/lib/db';
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
-  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download 
+  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
+  X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar
 } from 'lucide-react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface BatchModalState {
   isOpen: boolean;
@@ -29,12 +35,20 @@ export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // New Assessment Modal State
+  const [newAssessmentModalOpen, setNewAssessmentModalOpen] = useState(false);
+  const [selectedMeetingId, setSelectedMeetingId] = useState<string>('');
+  const [newMeetingModalOpen, setNewMeetingModalOpen] = useState(false);
+  const [newMeetingData, setNewMeetingData] = useState({ meetingNo: '', date: '', description: '' });
 
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved'>('all');
   const [filterDecision, setFilterDecision] = useState<'all' | 'accepted' | 'rejected'>('all');
+  const [filterMeetingId, setFilterMeetingId] = useState<string>('all');
   
   // Sort States
   const [sortField, setSortField] = useState<SortField>('date');
@@ -69,6 +83,8 @@ export default function Dashboard() {
     
     const loadData = async () => {
       try {
+        const loadedMeetings = await getAllMeetings();
+        setMeetings(loadedMeetings);
         if (currentUser.role === 'manager') {
           setAssessments(await getAllAssessments());
         } else {
@@ -124,6 +140,9 @@ export default function Dashboard() {
       // Decision Filter
       if (filterDecision === 'accepted' && item.result.isRejected) return false;
       if (filterDecision === 'rejected' && !item.result.isRejected) return false;
+
+      // Meeting Filter
+      if (filterMeetingId !== 'all' && item.meetingId !== filterMeetingId) return false;
 
       // Search Query Filter
       if (searchQuery.trim()) {
@@ -887,6 +906,14 @@ export default function Dashboard() {
           <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
             {user.role === 'manager' && (
               <>
+                <button
+                  onClick={() => setNewMeetingModalOpen(true)}
+                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-md shadow-indigo-900/20 touch-manipulation"
+                  title="Yeni bir toplantı oluştur"
+                >
+                  <Calendar size={18} />
+                  <span>Yeni Toplantı Oluştur</span>
+                </button>
                 {/* Batch Approve All Button */}
                 <button
                   onClick={openApproveAllModal}
@@ -921,10 +948,13 @@ export default function Dashboard() {
             )}
 
             {user.role === 'personnel' && (
-              <Link href="/assessment/new" className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 active:scale-95 font-extrabold text-sm transition-all shadow-md shadow-blue-200 touch-manipulation">
+              <button 
+                onClick={() => setNewAssessmentModalOpen(true)}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 active:scale-95 font-extrabold text-sm transition-all shadow-md shadow-blue-200 touch-manipulation"
+              >
                 <Plus size={18} />
                 Yeni İnceleme Başlat
-              </Link>
+              </button>
             )}
           </div>
         </div>
@@ -1079,20 +1109,35 @@ export default function Dashboard() {
             <div className="flex flex-wrap items-center justify-between md:justify-end gap-2.5 w-full md:w-auto">
               
               <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
+                <Calendar size={14} className="text-slate-500 shrink-0" />
+                <span>Toplantı:</span>
+                <select
+                  value={filterMeetingId}
+                  onChange={(e: any) => setFilterMeetingId(e.target.value)}
+                  className="bg-white border border-slate-300 text-slate-800 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm max-w-[120px] truncate"
+                >
+                  <option value="all">Tümü</option>
+                  {meetings.map(m => (
+                    <option key={m.id} value={m.id}>{m.meetingNo}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
                 <Filter size={14} className="text-slate-500 shrink-0" />
-                <span>Karar Filtresi:</span>
+                <span>Karar:</span>
                 <select
                   value={filterDecision}
                   onChange={(e: any) => setFilterDecision(e.target.value)}
                   className="bg-white border border-slate-300 text-slate-800 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
                 >
-                  <option value="all">Tüm Kararlar</option>
+                  <option value="all">Tümü</option>
                   <option value="accepted">Kapsam İçi (Kabul)</option>
                   <option value="rejected">Kapsam Dışı (Red)</option>
                 </select>
               </div>
 
-              {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
+              {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || filterMeetingId !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
                 <button
                   onClick={resetAllFilters}
                   className="text-xs text-blue-700 hover:text-blue-900 font-bold underline flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
@@ -1218,7 +1263,7 @@ export default function Dashboard() {
                   title="Seçilen kayıtları Excel (.xlsx) formatında indir"
                 >
                   <FileSpreadsheet size={14} />
-                  <span>Seçilenleri Excel'e Aktar ({selectedIds.length})</span>
+                  <span>Seçilenleri Excel&apos;e Aktar ({selectedIds.length})</span>
                 </button>
 
                 <button
@@ -1726,7 +1771,7 @@ export default function Dashboard() {
                 ) : searchQuery ? (
                   <>
                     <span>•</span>
-                    <span>Arama: <strong>"{searchQuery}"</strong></span>
+                    <span>Arama: <strong>&quot;{searchQuery}&quot;</strong></span>
                   </>
                 ) : null}
               </p>
@@ -1992,6 +2037,167 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Create New Meeting Modal (Manager) */}
+      <AnimatePresence>
+        {newMeetingModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
+            >
+              <div className="bg-indigo-600 px-6 py-4 flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Calendar size={20} />
+                  Yeni Toplantı Oluştur
+                </h3>
+                <button onClick={() => setNewMeetingModalOpen(false)} className="text-white/70 hover:text-white p-1 rounded-full hover:bg-indigo-500 transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Toplantı No (Örn: 2026/01)</label>
+                  <input
+                    type="text"
+                    value={newMeetingData.meetingNo}
+                    onChange={(e) => setNewMeetingData({ ...newMeetingData, meetingNo: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"
+                    placeholder="2026/01"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Toplantı Tarihi</label>
+                  <input
+                    type="date"
+                    value={newMeetingData.date}
+                    onChange={(e) => setNewMeetingData({ ...newMeetingData, date: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Açıklama (İsteğe Bağlı)</label>
+                  <textarea
+                    value={newMeetingData.description}
+                    onChange={(e) => setNewMeetingData({ ...newMeetingData, description: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 min-h-[80px]"
+                    placeholder="Toplantı içeriği vb."
+                  />
+                </div>
+              </div>
+              <div className="bg-slate-50 px-6 py-4 flex justify-end gap-3 border-t border-slate-100">
+                <button
+                  onClick={() => setNewMeetingModalOpen(false)}
+                  className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!newMeetingData.meetingNo || !newMeetingData.date) {
+                      alert('Lütfen toplantı numarası ve tarihini giriniz.');
+                      return;
+                    }
+                    const newMeeting: Meeting = {
+                      id: Date.now().toString(),
+                      meetingNo: newMeetingData.meetingNo,
+                      date: newMeetingData.date,
+                      createdAt: new Date().toISOString(),
+                      managerName: user.name,
+                      description: newMeetingData.description
+                    };
+                    await saveMeeting(newMeeting);
+                    const updated = await getAllMeetings();
+                    setMeetings(updated);
+                    setNewMeetingModalOpen(false);
+                    setNewMeetingData({ meetingNo: '', date: '', description: '' });
+                  }}
+                  className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-900/20 active:scale-95 transition-all"
+                >
+                  Kaydet ve Oluştur
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Select Meeting & Start Assessment Modal (Personnel) */}
+      <AnimatePresence>
+        {newAssessmentModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-blue-100"
+            >
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-5 flex items-center justify-between relative overflow-hidden">
+                <div className="absolute -right-4 -top-12 opacity-10">
+                  <ShieldCheck size={120} />
+                </div>
+                <h3 className="text-xl font-extrabold text-white flex items-center gap-2 relative z-10 tracking-tight">
+                  <Plus size={24} className="opacity-90" />
+                  Yeni İnceleme Başlat
+                </h3>
+                <button onClick={() => setNewAssessmentModalOpen(false)} className="text-white/70 hover:text-white p-1 rounded-full hover:bg-white/20 transition-colors relative z-10">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6 space-y-5">
+                <p className="text-sm text-slate-600 font-medium">Hane inceleme kaydı oluşturmak için öncelikle bu kaydın hangi mütevelli heyeti toplantısında sunulacağını seçiniz.</p>
+                <div>
+                  <label className="block text-sm font-bold text-slate-800 mb-2">Hedef Toplantı Seçimi</label>
+                  <select
+                    value={selectedMeetingId}
+                    onChange={(e) => setSelectedMeetingId(e.target.value)}
+                    className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-blue-500 bg-slate-50 font-semibold text-slate-800 shadow-sm transition-colors"
+                  >
+                    <option value="" disabled>Toplantı Seçiniz...</option>
+                    {meetings.map(m => (
+                      <option key={m.id} value={m.id}>{m.meetingNo} - {new Date(m.date).toLocaleDateString('tr-TR')} ({m.managerName})</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="bg-slate-50 px-6 py-5 flex flex-col gap-3 border-t border-slate-100">
+                <button
+                  onClick={() => {
+                    if (!selectedMeetingId) {
+                      alert('Lütfen işleme devam etmek için bir toplantı seçiniz.');
+                      return;
+                    }
+                    router.push(`/assessment/new?meetingId=${selectedMeetingId}`);
+                  }}
+                  disabled={!selectedMeetingId}
+                  className="w-full px-5 py-3.5 rounded-xl font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
+                >
+                  <Plus size={20} />
+                  İnceleme Formunu Aç
+                </button>
+                <button
+                  onClick={() => setNewAssessmentModalOpen(false)}
+                  className="w-full px-5 py-3 rounded-xl font-bold text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-700 transition-colors"
+                >
+                  Geri Dön
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

@@ -12,8 +12,18 @@ export interface AssessmentResult {
   isRejected: boolean;
 }
 
+export interface Meeting {
+  id: string; // Unique ID
+  meetingNo: string; // Toplantı No (e.g. 2026/01)
+  date: string; // Tarih
+  createdAt: string; // Oluşturulma tarihi
+  managerName: string; // Oluşturan Müdür
+  description?: string; // Toplantı açıklaması
+}
+
 export interface Assessment {
   id: string;
+  meetingId?: string; // Hangi toplantıya ait olduğu
   date: string;
   personnelId: string;
   personnelName: string;
@@ -32,7 +42,8 @@ export interface Assessment {
 
 const DB_NAME = 'SocialAssistanceDB';
 const STORE_NAME = 'assessments';
-const DB_VERSION = 1;
+const MEETING_STORE_NAME = 'meetings';
+const DB_VERSION = 2;
 
 export const initDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -50,8 +61,52 @@ export const initDB = (): Promise<IDBDatabase> => {
         const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
         store.createIndex('personnelId', 'personnelId', { unique: false });
         store.createIndex('date', 'date', { unique: false });
+        store.createIndex('meetingId', 'meetingId', { unique: false });
+      } else {
+        const store = e.currentTarget.transaction.objectStore(STORE_NAME);
+        if (!store.indexNames.contains('meetingId')) {
+          store.createIndex('meetingId', 'meetingId', { unique: false });
+        }
+      }
+      
+      if (!db.objectStoreNames.contains(MEETING_STORE_NAME)) {
+        const meetingStore = db.createObjectStore(MEETING_STORE_NAME, { keyPath: 'id' });
+        meetingStore.createIndex('date', 'date', { unique: false });
       }
     };
+  });
+};
+
+export const saveMeeting = async (meeting: Meeting): Promise<void> => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(MEETING_STORE_NAME, 'readwrite');
+    const store = tx.objectStore(MEETING_STORE_NAME);
+    const request = store.put(meeting);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+};
+
+export const getAllMeetings = async (): Promise<Meeting[]> => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(MEETING_STORE_NAME, 'readonly');
+    const store = tx.objectStore(MEETING_STORE_NAME);
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+    request.onerror = () => reject(request.error);
+  });
+};
+
+export const deleteMeeting = async (id: string): Promise<void> => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(MEETING_STORE_NAME, 'readwrite');
+    const store = tx.objectStore(MEETING_STORE_NAME);
+    const request = store.delete(id);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
   });
 };
 

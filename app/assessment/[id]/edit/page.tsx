@@ -592,7 +592,7 @@ export default function EditAssessmentWizard() {
                 </div>
                 <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE}>
                   <p className="text-xs text-slate-500 mb-4 font-medium">
-                    Her bir eşya için hanedeki mevcudiyet durumunu "Yok", "Var (Eski/Arızalı)" veya "Var (Yeni/İyi)" olarak belirleyiniz.
+                    Her bir eşya için hanedeki mevcudiyet durumunu &quot;Yok&quot;, &quot;Var (Eski/Arızalı)&quot; veya &quot;Var (Yeni/İyi)&quot; olarak belirleyiniz.
                   </p>
                   <div className="space-y-3">
                     <ApplianceStatusItem 
