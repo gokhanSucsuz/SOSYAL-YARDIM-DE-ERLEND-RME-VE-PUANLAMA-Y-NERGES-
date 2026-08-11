@@ -94,7 +94,35 @@ export interface Meeting {
   createdAt: string; // Oluşturulma tarihi
   managerName: string; // Oluşturan Müdür
   description?: string; // Toplantı açıklaması
+  isClosed?: boolean; // Toplantı müdür tarafından sonlandırıldı mı?
+  forceOpen?: boolean; // Geçmiş tarihli olmasına rağmen müdür tarafından yeniden açıldı mı?
 }
+
+/**
+ * Checks whether a meeting is locked for edits.
+ * - If user is manager, they can manage or edit anytime.
+ * - For personnel, meeting is locked if explicitly closed (isClosed === true)
+ *   or if meeting date is in the past and forceOpen is not true.
+ */
+export const isMeetingLocked = (meeting?: Meeting, userRole?: string): boolean => {
+  if (!meeting) return false;
+  if (userRole === 'manager') return false; // Managers can always override
+
+  if (meeting.isClosed === true) return true;
+
+  if (meeting.date) {
+    const meetingDate = new Date(meeting.date);
+    meetingDate.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (meetingDate < today && !meeting.forceOpen) {
+      return true;
+    }
+  }
+
+  return false;
+};
 
 export interface Assessment {
   id: string;

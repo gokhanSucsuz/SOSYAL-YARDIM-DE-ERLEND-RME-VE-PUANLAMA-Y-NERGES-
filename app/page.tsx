@@ -4,18 +4,19 @@
 export const dynamic = "force-dynamic";
 
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   getAllAssessments, getAssessmentsByPersonnel, Assessment, 
   saveAssessment, deleteAssessment, Meeting, getAllMeetings, 
-  saveMeeting, deleteMeeting 
+  saveMeeting, deleteMeeting, isMeetingLocked 
 } from '@/lib/db';
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
-  Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
-  X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar, ArrowLeft, ArrowRight, Settings
+  Lock, Unlock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
+  X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar, ArrowLeft, ArrowRight, Settings,
+  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -49,6 +50,7 @@ export default function Dashboard() {
   const [newMeetingData, setNewMeetingData] = useState({ meetingNo: '', date: '', description: '' });
 
   // Search & Filter States
+  const [householdSearchQuery, setHouseholdSearchQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved'>('all');
   const [filterDecision, setFilterDecision] = useState<'all' | 'accepted' | 'rejected'>('all');
@@ -104,6 +106,49 @@ export default function Dashboard() {
     loadData();
   }, [router]);
 
+  // Household search logic
+  const householdSearchResults = useMemo(() => {
+    if (!householdSearchQuery.trim()) return [];
+    const q = householdSearchQuery.toLowerCase().trim();
+    
+    const map = new Map<string, {
+      key: string;
+      applicantName: string;
+      applicantTc: string;
+      householdNo: string;
+      phoneNumber: string;
+      applicantAddress: string;
+      assessments: Assessment[];
+    }>();
+
+    assessments.forEach(item => {
+      const tcMatch = (item.applicantTc || '').toLowerCase().includes(q);
+      const nameMatch = (item.applicantName || '').toLowerCase().includes(q);
+      const noMatch = (item.householdNo || '').toLowerCase().includes(q);
+
+      if (tcMatch || nameMatch || noMatch) {
+        const key = (item.applicantTc && item.applicantTc.length === 11) 
+          ? item.applicantTc 
+          : (item.householdNo || item.applicantName);
+
+        if (!map.has(key)) {
+          map.set(key, {
+            key,
+            applicantName: item.applicantName,
+            applicantTc: item.applicantTc || '-',
+            householdNo: item.householdNo || '-',
+            phoneNumber: item.phoneNumber || '-',
+            applicantAddress: item.applicantAddress || '-',
+            assessments: [],
+          });
+        }
+        map.get(key)!.assessments.push(item);
+      }
+    });
+
+    return Array.from(map.values());
+  }, [householdSearchQuery, assessments]);
+
   if (!user || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -125,6 +170,35 @@ export default function Dashboard() {
       setAssessments(await getAllAssessments());
     } else {
       setAssessments(await getAssessmentsByPersonnel(user.id));
+    }
+  };
+
+  const handleToggleMeetingStatus = async (meeting: Meeting, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const mDate = new Date(meeting.date);
+    mDate.setHours(0,0,0,0);
+
+    const isCurrentlyLocked = meeting.isClosed || (mDate < today && !meeting.forceOpen);
+
+    const actionText = isCurrentlyLocked ? 'DÜZENLEMEYE AÇMAK' : 'SONLANDIRMAK';
+    const confirmMsg = isCurrentlyLocked
+      ? `"${meeting.meetingNo}" numaralı toplantıyı DÜZENLEMEYE AÇMAK istediğinizden emin misiniz?\n\nToplantı düzenlemeye açıldığında personel yeni kayıt ekleyebilir ve düzenleme yapabilir.`
+      : `"${meeting.meetingNo}" numaralı toplantıyı SONLANDIRMAK istediğinizden emin misiniz?\n\nToplantı sonlandırıldığında personel bu toplantıya ait kayıtları değiştiremez.`;
+
+    if (!confirm(confirmMsg)) return;
+
+    try {
+      const updatedMeeting: Meeting = {
+        ...meeting,
+        isClosed: isCurrentlyLocked ? false : true,
+        forceOpen: isCurrentlyLocked ? true : false,
+      };
+      await saveMeeting(updatedMeeting);
+      setMeetings(prev => prev.map(m => m.id === meeting.id ? updatedMeeting : m));
+    } catch (err) {
+      alert('Toplantı kilit durumu güncellenirken bir hata oluştu.');
     }
   };
 
@@ -1059,6 +1133,133 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Household Search Box */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                <Search className="text-blue-600" size={20} />
+                Hane Arama & Değerlendirme Geçmişi Sorgulama
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                T.C. Kimlik No, Ad Soyad veya Hane Numarası ile arama yaparak haneye ait yapılmış tüm geçmiş değerlendirmeleri ve toplantı detaylarını inceleyebilirsiniz.
+              </p>
+            </div>
+            {householdSearchQuery && (
+              <button
+                onClick={() => setHouseholdSearchQuery('')}
+                className="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 self-start sm:self-center bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                <X size={14} /> Aramayı Temizle
+              </button>
+            )}
+          </div>
+
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input
+              type="text"
+              value={householdSearchQuery}
+              onChange={(e) => setHouseholdSearchQuery(e.target.value)}
+              placeholder="Hane No (Örn: HN-123), T.C. Kimlik No (11 hane) veya Başvuru Sahibi Ad Soyad..."
+              className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-900 bg-slate-50/50 focus:bg-white transition-all shadow-inner"
+            />
+          </div>
+
+          {/* Results Box */}
+          {householdSearchQuery.trim() !== '' && (
+            <div className="mt-5 space-y-4">
+              {householdSearchResults.length === 0 ? (
+                <div className="p-6 text-center text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-xs font-semibold">
+                  &quot;{householdSearchQuery}&quot; aramasına uygun hane veya değerlendirme kaydı bulunamadı.
+                </div>
+              ) : (
+                householdSearchResults.map((hh) => (
+                  <div key={hh.key} className="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 shadow-sm space-y-4">
+                    {/* Household Info Banner */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3.5 rounded-lg border border-slate-200">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-blue-100 text-blue-700 rounded-xl font-bold">
+                          <Building2 size={22} />
+                        </div>
+                        <div>
+                          <h4 className="text-base font-extrabold text-slate-900 leading-tight">{hh.applicantName}</h4>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 font-medium mt-0.5">
+                            <span className="flex items-center gap-1"><Hash size={13} className="text-slate-400"/> TC: <strong className="text-slate-800">{hh.applicantTc}</strong></span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1"><Building2 size={13} className="text-slate-400"/> Hane No: <strong className="text-slate-800">{hh.householdNo}</strong></span>
+                            {hh.phoneNumber && hh.phoneNumber !== '-' && (
+                              <>
+                                <span>•</span>
+                                <span className="flex items-center gap-1"><Phone size={13} className="text-slate-400"/> {hh.phoneNumber}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-blue-50 text-blue-800 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-blue-100 self-start md:self-center shrink-0">
+                        Toplam {hh.assessments.length} Değerlendirme
+                      </div>
+                    </div>
+
+                    {/* Assessment History Timeline */}
+                    <div className="space-y-2.5 pl-2 border-l-2 border-blue-300">
+                      {hh.assessments.map((item) => {
+                        const meeting = meetings.find(m => m.id === item.meetingId);
+                        const isApproved = item.status === 'approved';
+                        return (
+                          <div key={item.id} className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs hover:border-blue-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="space-y-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="bg-indigo-100 text-indigo-800 text-[11px] font-black px-2.5 py-0.5 rounded-md border border-indigo-200">
+                                  Dosya No: {meeting?.meetingNo || 'Toplantısız / Münferit'}
+                                </span>
+                                <span className="text-xs text-slate-500 font-semibold flex items-center gap-1">
+                                  <Calendar size={13}/> {new Date(item.date).toLocaleDateString('tr-TR')}
+                                </span>
+                                {isApproved ? (
+                                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded border border-emerald-200">
+                                    MÜDÜR ONAYLADI
+                                  </span>
+                                ) : (
+                                  <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2 py-0.5 rounded border border-amber-200">
+                                    ONAY BEKLİYOR
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-1">
+                                <span className="font-bold text-slate-700">Puan: <strong className={item.result.isRejected ? 'text-red-600' : 'text-blue-700'}>{item.result.totalScore} Puan</strong></span>
+                                <span className="font-bold text-slate-700">Karar: <strong className={item.result.isRejected ? 'text-red-600' : 'text-emerald-700'}>{item.result.isRejected ? 'REDDEDİLDİ' : (item.result.assistance?.text || '-')}</strong></span>
+                                <span className="text-slate-500">İnceleyen: {item.personnelName}</span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                              <button
+                                onClick={() => handlePrintSingleDetailed(item)}
+                                className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
+                              >
+                                <Printer size={13} /> Rapor (A4)
+                              </button>
+                              <Link
+                                href={`/assessment/${item.id}`}
+                                className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
+                              >
+                                <FileText size={13} /> Detay
+                              </Link>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Main Content Area */}
         {!filterMeetingId ? (
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 min-h-[500px]">
@@ -1099,47 +1300,115 @@ export default function Dashboard() {
                   const mAssessments = assessments.filter(a => a.meetingId === m.id);
                   const mPending = mAssessments.filter(a => a.status !== 'approved').length;
                   const mApproved = mAssessments.filter(a => a.status === 'approved').length;
+                  
+                  const today = new Date();
+                  today.setHours(0,0,0,0);
+                  const mDate = new Date(m.date);
+                  mDate.setHours(0,0,0,0);
+                  const isClosedByManager = m.isClosed;
+                  const isExpiredDate = mDate < today && !m.forceOpen;
+                  const isLockedForPersonnel = isClosedByManager || isExpiredDate;
+
                   return (
                     <div 
                       key={m.id}
                       onClick={() => setFilterMeetingId(m.id)}
-                      className="group bg-white border-2 border-slate-100 hover:border-indigo-500 rounded-2xl p-5 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 relative overflow-hidden"
+                      className="group bg-white border-2 border-slate-100 hover:border-indigo-500 rounded-2xl p-5 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between"
                     >
                       <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -z-10 group-hover:bg-indigo-100 transition-colors"></div>
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="p-2 bg-indigo-100 text-indigo-700 rounded-lg">
-                            <Calendar size={20} />
+                      
+                      <div>
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-center gap-2">
+                            <div className="p-2 bg-indigo-100 text-indigo-700 rounded-lg">
+                              <Calendar size={20} />
+                            </div>
+                            <span className="font-bold text-slate-800 text-lg">{m.meetingNo}</span>
                           </div>
-                          <span className="font-bold text-slate-800 text-lg">{m.meetingNo}</span>
+                          
+                          {/* Lock / Status Pill */}
+                          {isClosedByManager ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-black text-red-700 bg-red-100 px-2 py-0.5 rounded-md border border-red-200 shrink-0">
+                              <Lock size={12} /> SONLANDIRILDI
+                            </span>
+                          ) : isExpiredDate ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-black text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md border border-amber-200 shrink-0">
+                              <Lock size={12} /> KİLİTLİ (TARİHİ GEÇTİ)
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-200 shrink-0">
+                              <CheckCircle2 size={12} /> AKTİF TOPLANTI
+                            </span>
+                          )}
                         </div>
-                        <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
-                          {new Date(m.date).toLocaleDateString('tr-TR')}
-                        </span>
-                      </div>
-                      
-                      <p className="text-sm text-slate-600 mb-6 line-clamp-2 h-10">
-                        {m.description || "Açıklama girilmemiş."}
-                      </p>
 
-                      <div className="flex items-center gap-4 border-t border-slate-100 pt-4">
-                        <div className="flex-1">
-                          <p className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Toplam Kayıt</p>
-                          <p className="text-lg font-black text-slate-800">{mAssessments.length}</p>
+                        <div className="text-xs text-slate-500 font-semibold mb-3 flex items-center gap-1">
+                          <Calendar size={13} className="text-slate-400" />
+                          <span>Toplantı Tarihi: <strong className="text-slate-800 font-extrabold">{new Date(m.date).toLocaleDateString('tr-TR')}</strong></span>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-[10px] uppercase font-bold text-amber-500 mb-0.5">Bekleyen</p>
-                          <p className="text-lg font-black text-amber-600">{mPending}</p>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-[10px] uppercase font-bold text-emerald-500 mb-0.5">Onaylı</p>
-                          <p className="text-lg font-black text-emerald-600">{mApproved}</p>
-                        </div>
+                        
+                        <p className="text-xs text-slate-600 mb-4 line-clamp-2 h-8">
+                          {m.description || "Açıklama girilmemiş."}
+                        </p>
                       </div>
-                      
-                      <div className="mt-5 w-full bg-indigo-50 text-indigo-700 font-bold text-sm py-2.5 rounded-xl text-center group-hover:bg-indigo-600 group-hover:text-white transition-colors flex items-center justify-center gap-2">
-                        <span>Dosyayı Aç</span>
-                        <ArrowRight size={16} />
+
+                      <div>
+                        <div className="flex items-center gap-4 border-t border-slate-100 pt-3">
+                          <div className="flex-1">
+                            <p className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Toplam Kayıt</p>
+                            <p className="text-base font-black text-slate-800">{mAssessments.length}</p>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[10px] uppercase font-bold text-amber-500 mb-0.5">Bekleyen</p>
+                            <p className="text-base font-black text-amber-600">{mPending}</p>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[10px] uppercase font-bold text-emerald-500 mb-0.5">Onaylı</p>
+                            <p className="text-base font-black text-emerald-600">{mApproved}</p>
+                          </div>
+                        </div>
+
+                        {/* Manager Override Controls / Personnel Lock Notice */}
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                          {user.role === 'manager' ? (
+                            <button
+                              type="button"
+                              onClick={(e) => handleToggleMeetingStatus(m, e)}
+                              className={`w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-xs active:scale-95 ${
+                                isLockedForPersonnel 
+                                  ? 'bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-300' 
+                                  : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
+                              }`}
+                            >
+                              {isLockedForPersonnel ? (
+                                <>
+                                  <Unlock size={14} /> Toplantıyı Düzenlemeye Aç
+                                </>
+                              ) : (
+                                <>
+                                  <Lock size={14} /> Toplantıyı Sonlandır
+                                </>
+                              )}
+                            </button>
+                          ) : (
+                            <div className="w-full text-[11px] text-center font-bold">
+                              {isLockedForPersonnel ? (
+                                <span className="text-red-600 flex items-center justify-center gap-1 bg-red-50 py-1.5 rounded-lg border border-red-100">
+                                  <Lock size={13} /> Değişiklik Yapılamaz (Kilitli)
+                                </span>
+                              ) : (
+                                <span className="text-emerald-700 flex items-center justify-center gap-1 bg-emerald-50 py-1.5 rounded-lg border border-emerald-100">
+                                  <CheckCircle2 size={13} /> Kayıt Girişine Açık
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="mt-2 w-full bg-indigo-50 text-indigo-700 font-bold text-xs py-2 rounded-xl text-center group-hover:bg-indigo-600 group-hover:text-white transition-colors flex items-center justify-center gap-2">
+                          <span>Dosyayı Aç</span>
+                          <ArrowRight size={14} />
+                        </div>
                       </div>
                     </div>
                   );
