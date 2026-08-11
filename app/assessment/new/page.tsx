@@ -1,4 +1,8 @@
 "use client";
+"use client";
+
+export const dynamic = "force-dynamic";
+
 
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -6,14 +10,14 @@ import {
   ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2, Info,
   Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug
 } from 'lucide-react';
-import { saveAssessment } from '@/lib/db';
+import { saveAssessment, calculateAssistanceFromScore } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
 
 function NewAssessmentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const meetingId = searchParams.get('meetingId') || undefined;
+  const meetingId = searchParams?.get('meetingId') || undefined;
   
   const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(0);
@@ -194,16 +198,7 @@ function NewAssessmentContent() {
     scoreG = Math.min(scoreG, 20);
 
     let totalScore = state.falseStatement ? 0 : (scoreA + scoreB + scoreC + scoreD + scoreE + scoreF + scoreG);
-
-    let assistance = { text: "Yardım uygun görülmez (veya Ayni)", amount: 0 };
-    if (!state.falseStatement) {
-      if (totalScore >= 116) assistance = { text: "10.000 TL Nakdi Yardım", amount: 10000 };
-      else if (totalScore >= 96) assistance = { text: "7.500 TL Nakdi Yardım", amount: 7500 };
-      else if (totalScore >= 71) assistance = { text: "5.000 TL Nakdi Yardım", amount: 5000 };
-      else if (totalScore >= 31) assistance = { text: "2.500 TL Nakdi Yardım", amount: 2500 };
-    } else {
-      assistance = { text: "REDDEDİLDİ", amount: 0 };
-    }
+    const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement);
 
     const priorities = [];
     if (state.b_agirEngelli) priorities.push("Ağır engelli bulunan hane");

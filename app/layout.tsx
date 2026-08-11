@@ -1,17 +1,14 @@
-import type {Metadata} from 'next';
-import './globals.css'; // Global styles
+import { type ReactNode } from "react";
+import "./globals.css";
 
-export const metadata: Metadata = {
-  title: 'SOSYAL YARDIM DEĞERLENDİRME VE İNCELEME SİSTEMİ',
-  description: 'Sosyal Yardım Değerlendirme ve İnceleme Sistemi',
-  manifest: '/manifest.json',
-  themeColor: '#2563eb',
-};
+export const dynamic = "force-dynamic";
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="tr">
-      <body suppressHydrationWarning>{children}</body>
+    <html lang="en">
+      <body>
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,4 +1,8 @@
 "use client";
+"use client";
+
+export const dynamic = "force-dynamic";
+
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -11,7 +15,7 @@ import {
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
   Lock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
-  X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar
+  X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar, ArrowLeft, ArrowRight, Settings
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -48,7 +52,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved'>('all');
   const [filterDecision, setFilterDecision] = useState<'all' | 'accepted' | 'rejected'>('all');
-  const [filterMeetingId, setFilterMeetingId] = useState<string>('all');
+  const [filterMeetingId, setFilterMeetingId] = useState<string | null>(null);
   
   // Sort States
   const [sortField, setSortField] = useState<SortField>('date');
@@ -142,7 +146,7 @@ export default function Dashboard() {
       if (filterDecision === 'rejected' && !item.result.isRejected) return false;
 
       // Meeting Filter
-      if (filterMeetingId !== 'all' && item.meetingId !== filterMeetingId) return false;
+      if (filterMeetingId && filterMeetingId !== 'all' && item.meetingId !== filterMeetingId) return false;
 
       // Search Query Filter
       if (searchQuery.trim()) {
@@ -866,6 +870,16 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between sm:justify-end w-full sm:w-auto gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+          {user?.role === 'manager' && (
+            <Link
+              href="/settings"
+              className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 text-xs font-black px-3 py-2 rounded-xl transition-colors shadow-sm"
+              title="Sistem ve Yardım Kriter Ayarları (Müdür Paneli)"
+            >
+              <Settings size={16} className="shrink-0" />
+              <span>Ayarlar</span>
+            </Link>
+          )}
           <Link
             href="/presentation"
             className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors shadow-sm"
@@ -1045,9 +1059,115 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Filter, Search & Records Section */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        {/* Main Content Area */}
+        {!filterMeetingId ? (
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 min-h-[500px]">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                  <Calendar className="text-indigo-600" size={24} />
+                  Toplantı Dosyaları
+                </h3>
+                <p className="text-sm text-slate-500 mt-1">İşlem yapmak veya kayıtları görüntülemek için bir toplantı seçiniz.</p>
+              </div>
+            </div>
+
+            {meetings.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
+                  <Calendar size={28} className="text-slate-400" />
+                </div>
+                <h4 className="text-lg font-bold text-slate-700 mb-2">Henüz Toplantı Bulunmuyor</h4>
+                <p className="text-slate-500 max-w-md mx-auto text-sm">
+                  {user?.role === 'manager' 
+                    ? "Sistemde hiç toplantı kaydı yok. Hane incelemelerini başlatmak için sağ üstteki butondan yeni bir toplantı oluşturunuz."
+                    : "Henüz bir toplantı oluşturulmamış. Lütfen müdür yetkilinizin bir toplantı oluşturmasını bekleyiniz."}
+                </p>
+                {user?.role === 'manager' && (
+                  <button
+                    onClick={() => setNewMeetingModalOpen(true)}
+                    className="mt-6 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md shadow-indigo-900/20"
+                  >
+                    <Plus size={20} />
+                    İlk Toplantıyı Oluştur
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {meetings.map((m) => {
+                  const mAssessments = assessments.filter(a => a.meetingId === m.id);
+                  const mPending = mAssessments.filter(a => a.status !== 'approved').length;
+                  const mApproved = mAssessments.filter(a => a.status === 'approved').length;
+                  return (
+                    <div 
+                      key={m.id}
+                      onClick={() => setFilterMeetingId(m.id)}
+                      className="group bg-white border-2 border-slate-100 hover:border-indigo-500 rounded-2xl p-5 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 relative overflow-hidden"
+                    >
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -z-10 group-hover:bg-indigo-100 transition-colors"></div>
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex items-center gap-2">
+                          <div className="p-2 bg-indigo-100 text-indigo-700 rounded-lg">
+                            <Calendar size={20} />
+                          </div>
+                          <span className="font-bold text-slate-800 text-lg">{m.meetingNo}</span>
+                        </div>
+                        <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
+                          {new Date(m.date).toLocaleDateString('tr-TR')}
+                        </span>
+                      </div>
+                      
+                      <p className="text-sm text-slate-600 mb-6 line-clamp-2 h-10">
+                        {m.description || "Açıklama girilmemiş."}
+                      </p>
+
+                      <div className="flex items-center gap-4 border-t border-slate-100 pt-4">
+                        <div className="flex-1">
+                          <p className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Toplam Kayıt</p>
+                          <p className="text-lg font-black text-slate-800">{mAssessments.length}</p>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[10px] uppercase font-bold text-amber-500 mb-0.5">Bekleyen</p>
+                          <p className="text-lg font-black text-amber-600">{mPending}</p>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[10px] uppercase font-bold text-emerald-500 mb-0.5">Onaylı</p>
+                          <p className="text-lg font-black text-emerald-600">{mApproved}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-5 w-full bg-indigo-50 text-indigo-700 font-bold text-sm py-2.5 rounded-xl text-center group-hover:bg-indigo-600 group-hover:text-white transition-colors flex items-center justify-center gap-2">
+                        <span>Dosyayı Aç</span>
+                        <ArrowRight size={16} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
           
+          {/* Header of Table view with Back button */}
+          <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between gap-4">
+             <div className="flex items-center gap-3">
+               <button 
+                 onClick={() => setFilterMeetingId(null)}
+                 className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"
+                 title="Toplantı Listesine Dön"
+               >
+                 <ArrowLeft size={20} />
+               </button>
+               <div>
+                 <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                   {meetings.find(m => m.id === filterMeetingId)?.meetingNo} <span className="text-slate-400 font-medium text-sm">Toplantı Kayıtları</span>
+                 </h2>
+               </div>
+             </div>
+          </div>
+
           {/* Section Title & Primary Tabs */}
           <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -1112,11 +1232,14 @@ export default function Dashboard() {
                 <Calendar size={14} className="text-slate-500 shrink-0" />
                 <span>Toplantı:</span>
                 <select
-                  value={filterMeetingId}
-                  onChange={(e: any) => setFilterMeetingId(e.target.value)}
+                  value={filterMeetingId || ''}
+                  onChange={(e: any) => {
+                    if (e.target.value === '') setFilterMeetingId(null);
+                    else setFilterMeetingId(e.target.value);
+                  }}
                   className="bg-white border border-slate-300 text-slate-800 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm max-w-[120px] truncate"
                 >
-                  <option value="all">Tümü</option>
+                  <option value="" disabled>Seçiniz</option>
                   {meetings.map(m => (
                     <option key={m.id} value={m.id}>{m.meetingNo}</option>
                   ))}
@@ -1137,7 +1260,7 @@ export default function Dashboard() {
                 </select>
               </div>
 
-              {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || filterMeetingId !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
+              {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
                 <button
                   onClick={resetAllFilters}
                   className="text-xs text-blue-700 hover:text-blue-900 font-bold underline flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
@@ -1304,11 +1427,11 @@ export default function Dashboard() {
           )}
 
           {/* Single-Row Table */}
-          <div className="overflow-x-auto">
+          <div className="w-full overflow-x-auto">
             <table className="w-full text-left border-collapse table-auto">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 text-[10px] uppercase tracking-wider border-b border-slate-200">
-                  <th className="px-3 py-3 font-black text-center w-10">
+                  <th className="px-2 py-2.5 font-black text-center w-8">
                     <input
                       type="checkbox"
                       checked={filteredAndSortedAssessments.length > 0 && selectedIds.length === filteredAndSortedAssessments.length}
@@ -1320,28 +1443,28 @@ export default function Dashboard() {
 
                   <th 
                     onClick={() => handleSort('customOrder')} 
-                    className="px-2 sm:px-3 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap text-center w-20"
+                    className="px-2 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap text-center w-16"
                     title="İstediğiniz özel sıra numarasına göre sırala"
                   >
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Sıra No</span>
+                    <div className="flex items-center justify-center gap-0.5">
+                      <span>Sıra</span>
                       {renderSortIcon('customOrder')}
                     </div>
                   </th>
 
                   <th 
                     onClick={() => handleSort('date')} 
-                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                    className="px-2 sm:px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
                   >
                     <div className="flex items-center gap-1">
-                      <span>Ziyaret Tarihi</span>
+                      <span>Tarih</span>
                       {renderSortIcon('date')}
                     </div>
                   </th>
 
                   <th 
                     onClick={() => handleSort('applicantTc')} 
-                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                    className="px-2 sm:px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
                   >
                     <div className="flex items-center gap-1">
                       <span>T.C. Kimlik</span>
@@ -1351,20 +1474,20 @@ export default function Dashboard() {
 
                   <th 
                     onClick={() => handleSort('applicantName')} 
-                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                    className="px-2 sm:px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
                   >
                     <div className="flex items-center gap-1">
-                      <span>Başvuru Sahibi Adı Soyadı</span>
+                      <span>Başvuru Sahibi Adı</span>
                       {renderSortIcon('applicantName')}
                     </div>
                   </th>
 
                   <th 
                     onClick={() => handleSort('householdSize')} 
-                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap text-center"
+                    className="px-2 sm:px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap text-center"
                   >
                     <div className="flex items-center justify-center gap-1">
-                      <span>Hane Kişi</span>
+                      <span>Hane</span>
                       {renderSortIcon('householdSize')}
                     </div>
                   </th>
@@ -1372,10 +1495,10 @@ export default function Dashboard() {
                   {user.role === 'manager' && (
                     <th 
                       onClick={() => handleSort('personnelName')} 
-                      className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                      className="px-2 sm:px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
                     >
                       <div className="flex items-center gap-1">
-                        <span>İnceleyen Personel</span>
+                        <span>Personel</span>
                         {renderSortIcon('personnelName')}
                       </div>
                     </th>
@@ -1383,17 +1506,17 @@ export default function Dashboard() {
 
                   <th 
                     onClick={() => handleSort('totalScore')} 
-                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap text-center"
+                    className="px-2 sm:px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap text-center"
                   >
                     <div className="flex items-center justify-center gap-1">
-                      <span>Toplam Puan</span>
+                      <span>Puan</span>
                       {renderSortIcon('totalScore')}
                     </div>
                   </th>
 
                   <th 
                     onClick={() => handleSort('status')} 
-                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                    className="px-2 sm:px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
                   >
                     <div className="flex items-center gap-1">
                       <span>Onay Durumu</span>
@@ -1403,7 +1526,7 @@ export default function Dashboard() {
 
                   <th 
                     onClick={() => handleSort('decision')} 
-                    className="px-3 sm:px-4 py-3 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
+                    className="px-2 sm:px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 transition-colors group select-none whitespace-nowrap"
                   >
                     <div className="flex items-center gap-1">
                       <span>Karar / Yardım Tipi</span>
@@ -1411,7 +1534,7 @@ export default function Dashboard() {
                     </div>
                   </th>
 
-                  <th className="px-3 sm:px-4 py-3 font-extrabold text-right whitespace-nowrap">
+                  <th className="px-2 sm:px-3 py-2.5 font-extrabold text-right whitespace-nowrap">
                     İşlem
                   </th>
                 </tr>
@@ -1519,79 +1642,90 @@ export default function Dashboard() {
                           )}
                         </td>
 
-                        {/* Actions */}
-                        <td className="px-3 sm:px-4 py-3 text-right whitespace-nowrap align-middle space-x-1.5">
-                          {/* Manager Quick Actions */}
-                          {user.role === 'manager' && (
-                            <>
-                              {!isApproved ? (
-                                <button
-                                  onClick={() => handleSingleApprove(item)}
-                                  className="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
-                                  title="Bu Kaydı Hızlı Onayla"
-                                >
-                                  <Check size={14} /> Onayla
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleSingleRevoke(item)}
-                                  className="inline-flex items-center gap-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
-                                  title="Müdür Onayını Kaldır ve Düzenlemeye Aç"
-                                >
-                                  <RotateCcw size={14} /> Onayı Kaldır
-                                </button>
-                              )}
-                            </>
-                          )}
+                        {/* Actions - Responsive Compact Icon/Text Buttons */}
+                        <td className="px-2 sm:px-3 py-2.5 text-right whitespace-nowrap align-middle">
+                          <div className="inline-flex items-center justify-end gap-1 sm:gap-1.5">
+                            {/* Manager Quick Actions */}
+                            {user.role === 'manager' && (
+                              <>
+                                {!isApproved ? (
+                                  <button
+                                    onClick={() => handleSingleApprove(item)}
+                                    className="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                                    title="Bu Kaydı Hızlı Onayla"
+                                  >
+                                    <Check size={14} />
+                                    <span className="hidden 2xl:inline">Onayla</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => handleSingleRevoke(item)}
+                                    className="inline-flex items-center gap-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                                    title="Müdür Onayını Kaldır ve Düzenlemeye Aç"
+                                  >
+                                    <RotateCcw size={14} />
+                                    <span className="hidden 2xl:inline">Onayı Kaldır</span>
+                                  </button>
+                                )}
+                              </>
+                            )}
 
-                          {/* Personnel Edit / Locked status indicator */}
-                          {user.role === 'personnel' && (
-                            <>
-                              {!isApproved ? (
-                                <Link
-                                  href={`/assessment/${item.id}/edit`}
-                                  className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors"
-                                >
-                                  <Edit3 size={13} /> Düzenle
-                                </Link>
-                              ) : (
-                                <span 
-                                  className="inline-flex items-center gap-1 bg-slate-100 text-slate-400 border border-slate-200 text-[10px] font-bold px-2 py-1 rounded-md cursor-not-allowed"
-                                  title="Onaylı veriler düzenlenemez. İzin için müdürün onayı kaldırması gerekmektedir."
-                                >
-                                  <Lock size={12} /> Onaylı (Kilitli)
-                                </span>
-                              )}
-                            </>
-                          )}
+                            {/* Personnel Edit / Locked status indicator */}
+                            {user.role === 'personnel' && (
+                              <>
+                                {!isApproved ? (
+                                  <Link
+                                    href={`/assessment/${item.id}/edit`}
+                                    className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors"
+                                    title="Sosyal İnceleme Kaydını Düzenle"
+                                  >
+                                    <Edit3 size={13} />
+                                    <span className="hidden 2xl:inline">Düzenle</span>
+                                  </Link>
+                                ) : (
+                                  <span 
+                                    className="inline-flex items-center gap-1 bg-slate-100 text-slate-400 border border-slate-200 text-[10px] font-bold p-1.5 2xl:px-2 2xl:py-1 rounded-md cursor-not-allowed"
+                                    title="Onaylı veriler düzenlenemez. İzin için müdürün onayı kaldırması gerekmektedir."
+                                  >
+                                    <Lock size={12} />
+                                    <span className="hidden 2xl:inline">Kilitli</span>
+                                  </span>
+                                )}
+                              </>
+                            )}
 
-                          {/* Single Detailed Report Print Button */}
-                          <button
-                            onClick={() => handlePrintSingleDetailed(item)}
-                            className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
-                            title="Bu kaydın tek sayfalık ayrıntılı A4 resmi raporunu yazdır/PDF yap"
-                          >
-                            <Printer size={13} /> Rapor (A4)
-                          </button>
-
-                          {/* View Detail Link */}
-                          <Link 
-                            href={`/assessment/${item.id}`} 
-                            className="inline-flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm"
-                          >
-                            <FileText size={14} /> Detaylar
-                          </Link>
-
-                          {/* Delete Button for Non-Approved Records */}
-                          {!isApproved && (
+                            {/* Single Detailed Report Print Button */}
                             <button
-                              onClick={() => handleDeleteSingle(item)}
-                              className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 text-xs font-bold px-2 py-1.5 rounded-lg transition-colors active:scale-95"
-                              title="Onaylanmamış İnceleme Kaydını Sil"
+                              onClick={() => handlePrintSingleDetailed(item)}
+                              className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                              title="Tek Sayfa Resmi A4 Raporu Yazdır / PDF Yap"
                             >
-                              <Trash2 size={13} /> Sil
+                              <Printer size={13} />
+                              <span className="hidden 2xl:inline">Rapor</span>
                             </button>
-                          )}
+
+                            {/* View Detail Link */}
+                            <Link 
+                              href={`/assessment/${item.id}`} 
+                              className="inline-flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold p-1.5 2xl:px-3 2xl:py-1.5 rounded-lg transition-colors shadow-sm"
+                              title="Tüm Ayrıntıları ve Sosyal İnceleme Detaylarını Gör"
+                            >
+                              <FileText size={14} />
+                              <span className="hidden 2xl:inline">Detaylar</span>
+                            </Link>
+
+                            {/* Delete Button for Non-Approved Records */}
+                            {!isApproved && (
+                              <button
+                                onClick={() => handleDeleteSingle(item)}
+                                className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 text-xs font-bold p-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg transition-colors active:scale-95"
+                                title="Onaylanmamış İnceleme Kaydını Sil"
+                              >
+                                <Trash2 size={13} />
+                                <span className="hidden 2xl:inline">Sil</span>
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
@@ -1601,6 +1735,7 @@ export default function Dashboard() {
             </table>
           </div>
         </div>
+        )}
 
       </main>
 
@@ -2114,6 +2249,11 @@ export default function Dashboard() {
                       description: newMeetingData.description
                     };
                     await saveMeeting(newMeeting);
+                    if (meetings.length === 0) {
+                      const { migrateAssessmentsToMeeting } = await import('@/lib/db');
+                      await migrateAssessmentsToMeeting(newMeeting.id);
+                      await reloadAssessments();
+                    }
                     const updated = await getAllMeetings();
                     setMeetings(updated);
                     setNewMeetingModalOpen(false);

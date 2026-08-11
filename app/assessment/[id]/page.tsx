@@ -1,4 +1,8 @@
 "use client";
+"use client";
+
+export const dynamic = "force-dynamic";
+
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -25,7 +29,9 @@ export default function AssessmentDetail() {
     
     const loadData = async () => {
       try {
-        const data = await getAssessmentById(params.id as string);
+        const id = params?.id as string;
+        if (!id) return;
+        const data = await getAssessmentById(id);
         if (data) setAssessment(data);
         else router.push('/');
       } catch (err) {
@@ -36,7 +42,7 @@ export default function AssessmentDetail() {
     };
     
     loadData();
-  }, [router, params.id]);
+  }, [router, params?.id]);
 
   const handleApprove = async () => {
     if (!assessment) return;
@@ -100,7 +106,7 @@ export default function AssessmentDetail() {
     }
   };
 
-  if (loading) return (
+  if (loading || !user) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="animate-pulse font-medium text-slate-500">İnceleme detayları yükleniyor...</div>
     </div>

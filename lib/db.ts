@@ -12,6 +12,81 @@ export interface AssessmentResult {
   isRejected: boolean;
 }
 
+export interface AssistanceTier {
+  id: string;
+  minScore: number;
+  maxScore: number;
+  text: string;
+  amount: number;
+  description?: string;
+}
+
+export interface SystemSettings {
+  assistanceTiers: AssistanceTier[];
+  rejectionText?: string;
+}
+
+export const DEFAULT_ASSISTANCE_TIERS: AssistanceTier[] = [
+  { id: 'tier-1', minScore: 116, maxScore: 130, text: '10.000 TL Nakdi Yardım', amount: 10000, description: 'Yüksek Derecede Muhtaçlık Kademesi' },
+  { id: 'tier-2', minScore: 96, maxScore: 115, text: '7.500 TL Nakdi Yardım', amount: 7500, description: '2. Derece Muhtaçlık Kademesi' },
+  { id: 'tier-3', minScore: 71, maxScore: 95, text: '5.000 TL Nakdi Yardım', amount: 5000, description: '3. Derece Muhtaçlık Kademesi' },
+  { id: 'tier-4', minScore: 31, maxScore: 70, text: '2.500 TL Nakdi Yardım', amount: 2500, description: '4. Derece Muhtaçlık Kademesi' },
+];
+
+export const DEFAULT_SETTINGS: SystemSettings = {
+  assistanceTiers: DEFAULT_ASSISTANCE_TIERS,
+  rejectionText: 'Yardım uygun görülmez (veya Ayni)',
+};
+
+export const getSystemSettings = (): SystemSettings => {
+  if (typeof window === 'undefined') return DEFAULT_SETTINGS;
+  try {
+    const saved = localStorage.getItem('socialAssistance_systemSettings');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && Array.isArray(parsed.assistanceTiers) && parsed.assistanceTiers.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Error loading settings from localStorage', e);
+  }
+  return DEFAULT_SETTINGS;
+};
+
+export const saveSystemSettings = (settings: SystemSettings): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('socialAssistance_systemSettings', JSON.stringify(settings));
+  } catch (e) {
+    console.error('Error saving settings to localStorage', e);
+  }
+};
+
+export const calculateAssistanceFromScore = (
+  totalScore: number,
+  isRejected: boolean,
+  settings?: SystemSettings
+): { text: string; amount: number } => {
+  if (isRejected) {
+    return { text: 'REDDEDİLDİ', amount: 0 };
+  }
+
+  const activeSettings = settings || getSystemSettings();
+  const sortedTiers = [...activeSettings.assistanceTiers].sort((a, b) => b.minScore - a.minScore);
+
+  for (const tier of sortedTiers) {
+    if (totalScore >= tier.minScore && totalScore <= tier.maxScore) {
+      return { text: tier.text, amount: tier.amount };
+    }
+  }
+
+  return { 
+    text: activeSettings.rejectionText || 'Yardım uygun görülmez (veya Ayni)', 
+    amount: 0 
+  };
+};
+
 export interface Meeting {
   id: string; // Unique ID
   meetingNo: string; // Toplantı No (e.g. 2026/01)
@@ -151,6 +226,28 @@ export const getAssessmentById = async (id: string): Promise<Assessment> => {
     const store = tx.objectStore(STORE_NAME);
     const request = store.get(id);
     request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+export const migrateAssessmentsToMeeting = async (meetingId: string): Promise<void> => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.getAll();
+    request.onsuccess = () => {
+      const records = request.result;
+      let count = 0;
+      records.forEach(record => {
+        if (!record.meetingId) {
+          record.meetingId = meetingId;
+          store.put(record);
+          count++;
+        }
+      });
+      resolve();
+    };
     request.onerror = () => reject(request.error);
   });
 };
