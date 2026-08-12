@@ -457,7 +457,8 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
 
     try {
       const html2canvas = (await import('html2canvas')).default;
-      const jsPDF = (await import('jspdf')).default;
+      const jsPDFModule = await import('jspdf');
+      const jsPDF = jsPDFModule.jsPDF || (jsPDFModule as any).default;
       
       const canvas = await html2canvas(element, { 
         scale: 2,
@@ -474,8 +475,8 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       const dateStr = new Date().toISOString().split('T')[0];
       const filename = `Istatistik_Raporu_${selectedMeetingId === 'ALL' ? 'Tum' : selectedMeeting?.meetingNo?.replace('/', '_')}_${dateStr}.pdf`;
       pdf.save(filename);
-    } catch (err) {
-      alert('PDF raporu oluşturulurken hata meydana geldi.');
+    } catch (err: any) {
+      alert('PDF raporu oluşturulurken hata meydana geldi: ' + (err.message || String(err)));
       console.error(err);
     } finally {
       setIsGeneratingPDF(false);
