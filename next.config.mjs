@@ -3,6 +3,7 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // Service Worker başlıkları
         source: '/sw.js',
         headers: [
           {
@@ -20,6 +21,7 @@ const nextConfig = {
         ],
       },
       {
+        // Web App Manifest başlıkları
         source: '/manifest.json',
         headers: [
           {
@@ -29,6 +31,21 @@ const nextConfig = {
           {
             key: 'Access-Control-Allow-Origin',
             value: '*',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache',
+          },
+        ],
+      },
+      {
+        // Tüm sayfalara PWA ile ilgili güvenlik başlıkları ekle
+        source: '/(.*)',
+        headers: [
+          {
+            // PWA kurulumunu zorlamak için referrer policy
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
           },
         ],
       },

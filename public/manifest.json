@@ -3,15 +3,15 @@
   "name": "Sosyal İnceleme ve Yardım Sistemi",
   "short_name": "Sosyal Yardım",
   "description": "Sosyal İnceleme Puanlama ve Saha İnceleme Otomasyon Sistemi",
-  "start_url": "/",
+  "start_url": "/login",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "background_color": "#0f172a",
   "theme_color": "#1e293b",
   "lang": "tr-TR",
   "dir": "ltr",
+  "prefer_related_applications": false,
   "categories": ["government", "productivity", "utilities"],
   "icons": [
     {
@@ -43,6 +43,22 @@
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Sosyal Yardım Sistemi Ana Ekran"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Sosyal Yardım Sistemi Geniş Ekran"
     }
   ]
 }
