@@ -58,6 +58,7 @@ function NewAssessmentContent() {
     b_yabanciUyruklu: false,
     b_ozelSebepMetin: "",
     b_ozelSebepPuan: 0,
+    b_cokluOzelDurumluBirey: false,
     // C
     c_0_6yas: 0,
     c_ilkokul: 0,
@@ -149,7 +150,7 @@ function NewAssessmentContent() {
       state.b_yabanciUyruklu
     ].filter(Boolean).length;
 
-    if (disadvantageCount >= 2) {
+    if (state.b_cokluOzelDurumluBirey) {
       scoreB += 5;
     }
     scoreB = Math.min(scoreB, 30);
@@ -240,7 +241,7 @@ function NewAssessmentContent() {
 
     const priorities = [];
     if (state.b_agirEngelli) priorities.push("Ağır engelli bulunan hane");
-    if (disadvantageCount >= 2) priorities.push("Birden Fazla Dezavantajlı Birey / Durum");
+    if (state.b_cokluOzelDurumluBirey) priorities.push("Hanede Birden Fazla Özel Durumlu Birey");
     if (state.b_yetim) priorities.push("Yetim çocuk bulunan hane");
     if (state.b_sehitYakini || state.b_gazi) priorities.push("Şehit / Gazi Ailesi");
     if (state.d_afetzede || state.e_afetGelirKaybi) priorities.push("Afet Mağduru");
@@ -302,7 +303,7 @@ function NewAssessmentContent() {
         }
       };
       await saveAssessment(assessmentData);
-      router.push(`/assessment/${assessmentData.id}`);
+      router.push('/');
     } catch (err) {
       alert("Kayıt sırasında hata oluştu!");
     }
@@ -552,13 +553,12 @@ function NewAssessmentContent() {
 
                     <div className="text-slate-900">
                       <SectionCard title="Hanehalkı Özel Durumları" maxScore={35} currentScore={calc.scoreB} hideScore={true}>
-                        {calc.disadvantageCount >= 2 && (
-                          <div className="mb-4 bg-amber-50 border border-amber-300 p-3.5 rounded-xl flex items-center justify-between text-xs font-bold text-amber-900">
-                            <span>Hanede Birden Fazla ({calc.disadvantageCount} Adet) Dezavantajlı Durum Mevcut</span>
-                            <span className="bg-amber-200 text-amber-950 px-2.5 py-1 rounded-md font-extrabold">+5 Ek Bonus Puan</span>
-                          </div>
-                        )}
+                        
 
+                        
+                        <div className="mb-4">
+                          <CheckboxItem label="Aynı hanede birden fazla özel durumu (dezavantajlı) olan farklı KİŞİ var" checked={state.b_cokluOzelDurumluBirey} onChange={(v:any) => set('b_cokluOzelDurumluBirey', v)} points={5} />
+                        </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <CheckboxItem label="Ağır engelli (%70+)" checked={state.b_agirEngelli} onChange={(v:any) => set('b_agirEngelli', v)} points={15} />
                           <CheckboxItem label="Engelli (%40-69)" checked={state.b_engelli} onChange={(v:any) => set('b_engelli', v)} points={10} />

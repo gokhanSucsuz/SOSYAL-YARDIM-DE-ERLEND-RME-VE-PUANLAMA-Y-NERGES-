@@ -49,6 +49,7 @@ export default function EditAssessmentWizard() {
     b_yabanciUyruklu: false,
     b_ozelSebepMetin: "",
     b_ozelSebepPuan: 0,
+    b_cokluOzelDurumluBirey: false,
     // C
     c_0_6yas: 0,
     c_ilkokul: 0,
@@ -117,12 +118,12 @@ export default function EditAssessmentWizard() {
         if (data) {
           if (data.status === 'approved') {
             alert('Onaylanmış inceleme kayıtlarında düzenleme yapılamaz. Düzenleme yapabilmek için öncelikle müdürün onayı kaldırması gerekmektedir.');
-            router.push(`/assessment/${id}`);
+            router.push('/');
             return;
           }
           if (currentUser.role === 'manager') {
             alert('Müdürler incelemeleri düzenleyemez, sadece onaylayabilir.');
-            router.push(`/assessment/${id}`);
+            router.push('/');
             return;
           }
           setAssessmentId(data.id);
@@ -510,14 +511,13 @@ export default function EditAssessmentWizard() {
                   <p className="text-slate-500 mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
                 </div>
                 <SectionCard title="Hanehalkı Özel Durumları" maxScore={35} currentScore={calc.scoreB} hideScore={true}>
-                  {calc.disadvantageCount >= 2 && (
-                    <div className="mb-4 bg-amber-50 border border-amber-300 p-3.5 rounded-xl flex items-center justify-between text-xs font-bold text-amber-900">
-                      <span>Hanede Birden Fazla ({calc.disadvantageCount} Adet) Dezavantajlı Durum Mevcut</span>
-                      <span className="bg-amber-200 text-amber-950 px-2.5 py-1 rounded-md font-extrabold">+5 Ek Bonus Puan</span>
-                    </div>
-                  )}
+                  
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  
+                        <div className="mb-4">
+                          <CheckboxItem label="Aynı hanede birden fazla özel durumu (dezavantajlı) olan farklı KİŞİ var" checked={state.b_cokluOzelDurumluBirey} onChange={(v:any) => set('b_cokluOzelDurumluBirey', v)} points={5} />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <CheckboxItem label="Ağır engelli (%70+)" checked={state.b_agirEngelli} onChange={(v:any) => set('b_agirEngelli', v)} points={15} />
                     <CheckboxItem label="Engelli (%40-69)" checked={state.b_engelli} onChange={(v:any) => set('b_engelli', v)} points={10} />
                     <CheckboxItem label="Evde bakım hastası" checked={state.b_evdeBakim} onChange={(v:any) => set('b_evdeBakim', v)} points={10} />
