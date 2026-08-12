@@ -1,0 +1,35 @@
+# Git binary file handling - prevents encoding corruption of image files
+# Bu dosya, resim ve binary dosyalarin git tarafindan text olarak islenmesini onler
+
+# PNG images - binary
+*.png binary
+*.PNG binary
+
+# ICO files - binary
+*.ico binary
+*.ICO binary
+
+# JPEG images - binary
+*.jpg binary
+*.JPG binary
+*.jpeg binary
+*.JPEG binary
+
+# SVG - text
+*.svg text eol=lf
+
+# Web fonts - binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Source files - LF line endings
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.mjs text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
