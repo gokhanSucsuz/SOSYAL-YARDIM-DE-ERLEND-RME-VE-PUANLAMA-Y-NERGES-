@@ -1173,6 +1173,16 @@ export default function Dashboard() {
                       <span>Sistem Ayarları</span>
                     </Link>
                   )}
+                  <Link
+                    href="/personnel"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition-colors border-b border-slate-100 group"
+                  >
+                    <div className="p-1.5 bg-blue-100 text-blue-700 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                      <Users size={15} />
+                    </div>
+                    <span>Personel Yönetimi</span>
+                  </Link>
 
                   <Link
                     href="/guide"
@@ -1220,13 +1230,22 @@ export default function Dashboard() {
             </div>
 
             {user?.role === 'manager' && (
-              <Link
-                href="/statistics"
-                className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white"
-              >
-                <BarChart3 size={18} className="text-blue-600" />
-                <span>Detaylı İstatistik ve Bütçe Raporları</span>
-              </Link>
+              <>
+                <Link
+                  href="/statistics"
+                  className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white"
+                >
+                  <BarChart3 size={18} className="text-blue-600" />
+                  <span>Detaylı İstatistik ve Bütçe Raporları</span>
+                </Link>
+                <Link
+                  href="/personnel"
+                  className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white"
+                >
+                  <Users size={18} className="text-blue-600" />
+                  <span>Personel Yönetimi</span>
+                </Link>
+              </>
             )}
           </div>
         </div>
