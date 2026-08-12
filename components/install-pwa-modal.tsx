@@ -105,16 +105,22 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
 
               {/* If in iframe (Preview Window) */}
               {isIframe && !deferredPrompt && (
-                <div className="bg-amber-950/40 border border-amber-500/30 p-4 rounded-2xl space-y-2">
-                  <p className="text-xs text-amber-200 font-semibold leading-relaxed">
-                    💡 <strong>Not:</strong> Önizleme penceresi içerisinden doğrudan yükleme bazı tarayıcılarda kısıtlanabilir. Uygulamayı harici bir sekmede açarak hızlıca ana ekrana ekleyebilirsiniz.
+                <div className="bg-amber-950/50 border border-amber-500/40 p-4 rounded-2xl space-y-3">
+                  <p className="text-xs text-amber-200 font-bold leading-relaxed">
+                    ⚠️ <strong>Neden Tarayıcıda Açılıyor?</strong>
+                  </p>
+                  <p className="text-xs text-amber-200/90 leading-relaxed">
+                    Önizleme penceresi (iFrame) içerisinden &quot;Ana Ekrana Ekle&quot; yapıldığında tarayıcı bunu gerçek bir uygulama olarak değil, sadece varsayılan internet kısayolu olarak kaydeder.
+                  </p>
+                  <p className="text-xs text-amber-300 font-extrabold">
+                    👉 Gerçek Mobil Uygulama (Tam Ekran) olarak yüklemek için aşağıdaki sarı butona basarak bağlantıyı harici tarayıcı sekmesinde (Chrome/Safari) açıp oradan ekleyin:
                   </p>
                   <button
                     onClick={() => window.open(window.location.href, '_blank')}
-                    className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 transition-all active:scale-95"
+                    className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-3 rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all active:scale-95"
                   >
-                    <ExternalLink size={15} />
-                    <span>Harici Sekmede Aç ve Yükle</span>
+                    <ExternalLink size={16} />
+                    <span>Harici Tarayıcıda Aç ve Mobil Uygulama Olarak Yükle</span>
                   </button>
                 </div>
               )}

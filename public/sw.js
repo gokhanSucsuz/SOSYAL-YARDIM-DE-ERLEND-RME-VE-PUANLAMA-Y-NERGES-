@@ -1,14 +1,18 @@
-const CACHE_NAME = 'sosyal-yardim-pwa-v4';
+const CACHE_NAME = 'sosyal-yardim-pwa-v6';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // Intentionally not failing the install if a cache fails
-      cache.add('/').catch(() => console.log('Failed to cache /'));
-      cache.add('/manifest.json').catch(() => console.log('Failed to cache manifest'));
-      cache.add('/favicon.ico').catch(() => console.log('Failed to cache favicon'));
-      return Promise.resolve();
+      return cache.addAll([
+        '/',
+        '/?source=pwa',
+        '/manifest.json',
+        '/favicon.ico',
+        '/icon-192.png',
+        '/icon-512.png',
+        '/apple-touch-icon.png'
+      ]).catch((err) => console.log('Cache pre-fill warning:', err));
     })
   );
 });
@@ -49,13 +53,13 @@ self.addEventListener('fetch', (event) => {
           if (cachedResponse) return cachedResponse;
           
           if (event.request.mode === 'navigate') {
-            return caches.match('/');
+            return caches.match('/') || caches.match('/?source=pwa');
           }
           
-          return new Response('Network error and no cache available', {
+          return new Response('Çevrimdışı - İnternet bağlantısı bulunamadı', {
             status: 503,
             statusText: 'Service Unavailable',
-            headers: new Headers({ 'Content-Type': 'text/plain' })
+            headers: new Headers({ 'Content-Type': 'text/plain; charset=utf-8' })
           });
         });
       })
