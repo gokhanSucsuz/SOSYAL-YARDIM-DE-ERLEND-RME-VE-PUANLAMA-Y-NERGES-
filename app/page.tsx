@@ -22,6 +22,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { LogoImage } from '@/components/logo-image';
+import { useDialog } from '@/components/DialogProvider';
 import { ManagerStatsView } from '@/components/manager-stats-view';
 
 interface BatchModalState {
@@ -40,6 +41,7 @@ type SortField = 'customOrder' | 'date' | 'applicantTc' | 'applicantName' | 'hou
 type SortOrder = 'asc' | 'desc';
 
 export default function Dashboard() {
+  const { showAlert, showConfirm } = useDialog();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
@@ -242,6 +244,24 @@ export default function Dashboard() {
     };
   }, [meetings, assessments]);
 
+  const personnelPendingStats = useMemo(() => {
+    if (user?.role !== 'manager' || !filterMeetingId) return null;
+    const stats: Record<string, { pending: number; approved: number; total: number }> = {};
+    
+    assessments.forEach(a => {
+      if (a.meetingId === filterMeetingId) {
+        if (!stats[a.personnelName]) {
+          stats[a.personnelName] = { pending: 0, approved: 0, total: 0 };
+        }
+        stats[a.personnelName].total++;
+        if (a.status === 'approved') stats[a.personnelName].approved++;
+        else stats[a.personnelName].pending++;
+      }
+    });
+
+    return stats;
+  }, [assessments, filterMeetingId, user?.role]);
+
   if (!user || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -280,7 +300,7 @@ export default function Dashboard() {
       ? `"${meeting.meetingNo}" numaralı toplantıyı DÜZENLEMEYE AÇMAK istediğinizden emin misiniz?\n\nToplantı düzenlemeye açıldığında personel yeni kayıt ekleyebilir ve düzenleme yapabilir.`
       : `"${meeting.meetingNo}" numaralı toplantıyı SONLANDIRMAK istediğinizden emin misiniz?\n\nToplantı sonlandırıldığında personel bu toplantıya ait kayıtları değiştiremez.`;
 
-    if (!confirm(confirmMsg)) return;
+    if (!(await showConfirm(confirmMsg))) return;
 
     try {
       const updatedMeeting: Meeting = {
@@ -291,7 +311,7 @@ export default function Dashboard() {
       await saveMeeting(updatedMeeting);
       setMeetings(prev => prev.map(m => m.id === meeting.id ? updatedMeeting : m));
     } catch (err) {
-      alert('Toplantı kilit durumu güncellenirken bir hata oluştu.');
+      await showAlert('Toplantı kilit durumu güncellenirken bir hata oluştu.', 'warning');
     }
   };
 
@@ -310,7 +330,7 @@ export default function Dashboard() {
   const handleSaveEditMeeting = async () => {
     if (!editingMeeting) return;
     if (!editMeetingData.meetingNo || !editMeetingData.date) {
-      alert('Lütfen toplantı dosya numarası ve tarihini giriniz.');
+      await showAlert('Lütfen toplantı dosya numarası ve tarihini giriniz.', 'warning');
       return;
     }
 
@@ -329,7 +349,7 @@ export default function Dashboard() {
       setEditMeetingModalOpen(false);
       setEditingMeeting(null);
     } catch (err) {
-      alert('Toplantı güncellenirken hata oluştu.');
+      await showAlert('Toplantı güncellenirken hata oluştu.', 'warning');
     }
   };
 
@@ -339,7 +359,7 @@ export default function Dashboard() {
   const approvedList = assessments.filter(a => a.status === 'approved');
   const approvedCount = approvedList.length;
 
-  // Search & Filter & Sort Pipeline
+    // Search & Filter & Sort Pipeline
   const filteredAndSortedAssessments = assessments
     .filter(item => {
       // Status Filter
@@ -438,7 +458,7 @@ export default function Dashboard() {
 
   const handleAutoAssignCustomOrders = async () => {
     if (filteredAndSortedAssessments.length === 0) return;
-    if (!confirm(`Ekranda listelenen ${filteredAndSortedAssessments.length} adet kayda 1'den başlayarak sırasıyla (1, 2, 3...) özel sıra numarası atansın mı?`)) return;
+    if (!(await showConfirm(`Ekranda listelenen ${filteredAndSortedAssessments.length} adet kayda 1'den başlayarak sırasıyla (1, 2, 3...) özel sıra numarası atansın mı?`))) return;
 
     try {
       const updatedMap = new Map<string, Assessment>();
@@ -455,12 +475,12 @@ export default function Dashboard() {
       setSortField('customOrder');
       setSortOrder('asc');
     } catch (err) {
-      alert('Sıra numaraları atanırken hata oluştu.');
+      await showAlert('Sıra numaraları atanırken hata oluştu.', 'warning');
     }
   };
 
   const handleClearAllCustomOrders = async () => {
-    if (!confirm('Tüm kayıtların özel sıra numaraları temizlenecektir. Emin misiniz?')) return;
+    if (!(await showConfirm('Tüm kayıtların özel sıra numaraları temizlenecektir. Emin misiniz?'))) return;
     try {
       const updatedList = assessments.map(a => ({ ...a, customOrder: undefined }));
       for (const item of updatedList) {
@@ -468,17 +488,17 @@ export default function Dashboard() {
       }
       setAssessments(updatedList);
     } catch (err) {
-      alert('Sıra numaraları temizlenirken hata oluştu.');
+      await showAlert('Sıra numaraları temizlenirken hata oluştu.', 'warning');
     }
   };
 
   const handleDeleteSingle = async (item: Assessment) => {
     if (item.status === 'approved') {
-      alert('Onaylanmış sosyal inceleme kayıtları silinemez.');
+      await showAlert('Onaylanmış sosyal inceleme kayıtları silinemez.', 'warning');
       return;
     }
 
-    if (!confirm(`"${item.applicantName}" isimli başvuru sahibine ait sosyal inceleme kaydını SILMEK istediğinizden emin misiniz?\n\nBu işlem kalıcıdır ve geri alınamaz!`)) {
+    if (!(await showConfirm(`"${item.applicantName}" isimli başvuru sahibine ait sosyal inceleme kaydını SILMEK istediğinizden emin misiniz?\n\nBu işlem kalıcıdır ve geri alınamaz!`))) {
       return;
     }
 
@@ -488,7 +508,7 @@ export default function Dashboard() {
       setSelectedIds(prev => prev.filter(id => id !== item.id));
     } catch (err) {
       console.error('Silme hatası:', err);
-      alert('Kayıt silinirken bir hata oluştu.');
+      await showAlert('Kayıt silinirken bir hata oluştu.', 'warning');
     }
   };
 
@@ -529,9 +549,9 @@ export default function Dashboard() {
   };
 
   // Open Modals
-  const openApproveAllModal = () => {
+  const openApproveAllModal = async () => {
     if (pendingCount === 0) {
-      alert('Onay bekleyen herhangi bir hane inceleme kaydı bulunmuyor.');
+      await showAlert('Onay bekleyen herhangi bir hane inceleme kaydı bulunmuyor.', 'warning');
       return;
     }
     setBatchModal({
@@ -547,9 +567,9 @@ export default function Dashboard() {
     });
   };
 
-  const openRevokeAllModal = () => {
+  const openRevokeAllModal = async () => {
     if (approvedCount === 0) {
-      alert('Onaylanmış herhangi bir hane inceleme kaydı bulunmuyor.');
+      await showAlert('Onaylanmış herhangi bir hane inceleme kaydı bulunmuyor.', 'warning');
       return;
     }
     setBatchModal({
@@ -565,10 +585,10 @@ export default function Dashboard() {
     });
   };
 
-  const openApproveSelectedModal = () => {
+  const openApproveSelectedModal = async () => {
     const selectedPending = assessments.filter(a => selectedIds.includes(a.id) && a.status !== 'approved');
     if (selectedPending.length === 0) {
-      alert('Seçilenler arasında onay bekleyen kayıt bulunmuyor.');
+      await showAlert('Seçilenler arasında onay bekleyen kayıt bulunmuyor.', 'warning');
       return;
     }
     setBatchModal({
@@ -584,10 +604,10 @@ export default function Dashboard() {
     });
   };
 
-  const openRevokeSelectedModal = () => {
+  const openRevokeSelectedModal = async () => {
     const selectedApproved = assessments.filter(a => selectedIds.includes(a.id) && a.status === 'approved');
     if (selectedApproved.length === 0) {
-      alert('Seçilenler arasında onaylanmış kayıt bulunmuyor.');
+      await showAlert('Seçilenler arasında onaylanmış kayıt bulunmuyor.', 'warning');
       return;
     }
     setBatchModal({
@@ -659,15 +679,15 @@ export default function Dashboard() {
       const currentPlanned = stats?.plannedAidTL || 0;
       const mBudget = meeting.budgetTL;
       if (currentPlanned > mBudget) {
-        const confirmExceeded = confirm(
+        const confirmExceeded = await showConfirm(
           `🚨 BÜTÇE AŞIMI UYARISI:\n\nBu toplantı için ayrılan Vakıf bütçesi (${mBudget.toLocaleString('tr-TR')} ₺) aşılmaktadır. Toplam yapılacak yardım (${currentPlanned.toLocaleString('tr-TR')} ₺) bütçeyi ${(currentPlanned - mBudget).toLocaleString('tr-TR')} ₺ geçmektedir.\n\nYine de "${item.applicantName}" isimli kaydı onaylamak istediğinizden emin misiniz?`
         );
         if (!confirmExceeded) return;
       } else {
-        if (!confirm(`${item.applicantName} isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`)) return;
+        if (!(await showConfirm(`${item.applicantName} isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`))) return;
       }
     } else {
-      if (!confirm(`${item.applicantName} isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`)) return;
+      if (!(await showConfirm(`${item.applicantName} isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`))) return;
     }
 
     try {
@@ -679,12 +699,12 @@ export default function Dashboard() {
       await saveAssessment(updated);
       await reloadAssessments();
     } catch (err) {
-      alert('Onaylama sırasında bir hata oluştu.');
+      await showAlert('Onaylama sırasında bir hata oluştu.', 'warning');
     }
   };
 
   const handleSingleRevoke = async (item: Assessment) => {
-    if (!confirm(`${item.applicantName} isimli başvuru sahibinin onayını kaldırmak istediğinizden emin misiniz? Kayıt tekrar düzenlemeye açılacaktır.`)) return;
+    if (!(await showConfirm(`${item.applicantName} isimli başvuru sahibinin onayını kaldırmak istediğinizden emin misiniz? Kayıt tekrar düzenlemeye açılacaktır.`))) return;
     try {
       const updated: Assessment = {
         ...item,
@@ -694,7 +714,7 @@ export default function Dashboard() {
       await saveAssessment(updated);
       await reloadAssessments();
     } catch (err) {
-      alert('Onay kaldırma sırasında bir hata oluştu.');
+      await showAlert('Onay kaldırma sırasında bir hata oluştu.', 'warning');
     }
   };
 
@@ -788,9 +808,9 @@ export default function Dashboard() {
     }, 150);
   };
 
-  const handlePrintSelectedList = () => {
+  const handlePrintSelectedList = async () => {
     if (selectedIds.length === 0) {
-      alert('Lütfen liste çıktısını almak istediğiniz kayıtları listeden seçiniz.');
+      await showAlert('Lütfen liste çıktısını almak istediğiniz kayıtları listeden seçiniz.', 'warning');
       return;
     }
     setPrintMode('summary');
@@ -800,9 +820,9 @@ export default function Dashboard() {
     }, 150);
   };
 
-  const handlePrintSelectedDetailed = () => {
+  const handlePrintSelectedDetailed = async () => {
     if (selectedIds.length === 0) {
-      alert('Lütfen tek sayfalık ayrıntılı raporunu almak istediğiniz kayıtları listeden seçiniz.');
+      await showAlert('Lütfen tek sayfalık ayrıntılı raporunu almak istediğiniz kayıtları listeden seçiniz.', 'warning');
       return;
     }
     setPrintMode('detailed');
@@ -836,7 +856,7 @@ export default function Dashboard() {
       : filteredAndSortedAssessments;
 
     if (!targetRecords || targetRecords.length === 0) {
-      alert('Dışa aktarılacak hane sosyal inceleme kaydı bulunamadı.');
+      await showAlert('Dışa aktarılacak hane sosyal inceleme kaydı bulunamadı.', 'warning');
       return;
     }
 
@@ -1012,7 +1032,7 @@ export default function Dashboard() {
       document.body.removeChild(link);
     } catch (err) {
       console.error('Excel indirilirken hata oluştu:', err);
-      alert('Excel dosyası oluşturulurken bir hata oluştu.');
+      await showAlert('Excel dosyası oluşturulurken bir hata oluştu.', 'warning');
     }
   };
 
@@ -1106,10 +1126,10 @@ export default function Dashboard() {
                     ? 'bg-blue-600/30 border-blue-400/50 text-blue-100 hover:bg-blue-600/50' 
                     : 'bg-white/10 border-white/20 hover:bg-white/20 text-white'
                 }`}
-                title={showScores ? "Puanları Gizle" : "Puanları Göster"}
+                title={showScores ? "Puan ve Kararları Gizle" : "Puan ve Kararları Göster"}
               >
                 {showScores ? <EyeOff size={16} /> : <Eye size={16} />}
-                <span className="hidden sm:inline">{showScores ? "Puanları Gizle" : "Puanları Göster"}</span>
+                <span className="hidden sm:inline">{showScores ? "Puan ve Kararları Gizle" : "Puan ve Kararları Göster"}</span>
               </button>
             )}
 
@@ -1406,7 +1426,7 @@ export default function Dashboard() {
 
                               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-1">
                                 <span className="font-bold text-slate-700">Puan: <strong className={item.result.isRejected ? 'text-red-600' : 'text-blue-700'}>{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</strong></span>
-                                <span className="font-bold text-slate-700">Karar: <strong className={item.result.isRejected ? 'text-red-600' : 'text-emerald-700'}>{item.result.isRejected ? 'REDDEDİLDİ' : (item.result.assistance?.text || '-')}</strong></span>
+                                <span className="font-bold text-slate-700">Karar: <strong className={item.result.isRejected ? "text-red-600" : "text-emerald-700"}>{user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "REDDEDİLDİ" : (item.result.assistance?.text || "-")}</strong></span>
                                 <span className="text-slate-500">İnceleyen: {item.personnelName}</span>
                               </div>
                             </div>
@@ -1960,7 +1980,7 @@ export default function Dashboard() {
                       {user.role === 'manager' && <td className="px-3 py-3">{item.personnelName}</td>}
                       <td className="px-3 py-3 text-center font-bold">{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore}</td>
                       <td className="px-3 py-3 font-black uppercase text-[10px]">{isApproved ? 'ONAYLI' : 'BEKLİYOR'}</td>
-                      <td className="px-3 py-3 font-bold">{item.result.isRejected ? 'RED' : item.result.assistance?.text}</td>
+                      <td className="px-3 py-3 font-bold">{user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "RED" : item.result.assistance?.text}</td>
                       <td className="px-3 py-3 text-right">
                         <div className="inline-flex gap-1">
                           {user.role === 'manager' && !isApproved && <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 text-white p-1 rounded">✓</button>}
@@ -2185,7 +2205,7 @@ export default function Dashboard() {
                       <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
                       <td className="p-1 text-center font-black">{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</td>
                       <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
-                      <td className="p-1 font-bold uppercase">{item.result.isRejected ? 'REDDEDİLDİ' : item.result.assistance?.text}</td>
+                      <td className="p-1 font-bold uppercase">{user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "REDDEDİLDİ" : item.result.assistance?.text}</td>
                     </tr>
                   ))
                 )}
@@ -2489,7 +2509,7 @@ export default function Dashboard() {
                 <button
                   onClick={async () => {
                     if (!newMeetingData.meetingNo || !newMeetingData.date) {
-                      alert('Lütfen toplantı numarası ve tarihini giriniz.');
+                      await showAlert('Lütfen toplantı numarası ve tarihini giriniz.', 'warning');
                       return;
                     }
                     const newMeeting: Meeting = {
@@ -2654,9 +2674,9 @@ export default function Dashboard() {
               </div>
               <div className="bg-slate-50 px-6 py-5 flex flex-col gap-3 border-t border-slate-100">
                 <button
-                  onClick={() => {
-                    if (!selectedMeetingId) {
-                      alert('Lütfen işleme devam etmek için bir toplantı seçiniz.');
+                  onClick={async () => {
+                      if (!selectedMeetingId) {
+                      await showAlert('Lütfen işleme devam etmek için bir toplantı seçiniz.', 'warning');
                       return;
                     }
                     router.push(`/assessment/new?meetingId=${selectedMeetingId}`);
