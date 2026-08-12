@@ -37,7 +37,7 @@ export default function StatisticsPage() {
 
   useEffect(() => {
     const fetch = async () => {
-      const storedUser = localStorage.getItem('user');
+      const storedUser = localStorage.getItem('currentUser');
       if (!storedUser) {
         router.push('/');
         return;
