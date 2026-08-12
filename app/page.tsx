@@ -48,6 +48,7 @@ export default function Dashboard() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [showScores, setShowScores] = useState(false);
 
 
 
@@ -1095,7 +1096,19 @@ export default function Dashboard() {
           openRevokeAllModal={openRevokeAllModal}
           approvedCount={approvedCount}
           setNewAssessmentModalOpen={setNewAssessmentModalOpen}
+          showScores={showScores}
+          setShowScores={setShowScores}
         />
+
+        
+        {user?.role === 'personnel' && (
+          <div className="bg-primary-50 border border-primary-200 text-primary-900 p-4 rounded-xl flex items-center justify-between mb-4 mt-2 shadow-sm">
+            <div>
+              <h3 className="font-bold text-lg">Hoş Geldiniz, {user.name}</h3>
+              <p className="text-sm mt-1">Sisteme toplam <strong>{new Set(assessments.map(a => a.meetingId)).size}</strong> farklı toplantı için <strong>{assessments.length}</strong> hane incelemesi kaydettiniz.</p>
+            </div>
+          </div>
+        )}
 
         {activeViewTab === 'statistics' ? (
           <ManagerStatsView 
@@ -1261,7 +1274,7 @@ export default function Dashboard() {
                               </div>
 
                               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-1">
-                                <span className="font-bold text-secondary-700">Puan: <strong className={item.result.isRejected ? 'text-red-600' : 'text-primary-700'}>{item.result.totalScore} Puan</strong></span>
+                                <span className="font-bold text-secondary-700">Puan: <strong className={item.result.isRejected ? 'text-red-600' : 'text-primary-700'}>{(showScores || user?.role === 'manager') ? item.result.totalScore : '***'} Puan</strong></span>
                                 <span className="font-bold text-secondary-700">Karar: <strong className={item.result.isRejected ? 'text-red-600' : 'text-emerald-700'}>{item.result.isRejected ? 'REDDEDİLDİ' : (item.result.assistance?.text || '-')}</strong></span>
                                 <span className="text-secondary-500">İnceleyen: {item.personnelName}</span>
                               </div>
@@ -1985,7 +1998,7 @@ export default function Dashboard() {
                       <div className="bg-secondary-50 p-2 rounded-lg border border-secondary-200">
                         <span className="text-[10px] text-secondary-400 font-bold uppercase block">Puan</span>
                         <span className={`font-black ${item.result.isRejected ? 'text-red-700' : 'text-primary-700'}`}>
-                          {item.result.totalScore} Puan
+                          {(showScores || user?.role === 'manager') ? item.result.totalScore : '***'} Puan
                         </span>
                       </div>
 
@@ -2259,7 +2272,7 @@ export default function Dashboard() {
                         {/* Total Score */}
                         <td className="px-3 sm:px-4 py-3 text-center whitespace-nowrap align-middle">
                           <span className={`inline-block px-2 py-0.5 rounded font-black text-xs ${item.result.isRejected ? 'bg-red-100 text-red-800' : 'bg-primary-100 text-blue-900'}`}>
-                            {item.result.totalScore} Puan
+                            {(showScores || user?.role === 'manager') ? item.result.totalScore : '***'} Puan
                           </span>
                         </td>
 
@@ -2593,7 +2606,7 @@ export default function Dashboard() {
                       <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
                       <td className="p-1 font-medium">{item.personnelName}</td>
                       <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
-                      <td className="p-1 text-center font-black">{item.result.totalScore} Puan</td>
+                      <td className="p-1 text-center font-black">{(showScores || user?.role === 'manager') ? item.result.totalScore : '***'} Puan</td>
                       <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
                       <td className="p-1 font-bold uppercase">{item.result.isRejected ? 'REDDEDİLDİ' : item.result.assistance?.text}</td>
                     </tr>
