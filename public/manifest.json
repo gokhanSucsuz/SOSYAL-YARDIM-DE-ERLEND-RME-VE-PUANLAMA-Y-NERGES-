@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Sosyal İnceleme ve Yardım Sistemi",
-  "short_name": "Sosyal Yardım",
+  "name": "Sosyal Yardım Kriter",
+  "short_name": "Sosyal Yardım Kriter",
   "description": "Sosyal İnceleme Puanlama ve Saha İnceleme Otomasyon Sistemi",
   "start_url": "/login",
   "scope": "/",

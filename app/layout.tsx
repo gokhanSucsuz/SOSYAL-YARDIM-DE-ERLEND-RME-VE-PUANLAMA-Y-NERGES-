@@ -11,7 +11,7 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: "Sosyal İnceleme Puanlama Sistemi ve Yardım Kriterleri",
+  title: "Sosyal Yardım Kriter",
   description: "Sosyal İnceleme ve Saha Araştırmaları Yönetim Paneli",
   manifest: "/manifest.json",
   icons: {
@@ -25,7 +25,7 @@ export const metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Sosyal Yardım",
+    title: "Sosyal Yardım Kriter",
   },
 };
 
@@ -36,8 +36,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Sosyal Yardım" />
-        <meta name="application-name" content="Sosyal Yardım" />
+        <meta name="apple-mobile-web-app-title" content="Sosyal Yardım Kriter" />
+        <meta name="application-name" content="Sosyal Yardım Kriter" />
         <meta name="format-detection" content="telephone=no" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
