@@ -12,8 +12,6 @@ import {
 } from 'lucide-react';
 import { Meeting, Assessment } from '@/lib/db';
 import { LogoImage } from './logo-image';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 interface ManagerStatsViewProps {
   meetings: Meeting[];
@@ -458,6 +456,9 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
     }
 
     try {
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
+      
       const canvas = await html2canvas(element, { 
         scale: 2,
         useCORS: true,
