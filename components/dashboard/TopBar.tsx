@@ -1,9 +1,10 @@
+import Link from 'next/link';
 import { Home, BarChart3, Calendar, CheckCircle2, RotateCcw, Plus, Eye, EyeOff } from 'lucide-react';
 
 interface TopBarProps {
   user: { role: string };
-  activeViewTab: 'operations' | 'statistics';
-  setActiveViewTab: (tab: 'operations' | 'statistics') => void;
+  
+  
   setNewMeetingModalOpen: (val: boolean) => void;
   openApproveAllModal: () => void;
   pendingCount: number;
@@ -16,8 +17,8 @@ interface TopBarProps {
 
 export function TopBar({
   user,
-  activeViewTab,
-  setActiveViewTab,
+  
+  
   setNewMeetingModalOpen,
   openApproveAllModal,
   pendingCount,
@@ -32,41 +33,30 @@ export function TopBar({
       {/* Primary View Segmented Navigation Bar - Only for Managers */}
       {user.role === 'manager' && (
         <div className="bg-white p-2 rounded-xl flex flex-wrap sm:flex-nowrap items-center gap-2 border border-slate-200 shadow-sm">
-          <button
-            onClick={() => setActiveViewTab('operations')}
-            className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-lg font-bold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
-              activeViewTab === 'operations'
-                ? 'bg-primary-50 text-primary-900 shadow-sm ring-1 ring-primary-500/20'
-                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-            }`}
-          >
-            <Home size={18} className={activeViewTab === 'operations' ? 'text-primary-600' : 'text-slate-400'} />
+          
+          <div className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-lg font-bold text-xs sm:text-sm bg-primary-50 text-primary-900 shadow-sm ring-1 ring-primary-500/20">
+            <Home size={18} className="text-primary-600" />
             <span>İnceleme Listesi & Hane İşlemleri</span>
-          </button>
+          </div>
 
-          <button
-            onClick={() => setActiveViewTab('statistics')}
-            className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-lg font-bold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
-              activeViewTab === 'statistics'
-                ? 'bg-primary-900 text-white shadow-md ring-1 ring-primary-800'
-                : 'text-slate-500 hover:text-slate-800 bg-transparent hover:bg-slate-50'
-            }`}
+          <Link
+            href="/statistics"
+            className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-lg font-bold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer text-slate-500 hover:text-slate-800 bg-transparent hover:bg-slate-50"
           >
-            <BarChart3 size={18} className={activeViewTab === 'statistics' ? 'text-primary-200' : 'text-slate-400'} />
+            <BarChart3 size={18} className="text-slate-400" />
             <span>Detaylı İstatistik ve Bütçe Raporları</span>
-          </button>
+          </Link>
+
         </div>
       )}
 
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-secondary-900 tracking-tight">
-            {activeViewTab === 'statistics' ? 'İstatistik ve Analiz Raporları' : 'Gösterge Paneli'}
+            Gösterge Paneli
           </h2>
           <p className="text-secondary-500 text-sm font-medium mt-1">
-            {activeViewTab === 'statistics' 
-              ? 'Mali bütçe verileri, hane risk dağılımları ve dönem raporlamaları.' 
-              : 'Hane inceleme ziyaretleri, gelişmiş arama/sıralama ve onay süreçleri.'}
+            Hane inceleme ziyaretleri, gelişmiş arama/sıralama ve onay süreçleri.
           </p>
         </div>
         
