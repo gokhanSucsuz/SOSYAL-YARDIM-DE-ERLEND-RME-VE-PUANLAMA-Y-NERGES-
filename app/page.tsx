@@ -1196,16 +1196,18 @@ export default function Dashboard() {
           <div className="bg-slate-200/80 p-1.5 rounded-2xl flex flex-wrap sm:flex-nowrap items-center gap-2 border border-slate-300/70 shadow-xs">
             <div className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-default bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5">
               <Home size={18} className="text-blue-600" />
-              <span>İnceleme Listesi &amp; Hane İşlemleri</span>
+              <span>İnceleme Listesi & Hane İşlemleri</span>
             </div>
 
-            <Link
-              href="/statistics"
-              className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white"
-            >
-              <BarChart3 size={18} className="text-blue-600" />
-              <span>Detaylı İstatistik ve Bütçe Raporları</span>
-            </Link>
+            {user?.role === 'manager' && (
+              <Link
+                href="/statistics"
+                className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white"
+              >
+                <BarChart3 size={18} className="text-blue-600" />
+                <span>Detaylı İstatistik ve Bütçe Raporları</span>
+              </Link>
+            )}
           </div>
         </div>
 
