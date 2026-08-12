@@ -8,13 +8,13 @@ import { useDialog } from '@/components/DialogProvider';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { 
-  ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2, Info,
+  ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, CheckCircle2, Info,
   Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug
 } from 'lucide-react';
 import { saveAssessment, getAssessmentById, calculateAssistanceFromScore, getAllMeetings, isMeetingLocked } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
-import { LogoImage } from '@/components/logo-image';
+import { AppHeader } from '@/components/app-header';
 
 export default function EditAssessmentWizard() {
   const { showAlert, showConfirm } = useDialog();
@@ -348,25 +348,9 @@ export default function EditAssessmentWizard() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
-      {/* Header */}
-      <header className="bg-slate-900 text-white px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-20">
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Link href={`/assessment/${assessmentId}`} className="p-2 hover:bg-slate-800 rounded-xl transition-colors active:scale-95 touch-manipulation">
-            <ArrowLeft size={20} />
-          </Link>
-          <LogoImage 
-            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0 hidden sm:block" 
-          />
-          <div>
-            <h1 className="text-sm sm:text-lg font-bold leading-tight uppercase">İncelemeyi Güncelle</h1>
-            <p className="text-[11px] text-slate-400 font-medium">Adım {step + 1} / {stepsCount}: <span className="text-blue-400 font-extrabold">{stepNames[step]}</span></p>
-          </div>
-        </div>
-        <div className="text-right border-l border-slate-700 pl-3 shrink-0">
-          <p className="text-[10px] text-slate-400">Görevli Personel</p>
-          <p className="text-xs sm:text-sm font-semibold truncate max-w-[110px] sm:max-w-none">{user.name}</p>
-        </div>
-      </header>
+      <AppHeader
+        subtitle={`✏️ İnceleme Düzenle • Adım ${step + 1} / ${stepsCount}: ${stepNames[step]}`}
+      />
 
       {/* Progress Bar */}
       <div className="h-1.5 bg-slate-200 shrink-0">

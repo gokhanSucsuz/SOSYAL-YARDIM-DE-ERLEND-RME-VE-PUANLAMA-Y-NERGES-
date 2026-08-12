@@ -7,10 +7,10 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getAssessmentById, Assessment, saveAssessment, deleteAssessment } from '@/lib/db';
-import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, AlertTriangle, Check, X, FileText, RotateCcw, Lock, Unlock, Trash2 } from 'lucide-react';
+import { ShieldCheck, Printer, CheckCircle2, Info, AlertTriangle, Check, X, FileText, RotateCcw, Lock, Unlock, Trash2 } from 'lucide-react';
 import { useDialog } from '@/components/DialogProvider';
 import Link from 'next/link';
-import { LogoImage } from '@/components/logo-image';
+import { AppHeader } from '@/components/app-header';
 
 export default function AssessmentDetail() {
   const { showAlert, showConfirm } = useDialog();
@@ -230,100 +230,58 @@ export default function AssessmentDetail() {
         }
       `}</style>
 
-      {/* SCREEN NAVBAR */}
-      <header className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shrink-0 z-10 no-print">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-1">
-            <ArrowLeft size={20} />
-          </Link>
-          <LogoImage 
-            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0 hidden sm:block" 
-          />
-          <div>
-            <h1 className="text-lg font-bold leading-tight flex items-center gap-2">
-              SOSYAL İNCELEME DETAYLARI
-              {user.role === 'manager' && (
-                <span className="text-xs bg-amber-500 text-slate-950 px-2 py-0.5 rounded font-extrabold uppercase">
-                  Müdür İnceleme Modu
-                </span>
-              )}
-            </h1>
-            <p className="text-xs text-slate-400 font-medium tracking-widest uppercase">
-              Ref ID: {assessment.id.slice(0, 8)}
-            </p>
+      <AppHeader
+        subtitle={`📄 İnceleme Detayı • Ref: ${assessment.id.slice(0, 8)}`}
+        actions={
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {user.role === 'personnel' && assessment.status !== 'approved' && (
+              <Link
+                href={`/assessment/${assessment.id}/edit`}
+                className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-xl text-xs font-bold border border-white/30 transition-colors"
+              >
+                <span>Düzenle</span>
+              </Link>
+            )}
+            {user.role === 'manager' && assessment.status !== 'approved' && (
+              <button
+                onClick={handleApprove}
+                disabled={approving}
+                className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
+              >
+                <CheckCircle2 size={14} />
+                <span>{approving ? 'Onaylanıyor...' : 'Onayla'}</span>
+              </button>
+            )}
+            {user.role === 'manager' && assessment.status === 'approved' && (
+              <button
+                onClick={handleRevokeApproval}
+                disabled={approving}
+                className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
+              >
+                <RotateCcw size={14} />
+                <span>{approving ? 'İşleniyor...' : 'Onaylı Aç'}</span>
+              </button>
+            )}
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-xl text-xs font-bold border border-white/30 transition-colors"
+            >
+              <Printer size={14} />
+              <span className="hidden sm:inline">Yazdır</span>
+            </button>
+            {assessment.status !== 'approved' && (
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex items-center gap-1.5 bg-red-500/80 hover:bg-red-400 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95"
+              >
+                <Trash2 size={14} />
+                <span>{deleting ? 'Siliniyor...' : 'Sil'}</span>
+              </button>
+            )}
           </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {user.role === 'personnel' && assessment.status !== 'approved' && (
-            <Link 
-              href={`/assessment/${assessment.id}/edit`}
-              className="flex items-center space-x-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors text-sm font-semibold shadow-sm"
-            >
-              <span>Düzenle</span>
-            </Link>
-          )}
-
-          {user.role === 'personnel' && assessment.status === 'approved' && (
-            <div className="flex items-center space-x-2 bg-slate-100 text-slate-500 border border-slate-200 px-3.5 py-2 rounded-lg text-xs font-bold" title="Bu kayıt müdür tarafından onaylandığı için düzenlenemez.">
-              <Lock size={15} />
-              <span>Onaylı Kayıt (Düzenlenemez)</span>
-            </div>
-          )}
-
-          {user.role === 'manager' && assessment.status !== 'approved' && (
-            <button 
-              onClick={handleApprove}
-              disabled={approving}
-              className="flex items-center space-x-2 bg-emerald-600 text-white border border-emerald-700 px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-bold shadow-md shadow-emerald-900/20 active:scale-95"
-            >
-              <CheckCircle2 size={18} />
-              <span>{approving ? 'Onaylanıyor...' : 'İncelemeyi Onayla'}</span>
-            </button>
-          )}
-
-          {user.role === 'manager' && assessment.status === 'approved' && (
-            <button 
-              onClick={handleRevokeApproval}
-              disabled={approving}
-              className="flex items-center space-x-2 bg-amber-600 hover:bg-amber-700 text-white border border-amber-700 px-4 py-2 rounded-lg transition-colors text-sm font-bold shadow-md shadow-amber-900/20 active:scale-95"
-              title="Müdür Onayını Kaldır ve Düzenlemeye Aç"
-            >
-              <RotateCcw size={18} />
-              <span>{approving ? 'İşleniyor...' : 'Müdür Onayını Geri Al (Düzenlemeye Aç)'}</span>
-            </button>
-          )}
-
-          <button 
-            onClick={() => window.print()}
-            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-bold shadow-md shadow-blue-900/20"
-          >
-            <Printer size={18} />
-            <span>Resmi Çıktı / Yazdır</span>
-          </button>
-
-          {/* Delete Record Button */}
-          {assessment.status !== 'approved' ? (
-            <button 
-              onClick={handleDelete}
-              disabled={deleting}
-              className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white border border-red-700 px-4 py-2 rounded-lg transition-colors text-sm font-bold shadow-md shadow-red-900/20 active:scale-95"
-              title="Onaylanmamış inceleme kaydını kalıcı olarak sil"
-            >
-              <Trash2 size={18} />
-              <span>{deleting ? 'Siliniyor...' : 'Kaydı Sil'}</span>
-            </button>
-          ) : (
-            <div 
-              className="flex items-center space-x-1.5 bg-slate-800 text-slate-400 border border-slate-700 px-3 py-2 rounded-lg text-xs font-bold cursor-not-allowed" 
-              title="Onaylı sosyal inceleme kayıtları silinemez. Silme işlemi için öncelikle müdür onayının kaldırılması gerekir."
-            >
-              <Lock size={14} />
-              <span>Onaylı (Silinemez)</span>
-            </div>
-          )}
-        </div>
-      </header>
+        }
+      />
 
       {/* SCREEN MAIN CONTENT */}
       <main className="flex-1 max-w-6xl mx-auto w-full p-6 lg:p-8 space-y-6 no-print">

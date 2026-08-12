@@ -15,7 +15,7 @@ import {
   CheckCircle2, AlertTriangle, Settings, Sliders, Info, ShieldAlert, Award
 } from 'lucide-react';
 import Link from 'next/link';
-import { LogoImage } from '@/components/logo-image';
+import { AppHeader } from '@/components/app-header';
 
 export default function SettingsPage() {
   const { showAlert, showConfirm } = useDialog();
@@ -147,46 +147,27 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
-      {/* HEADER NAVBAR */}
-      <header className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shrink-0 z-10 shadow-md">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-slate-800 rounded-lg transition-colors mr-1">
-            <ArrowLeft size={20} />
-          </Link>
-          <LogoImage 
-            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
-          />
-          <div>
-            <h1 className="text-lg font-bold leading-tight flex items-center gap-2">
-              SİSTEM VE YARDIM KRİTER AYARLARI
-              <span className="text-xs bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded font-extrabold uppercase">
-                Müdür Yönetim Paneli
-              </span>
-            </h1>
-            <p className="text-xs text-slate-400 font-medium">
-              Sosyal İnceleme Puan Aralıkları ve Yardım Miktarlarını Dinamik Yönetin
-            </p>
+      <AppHeader
+        subtitle="⚙️ Sistem ve Yardım Kriter Ayarları"
+        actions={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleResetDefaults}
+              className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white px-3 py-2 rounded-xl text-xs font-bold transition-colors border border-white/20"
+            >
+              <RotateCcw size={14} />
+              <span className="hidden sm:inline">Sıfırla</span>
+            </button>
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-white px-3 py-2 rounded-xl text-xs font-extrabold transition-all shadow-md active:scale-95"
+            >
+              <Save size={14} />
+              <span>Kaydet</span>
+            </button>
           </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleResetDefaults}
-            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-bold transition-colors border border-slate-700"
-          >
-            <RotateCcw size={15} />
-            <span className="hidden sm:inline">Fabrika Ayarlarına Sıfırla</span>
-          </button>
-
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-sm font-extrabold transition-all shadow-md active:scale-95"
-          >
-            <Save size={18} />
-            <span>Ayarları Kaydet</span>
-          </button>
-        </div>
-      </header>
+        }
+      />
 
       {/* MAIN CONTAINER */}
       <main className="flex-1 max-w-5xl mx-auto w-full p-6 lg:p-8 space-y-6">

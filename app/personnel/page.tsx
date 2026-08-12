@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Building2, Eye
+  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye
 } from 'lucide-react';
 import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db';
-import { LogoImage } from '@/components/logo-image';
 import Link from 'next/link';
+import { AppHeader } from '@/components/app-header';
 
 interface PersonnelStats {
   id: string;
@@ -140,27 +140,7 @@ export default function PersonnelPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* HEADER */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/"
-              className="p-2 -ml-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
-            >
-              <ArrowLeft size={20} />
-            </Link>
-            <div className="flex items-center gap-3">
-              <LogoImage className="h-8 w-auto grayscale opacity-80" />
-              <div className="h-4 w-px bg-slate-300"></div>
-              <h1 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
-                <Users className="text-blue-600" size={20} />
-                Personel Yönetimi
-              </h1>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AppHeader subtitle="👥 Personel Yönetimi" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!selectedPersonnel ? (

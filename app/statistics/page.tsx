@@ -8,12 +8,12 @@ import {
   PieChart, Pie, Cell
 } from 'recharts';
 import { 
-  ArrowLeft, Download, FileSpreadsheet, Printer, Calendar, ShieldAlert
+  Download, FileSpreadsheet, Printer, Calendar, ShieldAlert
 } from 'lucide-react';
 import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db';
-import { LogoImage } from '@/components/logo-image';
 import { useDialog } from '@/components/DialogProvider';
-import Link from 'next/link';
+import { AppHeader } from '@/components/app-header';
+import { LogoImage } from '@/components/logo-image';
 
 const COLORS = {
   emerald: '#10b981',
@@ -328,27 +328,19 @@ export default function StatisticsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20 no-print">
-      <div className="bg-primary-900 text-white p-6 shadow-md rounded-b-3xl max-w-7xl mx-auto">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="bg-primary-800 hover:bg-primary-700 p-2 rounded-full transition-colors">
-              <ArrowLeft size={20} />
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold">Gelişmiş İstatistik Raporları</h1>
-              <p className="text-primary-200 text-sm">Toplantı bazlı raporlamalar, grafikler ve analizler.</p>
-            </div>
+      <AppHeader
+        subtitle="📊 Gelişmiş İstatistik Raporları"
+        actions={
+          <div className="hidden sm:flex items-center gap-2">
+            <button onClick={handleExportExcel} className="bg-emerald-600 hover:bg-emerald-500 px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition-colors text-white">
+              <FileSpreadsheet size={15} /> Excel
+            </button>
+            <button onClick={handleExportPDF} className="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition-colors text-white border border-white/30">
+              <Printer size={15} /> PDF
+            </button>
           </div>
-          <div className="hidden sm:flex items-center gap-3">
-             <button onClick={handleExportExcel} className="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-colors">
-               <FileSpreadsheet size={18} /> Excel İndir
-             </button>
-             <button onClick={handleExportPDF} className="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-colors">
-               <Printer size={18} /> PDF Çıktısı Al
-             </button>
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       <div className="max-w-7xl mx-auto px-4 mt-8 space-y-6">
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
