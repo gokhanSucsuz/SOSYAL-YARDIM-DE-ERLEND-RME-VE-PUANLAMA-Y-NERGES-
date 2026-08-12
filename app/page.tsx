@@ -1173,16 +1173,18 @@ export default function Dashboard() {
                       <span>Sistem Ayarları</span>
                     </Link>
                   )}
-                  <Link
-                    href="/personnel"
-                    onClick={() => setIsNavMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition-colors border-b border-slate-100 group"
-                  >
-                    <div className="p-1.5 bg-blue-100 text-blue-700 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
-                      <Users size={15} />
-                    </div>
-                    <span>Personel Yönetimi</span>
-                  </Link>
+                  {user?.role === 'manager' && (
+                    <Link
+                      href="/personnel"
+                      onClick={() => setIsNavMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition-colors border-b border-slate-100 group"
+                    >
+                      <div className="p-1.5 bg-blue-100 text-blue-700 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                        <Users size={15} />
+                      </div>
+                      <span>Personel Yönetimi</span>
+                    </Link>
+                  )}
 
                   <Link
                     href="/guide"
