@@ -1,17 +1,10 @@
-// Service Worker for Sosyal İnceleme PWA
-const CACHE_NAME = 'sosyal-yardim-pwa-v2';
-const urlsToCache = [
-  '/',
-  '/manifest.json',
-  '/favicon.ico',
-  '/icon.png'
-];
+const CACHE_NAME = 'sosyal-yardim-pwa-v3';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache).catch(() => {});
+      return cache.addAll(['/', '/manifest.json', '/favicon.ico']);
     })
   );
 });
@@ -29,19 +22,40 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
-
   const url = new URL(event.request.url);
-  // Do NOT intercept Next.js chunks, dynamic routes or API endpoints
-  if (url.pathname.startsWith('/_next/') || url.pathname.startsWith('/api/')) {
+
+  if (url.pathname.startsWith('/api/')) {
     return;
   }
 
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
-    })
+    fetch(event.request)
+      .then((response) => {
+        // Cache successful GET requests for offline usage
+        if (response.status === 200 && url.protocol.startsWith('http')) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          
+          // Fallback to '/' for navigation requests
+          if (event.request.mode === 'navigate') {
+            return caches.match('/');
+          }
+          
+          return new Response('Network error and no cache available', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: new Headers({ 'Content-Type': 'text/plain' })
+          });
+        });
+      })
   );
 });
-
