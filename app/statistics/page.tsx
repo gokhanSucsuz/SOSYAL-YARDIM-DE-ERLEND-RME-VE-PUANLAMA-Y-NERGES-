@@ -24,6 +24,93 @@ const COLORS = {
   slate: '#64748b',
 };
 
+
+const CATEGORIES_MAP = [
+  {
+    id: 'A',
+    title: 'A. Gelir ve Barınma',
+    color: '#3b82f6', // blue
+    fields: [
+      { key: 'noWorker', label: 'Hanede Çalışan Yok' },
+      { key: 'noRegularIncome', label: 'Düzenli Gelir Yok' },
+      { key: 'noSgk', label: 'SGK Kaydı Yok' },
+      { key: 'a_kiraBorcu', label: 'Kira Borcu Var' },
+      { key: 'a_faturaBorcu', label: 'Fatura Borcu Var' },
+      { key: 'a_krediBorcu', label: 'Kredi Borcu Var' }
+    ]
+  },
+  {
+    id: 'B',
+    title: 'B. Dezavantajlı Bireyler',
+    color: '#8b5cf6', // purple
+    fields: [
+      { key: 'b_agirEngelli', label: 'Ağır Engelli' },
+      { key: 'b_engelli', label: 'Engelli' },
+      { key: 'b_evdeBakim', label: 'Evde Bakım Hastası' },
+      { key: 'b_kanser', label: 'Kanser Tedavisi' },
+      { key: 'b_kronik', label: 'Kronik Hastalık' },
+      { key: 'b_yasliYalniz', label: '65 Yaş Üstü Yalnız' },
+      { key: 'b_sehitYakini', label: 'Şehit Yakını' },
+      { key: 'b_gazi', label: 'Gazi' },
+      { key: 'b_yetim', label: 'Yetim / Öksüz' },
+      { key: 'b_koruyucuAile', label: 'Koruyucu Aile' },
+      { key: 'b_yabanciUyruklu', label: 'Yabancı Uyruklu' }
+    ]
+  },
+  {
+    id: 'C',
+    title: 'C. İhtiyaç Analizi',
+    color: '#f59e0b', // amber
+    fields: [
+      { key: 'c_beslenme', label: 'Beslenme' },
+      { key: 'c_giyim', label: 'Giyim' },
+      { key: 'c_fatura', label: 'Fatura Desteği' },
+      { key: 'c_yakacak', label: 'Yakacak Desteği' },
+      { key: 'c_saglikGideri', label: 'Sağlık / Medikal Gider' },
+      { key: 'c_egitimGideri', label: 'Eğitim Gideri' },
+      { key: 'c_bebekBakim', label: 'Bebek Bakım' }
+    ]
+  },
+  {
+    id: 'D',
+    title: 'D. Eğitim ve Fiziksel Koşullar',
+    color: '#10b981', // emerald
+    fields: [
+      { key: 'd_evsiz', label: 'Evsiz / Barınaksız' },
+      { key: 'd_afetzede', label: 'Afetzede' },
+      { key: 'd_agirHasarli', label: 'Ağır Hasarlı Konut' },
+      { key: 'd_sagliksiz', label: 'Sağlıksız Konut' },
+      { key: 'd_dereYatagi', label: 'Riskli Bölge/Bodrum' },
+      { key: 'd_kiraci', label: 'Kiracı' },
+      { key: 'd_tahliyeBaskisi', label: 'Tahliye/İcra Baskısı' },
+      { key: 'd_isinmaProblem', label: 'Isınma Problemi' }
+    ]
+  },
+  {
+    id: 'F',
+    title: 'F. Sosyal Kırılganlık',
+    color: '#ec4899', // pink
+    fields: [
+      { key: 'e_siddetMagduru', label: 'Şiddet Mağduru' },
+      { key: 'e_kadinReis', label: 'Kadın Hane Reisi' },
+      { key: 'e_esiCezaevinde', label: 'Eşi/Yakını Cezaevinde' },
+      { key: 'e_afetGelirKaybi', label: 'Kaza/Afet Kaynaklı Gelir Kaybı' },
+      { key: 'e_maddeBagimliligi', label: 'Madde Bağımlısı Birey' },
+      { key: 'e_sosyalGuvencesiz', label: 'Sosyal Güvencesiz' },
+      { key: 'e_icraBorcBaskisi', label: 'Yüksek Borç / İcra' },
+      { key: 'e_gebelikBebek', label: 'Bebek / Riskli Gebelik' },
+      { key: 'e_bosanmis', label: 'Boşanmış / Terk Edilmiş' },
+      { key: 'e_dul', label: 'Dul (Vefat)' }
+    ]
+  }
+];
+
+export interface CategoryChartData {
+  title: string;
+  color: string;
+  data: { name: string; birey: number }[];
+}
+
 export default function StatisticsPage() {
   const router = useRouter();
   const { showAlert } = useDialog();
@@ -71,53 +158,49 @@ export default function StatisticsPage() {
     return assessments.filter(a => a.meetingId && meetingIds.includes(a.meetingId));
   }, [assessments, filteredMeetings]);
 
-  const generateMeetingStats = (m: Meeting, meetingAssessments: Assessment[]) => {
-    const totalCount = meetingAssessments.length;
-    const approved = meetingAssessments.filter(a => a.status === 'approved');
-    const pending = meetingAssessments.filter(a => a.status === 'pending');
+    const generateMeetingStats = (m: Meeting, assessments: Assessment[]) => {
+    const totalCount = assessments.length;
+    const approved = assessments.filter(a => a.status === 'approved');
+    const pending = assessments.filter(a => a.status === 'pending');
     
     let totalScore = 0;
     let approvedAid = 0;
     let plannedAid = 0;
-    
-    let demographics = {
-      'Ağır Engelli': 0,
-      'Engelli': 0,
-      'Evde Bakım Hastası': 0,
-      'Kanser': 0,
-      'Kronik Hasta': 0,
-      '65 Yaş Üstü Yalnız': 0,
-      'Şehit Yakını': 0,
-      'Gazi': 0,
-      'Yetim/Öksüz': 0,
-      'Koruyucu Aile': 0,
-      'Yabancı Uyruklu': 0,
-    };
 
-    meetingAssessments.forEach(a => {
-      const s = a.data?.systemScore || 0;
-      totalScore += s;
+    // Track categorised stats
+    const catCounts: Record<string, Record<string, number>> = {};
+    CATEGORIES_MAP.forEach(cat => {
+      catCounts[cat.id] = {};
+    });
+
+    assessments.forEach(a => {
+      totalScore += a.result?.totalScore || 0;
       if (a.status === 'approved' && a.data?.assistanceAmount) approvedAid += a.data.assistanceAmount;
       if (a.data?.assistanceAmount) plannedAid += a.data.assistanceAmount;
 
       const d = a.data || {};
-      if (d.b_agirEngelli) demographics['Ağır Engelli']++;
-      if (d.b_engelli) demographics['Engelli']++;
-      if (d.b_evdeBakim) demographics['Evde Bakım Hastası']++;
-      if (d.b_kanser) demographics['Kanser']++;
-      if (d.b_kronik) demographics['Kronik Hasta']++;
-      if (d.b_yasliYalniz) demographics['65 Yaş Üstü Yalnız']++;
-      if (d.b_sehitYakini) demographics['Şehit Yakını']++;
-      if (d.b_gazi) demographics['Gazi']++;
-      if (d.b_yetim) demographics['Yetim/Öksüz']++;
-      if (d.b_koruyucuAile) demographics['Koruyucu Aile']++;
-      if (d.b_yabanciUyruklu) demographics['Yabancı Uyruklu']++;
+      
+      CATEGORIES_MAP.forEach(cat => {
+        cat.fields.forEach(field => {
+          // Both true booleans and numerical values > 0 count.
+          if (d[field.key]) {
+            catCounts[cat.id][field.label] = (catCounts[cat.id][field.label] || 0) + 1;
+          }
+        });
+      });
     });
     
-    const demographicsChartData = Object.keys(demographics).map(key => ({
-      name: key,
-      value: demographics[key as keyof typeof demographics]
-    })).filter(item => item.value > 0).sort((a, b) => b.value - a.value);
+    const categoryCharts: CategoryChartData[] = CATEGORIES_MAP.map(cat => {
+      const data = Object.keys(catCounts[cat.id]).map(label => ({
+        name: label,
+        birey: catCounts[cat.id][label]
+      })).sort((a, b) => b.birey - a.birey);
+      return {
+        title: cat.title,
+        color: cat.color,
+        data
+      };
+    }).filter(cat => cat.data.length > 0);
 
     return {
       meeting: m,
@@ -128,7 +211,7 @@ export default function StatisticsPage() {
       approvedAid,
       plannedAid,
       budget: m.budgetTL || 0,
-      demographicsChartData,
+      categoryCharts,
     };
   };
 
@@ -136,13 +219,19 @@ export default function StatisticsPage() {
     return filteredMeetings.map(m => generateMeetingStats(m, filteredAssessments.filter(a => a.meetingId === m.id)));
   }, [filteredMeetings, filteredAssessments]);
 
-  const grandTotal = useMemo(() => {
-    let overallDemographics: Record<string, number> = {};
+    const grandTotal = useMemo(() => {
+    const overallCatCounts: Record<string, Record<string, number>> = {};
+    CATEGORIES_MAP.forEach(cat => {
+      overallCatCounts[cat.title] = {};
+    });
 
     const totals = allStats.reduce((acc, curr) => {
-      if (curr.demographicsChartData) {
-        curr.demographicsChartData.forEach(d => {
-          overallDemographics[d.name] = (overallDemographics[d.name] || 0) + d.value;
+      if (curr.categoryCharts) {
+        curr.categoryCharts.forEach(catChart => {
+          if (!overallCatCounts[catChart.title]) overallCatCounts[catChart.title] = {};
+          catChart.data.forEach(d => {
+            overallCatCounts[catChart.title][d.name] = (overallCatCounts[catChart.title][d.name] || 0) + d.birey;
+          });
         });
       }
       return {
@@ -155,14 +244,22 @@ export default function StatisticsPage() {
       };
     }, { totalCount: 0, approvedCount: 0, pendingCount: 0, approvedAid: 0, plannedAid: 0, budget: 0 });
 
-    const demographicsChartData = Object.keys(overallDemographics).map(key => ({
-      name: key,
-      value: overallDemographics[key]
-    })).sort((a, b) => b.value - a.value);
+    const categoryCharts: CategoryChartData[] = CATEGORIES_MAP.map(cat => {
+      const counts = overallCatCounts[cat.title] || {};
+      const data = Object.keys(counts).map(label => ({
+        name: label,
+        birey: counts[label]
+      })).sort((a, b) => b.birey - a.birey);
+      return {
+        title: cat.title,
+        color: cat.color,
+        data
+      };
+    }).filter(cat => cat.data.length > 0);
 
     return {
       ...totals,
-      demographicsChartData
+      categoryCharts
     };
   }, [allStats]);
 
@@ -321,27 +418,34 @@ export default function StatisticsPage() {
           </div>
         </div>
 
-        {/* Overall Demographics Bar Chart */}
-        {grandTotal.demographicsChartData && grandTotal.demographicsChartData.length > 0 && (
-          <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-100 mb-8 page-break-inside-avoid print:mt-6 mt-6">
-            <h4 className="text-sm font-black text-slate-700 mb-6 uppercase tracking-wide">Genel Toplam Özel Durum İstatistikleri</h4>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={grandTotal.demographicsChartData} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
-                  <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 12, fill: '#475569', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
-                  <Tooltip cursor={{fill: '#f1f5f9'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                  <Bar dataKey="value" fill="#3b82f6" radius={[0, 6, 6, 0]}>
-                    {grandTotal.demographicsChartData.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={['#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#84cc16'][index % 6]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+        {/* Overall Category Charts */}
+          {grandTotal.categoryCharts && grandTotal.categoryCharts.length > 0 && (
+            <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-100 mb-8 page-break-inside-avoid print:mt-6 mt-6">
+              <h4 className="text-sm font-black text-slate-700 mb-6 uppercase tracking-wide">Genel Toplam Kategorik İstatistikler</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {grandTotal.categoryCharts.map((catChart: any, index: number) => (
+                  <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+                    <h5 className="font-bold text-slate-700 mb-4 text-xs" style={{ color: catChart.color }}>{catChart.title}</h5>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={catChart.data} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
+                          <XAxis type="number" hide />
+                          <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 11, fill: '#475569', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+                          <Tooltip cursor={{fill: '#f1f5f9'}} formatter={(value) => [value, 'Birey/Kayıt']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                          <Bar dataKey="birey" fill={catChart.color} radius={[0, 4, 4, 0]}>
+                            {catChart.data.map((entry: any, i: number) => (
+                              <Cell key={`cell-${i}`} fill={catChart.color} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-6">
@@ -388,32 +492,39 @@ export default function StatisticsPage() {
            </div>
         </div>
 
-        {/* Meeting-Specific Demographics Charts */}
-        {allStats.map((s, idx) => (
-          s.demographicsChartData && s.demographicsChartData.length > 0 && (
-            <div key={idx} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-6 page-break-inside-avoid print:mt-6">
-              <h3 className="font-bold text-slate-700 mb-6 flex justify-between">
-                <span>{s.meeting.meetingNo} Toplantısı - Özel Durum İstatistikleri</span>
-                <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs">{s.meeting.date}</span>
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={s.demographicsChartData} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
-                    <XAxis type="number" hide />
-                    <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 12, fill: '#475569', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
-                    <Tooltip cursor={{fill: '#f1f5f9'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                    <Bar dataKey="value" fill="#8b5cf6" radius={[0, 6, 6, 0]}>
-                      {s.demographicsChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={['#8b5cf6', '#6366f1', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'][index % 6]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+        {/* Meeting-Specific Category Charts */}
+          {allStats.map((s, idx) => (
+            s.categoryCharts && s.categoryCharts.length > 0 && (
+              <div key={idx} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-6 page-break-inside-avoid print:mt-6">
+                <h3 className="font-bold text-slate-700 mb-6 flex justify-between">
+                  <span>{s.meeting.meetingNo} Toplantısı - Kategorik İstatistikler</span>
+                  <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs">{s.meeting.date}</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {s.categoryCharts.map((catChart: any, index: number) => (
+                    <div key={index} className="bg-slate-50 rounded-xl border border-slate-100 p-4">
+                      <h5 className="font-bold text-slate-700 mb-4 text-xs" style={{ color: catChart.color }}>{catChart.title}</h5>
+                      <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={catChart.data} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
+                            <XAxis type="number" hide />
+                            <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 11, fill: '#475569', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+                            <Tooltip cursor={{fill: '#f1f5f9'}} formatter={(value) => [value, 'Birey/Kayıt']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                            <Bar dataKey="birey" fill={catChart.color} radius={[0, 4, 4, 0]}>
+                              {catChart.data.map((entry: any, i: number) => (
+                                <Cell key={`cell-${i}`} fill={catChart.color} />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )
-        ))}
+            )
+          ))}
       </div>
 
       {/* ------------------------------------------------------------- */}
