@@ -79,13 +79,45 @@ export default function StatisticsPage() {
     let totalScore = 0;
     let approvedAid = 0;
     let plannedAid = 0;
+    
+    let demographics = {
+      'Ağır Engelli': 0,
+      'Engelli': 0,
+      'Evde Bakım Hastası': 0,
+      'Kanser': 0,
+      'Kronik Hasta': 0,
+      '65 Yaş Üstü Yalnız': 0,
+      'Şehit Yakını': 0,
+      'Gazi': 0,
+      'Yetim/Öksüz': 0,
+      'Koruyucu Aile': 0,
+      'Yabancı Uyruklu': 0,
+    };
 
     meetingAssessments.forEach(a => {
       const s = a.data?.systemScore || 0;
       totalScore += s;
       if (a.status === 'approved' && a.data?.assistanceAmount) approvedAid += a.data.assistanceAmount;
       if (a.data?.assistanceAmount) plannedAid += a.data.assistanceAmount;
+
+      const d = a.data || {};
+      if (d.b_agirEngelli) demographics['Ağır Engelli']++;
+      if (d.b_engelli) demographics['Engelli']++;
+      if (d.b_evdeBakim) demographics['Evde Bakım Hastası']++;
+      if (d.b_kanser) demographics['Kanser']++;
+      if (d.b_kronik) demographics['Kronik Hasta']++;
+      if (d.b_yasliYalniz) demographics['65 Yaş Üstü Yalnız']++;
+      if (d.b_sehitYakini) demographics['Şehit Yakını']++;
+      if (d.b_gazi) demographics['Gazi']++;
+      if (d.b_yetim) demographics['Yetim/Öksüz']++;
+      if (d.b_koruyucuAile) demographics['Koruyucu Aile']++;
+      if (d.b_yabanciUyruklu) demographics['Yabancı Uyruklu']++;
     });
+    
+    const demographicsChartData = Object.keys(demographics).map(key => ({
+      name: key,
+      value: demographics[key as keyof typeof demographics]
+    })).filter(item => item.value > 0).sort((a, b) => b.value - a.value);
 
     return {
       meeting: m,
@@ -96,6 +128,7 @@ export default function StatisticsPage() {
       approvedAid,
       plannedAid,
       budget: m.budgetTL || 0,
+      demographicsChartData,
     };
   };
 
@@ -104,14 +137,33 @@ export default function StatisticsPage() {
   }, [filteredMeetings, filteredAssessments]);
 
   const grandTotal = useMemo(() => {
-    return allStats.reduce((acc, curr) => ({
-      totalCount: acc.totalCount + curr.totalCount,
-      approvedCount: acc.approvedCount + curr.approvedCount,
-      pendingCount: acc.pendingCount + curr.pendingCount,
-      approvedAid: acc.approvedAid + curr.approvedAid,
-      plannedAid: acc.plannedAid + curr.plannedAid,
-      budget: acc.budget + curr.budget,
-    }), { totalCount: 0, approvedCount: 0, pendingCount: 0, approvedAid: 0, plannedAid: 0, budget: 0 });
+    let overallDemographics: Record<string, number> = {};
+
+    const totals = allStats.reduce((acc, curr) => {
+      if (curr.demographicsChartData) {
+        curr.demographicsChartData.forEach(d => {
+          overallDemographics[d.name] = (overallDemographics[d.name] || 0) + d.value;
+        });
+      }
+      return {
+        totalCount: acc.totalCount + curr.totalCount,
+        approvedCount: acc.approvedCount + curr.approvedCount,
+        pendingCount: acc.pendingCount + curr.pendingCount,
+        approvedAid: acc.approvedAid + curr.approvedAid,
+        plannedAid: acc.plannedAid + curr.plannedAid,
+        budget: acc.budget + curr.budget,
+      };
+    }, { totalCount: 0, approvedCount: 0, pendingCount: 0, approvedAid: 0, plannedAid: 0, budget: 0 });
+
+    const demographicsChartData = Object.keys(overallDemographics).map(key => ({
+      name: key,
+      value: overallDemographics[key]
+    })).sort((a, b) => b.value - a.value);
+
+    return {
+      ...totals,
+      demographicsChartData
+    };
   }, [allStats]);
 
   const handleExportExcel = async () => {
@@ -269,6 +321,28 @@ export default function StatisticsPage() {
           </div>
         </div>
 
+        {/* Overall Demographics Bar Chart */}
+        {grandTotal.demographicsChartData && grandTotal.demographicsChartData.length > 0 && (
+          <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-100 mb-8 page-break-inside-avoid print:mt-6 mt-6">
+            <h4 className="text-sm font-black text-slate-700 mb-6 uppercase tracking-wide">Genel Toplam Özel Durum İstatistikleri</h4>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={grandTotal.demographicsChartData} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 12, fill: '#475569', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+                  <Tooltip cursor={{fill: '#f1f5f9'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                  <Bar dataKey="value" fill="#3b82f6" radius={[0, 6, 6, 0]}>
+                    {grandTotal.demographicsChartData.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={['#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#84cc16'][index % 6]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
+
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-6">
            <div className="p-6 border-b border-slate-200 bg-slate-50">
@@ -313,6 +387,33 @@ export default function StatisticsPage() {
              </table>
            </div>
         </div>
+
+        {/* Meeting-Specific Demographics Charts */}
+        {allStats.map((s, idx) => (
+          s.demographicsChartData && s.demographicsChartData.length > 0 && (
+            <div key={idx} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-6 page-break-inside-avoid print:mt-6">
+              <h3 className="font-bold text-slate-700 mb-6 flex justify-between">
+                <span>{s.meeting.meetingNo} Toplantısı - Özel Durum İstatistikleri</span>
+                <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs">{s.meeting.date}</span>
+              </h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={s.demographicsChartData} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
+                    <XAxis type="number" hide />
+                    <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 12, fill: '#475569', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+                    <Tooltip cursor={{fill: '#f1f5f9'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                    <Bar dataKey="value" fill="#8b5cf6" radius={[0, 6, 6, 0]}>
+                      {s.demographicsChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={['#8b5cf6', '#6366f1', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'][index % 6]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )
+        ))}
       </div>
 
       {/* ------------------------------------------------------------- */}

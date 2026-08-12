@@ -16,7 +16,7 @@ import {
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
   Lock, Unlock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
   X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar, ArrowLeft, ArrowRight, Settings,
-  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone, Wallet, Banknote, Pencil, BarChart3, Home, Menu
+  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone, Wallet, Banknote, Pencil, BarChart3, Home, Menu, Eye, EyeOff
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -66,6 +66,7 @@ export default function Dashboard() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved'>('all');
   const [filterDecision, setFilterDecision] = useState<'all' | 'accepted' | 'rejected'>('all');
   const [filterMeetingId, setFilterMeetingId] = useState<string | null>(null);
+  const [showScores, setShowScores] = useState(false);
 
   
   // Sort States
@@ -1096,7 +1097,22 @@ export default function Dashboard() {
             <p className="text-sm font-bold truncate max-w-[140px]">{user.name}</p>
           </div>
 
-          <div className="relative">
+          <div className="relative flex items-center gap-2">
+            {user.role === 'personnel' && (
+              <button
+                onClick={() => setShowScores(!showScores)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border focus:outline-none ${
+                  showScores 
+                    ? 'bg-blue-600/30 border-blue-400/50 text-blue-100 hover:bg-blue-600/50' 
+                    : 'bg-white/10 border-white/20 hover:bg-white/20 text-white'
+                }`}
+                title={showScores ? "Puanları Gizle" : "Puanları Göster"}
+              >
+                {showScores ? <EyeOff size={16} /> : <Eye size={16} />}
+                <span className="hidden sm:inline">{showScores ? "Puanları Gizle" : "Puanları Göster"}</span>
+              </button>
+            )}
+
             <button
               onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
               className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
@@ -1387,7 +1403,7 @@ export default function Dashboard() {
                               </div>
 
                               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-1">
-                                <span className="font-bold text-slate-700">Puan: <strong className={item.result.isRejected ? 'text-red-600' : 'text-blue-700'}>{item.result.totalScore} Puan</strong></span>
+                                <span className="font-bold text-slate-700">Puan: <strong className={item.result.isRejected ? 'text-red-600' : 'text-blue-700'}>{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</strong></span>
                                 <span className="font-bold text-slate-700">Karar: <strong className={item.result.isRejected ? 'text-red-600' : 'text-emerald-700'}>{item.result.isRejected ? 'REDDEDİLDİ' : (item.result.assistance?.text || '-')}</strong></span>
                                 <span className="text-slate-500">İnceleyen: {item.personnelName}</span>
                               </div>
@@ -1940,7 +1956,7 @@ export default function Dashboard() {
                       <td className="px-3 py-3 font-extrabold">{item.applicantName}</td>
                       <td className="px-3 py-3 text-center">{item.householdSize}</td>
                       {user.role === 'manager' && <td className="px-3 py-3">{item.personnelName}</td>}
-                      <td className="px-3 py-3 text-center font-bold">{item.result.totalScore}</td>
+                      <td className="px-3 py-3 text-center font-bold">{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore}</td>
                       <td className="px-3 py-3 font-black uppercase text-[10px]">{isApproved ? 'ONAYLI' : 'BEKLİYOR'}</td>
                       <td className="px-3 py-3 font-bold">{item.result.isRejected ? 'RED' : item.result.assistance?.text}</td>
                       <td className="px-3 py-3 text-right">
@@ -2165,7 +2181,7 @@ export default function Dashboard() {
                       <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
                       <td className="p-1 font-medium">{item.personnelName}</td>
                       <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
-                      <td className="p-1 text-center font-black">{item.result.totalScore} Puan</td>
+                      <td className="p-1 text-center font-black">{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</td>
                       <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
                       <td className="p-1 font-bold uppercase">{item.result.isRejected ? 'REDDEDİLDİ' : item.result.assistance?.text}</td>
                     </tr>
