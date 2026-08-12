@@ -1,18 +1,21 @@
-const CACHE_NAME = 'sosyal-yardim-pwa-v6';
+const CACHE_NAME = 'sosyal-yardim-pwa-v10';
+
+const PRECACHE_ASSETS = [
+  '/',
+  '/manifest.json',
+  '/favicon.ico',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/apple-touch-icon.png'
+];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([
-        '/',
-        '/?source=pwa',
-        '/manifest.json',
-        '/favicon.ico',
-        '/icon-192.png',
-        '/icon-512.png',
-        '/apple-touch-icon.png'
-      ]).catch((err) => console.log('Cache pre-fill warning:', err));
+      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
+        console.log('Cache pre-fill warning:', err);
+      });
     })
   );
 });
@@ -33,14 +36,15 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
 
-  if (url.pathname.startsWith('/api/')) {
+  // Skip API calls and non-http(s) requests
+  if (url.pathname.startsWith('/api/') || !url.protocol.startsWith('http')) {
     return;
   }
 
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        if (response.status === 200 && url.protocol.startsWith('http')) {
+        if (response.status === 200) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseClone);
@@ -53,7 +57,7 @@ self.addEventListener('fetch', (event) => {
           if (cachedResponse) return cachedResponse;
           
           if (event.request.mode === 'navigate') {
-            return caches.match('/') || caches.match('/?source=pwa');
+            return caches.match('/');
           }
           
           return new Response('Çevrimdışı - İnternet bağlantısı bulunamadı', {

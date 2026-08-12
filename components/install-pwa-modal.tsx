@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect } from 'react';
-import { Smartphone, Download, X, Share, PlusSquare, MoreVertical, CheckCircle2, ExternalLink, Sparkles } from 'lucide-react';
+import { Smartphone, Download, X, Share, PlusSquare, MoreVertical, CheckCircle2, ExternalLink, Sparkles, AlertTriangle } from 'lucide-react';
 import { LogoImage } from './logo-image';
 
 interface InstallPwaModalProps {
@@ -91,7 +91,7 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
                 <div className="bg-blue-950/60 border border-blue-500/30 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-left space-y-1">
                     <p className="font-bold text-sm text-blue-200">Otomatik Kurulum Hazır</p>
-                    <p className="text-xs text-blue-300/80">Tek tıkla telefonunuza mobil uygulama olarak yükleyin.</p>
+                    <p className="text-xs text-blue-300/80">Tek tıkla telefonunuza mobil uygulama (APK) olarak yükleyin.</p>
                   </div>
                   <button
                     onClick={handleNativeInstall}
@@ -103,24 +103,34 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
                 </div>
               )}
 
+              {/* Important notice about Shortcut vs Real App */}
+              <div className="bg-amber-950/40 border border-amber-500/30 p-4 rounded-2xl space-y-2 text-xs">
+                <div className="flex items-center gap-2 text-amber-300 font-bold">
+                  <AlertTriangle size={16} className="shrink-0" />
+                  <span>Kısayol (Web Kısayolu) ve Gerçek Uygulama Farkı</span>
+                </div>
+                <p className="text-amber-200/90 leading-relaxed">
+                  Eğer ana ekrandaki simgeye bastığınızda Chrome adresi görünüyorsa, telefonunuza internet kısayolu eklenmiş demektir. Gerçek tam ekran uygulama olarak çalıştırmak için:
+                </p>
+                <ol className="list-decimal list-inside space-y-1 text-amber-200/80 font-medium pl-1">
+                  <li>Önce masaüstünüzdeki eski kısayol simgesini silin.</li>
+                  <li>Sitemizi Chrome veya Safari tarayıcısında açın.</li>
+                  <li>Aşağıdaki adımları izleyerek <strong>&quot;Uygulamayı Yükle&quot;</strong> butonuna basın.</li>
+                </ol>
+              </div>
+
               {/* If in iframe (Preview Window) */}
               {isIframe && !deferredPrompt && (
-                <div className="bg-amber-950/50 border border-amber-500/40 p-4 rounded-2xl space-y-3">
-                  <p className="text-xs text-amber-200 font-bold leading-relaxed">
-                    ⚠️ <strong>Neden Tarayıcıda Açılıyor?</strong>
-                  </p>
-                  <p className="text-xs text-amber-200/90 leading-relaxed">
-                    Önizleme penceresi (iFrame) içerisinden &quot;Ana Ekrana Ekle&quot; yapıldığında tarayıcı bunu gerçek bir uygulama olarak değil, sadece varsayılan internet kısayolu olarak kaydeder.
-                  </p>
-                  <p className="text-xs text-amber-300 font-extrabold">
-                    👉 Gerçek Mobil Uygulama (Tam Ekran) olarak yüklemek için aşağıdaki sarı butona basarak bağlantıyı harici tarayıcı sekmesinde (Chrome/Safari) açıp oradan ekleyin:
+                <div className="bg-blue-950/50 border border-blue-500/40 p-4 rounded-2xl space-y-3">
+                  <p className="text-xs text-blue-200 font-extrabold">
+                    👉 Uygulamayı Harici Chrome Sekmesinde Açın:
                   </p>
                   <button
                     onClick={() => window.open(window.location.href, '_blank')}
-                    className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-3 rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+                    className="w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95"
                   >
                     <ExternalLink size={16} />
-                    <span>Harici Tarayıcıda Aç ve Mobil Uygulama Olarak Yükle</span>
+                    <span>Harici Tarayıcıda Aç ve Yükle</span>
                   </button>
                 </div>
               )}
@@ -151,15 +161,15 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
                   <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-3 text-xs text-slate-300">
                     <div className="flex items-start gap-3">
                       <div className="bg-blue-600/20 text-blue-400 p-2 rounded-xl shrink-0 font-bold border border-blue-500/20">1</div>
-                      <p className="pt-1">Chrome / tarayıcınızın sağ üst köşesindeki <strong>Üç Nokta (<MoreVertical size={14} className="inline mx-1 text-blue-400" />)</strong> menüsüne dokunun.</p>
+                      <p className="pt-1">Chrome tarayıcınızın sağ üst köşesindeki <strong>Üç Nokta (<MoreVertical size={14} className="inline mx-1 text-blue-400" />)</strong> menüsüne dokunun.</p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="bg-blue-600/20 text-blue-400 p-2 rounded-xl shrink-0 font-bold border border-blue-500/20">2</div>
-                      <p className="pt-1">Menüdeki <strong>&quot;Uygulamayı Yükle&quot;</strong> veya <strong>&quot;Ana Ekrana Ekle&quot;</strong> seçeneğini seçin.</p>
+                      <p className="pt-1">Menüdeki <strong>&quot;Uygulamayı Yükle&quot;</strong> seçeneğini seçin. *(Kısayol Ekle değil, Uygulamayı Yükle)*</p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="bg-blue-600/20 text-blue-400 p-2 rounded-xl shrink-0 font-bold border border-blue-500/20">3</div>
-                      <p className="pt-1">Açılan pencerede <strong>&quot;Yükle&quot;</strong> butonunu onaylayarak mobil uygulamayı cihazınıza kurun.</p>
+                      <p className="pt-1">Çıkan pencerdeki <strong>&quot;Yükle&quot;</strong> butonuna onay verin. Telefonunuz bağımsız bir uygulama kuracaktır.</p>
                     </div>
                   </div>
                 )}
@@ -181,7 +191,7 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
             }}
             className="text-slate-500 hover:text-white underline decoration-slate-700 transition-colors"
           >
-            Önbelleği Temizle
+            Önbelleği Temizle &amp; Yenile
           </button>
           <button
             onClick={onClose}
