@@ -16,7 +16,7 @@ import {
   Printer, Clock, BookOpen, Presentation, RotateCcw, 
   Lock, Unlock, RefreshCw, Edit3, Search, ArrowUpDown, ArrowUp, ArrowDown, 
   X, Filter, Check, CheckSquare, ListOrdered, Trash2, FileSpreadsheet, Download, Calendar, ArrowLeft, ArrowRight, Settings,
-  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone, Wallet, Banknote, Pencil, BarChart3, Home
+  Building2, Phone, MapPin, Hash, ChevronDown, ChevronUp, AlertCircle, UserCheck, Smartphone, Wallet, Banknote, Pencil, BarChart3, Home, Menu
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -45,10 +45,8 @@ export default function Dashboard() {
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
-  useEffect(() => {
-    // Add any necessary effect logic here
-  }, []);
 
 
 
@@ -1079,57 +1077,109 @@ export default function Dashboard() {
       `}</style>
 
       {/* Screen Header */}
-      <header className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shrink-0 z-10 no-print shadow-md border-b border-red-900">
-        <div className="flex items-center gap-3">
+      <header className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-20 no-print shadow-lg border-b border-red-900/60 relative">
+        {/* Left: Logo & Title */}
+        <div className="flex items-center gap-3 min-w-0">
           <LogoImage 
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl shadow-md border-2 border-white/30 object-cover shrink-0" 
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl shadow-md border-2 border-white/30 object-cover shrink-0" 
           />
-          <div>
-            <h1 className="text-sm sm:text-lg font-extrabold leading-tight tracking-wide">T.C. EDİRNE SYDV SOSYAL YARDIM DEĞERLENDİRME SİSTEMİ</h1>
-            <p className="text-[10px] sm:text-xs text-red-100 font-bold tracking-widest uppercase">
-              {user.role === 'manager' ? 'Müdür Yetkilisi Yönetim Paneli' : 'Personel Paneli'}
+          <div className="min-w-0">
+            <h1 className="text-xs sm:text-base font-extrabold leading-tight tracking-wide">T.C. EDİRNE SYDV SOSYAL YARDIM DEĞERLENDİRME SİSTEMİ</h1>
+            <p className="text-[10px] sm:text-xs text-red-200 font-semibold tracking-widest uppercase">
+              {user.role === 'manager' ? '🔐 Müdür Yetkilisi Yönetim Paneli' : '👤 Personel İnceleme Paneli'}
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-between sm:justify-end w-full sm:w-auto gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-red-600/50">
 
-          {user?.role === 'manager' && (
-            <Link
-              href="/settings"
-              className="flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 text-xs font-black px-3 py-2 rounded-xl transition-colors shadow-sm"
-              title="Sistem ve Yardım Kriter Ayarları (Müdür Paneli)"
-            >
-              <Settings size={16} className="shrink-0" />
-              <span>Ayarlar</span>
-            </Link>
-          )}
-          <Link
-            href="/presentation"
-            className="flex items-center gap-1.5 bg-red-900/80 hover:bg-red-900 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors shadow-sm border border-red-500/30"
-            title="Proje Sunumu ve PDF Raporu"
-          >
-            <Presentation size={16} className="shrink-0 text-red-200" />
-            <span>Proje Sunumu (PDF)</span>
-          </Link>
-          <Link
-            href="/guide"
-            className="flex items-center gap-1.5 bg-red-900/80 hover:bg-red-900 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors border border-red-500/30"
-            title="Puanlama ve İnceleme Kılavuzu"
-          >
-            <BookOpen size={16} className="text-red-200 shrink-0" />
-            <span>Kılavuz & Metodoloji</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="text-right border-r border-red-600/60 pr-3">
-              <p className="text-[10px] text-red-100">{user.role === 'manager' ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
-              <p className="text-xs sm:text-sm font-semibold truncate max-w-[120px]">{user.name}</p>
-            </div>
-            <button onClick={handleLogout} className="p-2 text-red-100 hover:text-white transition-colors active:scale-95 touch-manipulation" title="Çıkış Yap">
-              <LogOut size={20} />
-            </button>
+        {/* Right: User Info + Nav Dropdown + Logout */}
+        <div className="flex items-center gap-2 shrink-0 ml-3">
+          {/* User Info - only visible on desktop */}
+          <div className="hidden md:block text-right border-r border-red-600/50 pr-3 mr-1">
+            <p className="text-[10px] text-red-200 font-medium">{user.role === 'manager' ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
+            <p className="text-sm font-bold truncate max-w-[140px]">{user.name}</p>
           </div>
+
+          {/* Navigation Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
+              className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+              title="Gezinti Menüsü"
+            >
+              <Menu size={16} className="shrink-0" />
+              <span className="hidden sm:inline">Menü</span>
+              <ChevronDown size={13} className={`transition-transform duration-200 ${isNavMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Backdrop */}
+            {isNavMenuOpen && (
+              <div className="fixed inset-0 z-40" onClick={() => setIsNavMenuOpen(false)} />
+            )}
+
+            <AnimatePresence>
+              {isNavMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                  className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50"
+                >
+                  <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-100">
+                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Sistem Menüsü</p>
+                    <p className="text-xs font-bold text-slate-700 mt-0.5 md:hidden">{user.name}</p>
+                  </div>
+
+                  {user?.role === 'manager' && (
+                    <Link
+                      href="/settings"
+                      onClick={() => setIsNavMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50 hover:text-amber-800 transition-colors border-b border-slate-100 group"
+                    >
+                      <div className="p-1.5 bg-amber-100 text-amber-700 rounded-lg group-hover:bg-amber-600 group-hover:text-white transition-colors shrink-0">
+                        <Settings size={15} />
+                      </div>
+                      <span>Sistem Ayarları</span>
+                    </Link>
+                  )}
+
+                  <Link
+                    href="/guide"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition-colors border-b border-slate-100 group"
+                  >
+                    <div className="p-1.5 bg-blue-100 text-blue-700 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                      <BookOpen size={15} />
+                    </div>
+                    <span>Kılavuz &amp; Metodoloji</span>
+                  </Link>
+
+                  <Link
+                    href="/presentation"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-red-50 hover:text-red-800 transition-colors group"
+                  >
+                    <div className="p-1.5 bg-red-100 text-red-700 rounded-lg group-hover:bg-red-600 group-hover:text-white transition-colors shrink-0">
+                      <Presentation size={15} />
+                    </div>
+                    <span>Proje Sunumu (PDF)</span>
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="p-2 text-red-100 hover:text-white hover:bg-white/15 rounded-xl transition-all active:scale-95 touch-manipulation"
+            title="Çıkış Yap"
+          >
+            <LogOut size={20} />
+          </button>
         </div>
       </header>
+
       
       {/* Screen Main */}
       <main className="flex-1 w-full max-w-[1920px] mx-auto p-3 sm:p-6 lg:p-8 space-y-5 no-print">
