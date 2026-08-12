@@ -119,7 +119,7 @@ function NewAssessmentContent() {
     if (state.noSgk) scoreA += 5;
     scoreA = Math.max(0, Math.min(scoreA, 40));
 
-    // Section B: Dezavantajlı Bireyler (Maksimum 35 Puan)
+    // Section B: Dezavantajlı Bireyler (Maksimum 30 Puan)
     let scoreB = 0;
     if (state.b_agirEngelli) scoreB += 15;
     if (state.b_engelli) scoreB += 10;
@@ -152,7 +152,7 @@ function NewAssessmentContent() {
     if (disadvantageCount >= 2) {
       scoreB += 5;
     }
-    scoreB = Math.min(scoreB, 35);
+    scoreB = Math.min(scoreB, 30);
 
     // Section C: Çocuk ve Eğitim (Tüm Eğitim Kademeleri Eşit +3 Puan / Öğrenci)
     let scoreC = 0;
@@ -163,9 +163,9 @@ function NewAssessmentContent() {
     scoreC += (state.c_meslekiEgitim || 0) * 3;
     scoreC += (state.c_acikLise || 0) * 3;
     scoreC += (state.c_uni || 0) * 3;
-    scoreC = Math.min(scoreC, 15);
+    scoreC = Math.min(scoreC, 10);
 
-    // Section D: Barınma Durumu (Genişletilmiş Sosyal Kriterler - Maksimum 15 Puan)
+    // Section D: Barınma Durumu (Genişletilmiş Sosyal Kriterler - Maksimum 10 Puan)
     let scoreD = 0;
     if (state.d_evsiz) scoreD += 10;
     if (state.d_afetzede) scoreD += 10;
@@ -178,7 +178,7 @@ function NewAssessmentContent() {
     if (state.d_gecekondu) scoreD += 4;
     if (state.d_asansorsuzYuksek) scoreD += 4;
     if (state.d_tuvaletBanyoYetersiz) scoreD += 4;
-    scoreD = Math.min(scoreD, 15);
+    scoreD = Math.min(scoreD, 10);
 
     // Section E: Beyaz Eşya Durumu (Maksimum 10 Puan)
     let rawScoreE = 0;

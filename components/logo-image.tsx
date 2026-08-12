@@ -11,14 +11,15 @@ export function LogoImage({
   className = "w-10 h-10 rounded-2xl shadow-md border-2 border-red-700 shrink-0", 
   alt = "T.C. Edirne Valiliği Sosyal Yardımlaşma ve Dayanışma Vakfı Logo" 
 }: LogoImageProps) {
-  const [imgSrc, setImgSrc] = useState<string>('/logo.svg');
+  const OFFICIAL_LOGO_URL = 'https://pbs.twimg.com/profile_images/1456143975845404674/xGjOJe4S_400x400.jpg';
+  const [imgSrc, setImgSrc] = useState<string>(OFFICIAL_LOGO_URL);
   const [hasError, setHasError] = useState<boolean>(false);
 
   const handleError = () => {
-    if (imgSrc === '/logo.svg') {
+    if (imgSrc === '/logo.jpg') {
+      setImgSrc(OFFICIAL_LOGO_URL);
+    } else if (imgSrc === OFFICIAL_LOGO_URL) {
       setImgSrc('/logo.png');
-    } else if (imgSrc === '/logo.png') {
-      setImgSrc('/logo.jpg');
     } else {
       setHasError(true);
     }

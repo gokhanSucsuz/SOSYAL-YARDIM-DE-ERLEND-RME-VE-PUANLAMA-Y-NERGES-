@@ -284,7 +284,7 @@ export default function PresentationPage() {
               </div>
               <h3 className="font-extrabold text-slate-900 text-sm">Tam Denetlenebilirlik ve Hukuki Güvence</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Mülkiye Müfettişliği ve Sayıştay denetimlerinde, her yardım kararının arkasındaki 130 puanlık parametre dökümünü eksiksiz sunar.
+                Mülkiye Müfettişliği ve Sayıştay denetimlerinde, her yardım kararının arkasındaki 150 puanlık parametre dökümünü eksiksiz sunar.
               </p>
             </div>
           </div>
@@ -364,14 +364,14 @@ export default function PresentationPage() {
             </div>
             <div>
               <h2 className="text-xl font-extrabold text-slate-900">4. PUANLAMA VE YARDIM DERECELERİ METODOLOJİSİ</h2>
-              <p className="text-xs text-slate-500 font-medium">130 Puan Tavanı, Daraltılmış Tavan ve Artan Aralık Yaklaşımı</p>
+              <p className="text-xs text-slate-500 font-medium">150 Puan Tavanı, Daraltılmış Tavan ve Artan Aralık Yaklaşımı</p>
             </div>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl text-xs text-blue-950 space-y-2">
             <strong className="text-blue-900 font-extrabold text-sm block">Kademeli Aralık (Progressive Scoring) Mantığı:</strong>
             <p className="leading-relaxed">
-              En yüksek derece olan 1. Derece (10.000 TL) için puan aralığı <strong>15 Puan (116 - 130 Puan)</strong> olarak dar tutulmuştur. Alt derecelere doğru inildikçe puan aralıkları kademeli olarak genişler (15 Pn → 20 Pn → 25 Pn → 40 Pn). Böylece sınırlı nakdi kaynaklar en yüksek kırılganlıktaki gruplara odaklanır.
+              En yüksek derece olan 1. Derece (10.000 TL) için puan aralığı <strong>15 Puan (136 - 150 Puan)</strong> olarak dar tutulmuştur. Alt derecelere doğru inildikçe puan aralıkları kademeli olarak genişler (15 Pn → 20 Pn → 25 Pn → 40 Pn). Böylece sınırlı nakdi kaynaklar en yüksek kırılganlıktaki gruplara odaklanır.
             </p>
           </div>
 
@@ -380,7 +380,7 @@ export default function PresentationPage() {
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col justify-between text-center space-y-3">
               <div>
                 <span className="text-[10px] font-extrabold text-emerald-800 uppercase block">1. DERECE</span>
-                <span className="text-xl font-black text-emerald-900 block mt-1">116 - 130</span>
+                <span className="text-xl font-black text-emerald-900 block mt-1">136 - 150</span>
                 <p className="text-[10px] font-bold text-emerald-700">15 Puanlık Dar Tavan</p>
               </div>
               <div className="pt-2 border-t border-emerald-200 text-xs font-black text-emerald-900">
@@ -391,7 +391,7 @@ export default function PresentationPage() {
             <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 flex flex-col justify-between text-center space-y-3">
               <div>
                 <span className="text-[10px] font-extrabold text-blue-800 uppercase block">2. DERECE</span>
-                <span className="text-xl font-black text-blue-900 block mt-1">96 - 115</span>
+                <span className="text-xl font-black text-blue-900 block mt-1">116 - 135</span>
                 <p className="text-[10px] font-bold text-blue-700">20 Puanlık Aralık</p>
               </div>
               <div className="pt-2 border-t border-blue-200 text-xs font-black text-blue-900">
@@ -402,7 +402,7 @@ export default function PresentationPage() {
             <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex flex-col justify-between text-center space-y-3">
               <div>
                 <span className="text-[10px] font-extrabold text-indigo-800 uppercase block">3. DERECE</span>
-                <span className="text-xl font-black text-indigo-900 block mt-1">71 - 95</span>
+                <span className="text-xl font-black text-indigo-900 block mt-1">91 - 115</span>
                 <p className="text-[10px] font-bold text-indigo-700">25 Puanlık Aralık</p>
               </div>
               <div className="pt-2 border-t border-indigo-200 text-xs font-black text-indigo-900">
@@ -413,7 +413,7 @@ export default function PresentationPage() {
             <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col justify-between text-center space-y-3">
               <div>
                 <span className="text-[10px] font-extrabold text-amber-800 uppercase block">4. DERECE</span>
-                <span className="text-xl font-black text-amber-900 block mt-1">31 - 70</span>
+                <span className="text-xl font-black text-amber-900 block mt-1">51 - 90</span>
                 <p className="text-[10px] font-bold text-amber-700">40 Puanlık Aralık</p>
               </div>
               <div className="pt-2 border-t border-amber-200 text-xs font-black text-amber-900">

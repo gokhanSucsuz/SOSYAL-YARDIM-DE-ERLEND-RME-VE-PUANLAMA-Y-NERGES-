@@ -27,10 +27,10 @@ export interface SystemSettings {
 }
 
 export const DEFAULT_ASSISTANCE_TIERS: AssistanceTier[] = [
-  { id: 'tier-1', minScore: 116, maxScore: 130, text: '10.000 TL Nakdi Yardım', amount: 10000, description: 'Yüksek Derecede Muhtaçlık Kademesi' },
-  { id: 'tier-2', minScore: 96, maxScore: 115, text: '7.500 TL Nakdi Yardım', amount: 7500, description: '2. Derece Muhtaçlık Kademesi' },
-  { id: 'tier-3', minScore: 71, maxScore: 95, text: '5.000 TL Nakdi Yardım', amount: 5000, description: '3. Derece Muhtaçlık Kademesi' },
-  { id: 'tier-4', minScore: 31, maxScore: 70, text: '2.500 TL Nakdi Yardım', amount: 2500, description: '4. Derece Muhtaçlık Kademesi' },
+  { id: 'tier-1', minScore: 136, maxScore: 150, text: '10.000 TL Nakdi Yardım', amount: 10000, description: 'Yüksek Derecede Muhtaçlık Kademesi' },
+  { id: 'tier-2', minScore: 116, maxScore: 135, text: '7.500 TL Nakdi Yardım', amount: 7500, description: '2. Derece Muhtaçlık Kademesi' },
+  { id: 'tier-3', minScore: 91, maxScore: 115, text: '5.000 TL Nakdi Yardım', amount: 5000, description: '3. Derece Muhtaçlık Kademesi' },
+  { id: 'tier-4', minScore: 51, maxScore: 90, text: '2.500 TL Nakdi Yardım', amount: 2500, description: '4. Derece Muhtaçlık Kademesi' },
 ];
 
 export const DEFAULT_SETTINGS: SystemSettings = {

@@ -180,7 +180,7 @@ export default function EditAssessmentWizard() {
     if (disadvantageCount >= 2) {
       scoreB += 5; // Hanede birden fazla dezavantajlı durum varsa +5 puan bonus
     }
-    scoreB = Math.min(scoreB, 35);
+    scoreB = Math.min(scoreB, 30);
 
     // Section C (Eşit +3 Puan Uygulaması)
     let scoreC = 0;
@@ -191,7 +191,7 @@ export default function EditAssessmentWizard() {
     scoreC += (state.c_meslekiEgitim || 0) * 3;
     scoreC += (state.c_acikLise || 0) * 3;
     scoreC += state.c_uni * 3;
-    scoreC = Math.min(scoreC, 15);
+    scoreC = Math.min(scoreC, 10);
 
     // Section D (Genişletilmiş Barınma Durumu)
     let scoreD = 0;
@@ -206,7 +206,7 @@ export default function EditAssessmentWizard() {
     if (state.d_gecekondu) scoreD += 4;
     if (state.d_asansorsuzYuksek) scoreD += 4;
     if (state.d_tuvaletBanyoYetersiz) scoreD += 4;
-    scoreD = Math.min(scoreD, 15);
+    scoreD = Math.min(scoreD, 10);
 
     // Section E: Beyaz Eşya Durumu (Maks 10 Puan)
     let rawScoreE = 0;
