@@ -4,12 +4,11 @@
 export const dynamic = "force-dynamic";
 
 
-import { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   getAllAssessments, getAssessmentsByPersonnel, Assessment, 
-  saveAssessment, deleteAssessment, Meeting, getAllMeetings, 
-  saveMeeting, deleteMeeting, isMeetingLocked 
+  saveAssessment, deleteAssessment, Meeting, getAllMeetings, saveMeeting, deleteMeeting, isMeetingLocked, calculateAssistanceFromScore 
 } from '@/lib/db';
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
@@ -23,6 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { LogoImage } from '@/components/logo-image';
 import { ManagerStatsView } from '@/components/manager-stats-view';
+import { useDialog } from '@/components/DialogProvider';
 import { Header } from '@/components/dashboard/Header';
 import { TopBar } from '@/components/dashboard/TopBar';
 
@@ -43,6 +43,7 @@ type SortOrder = 'asc' | 'desc';
 
 export default function Dashboard() {
   const router = useRouter();
+  const { showAlert, showConfirm } = useDialog();
   const [user, setUser] = useState<any>(null);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
@@ -282,7 +283,7 @@ export default function Dashboard() {
       ? `"${meeting.meetingNo}" numaralı toplantıyı DÜZENLEMEYE AÇMAK istediğinizden emin misiniz?\n\nToplantı düzenlemeye açıldığında personel yeni kayıt ekleyebilir ve düzenleme yapabilir.`
       : `"${meeting.meetingNo}" numaralı toplantıyı SONLANDIRMAK istediğinizden emin misiniz?\n\nToplantı sonlandırıldığında personel bu toplantıya ait kayıtları değiştiremez.`;
 
-    if (!confirm(confirmMsg)) return;
+    if (!(await showConfirm(confirmMsg))) return;
 
     try {
       const updatedMeeting: Meeting = {
@@ -293,19 +294,19 @@ export default function Dashboard() {
       await saveMeeting(updatedMeeting);
       setMeetings(prev => prev.map(m => m.id === meeting.id ? updatedMeeting : m));
     } catch (err) {
-      alert('Toplantı kilit durumu güncellenirken bir hata oluştu.');
+      await showAlert('Toplantı kilit durumu güncellenirken bir hata oluştu.');
     }
   };
 
 
   const handleDeleteMeeting = async (m: Meeting, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (!confirm(`"${m.meetingNo}" numaralı toplantıyı İPTAL ETMEK ve SİLMEK istediğinize emin misiniz?\n\nBu işlem geri alınamaz.`)) return;
+    if (!(await showConfirm(`"${m.meetingNo}" numaralı toplantıyı İPTAL ETMEK ve SİLMEK istediğinize emin misiniz?\n\nBu işlem geri alınamaz.`))) return;
     try {
       await deleteMeeting(m.id);
       setMeetings(prev => prev.filter(x => x.id !== m.id));
     } catch (err) {
-      alert('Toplantı silinirken bir hata oluştu.');
+      await showAlert('Toplantı silinirken bir hata oluştu.');
     }
   };
 
@@ -324,7 +325,7 @@ export default function Dashboard() {
   const handleSaveEditMeeting = async () => {
     if (!editingMeeting) return;
     if (!editMeetingData.meetingNo || !editMeetingData.date) {
-      alert('Lütfen toplantı dosya numarası ve tarihini giriniz.');
+      await showAlert('Lütfen toplantı dosya numarası ve tarihini giriniz.');
       return;
     }
 
@@ -343,7 +344,7 @@ export default function Dashboard() {
       setEditMeetingModalOpen(false);
       setEditingMeeting(null);
     } catch (err) {
-      alert('Toplantı güncellenirken hata oluştu.');
+      await showAlert('Toplantı güncellenirken hata oluştu.');
     }
   };
 
@@ -452,7 +453,7 @@ export default function Dashboard() {
 
   const handleAutoAssignCustomOrders = async () => {
     if (filteredAndSortedAssessments.length === 0) return;
-    if (!confirm(`Ekranda listelenen ${filteredAndSortedAssessments.length} adet kayda 1'den başlayarak sırasıyla (1, 2, 3...) özel sıra numarası atansın mı?`)) return;
+    if (!(await showConfirm(`Ekranda listelenen ${filteredAndSortedAssessments.length} adet kayda 1'den başlayarak sırasıyla (1, 2, 3...) özel sıra numarası atansın mı?`))) return;
 
     try {
       const updatedMap = new Map<string, Assessment>();
@@ -469,12 +470,12 @@ export default function Dashboard() {
       setSortField('customOrder');
       setSortOrder('asc');
     } catch (err) {
-      alert('Sıra numaraları atanırken hata oluştu.');
+      await showAlert('Sıra numaraları atanırken hata oluştu.');
     }
   };
 
   const handleClearAllCustomOrders = async () => {
-    if (!confirm('Tüm kayıtların özel sıra numaraları temizlenecektir. Emin misiniz?')) return;
+    if (!(await showConfirm('Tüm kayıtların özel sıra numaraları temizlenecektir. Emin misiniz?'))) return;
     try {
       const updatedList = assessments.map(a => ({ ...a, customOrder: undefined }));
       for (const item of updatedList) {
@@ -482,17 +483,17 @@ export default function Dashboard() {
       }
       setAssessments(updatedList);
     } catch (err) {
-      alert('Sıra numaraları temizlenirken hata oluştu.');
+      await showAlert('Sıra numaraları temizlenirken hata oluştu.');
     }
   };
 
   const handleDeleteSingle = async (item: Assessment) => {
     if (item.status === 'approved') {
-      alert('Onaylanmış sosyal inceleme kayıtları silinemez.');
+      await showAlert('Onaylanmış sosyal inceleme kayıtları silinemez.');
       return;
     }
 
-    if (!confirm(`"${item.applicantName}" isimli başvuru sahibine ait sosyal inceleme kaydını SILMEK istediğinizden emin misiniz?\n\nBu işlem kalıcıdır ve geri alınamaz!`)) {
+    if (!(await showConfirm(`"${item.applicantName}" isimli başvuru sahibine ait sosyal inceleme kaydını SILMEK istediğinizden emin misiniz?\n\nBu işlem kalıcıdır ve geri alınamaz!`))) {
       return;
     }
 
@@ -502,7 +503,7 @@ export default function Dashboard() {
       setSelectedIds(prev => prev.filter(id => id !== item.id));
     } catch (err) {
       console.error('Silme hatası:', err);
-      alert('Kayıt silinirken bir hata oluştu.');
+      await showAlert('Kayıt silinirken bir hata oluştu.');
     }
   };
 
@@ -543,9 +544,9 @@ export default function Dashboard() {
   };
 
   // Open Modals
-  const openApproveAllModal = () => {
+  const openApproveAllModal = async () => {
     if (pendingCount === 0) {
-      alert('Onay bekleyen herhangi bir hane inceleme kaydı bulunmuyor.');
+      await showAlert('Onay bekleyen herhangi bir hane inceleme kaydı bulunmuyor.');
       return;
     }
     setBatchModal({
@@ -561,9 +562,9 @@ export default function Dashboard() {
     });
   };
 
-  const openRevokeAllModal = () => {
+  const openRevokeAllModal = async () => {
     if (approvedCount === 0) {
-      alert('Onaylanmış herhangi bir hane inceleme kaydı bulunmuyor.');
+      await showAlert('Onaylanmış herhangi bir hane inceleme kaydı bulunmuyor.');
       return;
     }
     setBatchModal({
@@ -579,10 +580,10 @@ export default function Dashboard() {
     });
   };
 
-  const openApproveSelectedModal = () => {
+  const openApproveSelectedModal = async () => {
     const selectedPending = assessments.filter(a => selectedIds.includes(a.id) && a.status !== 'approved');
     if (selectedPending.length === 0) {
-      alert('Seçilenler arasında onay bekleyen kayıt bulunmuyor.');
+      await showAlert('Seçilenler arasında onay bekleyen kayıt bulunmuyor.');
       return;
     }
     setBatchModal({
@@ -598,10 +599,10 @@ export default function Dashboard() {
     });
   };
 
-  const openRevokeSelectedModal = () => {
+  const openRevokeSelectedModal = async () => {
     const selectedApproved = assessments.filter(a => selectedIds.includes(a.id) && a.status === 'approved');
     if (selectedApproved.length === 0) {
-      alert('Seçilenler arasında onaylanmış kayıt bulunmuyor.');
+      await showAlert('Seçilenler arasında onaylanmış kayıt bulunmuyor.');
       return;
     }
     setBatchModal({
@@ -668,21 +669,21 @@ export default function Dashboard() {
   // Quick Single Item Action
   const handleSingleApprove = async (item: Assessment) => {
     const meeting = meetings.find(m => m.id === item.meetingId);
-    if (meeting && meeting.budgetTL && meeting.budgetTL > 0) {
+    if (meeting) {
       const stats = meetingStatsMap.get(meeting.id);
       const currentPlanned = stats?.plannedAidTL || 0;
-      const mBudget = meeting.budgetTL;
-      if (currentPlanned > mBudget) {
-        const confirmExceeded = confirm(
-          `🚨 BÜTÇE AŞIMI UYARISI:\n\nBu toplantı için ayrılan Vakıf bütçesi (${mBudget.toLocaleString('tr-TR')} ₺) aşılmaktadır. Toplam yapılacak yardım (${currentPlanned.toLocaleString('tr-TR')} ₺) bütçeyi ${(currentPlanned - mBudget).toLocaleString('tr-TR')} ₺ geçmektedir.\n\nYine de "${item.applicantName}" isimli kaydı onaylamak istediğinizden emin misiniz?`
-        );
-        if (!confirmExceeded) return;
-      } else {
-        if (!confirm(`${item.applicantName} isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`)) return;
+      const mBudget = meeting.budgetTL || 0;
+      
+      const calc = calculateAssistanceFromScore(item.data?.systemScore || 0, item.data);
+      const amountToAdd = calc.amount || 0;
+      
+      if (mBudget > 0 && (currentPlanned + amountToAdd) > mBudget) {
+        await showAlert(`BÜTÇE YETERSİZ!\n\nBu toplantı için belirlenen vakıf bütçesi (${mBudget.toLocaleString('tr-TR')} ₺).\n\nŞu ana kadar onaylanan: ${currentPlanned.toLocaleString('tr-TR')} ₺\nBu onay eklendiğinde gereken: ${(currentPlanned + amountToAdd).toLocaleString('tr-TR')} ₺\n\nOnaylama işlemine devam edebilmek için lütfen toplantı bütçesini güncelleyiniz.`, "warning");
+        return;
       }
-    } else {
-      if (!confirm(`${item.applicantName} isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`)) return;
     }
+
+    if (!(await showConfirm(`"${item.applicantName}" isimli başvuru sahibinin inceleme kaydını onaylamak istediğinizden emin misiniz?`))) return;
 
     try {
       const updated: Assessment = {
@@ -693,12 +694,12 @@ export default function Dashboard() {
       await saveAssessment(updated);
       await reloadAssessments();
     } catch (err) {
-      alert('Onaylama sırasında bir hata oluştu.');
+      await showAlert('Onaylama sırasında bir hata oluştu.');
     }
   };
 
   const handleSingleRevoke = async (item: Assessment) => {
-    if (!confirm(`${item.applicantName} isimli başvuru sahibinin onayını kaldırmak istediğinizden emin misiniz? Kayıt tekrar düzenlemeye açılacaktır.`)) return;
+    if (!(await showConfirm(`${item.applicantName} isimli başvuru sahibinin onayını kaldırmak istediğinizden emin misiniz? Kayıt tekrar düzenlemeye açılacaktır.`))) return;
     try {
       const updated: Assessment = {
         ...item,
@@ -708,7 +709,7 @@ export default function Dashboard() {
       await saveAssessment(updated);
       await reloadAssessments();
     } catch (err) {
-      alert('Onay kaldırma sırasında bir hata oluştu.');
+      await showAlert('Onay kaldırma sırasında bir hata oluştu.');
     }
   };
 
@@ -802,9 +803,9 @@ export default function Dashboard() {
     }, 150);
   };
 
-  const handlePrintSelectedList = () => {
+  const handlePrintSelectedList = async () => {
     if (selectedIds.length === 0) {
-      alert('Lütfen liste çıktısını almak istediğiniz kayıtları listeden seçiniz.');
+      await showAlert('Lütfen liste çıktısını almak istediğiniz kayıtları listeden seçiniz.');
       return;
     }
     setPrintMode('summary');
@@ -814,9 +815,9 @@ export default function Dashboard() {
     }, 150);
   };
 
-  const handlePrintSelectedDetailed = () => {
+  const handlePrintSelectedDetailed = async () => {
     if (selectedIds.length === 0) {
-      alert('Lütfen tek sayfalık ayrıntılı raporunu almak istediğiniz kayıtları listeden seçiniz.');
+      await showAlert('Lütfen tek sayfalık ayrıntılı raporunu almak istediğiniz kayıtları listeden seçiniz.');
       return;
     }
     setPrintMode('detailed');
@@ -835,7 +836,7 @@ export default function Dashboard() {
     }, 150);
   };
 
-  const handlePrintApprovedList = () => {
+  const handlePrintApprovedList = async () => {
     setPrintMode('summary');
     setPrintOnlySelected(false);
     setFilterStatus('approved');
@@ -850,7 +851,7 @@ export default function Dashboard() {
       : filteredAndSortedAssessments;
 
     if (!targetRecords || targetRecords.length === 0) {
-      alert('Dışa aktarılacak hane sosyal inceleme kaydı bulunamadı.');
+      await showAlert('Dışa aktarılacak hane sosyal inceleme kaydı bulunamadı.');
       return;
     }
 
@@ -1026,7 +1027,7 @@ export default function Dashboard() {
       document.body.removeChild(link);
     } catch (err) {
       console.error('Excel indirilirken hata oluştu:', err);
-      alert('Excel dosyası oluşturulurken bir hata oluştu.');
+      await showAlert('Excel dosyası oluşturulurken bir hata oluştu.');
     }
   };
 
@@ -1956,7 +1957,22 @@ export default function Dashboard() {
                 Arama ve filtreleme kriterlerine uygun sosyal inceleme kaydı bulunamadı.
               </div>
             ) : (
-              filteredAndSortedAssessments.map((item, idx) => {
+              Object.entries(
+                  filteredAndSortedAssessments.reduce((acc, item) => {
+                    const p = item.personnelName || 'Bilinmeyen Personel';
+                    if (!acc[p]) acc[p] = [];
+                    acc[p].push(item);
+                    return acc;
+                  }, {} as Record<string, Assessment[]>)
+                ).map(([personnelName, items]) => (
+                  <React.Fragment key={personnelName}>
+                    {user?.role === 'manager' && (
+                      <div className="bg-indigo-50 px-4 py-3 rounded-xl border border-indigo-100 text-indigo-800 font-bold mb-2 shadow-sm flex items-center justify-between">
+                        <span>{personnelName} İncelemeleri</span>
+                        <span className="text-xs bg-indigo-200 text-indigo-900 px-2 py-1 rounded-md">{items.length} Kayıt</span>
+                      </div>
+                    )}
+                    {items.map((item, idx) => {
                 const isSelected = selectedIds.includes(item.id);
                 const isApproved = item.status === 'approved';
 
@@ -2107,7 +2123,9 @@ export default function Dashboard() {
                     </div>
                   </div>
                 );
-              })
+                    })}
+                  </React.Fragment>
+                ))
             )}
           </div>
 
@@ -2233,7 +2251,23 @@ export default function Dashboard() {
                     </td>
                   </tr>
                 ) : (
-                  filteredAndSortedAssessments.map((item, idx) => {
+                  Object.entries(
+                  filteredAndSortedAssessments.reduce((acc, item) => {
+                    const p = item.personnelName || 'Bilinmeyen Personel';
+                    if (!acc[p]) acc[p] = [];
+                    acc[p].push(item);
+                    return acc;
+                  }, {} as Record<string, Assessment[]>)
+                ).map(([personnelName, items]) => (
+                  <React.Fragment key={personnelName}>
+                    {user?.role === 'manager' && (
+                      <tr className="bg-indigo-50">
+                        <td colSpan={13} className="px-4 py-3 text-indigo-800 font-bold border-y border-indigo-100 text-left">
+                           {personnelName} İncelemeleri ({items.length} Kayıt)
+                        </td>
+                      </tr>
+                    )}
+                    {items.map((item, idx) => {
                     const isSelected = selectedIds.includes(item.id);
                     const isApproved = item.status === 'approved';
 
@@ -2414,7 +2448,9 @@ export default function Dashboard() {
                         </td>
                       </tr>
                     );
-                  })
+                    })}
+                  </React.Fragment>
+                ))
                 )}
               </tbody>
             </table>
@@ -2940,7 +2976,7 @@ export default function Dashboard() {
                 <button
                   onClick={async () => {
                     if (!newMeetingData.meetingNo || !newMeetingData.date) {
-                      alert('Lütfen toplantı numarası ve tarihini giriniz.');
+                      await showAlert('Lütfen toplantı numarası ve tarihini giriniz.');
                       return;
                     }
                     const newMeeting: Meeting = {
@@ -3105,9 +3141,9 @@ export default function Dashboard() {
               </div>
               <div className="bg-secondary-50 px-6 py-5 flex flex-col gap-3 border-t border-secondary-100">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (!selectedMeetingId) {
-                      alert('Lütfen işleme devam etmek için bir toplantı seçiniz.');
+                      await showAlert('Lütfen işleme devam etmek için bir toplantı seçiniz.');
                       return;
                     }
                     router.push(`/assessment/new?meetingId=${selectedMeetingId}`);

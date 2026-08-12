@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import "./globals.css";
+import { Providers } from "./providers";
 
 export const viewport = {
   themeColor: "#1e293b",
@@ -45,7 +46,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
       </head>
       <body>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
         <script
           dangerouslySetInnerHTML={{
             __html: `

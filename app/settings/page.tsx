@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
+import { useDialog } from '@/components/DialogProvider';
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -17,6 +18,7 @@ import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
 
 export default function SettingsPage() {
+  const { showAlert, showConfirm } = useDialog();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -101,12 +103,12 @@ export default function SettingsPage() {
     }));
   };
 
-  const handleDeleteTier = (id: string) => {
+  const handleDeleteTier = async (id: string) => {
     if (settings.assistanceTiers.length <= 1) {
-      alert('Sistemde en az 1 yardım kriter aralığı tanımlı bulunmalıdır.');
+      await showAlert('Sistemde en az 1 yardım kriter aralığı tanımlı bulunmalıdır.');
       return;
     }
-    if (confirm('Bu yardım kriter aralığını silmek istediğinizden emin misiniz?')) {
+    if (await showConfirm('Bu yardım kriter aralığını silmek istediğinizden emin misiniz?')) {
       setSettings(prev => ({
         ...prev,
         assistanceTiers: prev.assistanceTiers.filter(tier => tier.id !== id)
@@ -114,8 +116,8 @@ export default function SettingsPage() {
     }
   };
 
-  const handleResetDefaults = () => {
-    if (confirm('Tüm yardım kriterlerini ve miktarlarını varsayılan fabrika ayarlarına sıfırlamak istediğinizden emin misiniz?')) {
+  const handleResetDefaults = async () => {
+    if (await showConfirm('Tüm yardım kriterlerini ve miktarlarını varsayılan fabrika ayarlarına sıfırlamak istediğinizden emin misiniz?')) {
       setSettings(DEFAULT_SETTINGS);
       saveSystemSettings(DEFAULT_SETTINGS);
       setSavedSuccess(true);

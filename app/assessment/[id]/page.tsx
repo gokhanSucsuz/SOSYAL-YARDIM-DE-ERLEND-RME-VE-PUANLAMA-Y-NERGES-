@@ -8,10 +8,12 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getAssessmentById, Assessment, saveAssessment, deleteAssessment } from '@/lib/db';
 import { ShieldCheck, Printer, ArrowLeft, CheckCircle2, Info, AlertTriangle, Check, X, FileText, RotateCcw, Lock, Unlock, Trash2 } from 'lucide-react';
+import { useDialog } from '@/components/DialogProvider';
 import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
 
 export default function AssessmentDetail() {
+  const { showAlert, showConfirm } = useDialog();
   const router = useRouter();
   const params = useParams();
   const [assessment, setAssessment] = useState<Assessment | null>(null);
@@ -57,7 +59,7 @@ export default function AssessmentDetail() {
       await saveAssessment(updated);
       setAssessment(updated);
     } catch (err) {
-      alert('Onaylama sırasında bir hata oluştu.');
+      await showAlert('Onaylama sırasında bir hata oluştu.');
     } finally {
       setApproving(false);
     }
@@ -65,7 +67,7 @@ export default function AssessmentDetail() {
 
   const handleRevokeApproval = async () => {
     if (!assessment) return;
-    if (!confirm('Bu inceleme kaydının onayını kaldırmak istediğinizden emin misiniz? Onay kaldırıldığında personel tarafından tekrar düzenleme yapılabilecektir.')) return;
+    if (!(await showConfirm('Bu inceleme kaydının onayını kaldırmak istediğinizden emin misiniz? Onay kaldırıldığında personel tarafından tekrar düzenleme yapılabilecektir.'))) return;
     
     setApproving(true);
     try {
@@ -76,9 +78,9 @@ export default function AssessmentDetail() {
       };
       await saveAssessment(updated);
       setAssessment(updated);
-      alert('Müdür onayı kaldırıldı. Kayıt tekrar düzenlenebilir duruma getirildi.');
+      await showAlert('Müdür onayı kaldırıldı. Kayıt tekrar düzenlenebilir duruma getirildi.');
     } catch (err) {
-      alert('Onay kaldırma sırasında bir hata oluştu.');
+      await showAlert('Onay kaldırma sırasında bir hata oluştu.');
     } finally {
       setApproving(false);
     }
@@ -87,22 +89,22 @@ export default function AssessmentDetail() {
   const handleDelete = async () => {
     if (!assessment) return;
     if (assessment.status === 'approved') {
-      alert('Onaylanmış sosyal inceleme kayıtları silinemez.');
+      await showAlert('Onaylanmış sosyal inceleme kayıtları silinemez.');
       return;
     }
 
-    if (!confirm(`"${assessment.applicantName}" isimli başvuru sahibine ait sosyal inceleme kaydını SILMEK istediğinizden emin misiniz?\n\nBu işlem kalıcıdır ve geri alınamaz!`)) {
+    if (!(await showConfirm(`"${assessment.applicantName}" isimli başvuru sahibine ait sosyal inceleme kaydını SILMEK istediğinizden emin misiniz?\n\nBu işlem kalıcıdır ve geri alınamaz!`))) {
       return;
     }
 
     setDeleting(true);
     try {
       await deleteAssessment(assessment.id);
-      alert('Sosyal inceleme kaydı başarıyla silindi.');
+      await showAlert('Sosyal inceleme kaydı başarıyla silindi.');
       router.push('/');
     } catch (err) {
       console.error('Silme işlemi sırasında hata oluştu:', err);
-      alert('Kayıt silinirken bir hata oluştu.');
+      await showAlert('Kayıt silinirken bir hata oluştu.');
       setDeleting(false);
     }
   };

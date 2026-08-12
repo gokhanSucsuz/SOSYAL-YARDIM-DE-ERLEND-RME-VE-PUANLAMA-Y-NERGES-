@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
+import { useDialog } from '@/components/DialogProvider';
 
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -16,6 +17,7 @@ import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
 
 export default function EditAssessmentWizard() {
+  const { showAlert, showConfirm } = useDialog();
   const router = useRouter();
   const params = useParams();
   const [user, setUser] = useState<any>(null);
@@ -119,17 +121,17 @@ export default function EditAssessmentWizard() {
           const meetings = await getAllMeetings();
           const meeting = meetings.find(m => m.id === data.meetingId);
           if (meeting && isMeetingLocked(meeting, currentUser.role)) {
-            alert('Bu incelemenin bağlı olduğu toplantı sonlandırılmış veya kilitlenmiş olduğu için düzenleme yapılamaz.');
+            await showAlert('Bu incelemenin bağlı olduğu toplantı sonlandırılmış veya kilitlenmiş olduğu için düzenleme yapılamaz.');
             router.push('/');
             return;
           }
           if (data.status === 'approved') {
-            alert('Onaylanmış inceleme kayıtlarında düzenleme yapılamaz. Düzenleme yapabilmek için öncelikle müdürün onayı kaldırması gerekmektedir.');
+            await showAlert('Onaylanmış inceleme kayıtlarında düzenleme yapılamaz. Düzenleme yapabilmek için öncelikle müdürün onayı kaldırması gerekmektedir.');
             router.push('/');
             return;
           }
           if (currentUser.role === 'manager') {
-            alert('Müdürler incelemeleri düzenleyemez, sadece onaylayabilir.');
+            await showAlert('Müdürler incelemeleri düzenleyemez, sadece onaylayabilir.');
             router.push('/');
             return;
           }
@@ -337,7 +339,7 @@ export default function EditAssessmentWizard() {
       await saveAssessment(assessmentData);
       router.push(`/assessment/${assessmentId}`);
     } catch (err) {
-      alert("Kayıt sırasında hata oluştu!");
+      await showAlert("Kayıt sırasında hata oluştu!");
     }
   };
 
