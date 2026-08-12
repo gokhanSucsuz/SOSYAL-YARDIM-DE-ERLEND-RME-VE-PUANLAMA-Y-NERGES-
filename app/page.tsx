@@ -1292,7 +1292,7 @@ export default function Dashboard() {
               title="Toplantı Bütçeleri ve İstatistik Raporları"
             >
               <BarChart3 size={18} />
-              <span>{activeViewTab === 'statistics' ? '📋 Gösterge Paneline Dön' : '📊 Detaylı İstatistik Raporları'}</span>
+              <span>{activeViewTab === 'statistics' ? '📋 Gösterge Paneline Dön' : '📊 İstatistik ve Raporlama Ekranını Aç'}</span>
             </button>
 
             {user.role === 'personnel' && (
@@ -2720,6 +2720,7 @@ export default function Dashboard() {
       {/* ========================================================================= */}
       {/* PRINT-ONLY SECTIONS (SUMMARY LIST OR DETAILED SINGLE A4 REPORTS)          */}
       {/* ========================================================================= */}
+      {activeViewTab === 'operations' && (
       <div className="print-only w-full bg-white text-black p-0 m-0 leading-tight">
         {printMode === 'summary' ? (
           /* SUMMARY TABLE PRINT LAYOUT */
@@ -3029,6 +3030,7 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+      )}
 
       {/* Create New Meeting Modal (Manager) */}
       <AnimatePresence>

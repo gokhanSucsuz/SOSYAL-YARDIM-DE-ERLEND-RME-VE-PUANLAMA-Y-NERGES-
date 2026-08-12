@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { Meeting, Assessment } from '@/lib/db';
 import { LogoImage } from './logo-image';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface ManagerStatsViewProps {
   meetings: Meeting[];
@@ -36,6 +38,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const applyDatePreset = (preset: 'today' | 'thisMonth' | 'last30' | 'thisYear' | 'all') => {
     const today = new Date();
@@ -442,10 +445,49 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
     }
   };
 
+  const handleExportPDFReport = async () => {
+    setIsGeneratingPDF(true);
+    // Give React time to update the DOM (unhide the element)
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    const element = document.getElementById('pdf-report-content');
+    if (!element) {
+      setIsGeneratingPDF(false);
+      alert('PDF raporu için gerekli içerik bulunamadı.');
+      return;
+    }
+
+    try {
+      const canvas = await html2canvas(element, { 
+        scale: 2,
+        useCORS: true,
+        logging: false 
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      
+      const dateStr = new Date().toISOString().split('T')[0];
+      const filename = `Istatistik_Raporu_${selectedMeetingId === 'ALL' ? 'Tum' : selectedMeeting?.meetingNo?.replace('/', '_')}_${dateStr}.pdf`;
+      pdf.save(filename);
+    } catch (err) {
+      alert('PDF raporu oluşturulurken hata meydana geldi.');
+      console.error(err);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Printable Official Header (Media Print Only) */}
-      <div className="print-only w-full bg-white text-black p-0 m-0 leading-tight">
+      <div 
+        id="pdf-report-content"
+        className={`${isGeneratingPDF ? 'absolute left-[-9999px] top-0 block w-[794px] p-8' : 'print-only w-full p-0'} bg-white text-black m-0 leading-tight`}
+      >
         <div className="border-b-2 border-black pb-3 mb-4 text-center">
           <div className="flex justify-between items-center mb-2">
             <LogoImage className="w-14 h-14 border border-black" />
@@ -730,12 +772,22 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
             </button>
 
             <button
+              onClick={handleExportPDFReport}
+              disabled={isGeneratingPDF}
+              className={`flex items-center gap-2 bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition-all shadow-md border border-red-400/30 ${isGeneratingPDF ? 'opacity-70 cursor-wait' : ''}`}
+              title="İstatistik Raporunu PDF Olarak İndir"
+            >
+              {isGeneratingPDF ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Download size={16} />}
+              <span className="hidden sm:inline">{isGeneratingPDF ? 'Oluşturuluyor...' : 'PDF İndir'}</span>
+            </button>
+
+            <button
               onClick={() => window.print()}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition-all shadow-md border border-blue-400/30"
-              title="Resmi Kurum PDF Raporu Oluştur / Yazdır"
+              className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition-all shadow-md border border-slate-500/30"
+              title="Raporu Yazdır"
             >
               <Printer size={16} />
-              <span className="hidden sm:inline">Resmi PDF / Yazdır</span>
+              <span className="hidden sm:inline">Yazdır</span>
             </button>
           </div>
         </div>
