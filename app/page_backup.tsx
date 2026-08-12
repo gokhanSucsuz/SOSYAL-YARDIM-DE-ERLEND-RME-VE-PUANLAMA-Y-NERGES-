@@ -23,8 +23,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { LogoImage } from '@/components/logo-image';
 import { ManagerStatsView } from '@/components/manager-stats-view';
-import { Header } from '@/components/dashboard/Header';
-import { TopBar } from '@/components/dashboard/TopBar';
 
 interface BatchModalState {
   isOpen: boolean;
@@ -245,9 +243,9 @@ export default function Dashboard() {
 
   if (!user || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-secondary-50">
-        <div className="text-secondary-500 font-medium animate-pulse flex items-center gap-2">
-          <RefreshCw className="animate-spin text-primary-600" size={20} />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-slate-500 font-medium animate-pulse flex items-center gap-2">
+          <RefreshCw className="animate-spin text-blue-600" size={20} />
           <span>Yükleniyor...</span>
         </div>
       </div>
@@ -505,12 +503,12 @@ export default function Dashboard() {
 
   const renderSortIcon = (field: SortField) => {
     if (sortField !== field) {
-      return <ArrowUpDown size={12} className="text-secondary-400 group-hover:text-secondary-600 transition-colors shrink-0" />;
+      return <ArrowUpDown size={12} className="text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />;
     }
     return sortOrder === 'asc' ? (
-      <ArrowUp size={12} className="text-primary-600 font-black shrink-0" />
+      <ArrowUp size={12} className="text-blue-600 font-black shrink-0" />
     ) : (
-      <ArrowDown size={12} className="text-primary-600 font-black shrink-0" />
+      <ArrowDown size={12} className="text-blue-600 font-black shrink-0" />
     );
   };
 
@@ -1033,7 +1031,7 @@ export default function Dashboard() {
     : filteredAndSortedAssessments;
 
   return (
-    <div className="min-h-screen bg-secondary-50 font-sans text-secondary-900 flex flex-col">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
       {/* Print Specific Styles for Approved List / Detailed Report PDF */}
       <style>{`
         @media print {
@@ -1079,23 +1077,218 @@ export default function Dashboard() {
       `}</style>
 
       {/* Screen Header */}
-      <Header user={user} handleLogout={handleLogout} />
+      <header className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-20 no-print shadow-lg border-b border-red-900/60 relative">
+        {/* Left: Logo & Title */}
+        <div className="flex items-center gap-3 min-w-0">
+          <LogoImage 
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl shadow-md border-2 border-white/30 object-cover shrink-0" 
+          />
+          <div className="min-w-0">
+            <h1 className="text-xs sm:text-base font-extrabold leading-tight tracking-wide">T.C. EDİRNE SYDV SOSYAL YARDIM DEĞERLENDİRME SİSTEMİ</h1>
+            <p className="text-[10px] sm:text-xs text-red-200 font-semibold tracking-widest uppercase">
+              {user.role === 'manager' ? '🔐 Müdür Yetkilisi Yönetim Paneli' : '👤 Personel İnceleme Paneli'}
+            </p>
+          </div>
+        </div>
+
+        {/* Right: User Info + Nav Dropdown + Logout */}
+        <div className="flex items-center gap-2 shrink-0 ml-3">
+          {/* User Info - only visible on desktop */}
+          <div className="hidden md:block text-right border-r border-red-600/50 pr-3 mr-1">
+            <p className="text-[10px] text-red-200 font-medium">{user.role === 'manager' ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
+            <p className="text-sm font-bold truncate max-w-[140px]">{user.name}</p>
+          </div>
+
+          {/* Navigation Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
+              className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+              title="Gezinti Menüsü"
+            >
+              <Menu size={16} className="shrink-0" />
+              <span className="hidden sm:inline">Menü</span>
+              <ChevronDown size={13} className={`transition-transform duration-200 ${isNavMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Backdrop */}
+            {isNavMenuOpen && (
+              <div className="fixed inset-0 z-40" onClick={() => setIsNavMenuOpen(false)} />
+            )}
+
+            <AnimatePresence>
+              {isNavMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                  className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50"
+                >
+                  <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-100">
+                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Sistem Menüsü</p>
+                    <p className="text-xs font-bold text-slate-700 mt-0.5 md:hidden">{user.name}</p>
+                  </div>
+
+                  {user?.role === 'manager' && (
+                    <Link
+                      href="/settings"
+                      onClick={() => setIsNavMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50 hover:text-amber-800 transition-colors border-b border-slate-100 group"
+                    >
+                      <div className="p-1.5 bg-amber-100 text-amber-700 rounded-lg group-hover:bg-amber-600 group-hover:text-white transition-colors shrink-0">
+                        <Settings size={15} />
+                      </div>
+                      <span>Sistem Ayarları</span>
+                    </Link>
+                  )}
+
+                  <Link
+                    href="/guide"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition-colors border-b border-slate-100 group"
+                  >
+                    <div className="p-1.5 bg-blue-100 text-blue-700 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                      <BookOpen size={15} />
+                    </div>
+                    <span>Kılavuz &amp; Metodoloji</span>
+                  </Link>
+
+                  <Link
+                    href="/presentation"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-red-50 hover:text-red-800 transition-colors group"
+                  >
+                    <div className="p-1.5 bg-red-100 text-red-700 rounded-lg group-hover:bg-red-600 group-hover:text-white transition-colors shrink-0">
+                      <Presentation size={15} />
+                    </div>
+                    <span>Proje Sunumu (PDF)</span>
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="p-2 text-red-100 hover:text-white hover:bg-white/15 rounded-xl transition-all active:scale-95 touch-manipulation"
+            title="Çıkış Yap"
+          >
+            <LogOut size={20} />
+          </button>
+        </div>
+      </header>
 
       
       {/* Screen Main */}
       <main className="flex-1 w-full max-w-[1920px] mx-auto p-3 sm:p-6 lg:p-8 space-y-5 no-print">
         
-        <TopBar 
-          user={user}
-          activeViewTab={activeViewTab}
-          setActiveViewTab={setActiveViewTab}
-          setNewMeetingModalOpen={setNewMeetingModalOpen}
-          openApproveAllModal={openApproveAllModal}
-          pendingCount={pendingCount}
-          openRevokeAllModal={openRevokeAllModal}
-          approvedCount={approvedCount}
-          setNewAssessmentModalOpen={setNewAssessmentModalOpen}
-        />
+        {/* Top View Switcher & Mobile App Download Banner */}
+        <div className="space-y-3">
+          {/* Prominent Mobile App Install Notification Bar */}
+
+
+          {/* Primary View Segmented Navigation Bar */}
+          <div className="bg-slate-200/80 p-1.5 rounded-2xl flex flex-wrap sm:flex-nowrap items-center gap-2 border border-slate-300/70 shadow-xs">
+            <button
+              onClick={() => setActiveViewTab('operations')}
+              className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
+                activeViewTab === 'operations'
+                  ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              }`}
+            >
+              <Home size={18} className={activeViewTab === 'operations' ? 'text-blue-600' : 'text-slate-400'} />
+              <span>📋 İnceleme Listesi &amp; Hane İşlemleri</span>
+            </button>
+
+            <button
+              onClick={() => setActiveViewTab('statistics')}
+              className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
+                activeViewTab === 'statistics'
+                  ? 'bg-gradient-to-r from-blue-700 to-indigo-700 text-white shadow-lg shadow-blue-950/20 ring-2 ring-blue-400/50'
+                  : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
+              }`}
+            >
+              <BarChart3 size={18} className={activeViewTab === 'statistics' ? 'text-blue-200' : 'text-blue-600'} />
+              <span>📊 Detaylı İstatistik ve Bütçe Raporları</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+              {activeViewTab === 'statistics' ? 'İstatistik ve Analiz Raporları' : 'Gösterge Paneli'}
+            </h2>
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">
+              {activeViewTab === 'statistics' 
+                ? 'Mali bütçe verileri, hane risk dağılımları ve dönem raporlamaları.' 
+                : 'Hane inceleme ziyaretleri, gelişmiş arama/sıralama ve onay süreçleri.'}
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+            {user.role === 'manager' && (
+              <>
+                <button
+                  onClick={() => setNewMeetingModalOpen(true)}
+                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-md shadow-indigo-900/20 touch-manipulation"
+                  title="Yeni bir toplantı oluştur"
+                >
+                  <Calendar size={18} />
+                  <span>Yeni Toplantı Oluştur</span>
+                </button>
+                {/* Batch Approve All Button */}
+                <button
+                  onClick={openApproveAllModal}
+                  disabled={pendingCount === 0}
+                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-md shadow-blue-900/20 touch-manipulation"
+                  title="Onay bekleyen tüm hane kayıtlarını toplu onayla"
+                >
+                  <CheckCircle2 size={18} />
+                  <span>Tümünü Onayla ({pendingCount})</span>
+                </button>
+
+                {/* Batch Revoke All Button */}
+                <button
+                  onClick={openRevokeAllModal}
+                  disabled={approvedCount === 0}
+                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-md shadow-amber-900/20 touch-manipulation"
+                  title="Tüm onaylı kayıtların onayını kaldır ve düzenlemeye aç"
+                >
+                  <RotateCcw size={18} />
+                  <span>Tüm Onayları Geri Al ({approvedCount})</span>
+                </button>
+              </>
+            )}
+
+            {/* View Statistics Toggle Button available to ALL roles */}
+            <button
+              onClick={() => setActiveViewTab(activeViewTab === 'statistics' ? 'operations' : 'statistics')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 text-white px-4 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm transition-all active:scale-95 shadow-md touch-manipulation cursor-pointer ${
+                activeViewTab === 'statistics'
+                  ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/30 ring-2 ring-blue-400'
+                  : 'bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 shadow-indigo-900/20'
+              }`}
+              title="Toplantı Bütçeleri ve İstatistik Raporları"
+            >
+              <BarChart3 size={18} />
+              <span>{activeViewTab === 'statistics' ? '📋 Gösterge Paneline Dön' : '📊 İstatistik ve Raporlama Ekranını Aç'}</span>
+            </button>
+
+            {user.role === 'personnel' && (
+              <button 
+                onClick={() => setNewAssessmentModalOpen(true)}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 active:scale-95 font-extrabold text-sm transition-all shadow-md shadow-blue-200 touch-manipulation"
+              >
+                <Plus size={18} />
+                Yeni İnceleme Başlat
+              </button>
+            )}
+          </div>
+        </div>
 
         {activeViewTab === 'statistics' ? (
           <ManagerStatsView 
@@ -1111,7 +1304,7 @@ export default function Dashboard() {
         {selectedIds.length > 0 && (
           <div className="bg-slate-900 text-white p-3.5 rounded-xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center gap-2.5 font-bold text-xs sm:text-sm">
-              <span className="bg-primary-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">
+              <span className="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">
                 {selectedIds.length} Kayıt Seçildi
               </span>
               <span className="text-slate-300 text-xs font-normal hidden sm:inline">
@@ -1121,7 +1314,7 @@ export default function Dashboard() {
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
               <button
                 onClick={handlePrintSelectedDetailed}
-                className="bg-primary-600 hover:bg-primary-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+                className="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
                 title="Seçilen her bir kaydın tek sayfalık resmi A4 detaylı raporunu yazdır"
               >
                 <FileText size={15} />
@@ -1166,21 +1359,21 @@ export default function Dashboard() {
         )}
 
         {/* Household Search Box */}
-        <div className="bg-white rounded-2xl border border-secondary-200 shadow-sm p-5 sm:p-6 mb-6">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
-              <h3 className="text-base font-extrabold text-secondary-800 flex items-center gap-2">
-                <Search className="text-primary-600" size={20} />
+              <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                <Search className="text-blue-600" size={20} />
                 Hane Arama & Değerlendirme Geçmişi Sorgulama
               </h3>
-              <p className="text-xs text-secondary-500 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 T.C. Kimlik No, Ad Soyad veya Hane Numarası ile arama yaparak haneye ait yapılmış tüm geçmiş değerlendirmeleri ve toplantı detaylarını inceleyebilirsiniz.
               </p>
             </div>
             {householdSearchQuery && (
               <button
                 onClick={() => setHouseholdSearchQuery('')}
-                className="text-xs font-bold text-secondary-500 hover:text-secondary-800 flex items-center gap-1 self-start sm:self-center bg-secondary-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors"
+                className="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 self-start sm:self-center bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors"
               >
                 <X size={14} /> Aramayı Temizle
               </button>
@@ -1188,13 +1381,13 @@ export default function Dashboard() {
           </div>
 
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input
               type="text"
               value={householdSearchQuery}
               onChange={(e) => setHouseholdSearchQuery(e.target.value)}
               placeholder="Hane No (Örn: HN-123), T.C. Kimlik No (11 hane) veya Başvuru Sahibi Ad Soyad..."
-              className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-secondary-900 bg-secondary-50/50 focus:bg-white transition-all shadow-inner"
+              className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-900 bg-slate-50/50 focus:bg-white transition-all shadow-inner"
             />
           </div>
 
@@ -1202,34 +1395,34 @@ export default function Dashboard() {
           {householdSearchQuery.trim() !== '' && (
             <div className="mt-5 space-y-4">
               {householdSearchResults.length === 0 ? (
-                <div className="p-6 text-center text-secondary-500 bg-secondary-50 rounded-xl border border-dashed border-secondary-200 text-xs font-semibold">
+                <div className="p-6 text-center text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-xs font-semibold">
                   &quot;{householdSearchQuery}&quot; aramasına uygun hane veya değerlendirme kaydı bulunamadı.
                 </div>
               ) : (
                 householdSearchResults.map((hh) => (
-                  <div key={hh.key} className="bg-secondary-50 border border-secondary-200 rounded-xl p-4 sm:p-5 shadow-sm space-y-4">
+                  <div key={hh.key} className="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 shadow-sm space-y-4">
                     {/* Household Info Banner */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3.5 rounded-lg border border-secondary-200">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3.5 rounded-lg border border-slate-200">
                       <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-primary-100 text-primary-700 rounded-xl font-bold">
+                        <div className="p-2.5 bg-blue-100 text-blue-700 rounded-xl font-bold">
                           <Building2 size={22} />
                         </div>
                         <div>
-                          <h4 className="text-base font-extrabold text-secondary-900 leading-tight">{hh.applicantName}</h4>
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-secondary-600 font-medium mt-0.5">
-                            <span className="flex items-center gap-1"><Hash size={13} className="text-secondary-400"/> TC: <strong className="text-secondary-800">{hh.applicantTc}</strong></span>
+                          <h4 className="text-base font-extrabold text-slate-900 leading-tight">{hh.applicantName}</h4>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 font-medium mt-0.5">
+                            <span className="flex items-center gap-1"><Hash size={13} className="text-slate-400"/> TC: <strong className="text-slate-800">{hh.applicantTc}</strong></span>
                             <span>•</span>
-                            <span className="flex items-center gap-1"><Building2 size={13} className="text-secondary-400"/> Hane No: <strong className="text-secondary-800">{hh.householdNo}</strong></span>
+                            <span className="flex items-center gap-1"><Building2 size={13} className="text-slate-400"/> Hane No: <strong className="text-slate-800">{hh.householdNo}</strong></span>
                             {hh.phoneNumber && hh.phoneNumber !== '-' && (
                               <>
                                 <span>•</span>
-                                <span className="flex items-center gap-1"><Phone size={13} className="text-secondary-400"/> {hh.phoneNumber}</span>
+                                <span className="flex items-center gap-1"><Phone size={13} className="text-slate-400"/> {hh.phoneNumber}</span>
                               </>
                             )}
                           </div>
                         </div>
                       </div>
-                      <div className="bg-primary-50 text-primary-800 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-blue-100 self-start md:self-center shrink-0">
+                      <div className="bg-blue-50 text-blue-800 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-blue-100 self-start md:self-center shrink-0">
                         Toplam {hh.assessments.length} Değerlendirme
                       </div>
                     </div>
@@ -1240,13 +1433,13 @@ export default function Dashboard() {
                         const meeting = meetings.find(m => m.id === item.meetingId);
                         const isApproved = item.status === 'approved';
                         return (
-                          <div key={item.id} className="bg-white p-3.5 rounded-xl border border-secondary-200 shadow-2xs hover:border-blue-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div key={item.id} className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs hover:border-blue-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="space-y-1">
                               <div className="flex flex-wrap items-center gap-2">
                                 <span className="bg-indigo-100 text-indigo-800 text-[11px] font-black px-2.5 py-0.5 rounded-md border border-indigo-200">
                                   Dosya No: {meeting?.meetingNo || 'Toplantısız / Münferit'}
                                 </span>
-                                <span className="text-xs text-secondary-500 font-semibold flex items-center gap-1">
+                                <span className="text-xs text-slate-500 font-semibold flex items-center gap-1">
                                   <Calendar size={13}/> {new Date(item.date).toLocaleDateString('tr-TR')}
                                 </span>
                                 {isApproved ? (
@@ -1261,16 +1454,16 @@ export default function Dashboard() {
                               </div>
 
                               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-1">
-                                <span className="font-bold text-secondary-700">Puan: <strong className={item.result.isRejected ? 'text-red-600' : 'text-primary-700'}>{item.result.totalScore} Puan</strong></span>
-                                <span className="font-bold text-secondary-700">Karar: <strong className={item.result.isRejected ? 'text-red-600' : 'text-emerald-700'}>{item.result.isRejected ? 'REDDEDİLDİ' : (item.result.assistance?.text || '-')}</strong></span>
-                                <span className="text-secondary-500">İnceleyen: {item.personnelName}</span>
+                                <span className="font-bold text-slate-700">Puan: <strong className={item.result.isRejected ? 'text-red-600' : 'text-blue-700'}>{item.result.totalScore} Puan</strong></span>
+                                <span className="font-bold text-slate-700">Karar: <strong className={item.result.isRejected ? 'text-red-600' : 'text-emerald-700'}>{item.result.isRejected ? 'REDDEDİLDİ' : (item.result.assistance?.text || '-')}</strong></span>
+                                <span className="text-slate-500">İnceleyen: {item.personnelName}</span>
                               </div>
                             </div>
 
                             <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
                               <button
                                 onClick={() => handlePrintSingleDetailed(item)}
-                                className="bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
+                                className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
                               >
                                 <Printer size={13} /> Rapor (A4)
                               </button>
@@ -1294,24 +1487,24 @@ export default function Dashboard() {
 
         {/* Main Content Area */}
         {!filterMeetingId ? (
-          <div className="bg-white rounded-xl border border-secondary-200 shadow-sm p-6 sm:p-8 min-h-[500px]">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 min-h-[500px]">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h3 className="text-lg font-extrabold text-secondary-800 flex items-center gap-2">
+                <h3 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
                   <Calendar className="text-indigo-600" size={24} />
                   Toplantı Dosyaları
                 </h3>
-                <p className="text-sm text-secondary-500 mt-1">İşlem yapmak veya kayıtları görüntülemek için bir toplantı seçiniz.</p>
+                <p className="text-sm text-slate-500 mt-1">İşlem yapmak veya kayıtları görüntülemek için bir toplantı seçiniz.</p>
               </div>
             </div>
 
             {meetings.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center bg-secondary-50 rounded-2xl border-2 border-dashed border-secondary-200">
+              <div className="flex flex-col items-center justify-center py-16 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
-                  <Calendar size={28} className="text-secondary-400" />
+                  <Calendar size={28} className="text-slate-400" />
                 </div>
-                <h4 className="text-lg font-bold text-secondary-700 mb-2">Henüz Toplantı Bulunmuyor</h4>
-                <p className="text-secondary-500 max-w-md mx-auto text-sm">
+                <h4 className="text-lg font-bold text-slate-700 mb-2">Henüz Toplantı Bulunmuyor</h4>
+                <p className="text-slate-500 max-w-md mx-auto text-sm">
                   {user?.role === 'manager' 
                     ? "Sistemde hiç toplantı kaydı yok. Hane incelemelerini başlatmak için sağ üstteki butondan yeni bir toplantı oluşturunuz."
                     : "Henüz bir toplantı oluşturulmamış. Lütfen müdür yetkilinizin bir toplantı oluşturmasını bekleyiniz."}
@@ -1319,7 +1512,7 @@ export default function Dashboard() {
                 {user?.role === 'manager' && (
                   <button
                     onClick={() => setNewMeetingModalOpen(true)}
-                    className="mt-6 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md shadow-primary-900/20"
+                    className="mt-6 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md shadow-indigo-900/20"
                   >
                     <Plus size={20} />
                     İlk Toplantıyı Oluştur
@@ -1345,7 +1538,7 @@ export default function Dashboard() {
                     <div 
                       key={m.id}
                       onClick={() => setFilterMeetingId(m.id)}
-                      className="group bg-white border-2 border-secondary-100 hover:border-indigo-500 rounded-2xl p-5 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between"
+                      className="group bg-white border-2 border-slate-100 hover:border-indigo-500 rounded-2xl p-5 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between"
                     >
                       <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -z-10 group-hover:bg-indigo-100 transition-colors"></div>
                       
@@ -1355,7 +1548,7 @@ export default function Dashboard() {
                             <div className="p-2 bg-indigo-100 text-indigo-700 rounded-lg">
                               <Calendar size={20} />
                             </div>
-                            <span className="font-bold text-secondary-800 text-lg">{m.meetingNo}</span>
+                            <span className="font-bold text-slate-800 text-lg">{m.meetingNo}</span>
                           </div>
                           
                           {/* Lock / Status Pill */}
@@ -1374,16 +1567,16 @@ export default function Dashboard() {
                           )}
                         </div>
 
-                        <div className="text-xs text-secondary-500 font-semibold mb-2 flex items-center justify-between gap-1">
+                        <div className="text-xs text-slate-500 font-semibold mb-2 flex items-center justify-between gap-1">
                           <span className="flex items-center gap-1">
-                            <Calendar size={13} className="text-secondary-400" />
-                            Toplantı Tarihi: <strong className="text-secondary-800 font-extrabold">{new Date(m.date).toLocaleDateString('tr-TR')}</strong>
+                            <Calendar size={13} className="text-slate-400" />
+                            Toplantı Tarihi: <strong className="text-slate-800 font-extrabold">{new Date(m.date).toLocaleDateString('tr-TR')}</strong>
                           </span>
                           {user.role === 'manager' && (
                             <button
                               type="button"
                               onClick={(e) => handleOpenEditMeeting(m, e)}
-                              className="text-xs text-primary-600 hover:text-primary-800 hover:bg-primary-50 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 transition-colors border border-primary-200"
+                              className="text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 transition-colors border border-blue-200"
                               title="Toplantı Bütçesini ve Bilgilerini Düzenle"
                             >
                               <Pencil size={12} /> Bütçe / Düzenle
@@ -1391,7 +1584,7 @@ export default function Dashboard() {
                           )}
                         </div>
                         
-                        <p className="text-xs text-secondary-600 mb-3 line-clamp-2 h-8">
+                        <p className="text-xs text-slate-600 mb-3 line-clamp-2 h-8">
                           {m.description || "Açıklama girilmemiş."}
                         </p>
 
@@ -1406,18 +1599,18 @@ export default function Dashboard() {
                           const pct = mBudget > 0 ? Math.min(100, Math.round((mPlanned / mBudget) * 100)) : 0;
 
                           return (
-                            <div className="bg-secondary-50 rounded-xl p-3 border border-secondary-200 mb-3 space-y-2">
+                            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 mb-3 space-y-2">
                               <div className="flex items-center justify-between text-xs font-bold">
-                                <span className="text-secondary-500 flex items-center gap-1">
-                                  <Wallet size={13} className="text-primary-600" /> Vakıf Bütçesi:
+                                <span className="text-slate-500 flex items-center gap-1">
+                                  <Wallet size={13} className="text-blue-600" /> Vakıf Bütçesi:
                                 </span>
-                                <span className="text-secondary-900 font-extrabold">
+                                <span className="text-slate-900 font-extrabold">
                                   {mBudget > 0 ? `${mBudget.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
                                 </span>
                               </div>
 
                               <div className="flex items-center justify-between text-xs font-bold">
-                                <span className="text-secondary-500 flex items-center gap-1">
+                                <span className="text-slate-500 flex items-center gap-1">
                                   <Banknote size={13} className="text-indigo-600" /> Yapılacak Yardım:
                                 </span>
                                 <span className="text-indigo-900 font-extrabold">
@@ -1428,7 +1621,7 @@ export default function Dashboard() {
                               {mBudget > 0 && (
                                 <div className="space-y-1 pt-1">
                                   <div className="flex justify-between items-center text-[10px] font-extrabold">
-                                    <span className={isExceeded ? 'text-red-600' : 'text-secondary-500'}>
+                                    <span className={isExceeded ? 'text-red-600' : 'text-slate-500'}>
                                       Bütçe Kullanımı: %{pct}
                                     </span>
                                     <span className={isExceeded ? 'text-red-600 font-black' : 'text-emerald-700'}>
@@ -1457,10 +1650,10 @@ export default function Dashboard() {
                       </div>
 
                       <div>
-                        <div className="flex items-center gap-4 border-t border-secondary-100 pt-3">
+                        <div className="flex items-center gap-4 border-t border-slate-100 pt-3">
                           <div className="flex-1">
-                            <p className="text-[10px] uppercase font-bold text-secondary-400 mb-0.5">Toplam Kayıt</p>
-                            <p className="text-base font-black text-secondary-800">{mAssessments.length}</p>
+                            <p className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Toplam Kayıt</p>
+                            <p className="text-base font-black text-slate-800">{mAssessments.length}</p>
                           </div>
                           <div className="flex-1">
                             <p className="text-[10px] uppercase font-bold text-amber-500 mb-0.5">Bekleyen</p>
@@ -1473,7 +1666,7 @@ export default function Dashboard() {
                         </div>
 
                         {/* Manager Override Controls / Personnel Lock Notice */}
-                        <div className="mt-4 pt-3 border-t border-secondary-100 flex items-center justify-between gap-2">
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                           {user.role === 'manager' ? (
                             <button
                               type="button"
@@ -1521,24 +1714,24 @@ export default function Dashboard() {
             )}
           </div>
         ) : (
-        <div className="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
           
           {/* Header of Table view with Back button & Meeting Budget Banner */}
-          <div className="px-6 py-4 border-b border-secondary-200 bg-white space-y-4">
+          <div className="px-6 py-4 border-b border-slate-200 bg-white space-y-4">
              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                <div className="flex items-center gap-3">
                  <button 
                    onClick={() => setFilterMeetingId(null)}
-                   className="p-2 bg-secondary-100 hover:bg-slate-200 rounded-xl text-secondary-600 transition-colors shrink-0"
+                   className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors shrink-0"
                    title="Toplantı Listesine Dön"
                  >
                    <ArrowLeft size={20} />
                  </button>
                  <div>
-                   <h2 className="text-lg font-black text-secondary-800 flex items-center gap-2">
-                     {meetings.find(m => m.id === filterMeetingId)?.meetingNo} <span className="text-secondary-400 font-medium text-sm">Toplantı Kayıtları</span>
+                   <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                     {meetings.find(m => m.id === filterMeetingId)?.meetingNo} <span className="text-slate-400 font-medium text-sm">Toplantı Kayıtları</span>
                    </h2>
-                   <p className="text-xs text-secondary-500">
+                   <p className="text-xs text-slate-500">
                      Toplantı Tarihi: {meetings.find(m => m.id === filterMeetingId)?.date ? new Date(meetings.find(m => m.id === filterMeetingId)!.date).toLocaleDateString('tr-TR') : '-'}
                    </p>
                  </div>
@@ -1574,10 +1767,10 @@ export default function Dashboard() {
 
                if (user?.role !== 'manager') {
                  return (
-                   <div className="p-3 bg-secondary-50 rounded-2xl border border-secondary-200 flex items-center justify-between">
+                   <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
                      <div className="flex items-center gap-2">
-                       <span className="text-xs font-bold text-secondary-700">Toplantı Hane Durumu:</span>
-                       <span className="text-xs font-extrabold text-secondary-900">{stats?.totalCount || 0} İnceleme Dosyası</span>
+                       <span className="text-xs font-bold text-slate-700">Toplantı Hane Durumu:</span>
+                       <span className="text-xs font-extrabold text-slate-900">{stats?.totalCount || 0} İnceleme Dosyası</span>
                      </div>
                      <div className="text-xs font-bold text-emerald-700">
                        {stats?.approvedCount || 0} Onaylı / {stats?.pendingCount || 0} Bekleyen
@@ -1588,40 +1781,40 @@ export default function Dashboard() {
 
                return (
                  <div className={`p-4 rounded-2xl border transition-all ${
-                   isExceeded ? 'bg-red-50/80 border-red-300' : 'bg-secondary-50 border-secondary-200'
+                   isExceeded ? 'bg-red-50/80 border-red-300' : 'bg-slate-50 border-slate-200'
                  }`}>
                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-                     <div className="bg-white p-3 rounded-xl border border-secondary-200 shadow-2xs">
-                       <span className="text-[10px] uppercase font-bold text-secondary-400 flex items-center gap-1">
-                         <Wallet size={12} className="text-primary-600" /> Vakıf Bütçesi
+                     <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+                       <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
+                         <Wallet size={12} className="text-blue-600" /> Vakıf Bütçesi
                        </span>
-                       <p className="text-base font-black text-secondary-900 mt-0.5">
+                       <p className="text-base font-black text-slate-900 mt-0.5">
                          {mBudget > 0 ? `${mBudget.toLocaleString('tr-TR')} ₺` : 'Bütçe Girilmemiş'}
                        </p>
                      </div>
 
-                     <div className="bg-white p-3 rounded-xl border border-secondary-200 shadow-2xs">
+                     <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
                        <span className="text-[10px] uppercase font-bold text-indigo-500 flex items-center gap-1">
                          <Banknote size={12} className="text-indigo-600" /> Yapılacak Toplam Yardım
                        </span>
                        <p className="text-base font-black text-indigo-900 mt-0.5">
                          {mPlanned.toLocaleString('tr-TR')} ₺
                        </p>
-                       <p className="text-[10px] text-secondary-500 font-semibold">Onaylanan: {mApproved.toLocaleString('tr-TR')} ₺</p>
+                       <p className="text-[10px] text-slate-500 font-semibold">Onaylanan: {mApproved.toLocaleString('tr-TR')} ₺</p>
                      </div>
 
-                     <div className="bg-white p-3 rounded-xl border border-secondary-200 shadow-2xs">
-                       <span className="text-[10px] uppercase font-bold text-secondary-400">Değerlendirilen Hane</span>
-                       <p className="text-base font-black text-secondary-800 mt-0.5">
+                     <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+                       <span className="text-[10px] uppercase font-bold text-slate-400">Değerlendirilen Hane</span>
+                       <p className="text-base font-black text-slate-800 mt-0.5">
                          {stats?.totalCount || 0} Hane
                        </p>
                        <p className="text-[10px] text-emerald-600 font-semibold">{stats?.approvedCount || 0} Onaylı / {stats?.pendingCount || 0} Bekleyen</p>
                      </div>
 
                      <div className={`p-3 rounded-xl border shadow-2xs ${
-                       isExceeded ? 'bg-red-600 text-white border-red-700' : 'bg-white border-secondary-200'
+                       isExceeded ? 'bg-red-600 text-white border-red-700' : 'bg-white border-slate-200'
                      }`}>
-                       <span className={`text-[10px] uppercase font-extrabold ${isExceeded ? 'text-red-100' : 'text-secondary-400'}`}>
+                       <span className={`text-[10px] uppercase font-extrabold ${isExceeded ? 'text-red-100' : 'text-slate-400'}`}>
                          {isExceeded ? '🚨 Bütçe Aşım Miktarı' : 'Kalan Kullanılabilir Bütçe'}
                        </span>
                        <p className={`text-base font-black mt-0.5 ${isExceeded ? 'text-white' : 'text-emerald-700'}`}>
@@ -1652,32 +1845,32 @@ export default function Dashboard() {
           </div>
 
           {/* Section Title & Primary Tabs */}
-          <div className="px-6 py-4 border-b border-secondary-200 bg-secondary-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-extrabold text-secondary-800 uppercase tracking-wider flex items-center gap-2">
-                <FileText size={16} className="text-primary-600" />
+              <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <FileText size={16} className="text-blue-600" />
                 Sosyal İnceleme Kayıtları
               </h3>
-              <p className="text-xs text-secondary-500 mt-0.5">Arama, filtreleme ve sütun bazlı sıralama ile tüm kayıtları inceleyip yönetebilirsiniz.</p>
+              <p className="text-xs text-slate-500 mt-0.5">Arama, filtreleme ve sütun bazlı sıralama ile tüm kayıtları inceleyip yönetebilirsiniz.</p>
             </div>
 
             {/* Filter Tabs */}
             <div className="flex items-center gap-1 bg-slate-200 p-1 rounded-lg shrink-0">
               <button
                 onClick={() => setFilterStatus('all')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'all' ? 'bg-white text-secondary-900 shadow-sm' : 'text-secondary-600 hover:text-secondary-900'}`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 Tümü ({total})
               </button>
               <button
                 onClick={() => setFilterStatus('pending')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'pending' ? 'bg-white text-amber-900 shadow-sm' : 'text-secondary-600 hover:text-secondary-900'}`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'pending' ? 'bg-white text-amber-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 Onay Bekleyenler ({pendingCount})
               </button>
               <button
                 onClick={() => setFilterStatus('approved')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'approved' ? 'bg-emerald-600 text-white shadow-sm' : 'text-secondary-600 hover:text-secondary-900'}`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'approved' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 Onaylananlar ({approvedCount})
               </button>
@@ -1685,22 +1878,22 @@ export default function Dashboard() {
           </div>
 
           {/* Search Bar & Secondary Filters */}
-          <div className="p-4 border-b border-secondary-200 bg-secondary-100/50 flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="p-4 border-b border-slate-200 bg-slate-100/50 flex flex-col md:flex-row items-center justify-between gap-3">
             
             {/* Live Search Input */}
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-400" size={16} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Ad soyad, TC kimlik, personel, karar..."
-                className="w-full pl-9 pr-8 py-2 text-xs font-medium rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-secondary-800 shadow-sm"
+                className="w-full pl-9 pr-8 py-2 text-xs font-medium rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-800 shadow-sm"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-secondary-400 hover:text-secondary-600 p-0.5"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
                   title="Aramayı Temizle"
                 >
                   <X size={14} />
@@ -1711,8 +1904,8 @@ export default function Dashboard() {
             {/* Decision Filter & Counter / Reset */}
             <div className="flex flex-wrap items-center justify-between md:justify-end gap-2.5 w-full md:w-auto">
               
-              <div className="flex items-center gap-1.5 text-xs font-bold text-secondary-600">
-                <Calendar size={14} className="text-secondary-500 shrink-0" />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
+                <Calendar size={14} className="text-slate-500 shrink-0" />
                 <span>Toplantı:</span>
                 <select
                   value={filterMeetingId || ''}
@@ -1720,7 +1913,7 @@ export default function Dashboard() {
                     if (e.target.value === '') setFilterMeetingId(null);
                     else setFilterMeetingId(e.target.value);
                   }}
-                  className="bg-white border border-slate-300 text-secondary-800 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm max-w-[120px] truncate"
+                  className="bg-white border border-slate-300 text-slate-800 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm max-w-[120px] truncate"
                 >
                   <option value="" disabled>Seçiniz</option>
                   {meetings.map(m => (
@@ -1729,13 +1922,13 @@ export default function Dashboard() {
                 </select>
               </div>
 
-              <div className="flex items-center gap-1.5 text-xs font-bold text-secondary-600">
-                <Filter size={14} className="text-secondary-500 shrink-0" />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
+                <Filter size={14} className="text-slate-500 shrink-0" />
                 <span>Karar:</span>
                 <select
                   value={filterDecision}
                   onChange={(e: any) => setFilterDecision(e.target.value)}
-                  className="bg-white border border-slate-300 text-secondary-800 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  className="bg-white border border-slate-300 text-slate-800 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
                 >
                   <option value="all">Tümü</option>
                   <option value="accepted">Kapsam İçi (Kabul)</option>
@@ -1746,7 +1939,7 @@ export default function Dashboard() {
               {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
                 <button
                   onClick={resetAllFilters}
-                  className="text-xs text-primary-700 hover:text-blue-900 font-bold underline flex items-center gap-1 px-2 py-1 rounded hover:bg-primary-50 transition-colors"
+                  className="text-xs text-blue-700 hover:text-blue-900 font-bold underline flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
                 >
                   <X size={12} /> Filtreleri Sıfırla
                 </button>
@@ -1754,7 +1947,7 @@ export default function Dashboard() {
 
               <button
                 onClick={handlePrintSelectedDetailed}
-                className="flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
+                className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
                 title="Seçilen kayıtların (veya seçilen tek kaydın) 1 sayfalık resmi A4 ayrıntılı raporunu yazdır/PDF yap"
               >
                 <FileText size={14} />
@@ -1790,8 +1983,8 @@ export default function Dashboard() {
                 <span>Tüm Listeyi Yazdır</span>
               </button>
 
-              <div className="text-[11px] font-bold text-secondary-500 bg-slate-200 px-2.5 py-1 rounded-md">
-                Gösterilen: <strong className="text-secondary-900 font-extrabold">{filteredAndSortedAssessments.length}</strong> / {total}
+              <div className="text-[11px] font-bold text-slate-500 bg-slate-200 px-2.5 py-1 rounded-md">
+                Gösterilen: <strong className="text-slate-900 font-extrabold">{filteredAndSortedAssessments.length}</strong> / {total}
               </div>
 
             </div>
@@ -1805,7 +1998,7 @@ export default function Dashboard() {
                 <ListOrdered size={15} className="text-indigo-600 shrink-0" />
                 <span>Özel Sıralama Yönetimi:</span>
               </span>
-              <span className="text-secondary-600 hidden md:inline text-[11px]">
+              <span className="text-slate-600 hidden md:inline text-[11px]">
                 Kayıtlara istediğiniz sıra numarasını verip bu sıralamaya göre listeleyebilir ve çıktı alabilirsiniz.
               </span>
             </div>
@@ -1847,7 +2040,7 @@ export default function Dashboard() {
 
               <button
                 onClick={handleClearAllCustomOrders}
-                className="text-secondary-500 hover:text-red-600 underline text-[11px] px-1 py-0.5"
+                className="text-slate-500 hover:text-red-600 underline text-[11px] px-1 py-0.5"
                 title="Tüm özel sıra numaralarını temizle"
               >
                 Sıraları Temizle
@@ -1874,7 +2067,7 @@ export default function Dashboard() {
 
                 <button
                   onClick={handlePrintSelectedDetailed}
-                  className="bg-primary-600 hover:bg-primary-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
                   title="Seçilen her bir kaydın tek sayfalık A4 ayrıntılı raporunu yazdır/PDF yap"
                 >
                   <FileText size={14} />
@@ -1892,7 +2085,7 @@ export default function Dashboard() {
                 {user.role === 'manager' && selectedPendingCount > 0 && (
                   <button
                     onClick={openApproveSelectedModal}
-                    className="bg-primary-600 hover:bg-primary-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1 rounded-md font-extrabold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
                   >
                     <CheckCircle2 size={14} />
                     <span>Seçilen Bekleyenleri Onayla ({selectedPendingCount})</span>
@@ -1901,7 +2094,7 @@ export default function Dashboard() {
 
                 <button
                   onClick={() => setSelectedIds([])}
-                  className="text-secondary-400 hover:text-white underline px-2 py-0.5 transition-colors text-[11px]"
+                  className="text-slate-400 hover:text-white underline px-2 py-0.5 transition-colors text-[11px]"
                 >
                   Seçimi Temizle
                 </button>
@@ -1912,7 +2105,7 @@ export default function Dashboard() {
           {/* Mobile & Tablet Card View (< md screens) */}
           <div className="md:hidden divide-y divide-slate-200 bg-white">
             {filteredAndSortedAssessments.length === 0 ? (
-              <div className="p-8 text-center text-secondary-500 font-medium">
+              <div className="p-8 text-center text-slate-500 font-medium">
                 Arama ve filtreleme kriterlerine uygun sosyal inceleme kaydı bulunamadı.
               </div>
             ) : (
@@ -1923,7 +2116,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={item.id} 
-                    className={`p-4 transition-colors space-y-3 ${isSelected ? 'bg-primary-50/80' : 'hover:bg-secondary-50'}`}
+                    className={`p-4 transition-colors space-y-3 ${isSelected ? 'bg-blue-50/80' : 'hover:bg-slate-50'}`}
                   >
                     {/* Top Row: Checkbox, Custom Sequence, Approval Badge */}
                     <div className="flex items-center justify-between gap-2">
@@ -1932,10 +2125,10 @@ export default function Dashboard() {
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleSelectId(item.id)}
-                          className="rounded border-slate-300 text-primary-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
+                          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                         />
                         <div className="flex items-center gap-1">
-                          <span className="text-[10px] font-black text-secondary-400 uppercase">Sıra:</span>
+                          <span className="text-[10px] font-black text-slate-400 uppercase">Sıra:</span>
                           <input
                             type="number"
                             min={1}
@@ -1965,32 +2158,32 @@ export default function Dashboard() {
 
                     {/* Applicant Name & Identity Details */}
                     <div>
-                      <h4 className="text-sm font-extrabold text-secondary-900 leading-snug">
+                      <h4 className="text-sm font-extrabold text-slate-900 leading-snug">
                         {item.applicantName}
                       </h4>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-secondary-500 font-medium mt-1">
-                        <span>TC: <strong className="text-secondary-800 font-bold">{item.applicantTc || '-'}</strong></span>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500 font-medium mt-1">
+                        <span>TC: <strong className="text-slate-800 font-bold">{item.applicantTc || '-'}</strong></span>
                         <span>•</span>
-                        <span>Ziyaret: <strong className="text-secondary-800 font-bold">{new Date(item.date).toLocaleDateString('tr-TR')}</strong></span>
+                        <span>Ziyaret: <strong className="text-slate-800 font-bold">{new Date(item.date).toLocaleDateString('tr-TR')}</strong></span>
                       </div>
                     </div>
 
                     {/* Metrics Grid */}
                     <div className="grid grid-cols-2 gap-2 text-xs pt-1">
-                      <div className="bg-secondary-50 p-2 rounded-lg border border-secondary-200">
-                        <span className="text-[10px] text-secondary-400 font-bold uppercase block">Hane Büyüklüğü</span>
-                        <span className="font-extrabold text-secondary-800">{item.householdSize} kişi</span>
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Hane Büyüklüğü</span>
+                        <span className="font-extrabold text-slate-800">{item.householdSize} kişi</span>
                       </div>
 
-                      <div className="bg-secondary-50 p-2 rounded-lg border border-secondary-200">
-                        <span className="text-[10px] text-secondary-400 font-bold uppercase block">Puan</span>
-                        <span className={`font-black ${item.result.isRejected ? 'text-red-700' : 'text-primary-700'}`}>
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Puan</span>
+                        <span className={`font-black ${item.result.isRejected ? 'text-red-700' : 'text-blue-700'}`}>
                           {item.result.totalScore} Puan
                         </span>
                       </div>
 
-                      <div className="bg-secondary-50 p-2 rounded-lg border border-secondary-200 col-span-2">
-                        <span className="text-[10px] text-secondary-400 font-bold uppercase block">Karar / Yardım Tipi</span>
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-200 col-span-2">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Karar / Yardım Tipi</span>
                         <span className={`font-black text-xs ${item.result.isRejected ? 'text-red-600' : 'text-emerald-700'}`}>
                           {item.result.isRejected ? 'REDDEDİLDİ' : (item.result.assistance?.text || '-')}
                         </span>
@@ -1998,13 +2191,13 @@ export default function Dashboard() {
                     </div>
 
                     {user.role === 'manager' && (
-                      <div className="text-[11px] text-secondary-500 font-medium">
-                        İnceleyen Personel: <strong className="text-secondary-800 font-bold">{item.personnelName}</strong>
+                      <div className="text-[11px] text-slate-500 font-medium">
+                        İnceleyen Personel: <strong className="text-slate-800 font-bold">{item.personnelName}</strong>
                       </div>
                     )}
 
                     {/* Action Buttons Row */}
-                    <div className="flex flex-wrap items-center justify-end gap-1.5 pt-2 border-t border-secondary-100">
+                    <div className="flex flex-wrap items-center justify-end gap-1.5 pt-2 border-t border-slate-100">
                       {user.role === 'manager' && (
                         <>
                           {!isApproved ? (
@@ -2030,12 +2223,12 @@ export default function Dashboard() {
                           {!isApproved ? (
                             <Link
                               href={`/assessment/${item.id}/edit`}
-                              className="inline-flex items-center gap-1 bg-secondary-100 hover:bg-slate-200 text-secondary-700 border border-slate-300 text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors"
+                              className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors"
                             >
                               <Edit3 size={13} /> Düzenle
                             </Link>
                           ) : (
-                            <span className="inline-flex items-center gap-1 bg-secondary-100 text-secondary-400 border border-secondary-200 text-[10px] font-bold px-2 py-1 rounded-md cursor-not-allowed">
+                            <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-400 border border-slate-200 text-[10px] font-bold px-2 py-1 rounded-md cursor-not-allowed">
                               <Lock size={12} /> Kilitli
                             </span>
                           )}
@@ -2044,7 +2237,7 @@ export default function Dashboard() {
 
                       <button
                         onClick={() => handlePrintSingleDetailed(item)}
-                        className="inline-flex items-center gap-1 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                        className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
                       >
                         <Printer size={13} /> Rapor (A4)
                       </button>
@@ -2075,13 +2268,13 @@ export default function Dashboard() {
           <div className="hidden md:block w-full overflow-x-auto xl:overflow-x-visible">
             <table className="w-full text-left border-collapse table-auto">
               <thead>
-                <tr className="bg-secondary-100 text-secondary-700 text-[10px] uppercase tracking-wider border-b border-secondary-200">
+                <tr className="bg-slate-100 text-slate-700 text-[10px] uppercase tracking-wider border-b border-slate-200">
                   <th className="px-2 py-2.5 font-black text-center w-8">
                     <input
                       type="checkbox"
                       checked={filteredAndSortedAssessments.length > 0 && selectedIds.length === filteredAndSortedAssessments.length}
                       onChange={toggleSelectAll}
-                      className="rounded border-slate-300 text-primary-600 focus:ring-blue-500 cursor-pointer"
+                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                       title="Tümünü Seç / Kaldır"
                     />
                   </th>
@@ -2188,7 +2381,7 @@ export default function Dashboard() {
               <tbody className="divide-y divide-slate-100 text-xs">
                 {filteredAndSortedAssessments.length === 0 ? (
                   <tr>
-                    <td colSpan={user.role === 'manager' ? 11 : 10} className="px-6 py-12 text-center text-secondary-500 bg-secondary-50/50 font-medium">
+                    <td colSpan={user.role === 'manager' ? 11 : 10} className="px-6 py-12 text-center text-slate-500 bg-slate-50/50 font-medium">
                       Arama ve filtreleme kriterlerine uygun sosyal inceleme kaydı bulunamadı.
                     </td>
                   </tr>
@@ -2200,14 +2393,14 @@ export default function Dashboard() {
                     return (
                       <tr 
                         key={item.id} 
-                        className={`transition-colors ${isSelected ? 'bg-primary-50/80 font-medium' : 'hover:bg-secondary-50/80'}`}
+                        className={`transition-colors ${isSelected ? 'bg-blue-50/80 font-medium' : 'hover:bg-slate-50/80'}`}
                       >
                         <td className="px-3 py-3 text-center align-middle whitespace-nowrap">
                           <input
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => toggleSelectId(item.id)}
-                            className="rounded border-slate-300 text-primary-600 focus:ring-blue-500 cursor-pointer"
+                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                           />
                         </td>
 
@@ -2230,35 +2423,35 @@ export default function Dashboard() {
                         </td>
 
                         {/* Date */}
-                        <td className="px-3 sm:px-4 py-3 font-semibold text-secondary-600 whitespace-nowrap align-middle">
+                        <td className="px-3 sm:px-4 py-3 font-semibold text-slate-600 whitespace-nowrap align-middle">
                           {new Date(item.date).toLocaleDateString('tr-TR')}
                         </td>
 
                         {/* TC */}
-                        <td className="px-3 sm:px-4 py-3 font-bold text-secondary-700 tracking-wider whitespace-nowrap align-middle">
+                        <td className="px-3 sm:px-4 py-3 font-bold text-slate-700 tracking-wider whitespace-nowrap align-middle">
                           {item.applicantTc || '-'}
                         </td>
 
                         {/* Name - Max Width Truncate for Single Line */}
-                        <td className="px-3 sm:px-4 py-3 font-extrabold text-secondary-900 whitespace-nowrap align-middle max-w-[200px] truncate" title={item.applicantName}>
+                        <td className="px-3 sm:px-4 py-3 font-extrabold text-slate-900 whitespace-nowrap align-middle max-w-[200px] truncate" title={item.applicantName}>
                           {item.applicantName}
                         </td>
 
                         {/* Household Size */}
-                        <td className="px-3 sm:px-4 py-3 font-semibold text-secondary-700 whitespace-nowrap text-center align-middle">
+                        <td className="px-3 sm:px-4 py-3 font-semibold text-slate-700 whitespace-nowrap text-center align-middle">
                           {item.householdSize} kişi
                         </td>
 
                         {/* Personnel Name */}
                         {user.role === 'manager' && (
-                          <td className="px-3 sm:px-4 py-3 font-medium text-secondary-700 whitespace-nowrap align-middle max-w-[150px] truncate" title={item.personnelName}>
+                          <td className="px-3 sm:px-4 py-3 font-medium text-slate-700 whitespace-nowrap align-middle max-w-[150px] truncate" title={item.personnelName}>
                             {item.personnelName}
                           </td>
                         )}
 
                         {/* Total Score */}
                         <td className="px-3 sm:px-4 py-3 text-center whitespace-nowrap align-middle">
-                          <span className={`inline-block px-2 py-0.5 rounded font-black text-xs ${item.result.isRejected ? 'bg-red-100 text-red-800' : 'bg-primary-100 text-blue-900'}`}>
+                          <span className={`inline-block px-2 py-0.5 rounded font-black text-xs ${item.result.isRejected ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-900'}`}>
                             {item.result.totalScore} Puan
                           </span>
                         </td>
@@ -2321,7 +2514,7 @@ export default function Dashboard() {
                                 {!isApproved ? (
                                   <Link
                                     href={`/assessment/${item.id}/edit`}
-                                    className="inline-flex items-center gap-1 bg-secondary-100 hover:bg-slate-200 text-secondary-700 border border-slate-300 text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors"
+                                    className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors"
                                     title="Sosyal İnceleme Kaydını Düzenle"
                                   >
                                     <Edit3 size={13} />
@@ -2329,7 +2522,7 @@ export default function Dashboard() {
                                   </Link>
                                 ) : (
                                   <span 
-                                    className="inline-flex items-center gap-1 bg-secondary-100 text-secondary-400 border border-secondary-200 text-[10px] font-bold p-1.5 lg:px-2 lg:py-1 rounded-md cursor-not-allowed"
+                                    className="inline-flex items-center gap-1 bg-slate-100 text-slate-400 border border-slate-200 text-[10px] font-bold p-1.5 lg:px-2 lg:py-1 rounded-md cursor-not-allowed"
                                     title="Onaylı veriler düzenlenemez. İzin için müdürün onayı kaldırması gerekmektedir."
                                   >
                                     <Lock size={12} />
@@ -2342,7 +2535,7 @@ export default function Dashboard() {
                             {/* Single Detailed Report Print Button */}
                             <button
                               onClick={() => handlePrintSingleDetailed(item)}
-                              className="inline-flex items-center gap-1 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
+                              className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors shadow-sm active:scale-95"
                               title="Tek Sayfa Resmi A4 Raporu Yazdır / PDF Yap"
                             >
                               <Printer size={13} />
@@ -2391,29 +2584,29 @@ export default function Dashboard() {
       {/* ========================================================================= */}
       {batchModal.isOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200 no-print">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-secondary-100 overflow-hidden relative">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100 overflow-hidden relative">
             
             {/* STEP 1: CONFIRMATION DIALOG */}
             {batchModal.step === 'confirm' && (
               <div className="space-y-4 text-center">
                 <div className="w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto">
                   {batchModal.type.startsWith('approve') ? (
-                    <ShieldCheck size={32} className="text-primary-600" />
+                    <ShieldCheck size={32} className="text-blue-600" />
                   ) : (
                     <RotateCcw size={32} className="text-amber-600" />
                   )}
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-black text-secondary-900">{batchModal.title}</h3>
-                  <p className="text-xs text-secondary-600 mt-2 leading-relaxed font-medium">
+                  <h3 className="text-lg font-black text-slate-900">{batchModal.title}</h3>
+                  <p className="text-xs text-slate-600 mt-2 leading-relaxed font-medium">
                     {batchModal.description}
                   </p>
                 </div>
 
-                <div className="bg-secondary-50 border border-secondary-200 p-3 rounded-xl flex items-center justify-between text-xs font-bold text-secondary-700">
+                <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex items-center justify-between text-xs font-bold text-slate-700">
                   <span>İşlenecek Kayıt Sayısı:</span>
-                  <span className="bg-primary-100 text-blue-900 px-2.5 py-1 rounded-md font-black text-sm">
+                  <span className="bg-blue-100 text-blue-900 px-2.5 py-1 rounded-md font-black text-sm">
                     {batchModal.totalCount} Adet Kayıt
                   </span>
                 </div>
@@ -2421,7 +2614,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2.5 pt-2">
                   <button
                     onClick={() => setBatchModal(prev => ({ ...prev, isOpen: false }))}
-                    className="flex-1 bg-secondary-100 hover:bg-slate-200 text-secondary-700 py-2.5 rounded-xl text-xs font-bold transition-colors"
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-xs font-bold transition-colors"
                   >
                     Vazgeç
                   </button>
@@ -2429,7 +2622,7 @@ export default function Dashboard() {
                     onClick={executeBatchAction}
                     className={`flex-1 text-white py-2.5 rounded-xl text-xs font-black shadow-md transition-all active:scale-95 ${
                       batchModal.type.startsWith('approve')
-                        ? 'bg-primary-600 hover:bg-primary-700 shadow-blue-900/20'
+                        ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/20'
                         : 'bg-amber-600 hover:bg-amber-700 shadow-amber-900/20'
                     }`}
                   >
@@ -2443,15 +2636,15 @@ export default function Dashboard() {
             {batchModal.step === 'processing' && (
               <div className="space-y-5 text-center py-2">
                 <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-                  <RefreshCw size={40} className="animate-spin text-primary-600" />
+                  <RefreshCw size={40} className="animate-spin text-blue-600" />
                   <span className="absolute text-xs font-black text-blue-900">
                     %{batchModal.progress}
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-base font-black text-secondary-900">Toplu İşlem Gerçekleştiriliyor...</h3>
-                  <p className="text-xs text-secondary-500 font-medium mt-1">
+                  <h3 className="text-base font-black text-slate-900">Toplu İşlem Gerçekleştiriliyor...</h3>
+                  <p className="text-xs text-slate-500 font-medium mt-1">
                     Kayıtlar sırayla güncelleniyor. Lütfen tarayıcı penceresini kapatmayınız.
                   </p>
                 </div>
@@ -2459,18 +2652,18 @@ export default function Dashboard() {
                 {/* Percentage Display & Progress Bar */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs font-bold">
-                    <span className="text-secondary-600">İlerleme Durumu</span>
-                    <span className="text-primary-700 font-black text-sm">%{batchModal.progress}</span>
+                    <span className="text-slate-600">İlerleme Durumu</span>
+                    <span className="text-blue-700 font-black text-sm">%{batchModal.progress}</span>
                   </div>
 
-                  <div className="w-full bg-secondary-100 rounded-full h-4 p-0.5 border border-secondary-200 overflow-hidden shadow-inner">
+                  <div className="w-full bg-slate-100 rounded-full h-4 p-0.5 border border-slate-200 overflow-hidden shadow-inner">
                     <div 
                       className="bg-gradient-to-r from-blue-600 to-emerald-500 h-3 rounded-full transition-all duration-200 ease-out shadow-sm"
                       style={{ width: `${batchModal.progress}%` }}
                     />
                   </div>
 
-                  <div className="text-[11px] font-semibold text-secondary-500 text-right">
+                  <div className="text-[11px] font-semibold text-slate-500 text-right">
                     {batchModal.processedCount} / {batchModal.totalCount} Kayıt İşlendi
                   </div>
                 </div>
@@ -2485,9 +2678,9 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-black text-secondary-900">İşlem Tamamlandı!</h3>
-                  <p className="text-xs text-secondary-600 font-medium mt-1">
-                    Toplam <strong className="text-secondary-900">{batchModal.totalCount} adet</strong> sosyal inceleme kaydı için toplu güncelleme başarıyla gerçekleştirildi.
+                  <h3 className="text-lg font-black text-slate-900">İşlem Tamamlandı!</h3>
+                  <p className="text-xs text-slate-600 font-medium mt-1">
+                    Toplam <strong className="text-slate-900">{batchModal.totalCount} adet</strong> sosyal inceleme kaydı için toplu güncelleme başarıyla gerçekleştirildi.
                   </p>
                 </div>
 
@@ -2528,7 +2721,7 @@ export default function Dashboard() {
                   ? 'ONAY BEKLEYEN SOSYAL İNCELEME KAYITLARI LİSTESİ'
                   : 'SOSYAL İNCELEME KAYITLARI DİNAMİK LİSTESİ'}
               </p>
-              <p className="text-[9px] text-secondary-700 mt-1 flex items-center justify-center gap-3">
+              <p className="text-[9px] text-slate-700 mt-1 flex items-center justify-center gap-3">
                 <span>Rapor Tarihi: {new Date().toLocaleDateString('tr-TR')}</span>
                 <span>•</span>
                 <span>Toplam Kayıt: <strong>{printableRecords.length}</strong></span>
@@ -2579,7 +2772,7 @@ export default function Dashboard() {
               <tbody>
                 {printableRecords.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="p-4 text-center font-bold text-secondary-500">
+                    <td colSpan={10} className="p-4 text-center font-bold text-slate-500">
                       {printOnlySelected ? 'Seçilen herhangi bir sosyal inceleme kaydı bulunmamaktadır.' : 'Arama ve filtreleme kriterlerine uygun kayıt bulunmamaktadır.'}
                     </td>
                   </tr>
@@ -2604,7 +2797,7 @@ export default function Dashboard() {
 
             {/* Signature Block at Bottom */}
             <div className="border border-black p-3 mt-8">
-              <p className="text-[9px] italic text-secondary-700 mb-4">
+              <p className="text-[9px] italic text-slate-700 mb-4">
                 * İşbu liste Sosyal Yardımlaşma ve Dayanışmayı Teşvik Kanunu kapsamında oluşturulan resmi özet inceleme belgesidir.
               </p>
 
@@ -2612,8 +2805,8 @@ export default function Dashboard() {
                 <div className="text-center w-5/12">
                   <p className="font-bold uppercase tracking-wider">SOSYAL YARDIM VE İNCELEME GÖREVLİSİ</p>
                   <p className="font-semibold mt-2">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
-                  <p className="text-[9px] text-secondary-600 mt-1">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
-                  <p className="text-[9px] text-secondary-600 mt-0.5">Tarih: {new Date().toLocaleDateString('tr-TR')}</p>
+                  <p className="text-[9px] text-slate-600 mt-1">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
+                  <p className="text-[9px] text-slate-600 mt-0.5">Tarih: {new Date().toLocaleDateString('tr-TR')}</p>
                   <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
                     İmza / Mühür
                   </div>
@@ -2622,7 +2815,7 @@ export default function Dashboard() {
                 <div className="text-center w-5/12">
                   <p className="font-bold uppercase tracking-wider">VAKIF MÜDÜRÜ</p>
                   <p className="font-semibold mt-2">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
-                  <p className="text-[9px] text-secondary-600 mt-1">Unvan: SYDV Vakıf Müdürü</p>
+                  <p className="text-[9px] text-slate-600 mt-1">Unvan: SYDV Vakıf Müdürü</p>
                   <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
                     İmza / Mühür
                   </div>
@@ -2634,7 +2827,7 @@ export default function Dashboard() {
           /* DETAILED 1-PAGE PER RECORD PRINT LAYOUT */
           <div>
             {printableRecords.length === 0 ? (
-              <div className="p-8 text-center font-bold text-secondary-500">
+              <div className="p-8 text-center font-bold text-slate-500">
                 Detaylı raporu yazdırılacak seçili kayıt bulunmamaktadır.
               </div>
             ) : (
@@ -2659,7 +2852,7 @@ export default function Dashboard() {
                     {/* Top Info Table */}
                     <table className="w-full border-collapse border border-black text-[9px] mb-2 print-compact-table">
                       <tbody>
-                        <tr className="border-b border-black bg-secondary-100">
+                        <tr className="border-b border-black bg-slate-100">
                           <td className="border-r border-black font-bold p-1 w-1/6">SIRA NO:</td>
                           <td className="border-r border-black p-1 w-1/6 font-black">{item.customOrder !== undefined && item.customOrder !== null ? item.customOrder : '-'}</td>
                           <td className="border-r border-black font-bold p-1 w-1/6">T.C. KİMLİK NO:</td>
@@ -2692,7 +2885,7 @@ export default function Dashboard() {
 
                       <table className="w-full border-collapse border border-black text-[8px] print-compact-table">
                         <thead>
-                          <tr className="bg-secondary-100 border-b border-black">
+                          <tr className="bg-slate-100 border-b border-black">
                             <th className="border-r border-black p-1 text-left w-1/5">KATEGORİ</th>
                             <th className="border-r border-black p-1 text-left">İŞARETLENEN / TESPİT EDİLEN SEÇENEKLER</th>
                             <th className="p-1 text-center w-14">PUAN</th>
@@ -2765,7 +2958,7 @@ export default function Dashboard() {
                     {/* System Check & Final Decision Box */}
                     <table className="w-full border-collapse border border-black text-[8.5px] mb-2 print-compact-table">
                       <tbody>
-                        <tr className="border-b border-black bg-secondary-100">
+                        <tr className="border-b border-black bg-slate-100">
                           <td className="border-r border-black font-bold p-1 w-1/3">ZORUNLU KONTROLLER (SGK/TAPU/ARAÇ):</td>
                           <td className="border-r border-black p-1 font-bold text-emerald-800">YAPILDI (EKSİKSİZ)</td>
                           <td className="border-r border-black font-bold p-1 w-1/4">GERÇEĞE AYKIRI BEYAN:</td>
@@ -2781,7 +2974,7 @@ export default function Dashboard() {
                     </table>
 
                     {/* Official Note */}
-                    <p className="text-[7.5px] italic text-secondary-700 mb-3">
+                    <p className="text-[7.5px] italic text-slate-700 mb-3">
                       * Bu rapor, 3294 Sayılı Sosyal Yardımlaşma ve Dayanışmayı Teşvik Kanunu kapsamında SYDV Sosyal İnceleme Görevlisi ({item.personnelName}) tarafından yerinde yapılan ev ziyareti neticesinde düzenlenmiş resmi inceleme belgesidir.
                     </p>
 
@@ -2792,9 +2985,9 @@ export default function Dashboard() {
                         {/* Personnel Signature */}
                         <div className="text-center w-5/12">
                           <p className="font-bold uppercase tracking-wider">SOSYAL YARDIM VE İNCELEME GÖREVLİSİ</p>
-                          <p className="font-semibold text-secondary-800 mt-1">Adı Soyadı: <span className="font-bold uppercase">{item.personnelName}</span></p>
-                          <p className="text-[7.5px] text-secondary-600">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
-                          <p className="text-[7.5px] text-secondary-600 mt-0.5">Tarih: {new Date(item.date).toLocaleDateString('tr-TR')}</p>
+                          <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="font-bold uppercase">{item.personnelName}</span></p>
+                          <p className="text-[7.5px] text-slate-600">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
+                          <p className="text-[7.5px] text-slate-600 mt-0.5">Tarih: {new Date(item.date).toLocaleDateString('tr-TR')}</p>
                           <div className="mt-5 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[8px] font-bold">
                             İmza / Mühür
                           </div>
@@ -2803,9 +2996,9 @@ export default function Dashboard() {
                         {/* Manager Signature */}
                         <div className="text-center w-5/12">
                           <p className="font-bold uppercase tracking-wider">VAKIF MÜDÜRÜ</p>
-                          <p className="font-semibold text-secondary-800 mt-1">Adı Soyadı: <span className="font-bold uppercase">{item.managerName || 'VAKIF MÜDÜRÜ'}</span></p>
-                          <p className="text-[7.5px] text-secondary-600">Unvan: SYDV Vakıf Müdürü</p>
-                          <p className="text-[7.5px] text-secondary-600 mt-0.5">Onay Durumu: {item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLİYOR'}</p>
+                          <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="font-bold uppercase">{item.managerName || 'VAKIF MÜDÜRÜ'}</span></p>
+                          <p className="text-[7.5px] text-slate-600">Unvan: SYDV Vakıf Müdürü</p>
+                          <p className="text-[7.5px] text-slate-600 mt-0.5">Onay Durumu: {item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLİYOR'}</p>
                           <div className="mt-5 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[8px] font-bold">
                             İmza / Mühür
                           </div>
@@ -2848,52 +3041,52 @@ export default function Dashboard() {
               </div>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-secondary-700 mb-1">Toplantı No (Örn: 2026/01)</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Toplantı No (Örn: 2026/01)</label>
                   <input
                     type="text"
                     value={newMeetingData.meetingNo}
                     onChange={(e) => setNewMeetingData({ ...newMeetingData, meetingNo: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-secondary-50 font-bold"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-bold"
                     placeholder="2026/01"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-secondary-700 mb-1">Toplantı Tarihi</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Toplantı Tarihi</label>
                   <input
                     type="date"
                     value={newMeetingData.date}
                     onChange={(e) => setNewMeetingData({ ...newMeetingData, date: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-secondary-50 font-bold"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-secondary-700 mb-1 flex items-center gap-1">
-                    <Wallet size={15} className="text-primary-600" />
+                  <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <Wallet size={15} className="text-blue-600" />
                     <span>Harcanabilir Vakıf Bütçesi Tutarı (TL)</span>
                   </label>
                   <input
                     type="number"
                     value={newMeetingData.budgetTL}
                     onChange={(e) => setNewMeetingData({ ...newMeetingData, budgetTL: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-secondary-50 font-black text-secondary-900"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-black text-slate-900"
                     placeholder="Örn: 250000"
                   />
-                  <p className="text-[11px] text-secondary-500 mt-1">Bu toplantı için ayrılan harcanabilir Vakıf kaynağı. Belirtilmezse sınırsız kabul edilir.</p>
+                  <p className="text-[11px] text-slate-500 mt-1">Bu toplantı için ayrılan harcanabilir Vakıf kaynağı. Belirtilmezse sınırsız kabul edilir.</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-secondary-700 mb-1">Açıklama (İsteğe Bağlı)</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Açıklama (İsteğe Bağlı)</label>
                   <textarea
                     value={newMeetingData.description}
                     onChange={(e) => setNewMeetingData({ ...newMeetingData, description: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-secondary-50 min-h-[70px]"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 min-h-[70px]"
                     placeholder="Toplantı içeriği vb."
                   />
                 </div>
               </div>
-              <div className="bg-secondary-50 px-6 py-4 flex justify-end gap-3 border-t border-secondary-100">
+              <div className="bg-slate-50 px-6 py-4 flex justify-end gap-3 border-t border-slate-100">
                 <button
                   onClick={() => setNewMeetingModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl font-bold text-secondary-600 bg-white border border-slate-300 hover:bg-secondary-50"
+                  className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50"
                 >
                   İptal
                 </button>
@@ -2923,7 +3116,7 @@ export default function Dashboard() {
                     setNewMeetingModalOpen(false);
                     setNewMeetingData({ meetingNo: '', date: '', description: '', budgetTL: '' });
                   }}
-                  className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-primary-900/20 active:scale-95 transition-all"
+                  className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-900/20 active:scale-95 transition-all"
                 >
                   Kaydet ve Oluştur
                 </button>
@@ -2960,57 +3153,57 @@ export default function Dashboard() {
 
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-secondary-700 mb-1">Toplantı No (Örn: 2026/01)</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Toplantı No (Örn: 2026/01)</label>
                   <input
                     type="text"
                     value={editMeetingData.meetingNo}
                     onChange={(e) => setEditMeetingData({ ...editMeetingData, meetingNo: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-secondary-50 font-bold"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-secondary-700 mb-1">Toplantı Tarihi</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Toplantı Tarihi</label>
                   <input
                     type="date"
                     value={editMeetingData.date}
                     onChange={(e) => setEditMeetingData({ ...editMeetingData, date: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-secondary-50 font-bold"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-secondary-700 mb-1 flex items-center gap-1">
-                    <Wallet size={15} className="text-primary-600" />
+                  <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <Wallet size={15} className="text-blue-600" />
                     <span>Harcanabilir Vakıf Bütçesi Tutarı (TL)</span>
                   </label>
                   <input
                     type="number"
                     value={editMeetingData.budgetTL}
                     onChange={(e) => setEditMeetingData({ ...editMeetingData, budgetTL: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-secondary-50 font-black text-secondary-900"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-black text-slate-900"
                     placeholder="Örn: 250000"
                   />
-                  <p className="text-[11px] text-secondary-500 mt-1">Toplantı boyunca onaylanacak veya planlanacak tüm yardım tutarlarının üst sınırı.</p>
+                  <p className="text-[11px] text-slate-500 mt-1">Toplantı boyunca onaylanacak veya planlanacak tüm yardım tutarlarının üst sınırı.</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-secondary-700 mb-1">Açıklama</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Açıklama</label>
                   <textarea
                     value={editMeetingData.description}
                     onChange={(e) => setEditMeetingData({ ...editMeetingData, description: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-secondary-50 min-h-[70px]"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 min-h-[70px]"
                   />
                 </div>
               </div>
 
-              <div className="bg-secondary-50 px-6 py-4 flex justify-end gap-3 border-t border-secondary-100">
+              <div className="bg-slate-50 px-6 py-4 flex justify-end gap-3 border-t border-slate-100">
                 <button
                   onClick={() => setEditMeetingModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl font-bold text-secondary-600 bg-white border border-slate-300 hover:bg-secondary-50"
+                  className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50"
                 >
                   İptal
                 </button>
                 <button
                   onClick={handleSaveEditMeeting}
-                  className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-primary-900/20 active:scale-95 transition-all"
+                  className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-900/20 active:scale-95 transition-all"
                 >
                   Guncelle ve Kaydet
                 </button>
@@ -3048,13 +3241,13 @@ export default function Dashboard() {
                 </button>
               </div>
               <div className="p-6 space-y-5">
-                <p className="text-sm text-secondary-600 font-medium">Hane inceleme kaydı oluşturmak için öncelikle bu kaydın hangi mütevelli heyeti toplantısında sunulacağını seçiniz.</p>
+                <p className="text-sm text-slate-600 font-medium">Hane inceleme kaydı oluşturmak için öncelikle bu kaydın hangi mütevelli heyeti toplantısında sunulacağını seçiniz.</p>
                 <div>
-                  <label className="block text-sm font-bold text-secondary-800 mb-2">Hedef Toplantı Seçimi</label>
+                  <label className="block text-sm font-bold text-slate-800 mb-2">Hedef Toplantı Seçimi</label>
                   <select
                     value={selectedMeetingId}
                     onChange={(e) => setSelectedMeetingId(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-xl border-2 border-secondary-200 focus:outline-none focus:border-blue-500 bg-secondary-50 font-semibold text-secondary-800 shadow-sm transition-colors"
+                    className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-blue-500 bg-slate-50 font-semibold text-slate-800 shadow-sm transition-colors"
                   >
                     <option value="" disabled>Toplantı Seçiniz...</option>
                     {meetings.map(m => (
@@ -3063,7 +3256,7 @@ export default function Dashboard() {
                   </select>
                 </div>
               </div>
-              <div className="bg-secondary-50 px-6 py-5 flex flex-col gap-3 border-t border-secondary-100">
+              <div className="bg-slate-50 px-6 py-5 flex flex-col gap-3 border-t border-slate-100">
                 <button
                   onClick={() => {
                     if (!selectedMeetingId) {
@@ -3073,14 +3266,14 @@ export default function Dashboard() {
                     router.push(`/assessment/new?meetingId=${selectedMeetingId}`);
                   }}
                   disabled={!selectedMeetingId}
-                  className="w-full px-5 py-3.5 rounded-xl font-extrabold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
+                  className="w-full px-5 py-3.5 rounded-xl font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
                 >
                   <Plus size={20} />
                   İnceleme Formunu Aç
                 </button>
                 <button
                   onClick={() => setNewAssessmentModalOpen(false)}
-                  className="w-full px-5 py-3 rounded-xl font-bold text-secondary-500 bg-white border border-secondary-200 hover:bg-secondary-50 hover:text-secondary-700 transition-colors"
+                  className="w-full px-5 py-3 rounded-xl font-bold text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-700 transition-colors"
                 >
                   Geri Dön
                 </button>
