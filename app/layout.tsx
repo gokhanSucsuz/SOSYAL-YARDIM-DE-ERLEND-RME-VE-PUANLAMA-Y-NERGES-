@@ -1,8 +1,6 @@
 import { type ReactNode } from "react";
 import "./globals.css";
 
-export const dynamic = "force-dynamic";
-
 export const viewport = {
   themeColor: "#1e293b",
   width: "device-width",

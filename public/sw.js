@@ -1,10 +1,14 @@
-const CACHE_NAME = 'sosyal-yardim-pwa-v3';
+const CACHE_NAME = 'sosyal-yardim-pwa-v4';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(['/', '/manifest.json', '/favicon.ico']);
+      // Intentionally not failing the install if a cache fails
+      cache.add('/').catch(() => console.log('Failed to cache /'));
+      cache.add('/manifest.json').catch(() => console.log('Failed to cache manifest'));
+      cache.add('/favicon.ico').catch(() => console.log('Failed to cache favicon'));
+      return Promise.resolve();
     })
   );
 });
@@ -32,7 +36,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Cache successful GET requests for offline usage
         if (response.status === 200 && url.protocol.startsWith('http')) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -45,7 +48,6 @@ self.addEventListener('fetch', (event) => {
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) return cachedResponse;
           
-          // Fallback to '/' for navigation requests
           if (event.request.mode === 'navigate') {
             return caches.match('/');
           }

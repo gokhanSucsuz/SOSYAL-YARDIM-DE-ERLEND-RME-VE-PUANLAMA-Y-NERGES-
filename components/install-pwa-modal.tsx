@@ -164,7 +164,19 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
 
         {/* Footer */}
         <div className="bg-slate-950 p-4 border-t border-slate-800 flex justify-between items-center text-xs">
-          <span className="text-slate-500">v1.2 Mobil PWA Sürümü</span>
+          <button
+            onClick={() => {
+              if (window.caches) {
+                caches.keys().then((names) => {
+                  for (let name of names) caches.delete(name);
+                });
+              }
+              window.location.reload();
+            }}
+            className="text-slate-500 hover:text-white underline decoration-slate-700 transition-colors"
+          >
+            Önbelleği Temizle
+          </button>
           <button
             onClick={onClose}
             className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold transition-colors"
