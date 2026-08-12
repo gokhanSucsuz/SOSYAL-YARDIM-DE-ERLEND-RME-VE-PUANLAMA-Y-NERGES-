@@ -297,6 +297,18 @@ export default function Dashboard() {
     }
   };
 
+
+  const handleDeleteMeeting = async (m: Meeting, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!confirm(`"${m.meetingNo}" numaralı toplantıyı İPTAL ETMEK ve SİLMEK istediğinize emin misiniz?\n\nBu işlem geri alınamaz.`)) return;
+    try {
+      await deleteMeeting(m.id);
+      setMeetings(prev => prev.filter(x => x.id !== m.id));
+    } catch (err) {
+      alert('Toplantı silinirken bir hata oluştu.');
+    }
+  };
+
   const handleOpenEditMeeting = (m: Meeting, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setEditingMeeting(m);
@@ -1559,16 +1571,31 @@ export default function Dashboard() {
 
                {/* Quick Edit Budget Button for Manager */}
                {user.role === 'manager' && filterMeetingId && (
-                 <button
-                   onClick={() => {
-                     const currentM = meetings.find(m => m.id === filterMeetingId);
-                     if (currentM) handleOpenEditMeeting(currentM);
-                   }}
-                   className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm shrink-0 self-start md:self-center"
-                 >
-                   <Pencil size={15} />
-                   <span>Toplantı Bütçesini Düzenle</span>
-                 </button>
+                 <div className="flex items-center gap-2 self-start md:self-center">
+                   <button
+                     onClick={() => {
+                       const currentM = meetings.find(m => m.id === filterMeetingId);
+                       if (currentM) handleOpenEditMeeting(currentM);
+                     }}
+                     className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm shrink-0"
+                   >
+                     <Pencil size={15} />
+                     <span>Bütçeyi Düzenle</span>
+                   </button>
+                   <button 
+                     onClick={(e) => {
+                       const currentM = meetings.find(m => m.id === filterMeetingId);
+                       if (currentM) {
+                         handleDeleteMeeting(currentM, e);
+                         setFilterMeetingId(null);
+                       }
+                     }}
+                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors shrink-0"
+                     title="Toplantıyı Sil"
+                   >
+                     <Trash2 size={15} />
+                   </button>
+                 </div>
                )}
              </div>
 
@@ -1736,7 +1763,7 @@ export default function Dashboard() {
                   className="bg-white border border-slate-300 text-secondary-800 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm max-w-[120px] truncate"
                 >
                   <option value="" disabled>Seçiniz</option>
-                  {meetings.map(m => (
+                  {meetings.filter(m => user?.role === 'manager' || !isMeetingLocked(m, user?.role)).map(m => (
                     <option key={m.id} value={m.id}>{m.meetingNo}</option>
                   ))}
                 </select>
@@ -2040,7 +2067,7 @@ export default function Dashboard() {
 
                       {user.role === 'personnel' && (
                         <>
-                          {!isApproved ? (
+                          {(!isApproved && (!meetings.find(m => m.id === item.meetingId) || !isMeetingLocked(meetings.find(m => m.id === item.meetingId), user?.role))) ? (
                             <Link
                               href={`/assessment/${item.id}/edit`}
                               className="inline-flex items-center gap-1 bg-secondary-100 hover:bg-slate-200 text-secondary-700 border border-slate-300 text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors"
@@ -2331,7 +2358,7 @@ export default function Dashboard() {
                             {/* Personnel Edit / Locked status indicator */}
                             {user.role === 'personnel' && (
                               <>
-                                {!isApproved ? (
+                                {(!isApproved && (!meetings.find(m => m.id === item.meetingId) || !isMeetingLocked(meetings.find(m => m.id === item.meetingId), user?.role))) ? (
                                   <Link
                                     href={`/assessment/${item.id}/edit`}
                                     className="inline-flex items-center gap-1 bg-secondary-100 hover:bg-slate-200 text-secondary-700 border border-slate-300 text-xs font-bold p-1.5 lg:px-2.5 lg:py-1.5 rounded-lg transition-colors"
@@ -2343,7 +2370,7 @@ export default function Dashboard() {
                                 ) : (
                                   <span 
                                     className="inline-flex items-center gap-1 bg-secondary-100 text-secondary-400 border border-secondary-200 text-[10px] font-bold p-1.5 lg:px-2 lg:py-1 rounded-md cursor-not-allowed"
-                                    title="Onaylı veriler düzenlenemez. İzin için müdürün onayı kaldırması gerekmektedir."
+                                    title="Onaylı veriler veya sonlandırılmış toplantı kayıtları düzenlenemez."
                                   >
                                     <Lock size={12} />
                                     <span className="hidden lg:inline">Kilitli</span>
@@ -3070,7 +3097,7 @@ export default function Dashboard() {
                     className="w-full px-4 py-3.5 rounded-xl border-2 border-secondary-200 focus:outline-none focus:border-blue-500 bg-secondary-50 font-semibold text-secondary-800 shadow-sm transition-colors"
                   >
                     <option value="" disabled>Toplantı Seçiniz...</option>
-                    {meetings.map(m => (
+                    {meetings.filter(m => user?.role === 'manager' || !isMeetingLocked(m, user?.role)).map(m => (
                       <option key={m.id} value={m.id}>{m.meetingNo} - {new Date(m.date).toLocaleDateString('tr-TR')} ({m.managerName})</option>
                     ))}
                   </select>

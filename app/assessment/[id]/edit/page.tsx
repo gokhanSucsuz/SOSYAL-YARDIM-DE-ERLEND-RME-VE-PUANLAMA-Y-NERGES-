@@ -10,7 +10,7 @@ import {
   ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2, Info,
   Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug
 } from 'lucide-react';
-import { saveAssessment, getAssessmentById, calculateAssistanceFromScore } from '@/lib/db';
+import { saveAssessment, getAssessmentById, calculateAssistanceFromScore, getAllMeetings, isMeetingLocked } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
@@ -116,6 +116,13 @@ export default function EditAssessmentWizard() {
         if (!id) return;
         const data = await getAssessmentById(id);
         if (data) {
+          const meetings = await getAllMeetings();
+          const meeting = meetings.find(m => m.id === data.meetingId);
+          if (meeting && isMeetingLocked(meeting, currentUser.role)) {
+            alert('Bu incelemenin bağlı olduğu toplantı sonlandırılmış veya kilitlenmiş olduğu için düzenleme yapılamaz.');
+            router.push('/');
+            return;
+          }
           if (data.status === 'approved') {
             alert('Onaylanmış inceleme kayıtlarında düzenleme yapılamaz. Düzenleme yapabilmek için öncelikle müdürün onayı kaldırması gerekmektedir.');
             router.push('/');
@@ -178,8 +185,8 @@ export default function EditAssessmentWizard() {
       scoreB += Number(state.b_ozelSebepPuan);
       disadvantageCount++;
     }
-    if (disadvantageCount >= 2) {
-      scoreB += 5; // Hanede birden fazla dezavantajlı durum varsa +5 puan bonus
+    if (state.b_cokluOzelDurumluBirey) {
+      scoreB += 5; // Hanede birden fazla özel durumlu birey varsa +5 puan bonus
     }
     scoreB = Math.min(scoreB, 30);
 
