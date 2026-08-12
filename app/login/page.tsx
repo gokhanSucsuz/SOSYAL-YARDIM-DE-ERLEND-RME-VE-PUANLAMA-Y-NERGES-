@@ -52,18 +52,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 relative p-4 selection:bg-red-600 selection:text-white">
-      {/* Mobile App Download Floating Button */}
-      <button 
-        onClick={handleInstallClick}
-        className="absolute top-4 right-4 sm:top-8 sm:right-8 bg-red-700 hover:bg-red-800 text-white px-4 py-2.5 rounded-full flex items-center gap-2 shadow-lg shadow-red-900/20 transition-all font-bold text-xs sm:text-sm active:scale-95 z-10 border border-red-500"
-      >
-        <Smartphone size={18} />
-        <span className="hidden sm:inline">Mobil Sürümü İndir</span>
-        <span className="sm:hidden">Uygulamayı Yükle</span>
-        <Download size={14} className="ml-1 opacity-80" />
-      </button>
-
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 relative p-4 py-12 selection:bg-red-600 selection:text-white">
+      
       <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-red-950/10 border border-slate-200 w-full max-w-md relative overflow-hidden text-slate-900">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-700 via-red-600 to-red-800"></div>
         
@@ -111,6 +101,43 @@ export default function Login() {
             </div>
           </button>
         </div>
+      </div>
+
+      {/* Detailed App Install Section */}
+      <div className="bg-white p-6 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 w-full max-w-md mt-6 relative overflow-hidden text-slate-900">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-blue-100 text-blue-700 p-2.5 rounded-xl">
+            <Smartphone size={22} />
+          </div>
+          <h2 className="font-bold text-slate-800 text-lg">Mobil Uygulamayı Yükle</h2>
+        </div>
+        
+        <p className="text-sm text-slate-600 mb-5 leading-relaxed font-medium">
+          Bu sistemi telefonunuza veya tabletinize bir mobil uygulama (PWA) olarak yükleyebilirsiniz. Kurulum tamamlandığında ana ekranınıza uygulamanın ikonu eklenir ve tarayıcı sekmelerinden bağımsız, tam ekran, daha hızlı bir şekilde çalışır.
+        </p>
+
+        <div className="space-y-3 mb-6">
+          <div className="flex gap-3 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+            <div className="font-bold text-slate-800 shrink-0 bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-xs">1</div>
+            <div>
+              Aşağıdaki <strong className="text-slate-800">&quot;Hemen Yükle&quot;</strong> butonuna basın veya tarayıcınızın sağ üst köşesindeki üç nokta (⋮) menüsünden <strong className="text-slate-800">&quot;Ana Ekrana Ekle&quot;</strong> (veya Uygulamayı Yükle) seçeneğini seçin.
+            </div>
+          </div>
+          <div className="flex gap-3 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+            <div className="font-bold text-slate-800 shrink-0 bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-xs">2</div>
+            <div>
+              Ekrana gelen küçük onay penceresinde <strong className="text-slate-800">&quot;Yükle&quot;</strong> butonuna dokunun. Kurulum saniyeler içinde tamamlanacaktır.
+            </div>
+          </div>
+        </div>
+
+        <button 
+          onClick={handleInstallClick}
+          className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl font-bold transition-all active:scale-[0.98] shadow-md shadow-blue-900/10"
+        >
+          <Download size={20} />
+          Hemen Yükle
+        </button>
       </div>
 
       <InstallPwaModal 

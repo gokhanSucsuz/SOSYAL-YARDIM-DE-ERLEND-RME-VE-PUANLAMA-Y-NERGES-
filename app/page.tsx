@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { InstallPwaModal } from '@/components/install-pwa-modal';
+
 import { LogoImage } from '@/components/logo-image';
 import { ManagerStatsView } from '@/components/manager-stats-view';
 
@@ -46,39 +46,11 @@ export default function Dashboard() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // PWA Install State
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
-
   useEffect(() => {
-    const handleBeforeInstall = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+    // Add any necessary effect logic here
   }, []);
 
-  const handleInstallClick = () => {
-    if (deferredPrompt) {
-      try {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult: any) => {
-          if (choiceResult.outcome === 'accepted') {
-            setDeferredPrompt(null);
-          } else {
-            setIsInstallModalOpen(true);
-          }
-        }).catch(() => {
-          setIsInstallModalOpen(true);
-        });
-      } catch (err) {
-        setIsInstallModalOpen(true);
-      }
-    } else {
-      setIsInstallModalOpen(true);
-    }
-  };
+
 
   // New & Edit Meeting Modal State
   const [newAssessmentModalOpen, setNewAssessmentModalOpen] = useState(false);
@@ -1120,15 +1092,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between sm:justify-end w-full sm:w-auto gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-red-600/50">
-          <button
-            onClick={handleInstallClick}
-            className="flex items-center gap-1.5 bg-white text-red-800 hover:bg-red-50 active:scale-95 text-xs font-black px-3.5 py-2 rounded-xl transition-all shadow-md border border-white/80"
-            title="Mobil Uygulama Olarak Telefonunuza Yükleyin"
-          >
-            <Smartphone size={16} className="shrink-0 text-red-700" />
-            <span>Mobil Uygulamayı İndir</span>
-            <Download size={13} className="opacity-80 text-red-700" />
-          </button>
+
           {user?.role === 'manager' && (
             <Link
               href="/settings"
@@ -1173,29 +1137,7 @@ export default function Dashboard() {
         {/* Top View Switcher & Mobile App Download Banner */}
         <div className="space-y-3">
           {/* Prominent Mobile App Install Notification Bar */}
-          <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-3.5 sm:p-4 rounded-2xl border border-blue-800/50 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-blue-600/30 text-blue-400 rounded-xl shrink-0 border border-blue-500/30">
-                <Smartphone size={22} className="animate-bounce" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-xs sm:text-sm text-blue-100">📲 T.C. Edirne SYDV Mobil Uygulama Modu</span>
-                  <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/30">PWA Destekli</span>
-                </div>
-                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">
-                  Sistemi telefonunuzun ana ekranına yükleyerek sahadayken uygulama mantığında internetli/internetsiz hızlıca kullanabilirsiniz.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleInstallClick}
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-2.5 rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-900/30 shrink-0 transition-all active:scale-95 border border-blue-400/30 cursor-pointer"
-            >
-              <Download size={16} />
-              <span>Telefona Yükle / Rehber</span>
-            </button>
-          </div>
+
 
           {/* Primary View Segmented Navigation Bar */}
           <div className="bg-slate-200/80 p-1.5 rounded-2xl flex flex-wrap sm:flex-nowrap items-center gap-2 border border-slate-300/70 shadow-xs">
@@ -3300,11 +3242,7 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
-      <InstallPwaModal 
-        isOpen={isInstallModalOpen} 
-        onClose={() => setIsInstallModalOpen(false)} 
-        deferredPrompt={deferredPrompt} 
-      />
+
 
     </div>
   );
