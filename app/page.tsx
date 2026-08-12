@@ -1261,15 +1261,6 @@ export default function Dashboard() {
                   <RotateCcw size={18} />
                   <span>Tüm Onayları Geri Al ({approvedCount})</span>
                 </button>
-
-                {/* Print PDF Button */}
-                <button
-                  onClick={handlePrintApprovedList}
-                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-md shadow-emerald-950/20 touch-manipulation"
-                >
-                  <Printer size={18} />
-                  <span>Onaylı Liste PDF ({approvedCount})</span>
-                </button>
               </>
             )}
 

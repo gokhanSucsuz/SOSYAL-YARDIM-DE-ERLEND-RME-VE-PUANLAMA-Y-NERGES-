@@ -749,7 +749,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
             </div>
           </div>
 
-          {/* Scope Selector and Export Controls */}
+          {/* Scope Selector only */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="bg-slate-800/90 border border-slate-700 rounded-2xl p-1.5 flex items-center gap-2 shadow-inner">
               <Filter size={16} className="text-blue-400 ml-2 shrink-0" />
@@ -766,34 +766,6 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
                 ))}
               </select>
             </div>
-
-            <button
-              onClick={handleExportExcelReport}
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition-all shadow-md border border-emerald-400/30"
-              title="Resmi İstatistik Excel Raporu İndir (.xlsx)"
-            >
-              <FileSpreadsheet size={16} />
-              <span className="hidden sm:inline">Excel Raporu</span>
-            </button>
-
-            <button
-              onClick={handleExportPDFReport}
-              disabled={isGeneratingPDF}
-              className={`flex items-center gap-2 bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition-all shadow-md border border-red-400/30 ${isGeneratingPDF ? 'opacity-70 cursor-wait' : ''}`}
-              title="İstatistik Raporunu PDF Olarak İndir"
-            >
-              {isGeneratingPDF ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Download size={16} />}
-              <span className="hidden sm:inline">{isGeneratingPDF ? 'Oluşturuluyor...' : 'PDF İndir'}</span>
-            </button>
-
-            <button
-              onClick={() => window.print()}
-              className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition-all shadow-md border border-slate-500/30"
-              title="Raporu Yazdır"
-            >
-              <Printer size={16} />
-              <span className="hidden sm:inline">Yazdır</span>
-            </button>
           </div>
         </div>
       </div>
@@ -888,10 +860,45 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
                 onClick={() => { setStartDate(''); setEndDate(''); }}
                 className="text-xs font-extrabold text-red-600 hover:text-red-700 underline cursor-pointer"
               >
-                Filtreyi Temizle
+                Temizle
               </button>
             )}
           </div>
+        </div>
+
+        {/* Report Export Action Buttons Based on Filter */}
+        <div className="flex flex-wrap items-center justify-end gap-3 pt-3 border-t border-slate-100 mt-2">
+          <div className="text-xs font-semibold text-slate-500 mr-auto flex items-center gap-2 hidden md:flex">
+            <TrendingUp size={16} /> <span>Filtrelenen {filteredAssessments.length} kayıt üzerinden rapor alınacaktır.</span>
+          </div>
+          
+          <button
+            onClick={handleExportExcelReport}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-md border border-emerald-400/30"
+            title="Resmi İstatistik Excel Raporu İndir (.xlsx)"
+          >
+            <FileSpreadsheet size={16} />
+            <span>Excel&apos;e Aktar</span>
+          </button>
+
+          <button
+            onClick={handleExportPDFReport}
+            disabled={isGeneratingPDF}
+            className={`flex items-center gap-2 bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-md border border-red-400/30 ${isGeneratingPDF ? 'opacity-70 cursor-wait' : ''}`}
+            title="İstatistik Raporunu PDF Olarak İndir"
+          >
+            {isGeneratingPDF ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Download size={16} />}
+            <span>{isGeneratingPDF ? 'Oluşturuluyor...' : 'PDF İndir'}</span>
+          </button>
+
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-md border border-slate-500/30"
+            title="Raporu Yazdır"
+          >
+            <Printer size={16} />
+            <span>Yazdır</span>
+          </button>
         </div>
       </div>
 
