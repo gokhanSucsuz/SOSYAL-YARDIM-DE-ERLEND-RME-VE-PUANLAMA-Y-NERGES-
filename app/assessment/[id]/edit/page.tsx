@@ -508,7 +508,7 @@ export default function EditAssessmentWizard() {
                   <h2 className="text-2xl font-bold text-slate-800">B. Dezavantajlı Bireyler</h2>
                   <p className="text-slate-500 mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
                 </div>
-                <SectionCard title="Hanehalkı Özel Durumları" maxScore={35} currentScore={calc.scoreB} hideScore={true}>
+                <SectionCard title="Hanehalkı Özel Durumları" maxScore={30} currentScore={calc.scoreB} hideScore={true}>
                   
 
                   
@@ -598,7 +598,7 @@ export default function EditAssessmentWizard() {
                   <h2 className="text-2xl font-bold text-slate-800">D. Barınma Durumu</h2>
                   <p className="text-slate-500 mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
                 </div>
-                <SectionCard title="Barınma Şartları" maxScore={15} currentScore={calc.scoreD} hideScore={true}>
+                <SectionCard title="Barınma Şartları" maxScore={10} currentScore={calc.scoreD} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <CheckboxItem label="Evsiz / Barınaksız / Geçici Sığınma" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={10} />
                     <CheckboxItem label="Afetzede (Yangın / Deprem / Su Baskını)" checked={state.d_afetzede} onChange={(v:any) => set('d_afetzede', v)} points={10} />
@@ -655,9 +655,7 @@ export default function EditAssessmentWizard() {
                       label="Bulaşık Makinesi" 
                       icon={Sparkles} 
                       value={state.appliance_bulasik} 
-                      onChange={(v: any) => set('appliance_bulasik', v)} 
-                      pointsYok={1} 
-                      pointsEski={0.5} 
+                      onChange={(v: any) => set('appliance_bulasik', v)} pointsYok={0} pointsEski={0} 
                     />
                     <ApplianceStatusItem 
                       label="Televizyon (TV)" 
