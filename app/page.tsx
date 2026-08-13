@@ -729,19 +729,23 @@ export default function Dashboard() {
   const getDisadvantagesList = (state: any) => {
     if (!state) return [];
     const list = [];
-    if (state.b_agirEngelli) list.push("Ağır engelli (%70+) (+15 Pn)");
-    if (state.b_engelli) list.push("Engelli (%40-69) (+10 Pn)");
-    if (state.b_evdeBakim) list.push("Evde bakım hastası (+10 Pn)");
-    if (state.b_kanser) list.push("Kanser tedavisi gören (+10 Pn)");
-    if (state.b_kronik) list.push("Kronik hastalık (+6 Pn)");
-    if (state.b_yasliYalniz) list.push("65 yaş üstü yalnız yaşayan (+8 Pn)");
-    if (state.b_sehitYakini) list.push("Şehit yakını (+8 Pn)");
-    if (state.b_gazi) list.push("Gazi (+8 Pn)");
-    if (state.b_yetim) list.push("Yetim / Öksüz çocuk (+5 Pn)");
-    if (state.b_koruyucuAile) list.push("Koruyucu aile (+5 Pn)");
-    if (state.b_yabanciUyruklu) list.push("Yabancı uyruklu / Sığınmacı (+3 Pn)");
-    if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
-      const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : "";
+    if (state.b_agirEngelli) list.push('Ağır engelli (%70+) (+15 Pn)');
+    if (state.b_engelli) list.push('Engelli (%40-69) (+10 Pn)');
+    if (state.b_dusukEngelli) list.push('Hafif Engelli (%20-39) (+3 Pn)');
+    if (state.b_evdeBakim) list.push('Evde bakım hastası (+10 Pn)');
+    if (state.b_kanser) list.push('Kanser tedavisi gören (+10 Pn)');
+    if (state.b_kronik) list.push('Kronik hastalık (+6 Pn)');
+    if (state.b_yasliYalniz) list.push('65 yaş üstü yalnız yaşayan (+8 Pn)');
+    if (state.b_sehitYakini) list.push('Şehit yakını (+8 Pn)');
+    if (state.b_gazi) list.push('Gazi (+8 Pn)');
+    if (state.b_yetim) list.push('Yetim / Öksüz çocuk (+5 Pn)');
+    if (state.b_koruyucuAile) list.push('Koruyucu aile (+5 Pn)');
+    if (state.b_yabanciUyruklu) list.push('Yabancı uyruklu / Sığınmacı (+3 Pn)');
+    if (state.b_ozelSebepPuanBekliyor) {
+      const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
+      list.push(`Özel Sebep${reasonText} (Ümüdür Onayı Bekleniyor)`);
+    } else if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
+      const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
       list.push(`Özel Sebep${reasonText} (+${state.b_ozelSebepPuan} Pn)`);
     }
     return list;
@@ -750,8 +754,8 @@ export default function Dashboard() {
   const getEducationList = (state: any) => {
     if (!state) return [];
     const list = [];
-    if (state.c_0_6yas > 0) list.push(`0-6 Yaş: ${state.c_0_6yas} çck (+${state.c_0_6yas * 2} Pn)`);
-    if (state.c_ilkokul > 0) list.push(`İlkokul: ${state.c_ilkokul} öğr (+${state.c_ilkokul * 1} Pn)`);
+    if (state.c_0_6yas > 0) list.push(`0-6 Yaş (Bakım): ${state.c_0_6yas} çck (+${state.c_0_6yas * 2} Pn)`);
+    if (state.c_ilkokul > 0) list.push(`İlkokul: ${state.c_ilkokul} öğr (+${state.c_ilkokul * 2} Pn)`);
     if (state.c_ortaokul > 0) list.push(`Ortaokul: ${state.c_ortaokul} öğr (+${state.c_ortaokul * 2} Pn)`);
     if (state.c_lise > 0) list.push(`Lise: ${state.c_lise} öğr (+${state.c_lise * 3} Pn)`);
     if (state.c_meslekiEgitim > 0) list.push(`Mesleki Eğt: ${state.c_meslekiEgitim} öğr (+${state.c_meslekiEgitim * 3} Pn)`);
@@ -774,30 +778,45 @@ export default function Dashboard() {
   const getFragilityList = (state: any) => {
     if (!state) return [];
     const list = [];
-    if (state.e_siddetMagduru) list.push("Şiddet mağduru (+6 Pn)");
-    if (state.e_kadinReis) list.push("Kadın hane reisi (+5 Pn)");
-    if (state.e_esiCezaevinde) list.push("Eşi cezaevinde (+5 Pn)");
-    if (state.e_afetGelirKaybi) list.push("Afet gelir kaybı (+5 Pn)");
-    if (state.e_bosanmis) list.push("Boşanmış (+3 Pn)");
-    if (state.e_dul) list.push("Dul (+3 Pn)");
+    if (state.e_siddetMagduru) list.push('Şiddet mağduru (+6 Pn)');
+    if (state.e_kadinReis) list.push('Kadın hane reisi (+5 Pn)');
+    if (state.e_esiCezaevinde) list.push('Eşi cezaevinde (+5 Pn)');
+    if (state.e_afetGelirKaybi) list.push('Afet gelir kaybı (+5 Pn)');
+    if (state.e_maddeBagimliligi) list.push('Madde bağımlılığı (+5 Pn)');
+    if (state.e_sosyalGuvencesiz) list.push('Sosyal güvencesiz (+5 Pn)');
+    if (state.e_icraBorcBaskisi) list.push('Borç/icra baskısı (+4 Pn)');
+    if (state.e_gebelikBebek) list.push('Bakıma muhtaç bebek/gebelik (+4 Pn)');
+    if (state.e_bosanmis) list.push('Boşanmış (+3 Pn)');
+    if (state.e_dul) list.push('Dul (+3 Pn)');
+    if (state.e_hukumluYakin) list.push('Eski hükümlü (+3 Pn)');
+    // OECD 4 kademeli hane büyüklüğü skalası
     const hhSize = state.householdSize || 1;
-    if (hhSize >= 5) list.push(`Hane Nüfusu ${hhSize} kişi (+3 Pn)`);
-    else if (hhSize >= 1) list.push(`Hane Nüfusu ${hhSize} kişi (+1 Pn)`);
+    if (hhSize >= 7) list.push(`Hane Nüfusu ${hhSize} kişi (+6 Pn)`);
+    else if (hhSize >= 5) list.push(`Hane Nüfusu ${hhSize} kişi (+4 Pn)`);
+    else if (hhSize >= 3) list.push(`Hane Nüfusu ${hhSize} kişi (+2 Pn)`);
+    else list.push(`Hane Nüfusu ${hhSize} kişi (+1 Pn)`);
+    // Ceza puanları
+    if (state.a_aracSahibi) list.push('Araç Tescil Tespit (-15 Pn)');
+    if (state.a_birdenFazlaTasinmaz) list.push('Birden Fazla Taşınmaz (-20 Pn)');
+    if (state.a_aktifSgkPrim) list.push('Aktif SGK Prim (A bölümü sıfır)');
+    if (state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0) {
+      list.push(`Son 3 Ay Mükerrer Yardım: ${state.a_son3AyYardimKisi} kişi (-${state.a_son3AyYardimKisi * 5} Pn)`);
+    }
     return list;
   };
 
   const getAppliancesText = (state: any) => {
-    if (!state) return "Eşya bilgisi girilmedi";
+    if (!state) return 'Eşya bilgisi girilmedi';
     const items = [
       { name: 'Buzdolabı', val: state.appliance_buzdolabi },
       { name: 'Çamaşır M.', val: state.appliance_camasir },
       { name: 'Fırın', val: state.appliance_firin },
-      { name: 'Bulaşık M.', val: state.appliance_bulasik },
+      { name: 'Bulaşık M. (Konfor)', val: state.appliance_bulasik },
       { name: 'TV', val: state.appliance_tv },
       { name: 'Telefon', val: state.appliance_telefon },
       { name: 'Klima/Isıtıcı', val: state.appliance_klima },
     ];
-    return items.map(i => `${i.name}: ${i.val === 'yok' ? 'YOK' : (i.val === 'eski' ? 'ESKİ' : 'TAM')}`).join(" • ");
+    return items.map(i => `${i.name}: ${i.val === 'yok' ? 'YOK' : (i.val === 'eski' ? 'ESKİ' : 'TAM')}`).join(' • ');
   };
 
   const handlePrintCurrentList = () => {

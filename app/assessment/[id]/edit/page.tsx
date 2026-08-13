@@ -183,25 +183,24 @@ export default function EditAssessmentWizard() {
     if (state.b_yetim) { scoreB += 5; disadvantageCount++; }
     if (state.b_koruyucuAile) { scoreB += 5; disadvantageCount++; }
     if (state.b_yabanciUyruklu) { scoreB += 3; disadvantageCount++; }
+    if (state.b_dusukEngelli) { scoreB += 3; disadvantageCount++; }  // YENİ: %20-39
     if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
       scoreB += Number(state.b_ozelSebepPuan);
       disadvantageCount++;
     }
-    if (state.b_cokluOzelDurumluBirey) {
-      scoreB += 5; // Hanede birden fazla özel durumlu birey varsa +5 puan bonus
-    }
+    if (state.b_cokluOzelDurumluBirey) scoreB += 5;
     scoreB = Math.min(scoreB, 30);
 
-    // Section C (Eşit +3 Puan Uygulaması)
+    // Section C: Kademeli Ağırlıklı Eğitim Puanı (Maks 15 Puan)
     let scoreC = 0;
-    scoreC += state.c_0_6yas * 3;
-    scoreC += state.c_ilkokul * 3;
-    scoreC += state.c_ortaokul * 3;
-    scoreC += state.c_lise * 3;
-    scoreC += (state.c_meslekiEgitim || 0) * 3;
-    scoreC += (state.c_acikLise || 0) * 3;
-    scoreC += state.c_uni * 3;
-    scoreC = Math.min(scoreC, 10);
+    scoreC += (state.c_0_6yas || 0) * 2;       // Bakım yükü
+    scoreC += (state.c_ilkokul || 0) * 2;       // Temel eğitim
+    scoreC += (state.c_ortaokul || 0) * 2;      // Temel eğitim
+    scoreC += (state.c_lise || 0) * 3;          // Orta eğitim
+    scoreC += (state.c_meslekiEgitim || 0) * 3; // Mesleki eğitim
+    scoreC += (state.c_acikLise || 0) * 3;      // Açık lise
+    scoreC += (state.c_uni || 0) * 4;           // Yükseköğretim
+    scoreC = Math.min(scoreC, 15);
 
     // Section D (Genişletilmiş Barınma Durumu)
     let scoreD = 0;
@@ -228,23 +227,16 @@ export default function EditAssessmentWizard() {
 
     if (state.appliance_firin === 'yok') rawScoreE += 2;
     else if (state.appliance_firin === 'eski') rawScoreE += 1;
-
-    if (state.appliance_bulasik === 'yok') rawScoreE += 1;
-    else if (state.appliance_bulasik === 'eski') rawScoreE += 0.5;
-
+    // Bulaşık makinesi: 0 puan (lüks eşya - çıkarıldı - TÜİK/OECD)
     if (state.appliance_tv === 'yok') rawScoreE += 1;
     else if (state.appliance_tv === 'eski') rawScoreE += 0.5;
-
     if (state.appliance_telefon === 'yok') rawScoreE += 1;
     else if (state.appliance_telefon === 'eski') rawScoreE += 0.5;
-
     if (state.appliance_klima === 'yok') rawScoreE += 1;
     else if (state.appliance_klima === 'eski') rawScoreE += 0.5;
-
     if (state.appliance_diger === 'yok') rawScoreE += 1;
     else if (state.appliance_diger === 'eski') rawScoreE += 0.5;
-
-    let scoreE = Math.min(10, Math.round(rawScoreE));
+    const scoreE = Math.min(10, Math.round(rawScoreE));
 
     // Section F: Sosyal Kırılganlık ve Nüfus (Maksimum 30 Puan)
     let scoreF = 0;
@@ -260,33 +252,46 @@ export default function EditAssessmentWizard() {
     if (state.e_dul) scoreF += 3;
     if (state.e_hukumluYakin) scoreF += 3;
 
+    // OECD 4 kademeli hane büyüklüğü skalası
     const hhSize = state.householdSize || 1;
-    if (hhSize >= 5) {
-      scoreF += 3;
-    } else if (hhSize >= 1) {
-      scoreF += 1;
-    }
-
+    if (hhSize >= 7) scoreF += 6;
+    else if (hhSize >= 5) scoreF += 4;
+    else if (hhSize >= 3) scoreF += 2;
+    else scoreF += 1;
     scoreF = Math.min(scoreF, 30);
 
     // Section G: Sosyal İnceleme Kanaati (Maks 20 Puan)
-    let scoreG = state.f_yasamKosullari + state.f_aciliyet + state.f_sosyalDestek + state.f_risk;
-    scoreG = Math.min(scoreG, 20);
+    const scoreG = Math.min(
+      (state.f_yasamKosullari || 0) + (state.f_aciliyet || 0) + (state.f_sosyalDestek || 0) + (state.f_risk || 0),
+      20
+    );
 
-    let totalScore = state.falseStatement ? 0 : (scoreA + scoreB + scoreC + scoreD + scoreE + scoreF + scoreG);
+    // CEZA PUANLARI (Varlık Testi)
+    let scorePenalty = 0;
+    if (state.a_aracSahibi) scorePenalty += 15;
+    if (state.a_birdenFazlaTasinmaz) scorePenalty += 20;
+    if (state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0) {
+      scorePenalty += (state.a_son3AyYardimKisi || 0) * 5;
+    }
+    // SGK zorlaması
+    const effectiveScoreA = state.a_aktifSgkPrim ? 0 : scoreA;
+
+    const rawTotal = effectiveScoreA + scoreB + scoreC + scoreD + scoreE + scoreF + scoreG;
+    const totalScore = state.falseStatement ? 0 : Math.max(0, rawTotal - scorePenalty);
     const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement);
 
-    const priorities = [];
-    if (state.b_agirEngelli) priorities.push("Ağır engelli bulunan hane");
-    if (state.b_yetim) priorities.push("Yetim çocuk bulunan hane");
-    if (state.b_sehitYakini || state.b_gazi) priorities.push("Şehit / Gazi Ailesi");
-    if (state.d_afetzede || state.e_afetGelirKaybi) priorities.push("Afet Mağduru");
-    if (state.b_yasliYalniz) priorities.push("Yaşlı ve Yalnız Yaşayan");
+    const priorities: string[] = [];
+    if (state.b_agirEngelli) priorities.push('Ağır engelli bulunan hane');
+    if (state.b_yetim) priorities.push('Yetim çocuk bulunan hane');
+    if (state.b_sehitYakini || state.b_gazi) priorities.push('Şehit / Gazi Ailesi');
+    if (state.d_afetzede || state.e_afetGelirKaybi) priorities.push('Afet Mağduru');
+    if (state.b_yasliYalniz) priorities.push('Yaşlı ve Yalnız Yaşayan');
+    if (state.a_aracSahibi || state.a_birdenFazlaTasinmaz) priorities.push('Varlık Testi: Ceza Puanı Uygulandı');
     if (state.appliance_buzdolabi === 'yok' || state.appliance_camasir === 'yok') {
-      priorities.push("Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)");
+      priorities.push('Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)');
     }
 
-    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scoreG, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
+    return { scoreA: effectiveScoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scoreG, scorePenalty, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
   }, [state]);
 
   const stepsCount = 10;

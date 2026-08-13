@@ -10,7 +10,7 @@ import {
   ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2, Info,
   Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug, User, MapPin, Phone, Hash, Users, Activity
 } from 'lucide-react';
-import { saveAssessment, calculateAssistanceFromScore } from '@/lib/db';
+import { saveAssessment, getAllAssessments, calculateAssistanceFromScore } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
@@ -22,6 +22,8 @@ function NewAssessmentContent() {
   
   const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(0);
+  const [allAssessments, setAllAssessments] = useState<any[]>([]);
+  const [tcHistory, setTcHistory] = useState<any[]>([]);
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
@@ -30,6 +32,8 @@ function NewAssessmentContent() {
     } else {
       setUser(JSON.parse(userStr));
     }
+    // TC geçmiş araması için tüm kayıtları yükle
+    getAllAssessments().then(setAllAssessments).catch(() => {});
   }, [router]);
 
   const [state, setState] = useState({
@@ -56,8 +60,10 @@ function NewAssessmentContent() {
     b_yetim: false,
     b_koruyucuAile: false,
     b_yabanciUyruklu: false,
+    b_dusukEngelli: false,         // YENİ: %20-39 engel oranı (+3 puan)
     b_ozelSebepMetin: "",
-    b_ozelSebepPuan: 0,
+    b_ozelSebepPuan: 0,            // Müdür onayıyla aktif; personel giremez
+    b_ozelSebepPuanBekliyor: false, // Personel metin girdi, müdür onayı bekliyor
     b_cokluOzelDurumluBirey: false,
     // C
     c_0_6yas: 0,
@@ -105,6 +111,13 @@ function NewAssessmentContent() {
     f_aciliyet: 0,
     f_sosyalDestek: 0,
     f_risk: 0,
+    // Varlık Testi (Sistem Kontrolleri Adımı)
+    a_aracSahibi: false,           // Araç tescil kaydı var → -15 puan
+    a_birdenFazlaTasinmaz: false,  // 2+ taşınmaz kaydı → -20 puan
+    a_aktifSgkPrim: false,         // Aktif SGK prim ödemesi → A bölümü zorla 0
+    // Yardım Yığılması (Mükerrerlik)
+    a_son3AyYardimAldi: false,     // Son 3 ayda vakıftan yardım aldı mı?
+    a_son3AyYardimKisi: 0,         // Varsa kaç kişi? (Her kişi -5 puan)
     // Check
     systemChecksDone: false,
     falseStatement: false,
@@ -112,18 +125,30 @@ function NewAssessmentContent() {
 
   const set = (key: string, value: any) => setState(s => ({ ...s, [key]: value }));
 
+  // TC geçmiş araması
+  useEffect(() => {
+    if (state.applicantTc.length === 11 && allAssessments.length > 0) {
+      const found = allAssessments.filter(a => a.applicantTc === state.applicantTc);
+      setTcHistory(found);
+    } else {
+      setTcHistory([]);
+    }
+  }, [state.applicantTc, allAssessments]);
+
   const calc = useMemo(() => {
     // Section A: Ekonomik Durum (Maksimum 40 Puan)
-    let scoreA = state.income;
-    if (state.noWorker) scoreA += 10;
-    if (state.noRegularIncome) scoreA += 5;
-    if (state.noSgk) scoreA += 5;
-    scoreA = Math.max(0, Math.min(scoreA, 40));
+    // Aktif SGK prim ödemesi varsa gelir skoru zorla 0 (muhtaçlık sınırı üzeri sayılır)
+    let rawScoreA = state.income;
+    if (state.noWorker) rawScoreA += 10;
+    if (state.noRegularIncome) rawScoreA += 5;
+    if (state.noSgk) rawScoreA += 5;
+    const scoreA = state.a_aktifSgkPrim ? 0 : Math.max(0, Math.min(rawScoreA, 40));
 
     // Section B: Dezavantajlı Bireyler (Maksimum 30 Puan)
     let scoreB = 0;
     if (state.b_agirEngelli) scoreB += 15;
     if (state.b_engelli) scoreB += 10;
+    if (state.b_dusukEngelli) scoreB += 3;    // YENİ: %20-39 engel oranı
     if (state.b_evdeBakim) scoreB += 10;
     if (state.b_kanser) scoreB += 10;
     if (state.b_kronik) scoreB += 6;
@@ -133,40 +158,34 @@ function NewAssessmentContent() {
     if (state.b_yetim) scoreB += 5;
     if (state.b_koruyucuAile) scoreB += 5;
     if (state.b_yabanciUyruklu) scoreB += 3;
-    if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) scoreB += Number(state.b_ozelSebepPuan);
-
-    // Birden fazla dezavantajlı birey/durum mevcudiyeti ekstra puan bonusu (+5 Ek Puan)
-    const disadvantageCount = [
-      state.b_agirEngelli,
-      state.b_engelli,
-      state.b_evdeBakim,
-      state.b_kanser,
-      state.b_kronik,
-      state.b_yasliYalniz,
-      state.b_sehitYakini,
-      state.b_gazi,
-      state.b_yetim,
-      state.b_koruyucuAile,
-      state.b_yabanciUyruklu
-    ].filter(Boolean).length;
-
-    if (state.b_cokluOzelDurumluBirey) {
-      scoreB += 5;
+    // Özel sebep: Yalnızca müdür onayladıysa (b_ozelSebepPuanBekliyor=false) puana eklenir
+    if (!state.b_ozelSebepPuanBekliyor && state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
+      scoreB += Number(state.b_ozelSebepPuan);
     }
+    if (state.b_cokluOzelDurumluBirey) scoreB += 5;
     scoreB = Math.min(scoreB, 30);
 
-    // Section C: Çocuk ve Eğitim (Tüm Eğitim Kademeleri Eşit +3 Puan / Öğrenci)
-    let scoreC = 0;
-    scoreC += (state.c_0_6yas || 0) * 3;
-    scoreC += (state.c_ilkokul || 0) * 3;
-    scoreC += (state.c_ortaokul || 0) * 3;
-    scoreC += (state.c_lise || 0) * 3;
-    scoreC += (state.c_meslekiEgitim || 0) * 3;
-    scoreC += (state.c_acikLise || 0) * 3;
-    scoreC += (state.c_uni || 0) * 3;
-    scoreC = Math.min(scoreC, 10);
+    const disadvantageCount = [
+      state.b_agirEngelli, state.b_engelli, state.b_dusukEngelli,
+      state.b_evdeBakim, state.b_kanser, state.b_kronik,
+      state.b_yasliYalniz, state.b_sehitYakini, state.b_gazi,
+      state.b_yetim, state.b_koruyucuAile, state.b_yabanciUyruklu
+    ].filter(Boolean).length;
 
-    // Section D: Barınma Durumu (Genişletilmiş Sosyal Kriterler - Maksimum 10 Puan)
+    // Section C: Çocuk ve Eğitim — Kademeli Ağırlıklı (Maksimum 15 Puan)
+    // Literatür: Şartlı Eğitim Yardımı ve Dünya Bankası raporlarına göre
+    // yükseköğretim daha yüksek maliyet taşır.
+    let scoreC = 0;
+    scoreC += (state.c_0_6yas || 0) * 2;        // Bakım yükü
+    scoreC += (state.c_ilkokul || 0) * 2;        // Temel eğitim
+    scoreC += (state.c_ortaokul || 0) * 2;       // Temel eğitim
+    scoreC += (state.c_lise || 0) * 3;           // Orta eğitim (artan maliyet)
+    scoreC += (state.c_meslekiEgitim || 0) * 3;  // Mesleki eğitim
+    scoreC += (state.c_acikLise || 0) * 3;       // Açık lise
+    scoreC += (state.c_uni || 0) * 4;            // Yükseköğretim (en yüksek maliyet)
+    scoreC = Math.min(scoreC, 15);
+
+    // Section D: Barınma Durumu (Maksimum 10 Puan)
     let scoreD = 0;
     if (state.d_evsiz) scoreD += 10;
     if (state.d_afetzede) scoreD += 10;
@@ -181,35 +200,28 @@ function NewAssessmentContent() {
     if (state.d_tuvaletBanyoYetersiz) scoreD += 4;
     scoreD = Math.min(scoreD, 10);
 
-    // Section E: Beyaz Eşya Durumu (Maksimum 10 Puan)
+    // Section E: Beyaz Eşya (Maksimum 10 Puan)
+    // NOT: Bulaşık makinesi lüks eşya sayıldığından puanlamadan çıkarıldı (TÜİK/OECD)
     let rawScoreE = 0;
     if (state.appliance_buzdolabi === 'yok') rawScoreE += 3;
     else if (state.appliance_buzdolabi === 'eski') rawScoreE += 1.5;
-
     if (state.appliance_camasir === 'yok') rawScoreE += 3;
     else if (state.appliance_camasir === 'eski') rawScoreE += 1.5;
-
     if (state.appliance_firin === 'yok') rawScoreE += 2;
     else if (state.appliance_firin === 'eski') rawScoreE += 1;
-
-    if (state.appliance_bulasik === 'yok') rawScoreE += 1;
-    else if (state.appliance_bulasik === 'eski') rawScoreE += 0.5;
-
+    // Bulaşık makinesi: 0 puan (lüks eşya - çıkarıldı)
     if (state.appliance_tv === 'yok') rawScoreE += 1;
     else if (state.appliance_tv === 'eski') rawScoreE += 0.5;
-
     if (state.appliance_telefon === 'yok') rawScoreE += 1;
     else if (state.appliance_telefon === 'eski') rawScoreE += 0.5;
-
     if (state.appliance_klima === 'yok') rawScoreE += 1;
     else if (state.appliance_klima === 'eski') rawScoreE += 0.5;
-
     if (state.appliance_diger === 'yok') rawScoreE += 1;
     else if (state.appliance_diger === 'eski') rawScoreE += 0.5;
-
-    let scoreE = Math.min(10, Math.round(rawScoreE));
+    const scoreE = Math.min(10, Math.round(rawScoreE));
 
     // Section F: Sosyal Kırılganlık ve Nüfus (Maksimum 30 Puan)
+    // Hane büyüklüğü: OECD Modified Equivalence Scale'e göre 4 kademeli
     let scoreF = 0;
     if (state.e_siddetMagduru) scoreF += 6;
     if (state.e_kadinReis) scoreF += 5;
@@ -222,36 +234,46 @@ function NewAssessmentContent() {
     if (state.e_bosanmis) scoreF += 3;
     if (state.e_dul) scoreF += 3;
     if (state.e_hukumluYakin) scoreF += 3;
-
+    // Kademeli hane büyüklüğü etkisi (OECD skalası)
     const hhSize = state.householdSize || 1;
-    if (hhSize >= 5) {
-      scoreF += 3;
-    } else if (hhSize >= 1) {
-      scoreF += 1;
-    }
-
+    if (hhSize >= 7) scoreF += 6;
+    else if (hhSize >= 5) scoreF += 4;
+    else if (hhSize >= 3) scoreF += 2;
+    else scoreF += 1;
     scoreF = Math.min(scoreF, 30);
 
     // Section G: Sosyal İnceleme Kanaati (Maksimum 20 Puan)
-    let scoreG = state.f_yasamKosullari + state.f_aciliyet + state.f_sosyalDestek + state.f_risk;
-    scoreG = Math.min(scoreG, 20);
+    const scoreG = Math.min(
+      (state.f_yasamKosullari || 0) + (state.f_aciliyet || 0) + (state.f_sosyalDestek || 0) + (state.f_risk || 0),
+      20
+    );
 
-    let totalScore = state.falseStatement ? 0 : (scoreA + scoreB + scoreC + scoreD + scoreE + scoreF + scoreG);
-    const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement);
-
-    const priorities = [];
-    if (state.b_agirEngelli) priorities.push("Ağır engelli bulunan hane");
-    if (state.b_cokluOzelDurumluBirey) priorities.push("Hanede Birden Fazla Özel Durumlu Birey");
-    if (state.b_yetim) priorities.push("Yetim çocuk bulunan hane");
-    if (state.b_sehitYakini || state.b_gazi) priorities.push("Şehit / Gazi Ailesi");
-    if (state.d_afetzede || state.e_afetGelirKaybi) priorities.push("Afet Mağduru");
-    if (state.b_yasliYalniz) priorities.push("Yaşlı ve Yalnız Yaşayan");
-    if (state.e_siddetMagduru) priorities.push("Aile İçi Şiddet Mağduru");
-    if (state.appliance_buzdolabi === 'yok' || state.appliance_camasir === 'yok') {
-      priorities.push("Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)");
+    // CEZA PUANLARI (Means Testing / Varlık Testi)
+    let scorePenalty = 0;
+    if (state.a_aracSahibi) scorePenalty += 15;
+    if (state.a_birdenFazlaTasinmaz) scorePenalty += 20;
+    if (state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0) {
+      scorePenalty += (state.a_son3AyYardimKisi || 0) * 5;
     }
 
-    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scoreG, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
+    const rawTotal = scoreA + scoreB + scoreC + scoreD + scoreE + scoreF + scoreG;
+    const totalScore = state.falseStatement ? 0 : Math.max(0, rawTotal - scorePenalty);
+    const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement);
+
+    const priorities: string[] = [];
+    if (state.b_agirEngelli) priorities.push('Ağır engelli bulunan hane');
+    if (state.b_cokluOzelDurumluBirey) priorities.push('Hanede Birden Fazla Özel Durumlu Birey');
+    if (state.b_yetim) priorities.push('Yetim çocuk bulunan hane');
+    if (state.b_sehitYakini || state.b_gazi) priorities.push('Şehit / Gazi Ailesi');
+    if (state.d_afetzede || state.e_afetGelirKaybi) priorities.push('Afet Mağduru');
+    if (state.b_yasliYalniz) priorities.push('Yaşlı ve Yalnız Yaşayan');
+    if (state.e_siddetMagduru) priorities.push('Aile İçi Şiddet Mağduru');
+    if (state.a_aracSahibi || state.a_birdenFazlaTasinmaz) priorities.push('Varlık Testi: Ceza Puanı Uygulandı');
+    if (state.appliance_buzdolabi === 'yok' || state.appliance_camasir === 'yok') {
+      priorities.push('Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)');
+    }
+
+    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scoreG, scorePenalty, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
   }, [state]);
 
   const stepsCount = 10;
@@ -296,6 +318,7 @@ function NewAssessmentContent() {
           scoreE: calc.scoreE,
           scoreF: calc.scoreF,
           scoreG: calc.scoreG,
+          scorePenalty: calc.scorePenalty,
           totalScore: calc.totalScore,
           assistance: calc.assistance,
           priorities: calc.priorities,
@@ -455,6 +478,20 @@ function NewAssessmentContent() {
                           {state.applicantTc.length > 0 && state.applicantTc.length < 11 && (
                             <p className="text-amber-400 text-xs mt-2 flex items-center font-bold"><AlertTriangle size={14} className="mr-1 shrink-0"/> TC Kimlik Numarası 11 hane olmalıdır.</p>
                           )}
+                          {/* TC Geçmiş Yardım Uyarısı */}
+                          {tcHistory.length > 0 && (
+                            <div className="mt-3 bg-amber-900/40 border border-amber-500/40 rounded-xl p-3 space-y-1.5">
+                              <p className="text-amber-300 text-xs font-extrabold flex items-center gap-1.5">
+                                <AlertTriangle size={14} className="shrink-0" />
+                                Bu hane daha önce {tcHistory.length} değerlendirmeye alınmış!
+                              </p>
+                              {tcHistory.slice(0, 3).map((h: any) => (
+                                <p key={h.id} className="text-amber-200 text-[11px] font-medium pl-5">
+                                  • {new Date(h.date).toLocaleDateString('tr-TR')} — {h.result?.assistance?.text || 'Bilgi yok'} ({h.status === 'approved' ? 'Onaylandı' : 'Onay Bekliyor'})
+                                </p>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                       
@@ -552,7 +589,7 @@ function NewAssessmentContent() {
                     </div>
 
                     <div className="text-slate-900">
-                      <SectionCard title="Hanehalkı Özel Durumları" maxScore={35} currentScore={calc.scoreB} hideScore={true}>
+                      <SectionCard title="Hanehalkı Özel Durumları" maxScore={30} currentScore={calc.scoreB} hideScore={true}>
                         
 
                         
@@ -560,8 +597,9 @@ function NewAssessmentContent() {
                           <CheckboxItem label="Aynı hanede birden fazla özel durumu (dezavantajlı) olan farklı KİŞİ var" checked={state.b_cokluOzelDurumluBirey} onChange={(v:any) => set('b_cokluOzelDurumluBirey', v)} points={5} />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <CheckboxItem label="Ağır engelli (%70+)" checked={state.b_agirEngelli} onChange={(v:any) => set('b_agirEngelli', v)} points={15} />
-                          <CheckboxItem label="Engelli (%40-69)" checked={state.b_engelli} onChange={(v:any) => set('b_engelli', v)} points={10} />
+                          <CheckboxItem label="Ağır engelli (%70+) — Ağır Engellilik" checked={state.b_agirEngelli} onChange={(v:any) => set('b_agirEngelli', v)} points={15} />
+                          <CheckboxItem label="Engelli (%40-69) — Orta/Yüksek Engellilik" checked={state.b_engelli} onChange={(v:any) => set('b_engelli', v)} points={10} />
+                          <CheckboxItem label="Hafif Engelli (%20-39) — Düşük Engel Oranı" checked={state.b_dusukEngelli} onChange={(v:any) => set('b_dusukEngelli', v)} points={3} />
                           <CheckboxItem label="Evde bakım hastası" checked={state.b_evdeBakim} onChange={(v:any) => set('b_evdeBakim', v)} points={10} />
                           <CheckboxItem label="Kanser tedavisi" checked={state.b_kanser} onChange={(v:any) => set('b_kanser', v)} points={10} />
                           <CheckboxItem label="Kronik hastalık" checked={state.b_kronik} onChange={(v:any) => set('b_kronik', v)} points={6} />
@@ -579,37 +617,48 @@ function NewAssessmentContent() {
                             Özel Sebep / Özel Durum Tanımlama
                           </h3>
                           <p className="text-xs text-slate-500 mb-3">
-                            Standart kriterlerin dışındaki özel durumlara ilave değer ekleyebilirsiniz.
+                            Standart kriterlerin dışındaki özel durumlar için açıklama girebilirsiniz.
                           </p>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                            <div className="sm:col-span-2">
+                          <div className="space-y-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                            <div>
                               <label className="block text-[11px] font-bold text-slate-600 mb-1">
                                 Özel Sebep Açıklaması
                               </label>
                               <input
                                 type="text"
                                 value={state.b_ozelSebepMetin || ''}
-                                onChange={(e) => set('b_ozelSebepMetin', e.target.value)}
-                                placeholder="Örn: Organ nakli, nadir hastalık vb."
+                                onChange={(e) => {
+                                  set('b_ozelSebepMetin', e.target.value);
+                                  // Personel girerken müdür onayı bekliyor bayrağı
+                                  if (user?.role === 'personnel') {
+                                    set('b_ozelSebepPuanBekliyor', e.target.value.trim().length > 0);
+                                  }
+                                }}
+                                placeholder="Örn: Organ nakli, nadir hastalık, son birkaç günde karşılaşılan acil durum vb."
                                 className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-slate-800 font-medium"
                               />
                             </div>
-                            <div>
-                              <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                                İlave Değer
-                              </label>
-                              <select
-                                value={state.b_ozelSebepPuan || 0}
-                                onChange={(e) => set('b_ozelSebepPuan', Number(e.target.value))}
-                                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-bold text-slate-800"
-                              >
-                                <option value={0}>Ekleme Yok</option>
-                                <option value={10}>+10 Kademe</option>
-                                <option value={15}>+15 Kademe</option>
-                                <option value={20}>+20 Kademe</option>
-                                <option value={25}>+25 Kademe</option>
-                              </select>
-                            </div>
+                            {user?.role === 'personnel' ? (
+                              <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-[11px] text-amber-800 font-semibold flex items-start gap-2">
+                                <AlertTriangle size={13} className="shrink-0 mt-0.5 text-amber-600" />
+                                <span>Özel sebep puanı <strong>yalnızca Vakıf Müdürü</strong> tarafından belirlenebilir. Girdiğiniz açıklama Müdür incelemesi için kaydedilecek, puan otomatik olarak 0 kalacaktır.</span>
+                              </div>
+                            ) : (
+                              <div>
+                                <label className="block text-[11px] font-bold text-slate-600 mb-1">İlave Puan Değeri (Müdür Yetkisi)</label>
+                                <select
+                                  value={state.b_ozelSebepPuan || 0}
+                                  onChange={(e) => { set('b_ozelSebepPuan', Number(e.target.value)); set('b_ozelSebepPuanBekliyor', false); }}
+                                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-bold text-slate-800"
+                                >
+                                  <option value={0}>Ekleme Yok</option>
+                                  <option value={5}>+5 Puan</option>
+                                  <option value={10}>+10 Puan</option>
+                                  <option value={15}>+15 Puan</option>
+                                  <option value={20}>+20 Puan</option>
+                                </select>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </SectionCard>
@@ -621,18 +670,18 @@ function NewAssessmentContent() {
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-xl font-black text-white">C. Çocuk ve Eğitim</h2>
-                      <p className="text-slate-400 text-xs mt-1">Hanedeki eğitim gören tüm kademelerdeki çocuklar ve öğrenciler (Tüm Kademeler Eşit)</p>
+                      <p className="text-slate-400 text-xs mt-1">Kademeli ağırlıklı puanlama (Şartlı Eğitim Yardımı ve Dünya Bankası metodolojisi)</p>
                     </div>
                     <div className="text-slate-900">
-                      <SectionCard title="Eğitim Durumu" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
+                      <SectionCard title="Eğitim Durumu (Maks. 15 Puan)" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <CounterItem label="0-6 yaş çocuk" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={3} />
-                          <CounterItem label="İlkokul öğrencisi" value={state.c_ilkokul} onChange={(v:any) => set('c_ilkokul', v)} pointsPerItem={3} />
-                          <CounterItem label="Ortaokul öğrencisi" value={state.c_ortaokul} onChange={(v:any) => set('c_ortaokul', v)} pointsPerItem={3} />
+                          <CounterItem label="0-6 yaş çocuk (Bakım Yükü)" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={2} />
+                          <CounterItem label="İlkokul öğrencisi" value={state.c_ilkokul} onChange={(v:any) => set('c_ilkokul', v)} pointsPerItem={2} />
+                          <CounterItem label="Ortaokul öğrencisi" value={state.c_ortaokul} onChange={(v:any) => set('c_ortaokul', v)} pointsPerItem={2} />
                           <CounterItem label="Lise öğrencisi" value={state.c_lise} onChange={(v:any) => set('c_lise', v)} pointsPerItem={3} />
                           <CounterItem label="Mesleki Eğitim Merkezi" value={state.c_meslekiEgitim || 0} onChange={(v:any) => set('c_meslekiEgitim', v)} pointsPerItem={3} />
                           <CounterItem label="Açık Lise öğrencisi" value={state.c_acikLise || 0} onChange={(v:any) => set('c_acikLise', v)} pointsPerItem={3} />
-                          <CounterItem label="Üniversite öğrencisi" value={state.c_uni} onChange={(v:any) => set('c_uni', v)} pointsPerItem={3} />
+                          <CounterItem label="Üniversite öğrencisi (En Yüksek Maliyet)" value={state.c_uni} onChange={(v:any) => set('c_uni', v)} pointsPerItem={4} />
                         </div>
                       </SectionCard>
                     </div>
@@ -646,7 +695,7 @@ function NewAssessmentContent() {
                       <p className="text-slate-400 text-xs mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
                     </div>
                     <div className="text-slate-900">
-                      <SectionCard title="Barınma Şartları" maxScore={15} currentScore={calc.scoreD} hideScore={true}>
+                      <SectionCard title="Barınma Şartları (Maks. 10 Puan)" maxScore={10} currentScore={calc.scoreD} hideScore={true}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <CheckboxItem label="Evsiz / Barınaksız / Geçici Sığınma" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={10} />
                           <CheckboxItem label="Afetzede (Yangın / Deprem / Su Baskını)" checked={state.d_afetzede} onChange={(v:any) => set('d_afetzede', v)} points={10} />
@@ -669,7 +718,7 @@ function NewAssessmentContent() {
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-xl font-black text-white">E. Beyaz Eşya ve Ev Aletleri</h2>
-                      <p className="text-slate-400 text-xs mt-1">Hanedeki temel eşyaların varlık ve yıpranma durumu</p>
+                      <p className="text-slate-400 text-xs mt-1">Temel eşyaların varlık/yıpranma durumu — Bulaşık makinesi lüks eşya sayıldığından puanlama dışıdır (TÜİK/OECD)</p>
                     </div>
                     <div className="text-slate-900">
                       <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE} hideScore={true}>
@@ -677,7 +726,7 @@ function NewAssessmentContent() {
                           <ApplianceStatusItem label="Buzdolabı" icon={Box} value={state.appliance_buzdolabi} onChange={(v: any) => set('appliance_buzdolabi', v)} pointsYok={3} pointsEski={1.5} />
                           <ApplianceStatusItem label="Çamaşır Makinesi" icon={Shirt} value={state.appliance_camasir} onChange={(v: any) => set('appliance_camasir', v)} pointsYok={3} pointsEski={1.5} />
                           <ApplianceStatusItem label="Fırın / Ocak" icon={Flame} value={state.appliance_firin} onChange={(v: any) => set('appliance_firin', v)} pointsYok={2} pointsEski={1} />
-                          <ApplianceStatusItem label="Bulaşık Makinesi" icon={Sparkles} value={state.appliance_bulasik} onChange={(v: any) => set('appliance_bulasik', v)} pointsYok={1} pointsEski={0.5} />
+                          <ApplianceStatusItem label="Bulaşık Makinesi (Konfor Eşyası — Puanlama Dışı)" icon={Sparkles} value={state.appliance_bulasik} onChange={(v: any) => set('appliance_bulasik', v)} pointsYok={0} pointsEski={0} />
                           <ApplianceStatusItem label="Televizyon (TV)" icon={Tv} value={state.appliance_tv} onChange={(v: any) => set('appliance_tv', v)} pointsYok={1} pointsEski={0.5} />
                           <ApplianceStatusItem label="Akıllı / Sabit Telefon" icon={Smartphone} value={state.appliance_telefon} onChange={(v: any) => set('appliance_telefon', v)} pointsYok={1} pointsEski={0.5} />
                           <ApplianceStatusItem label="Klima / Isıtıcı" icon={Wind} value={state.appliance_klima} onChange={(v: any) => set('appliance_klima', v)} pointsYok={1} pointsEski={0.5} />
@@ -700,10 +749,12 @@ function NewAssessmentContent() {
                           <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 sm:col-span-2">
                             <span className="flex items-center gap-2">
                               <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-                              Hane Nüfusu Etkisi ({state.householdSize || 1} Kişi)
+                              Hane Nüfusu Etkisi — {state.householdSize || 1} Kişi
                             </span>
                             <span className="bg-blue-100 text-blue-900 font-extrabold px-3 py-1 rounded-md">
-                              {(state.householdSize || 1) >= 5 ? 'Kalabalık Hane' : 'Standart Hane'}
+                              {(state.householdSize || 1) >= 7 ? `Çok Kalabalık (+6)` :
+                               (state.householdSize || 1) >= 5 ? `Kalabalık (+4)` :
+                               (state.householdSize || 1) >= 3 ? `Orta Büyüklük (+2)` : `Küçük Hane (+1)`}
                             </span>
                           </div>
                           <CheckboxItem label="Aile içi şiddet mağduru" checked={state.e_siddetMagduru} onChange={(v:any) => set('e_siddetMagduru', v)} points={6} />
@@ -781,38 +832,60 @@ function NewAssessmentContent() {
                     </div>
 
                     <div className="text-slate-900">
-                      <SectionCard title="Kontrol Listesi" maxScore={0} currentScore={0} hideScore={true}>
-                         <div className="mb-6 space-y-3">
+                      <SectionCard title="Varlık Testi ve Kontrol Listesi" maxScore={0} currentScore={0} hideScore={true}>
+                         {/* Zorunlu Onay */}
+                         <div className="mb-5 space-y-3">
                             <label className={`flex items-center p-4 border rounded-2xl cursor-pointer transition-all ${state.systemChecksDone ? 'bg-emerald-50 border-emerald-300 ring-2 ring-emerald-400/30' : 'bg-white border-slate-200 hover:bg-slate-50'}`}>
-                              <input 
-                                type="checkbox" 
-                                className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mr-4"
-                                checked={state.systemChecksDone}
-                                onChange={(e) => set('systemChecksDone', e.target.checked)}
-                              />
+                              <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mr-4"
+                                checked={state.systemChecksDone} onChange={(e) => set('systemChecksDone', e.target.checked)} />
                               <span className={`font-bold text-sm ${state.systemChecksDone ? 'text-emerald-900' : 'text-slate-800'}`}>
-                                Zorunlu sistem kontrollerini (Araç, Tapu, SGK vb.) yaptım.
+                                Zorunlu sistem sorgularını (Araç Tescil, Tapu, SGK) tamamladım ve aşağıdaki sonuçları girdim.
                               </span>
                             </label>
-
                             {!state.systemChecksDone && (
                               <p className="text-amber-600 text-xs font-bold flex items-center gap-1"><AlertTriangle size={14}/> Sonraki adıma geçmek için onaylamanız gereklidir.</p>
                             )}
                          </div>
-                         
+
+                         {/* Varlık Testi Sonuçları */}
+                         <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-5 space-y-3">
+                           <h4 className="text-sm font-extrabold text-orange-900 flex items-center gap-2">
+                             <AlertTriangle size={16} className="text-orange-600" />
+                             Sorgu Sonuçları — Ceza Puanları Uygulanır
+                           </h4>
+                           <CheckboxItem label="Araç tescil kaydı tespit edildi (−15 Puan)" checked={state.a_aracSahibi} onChange={(v:any) => set('a_aracSahibi', v)} isAlert={true} points={null} />
+                           <CheckboxItem label="Birden fazla taşınmaz (gayrimenkul) kaydı var (−20 Puan)" checked={state.a_birdenFazlaTasinmaz} onChange={(v:any) => set('a_birdenFazlaTasinmaz', v)} isAlert={true} points={null} />
+                           <CheckboxItem label="Aktif SGK prim ödemesi tespit edildi → A bölümü puanı sıfırlanır" checked={state.a_aktifSgkPrim} onChange={(v:any) => set('a_aktifSgkPrim', v)} isAlert={true} points={null} />
+                           <div className="space-y-2 pt-2 border-t border-orange-200">
+                             <CheckboxItem label="Son 3 ayda bu vakıftan yardım aldığı tespit edildi" checked={state.a_son3AyYardimAldi} onChange={(v:any) => { set('a_son3AyYardimAldi', v); if (!v) set('a_son3AyYardimKisi', 0); }} isAlert={true} points={null} />
+                             {state.a_son3AyYardimAldi && (
+                               <div className="flex items-center gap-3 pl-9">
+                                 <label className="text-xs font-bold text-orange-800">Kaç kişi yardım aldı? (Her kişi −5 puan)</label>
+                                 <div className="flex items-center gap-2">
+                                   <button type="button" onClick={() => set('a_son3AyYardimKisi', Math.max(0, (state.a_son3AyYardimKisi||0) - 1))} className="w-8 h-8 rounded-lg bg-orange-100 text-orange-800 font-black border border-orange-300 flex items-center justify-center">-</button>
+                                   <span className="w-8 text-center font-black text-orange-900">{state.a_son3AyYardimKisi || 0}</span>
+                                   <button type="button" onClick={() => set('a_son3AyYardimKisi', (state.a_son3AyYardimKisi||0) + 1)} className="w-8 h-8 rounded-lg bg-orange-100 text-orange-800 font-black border border-orange-300 flex items-center justify-center">+</button>
+                                 </div>
+                               </div>
+                             )}
+                           </div>
+                         </div>
+
+                         {/* Ceza özeti */}
+                         {calc.scorePenalty > 0 && (
+                           <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-5 text-sm font-bold text-red-800 flex items-center gap-2">
+                             <AlertTriangle size={16} className="text-red-600 shrink-0" />
+                             Toplam Ceza Puanı: −{calc.scorePenalty} puan uygulanacaktır.
+                           </div>
+                         )}
+
                          <div className="pt-4 border-t border-red-100">
                            <label className={`flex items-start p-4 border rounded-2xl cursor-pointer transition-all ${state.falseStatement ? 'bg-red-50 border-red-400 ring-2 ring-red-400/30' : 'bg-white border-slate-200 hover:bg-red-50/50'}`}>
-                             <input
-                               type="checkbox"
-                               className="w-5 h-5 rounded border-red-300 text-red-600 focus:ring-red-500 mt-0.5"
-                               checked={state.falseStatement}
-                               onChange={(e) => set('falseStatement', e.target.checked)}
-                             />
+                             <input type="checkbox" className="w-5 h-5 rounded border-red-300 text-red-600 focus:ring-red-500 mt-0.5"
+                               checked={state.falseStatement} onChange={(e) => set('falseStatement', e.target.checked)} />
                              <div className="ml-3 flex flex-col">
                                <span className="text-sm font-bold text-red-700">DİKKAT: Gerçeğe Aykırı Beyan TESPİT EDİLDİ!</span>
-                               <span className="text-xs font-semibold text-red-500 mt-0.5">
-                                 (İşaretlenirse başvuruyu doğrudan reddeder ve onay sürecinde işleme alınmaz)
-                               </span>
+                               <span className="text-xs font-semibold text-red-500 mt-0.5">(İşaretlenirse başvuruyu doğrudan reddeder)</span>
                              </div>
                            </label>
                          </div>

@@ -129,30 +129,35 @@ export default function AssessmentDetail() {
   };
 
   const selectedDisadvantages = [];
-  if (state.b_agirEngelli) selectedDisadvantages.push("Ağır engelli (%70+) (+15 Puan)");
-  if (state.b_engelli) selectedDisadvantages.push("Engelli (%40-69) (+10 Puan)");
-  if (state.b_evdeBakim) selectedDisadvantages.push("Evde bakım hastası (+10 Puan)");
-  if (state.b_kanser) selectedDisadvantages.push("Kanser tedavisi gören (+10 Puan)");
-  if (state.b_kronik) selectedDisadvantages.push("Kronik hastalık (+6 Puan)");
-  if (state.b_yasliYalniz) selectedDisadvantages.push("65 yaş üstü yalnız yaşayan (+8 Puan)");
-  if (state.b_sehitYakini) selectedDisadvantages.push("Şehit yakını (+8 Puan)");
-  if (state.b_gazi) selectedDisadvantages.push("Gazi (+8 Puan)");
-  if (state.b_yetim) selectedDisadvantages.push("Yetim / Öksüz çocuk (+5 Puan)");
-  if (state.b_koruyucuAile) selectedDisadvantages.push("Koruyucu aile (+5 Puan)");
-  if (state.b_yabanciUyruklu) selectedDisadvantages.push("Yabancı uyruklu / Sığınmacı (Suriyeli, Afgan vb.) (+3 Puan)");
-  if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
-    const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : "";
+  if (state.b_agirEngelli) selectedDisadvantages.push('Ağır engelli (%70+) (+15 Puan)');
+  if (state.b_engelli) selectedDisadvantages.push('Engelli (%40-69) (+10 Puan)');
+  if (state.b_dusukEngelli) selectedDisadvantages.push('Hafif Engelli (%20-39) (+3 Puan)');
+  if (state.b_evdeBakim) selectedDisadvantages.push('Evde bakım hastası (+10 Puan)');
+  if (state.b_kanser) selectedDisadvantages.push('Kanser tedavisi gören (+10 Puan)');
+  if (state.b_kronik) selectedDisadvantages.push('Kronik hastalık (+6 Puan)');
+  if (state.b_yasliYalniz) selectedDisadvantages.push('65 yaş üstü yalnız yaşayan (+8 Puan)');
+  if (state.b_sehitYakini) selectedDisadvantages.push('Şehit yakını (+8 Puan)');
+  if (state.b_gazi) selectedDisadvantages.push('Gazi (+8 Puan)');
+  if (state.b_yetim) selectedDisadvantages.push('Yetim / Öksüz çocuk (+5 Puan)');
+  if (state.b_koruyucuAile) selectedDisadvantages.push('Koruyucu aile (+5 Puan)');
+  if (state.b_yabanciUyruklu) selectedDisadvantages.push('Yabancı uyruklu / Sığınmacı (+3 Puan)');
+  if (state.b_ozelSebepPuanBekliyor) {
+    const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
+    selectedDisadvantages.push(`Özel Sebep${reasonText} (⚠ Müdür Onayı Bekleniyor)`);
+  } else if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
+    const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
     selectedDisadvantages.push(`Özel Sebep${reasonText} (+${state.b_ozelSebepPuan} Puan)`);
   }
 
   const selectedEducation = [];
-  if (state.c_0_6yas > 0) selectedEducation.push(`0-6 Yaş Çocuk: ${state.c_0_6yas} kişi (+${state.c_0_6yas * 2} Puan)`);
-  if (state.c_ilkokul > 0) selectedEducation.push(`İlkokul Öğrencisi: ${state.c_ilkokul} kişi (+${state.c_ilkokul * 1} Puan)`);
+  if (state.c_0_6yas > 0) selectedEducation.push(`0-6 Yaş Çocuk (Bakım Yükü): ${state.c_0_6yas} kişi (+${state.c_0_6yas * 2} Puan)`);
+  if (state.c_ilkokul > 0) selectedEducation.push(`İlkokul Öğrencisi: ${state.c_ilkokul} kişi (+${state.c_ilkokul * 2} Puan)`);
   if (state.c_ortaokul > 0) selectedEducation.push(`Ortaokul Öğrencisi: ${state.c_ortaokul} kişi (+${state.c_ortaokul * 2} Puan)`);
   if (state.c_lise > 0) selectedEducation.push(`Lise Öğrencisi: ${state.c_lise} kişi (+${state.c_lise * 3} Puan)`);
-  if (state.c_meslekiEgitim > 0) selectedEducation.push(`Mesleki Eğitim Merkezi Öğrencisi: ${state.c_meslekiEgitim} kişi (+${state.c_meslekiEgitim * 3} Puan)`);
+  if (state.c_meslekiEgitim > 0) selectedEducation.push(`Mesleki Eğitim Merkezi: ${state.c_meslekiEgitim} kişi (+${state.c_meslekiEgitim * 3} Puan)`);
   if (state.c_acikLise > 0) selectedEducation.push(`Açık Lise Öğrencisi: ${state.c_acikLise} kişi (+${state.c_acikLise * 3} Puan)`);
-  if (state.c_uni > 0) selectedEducation.push(`Üniversite Öğrencisi: ${state.c_uni} kişi (+${state.c_uni * 4} Puan)`);
+  if (state.c_uni > 0) selectedEducation.push(`Üniversite Öğrencisi (Yüksek Maliyet): ${state.c_uni} kişi (+${state.c_uni * 4} Puan)`);
+
 
   const selectedHousing = [];
   if (state.d_evsiz) selectedHousing.push("Evsiz (+10 Puan)");
@@ -162,25 +167,36 @@ export default function AssessmentDetail() {
   if (state.d_kiraci) selectedHousing.push("Kiracı (+5 Puan)");
 
   const selectedFragility = [];
-  if (state.e_siddetMagduru) selectedFragility.push("Aile içi şiddet mağduru (+6 Puan)");
-  if (state.e_kadinReis) selectedFragility.push("Kadın hane reisi (+5 Puan)");
-  if (state.e_esiCezaevinde) selectedFragility.push("Eşi cezaevinde (+5 Puan)");
-  if (state.e_afetGelirKaybi) selectedFragility.push("Afet nedeniyle gelir kaybı (+5 Puan)");
-  if (state.e_bosanmis) selectedFragility.push("Boşanmış (+3 Puan)");
-  if (state.e_dul) selectedFragility.push("Dul (Eşi vefat etmiş) (+3 Puan)");
-
+  if (state.e_siddetMagduru) selectedFragility.push('Aile içi Şiddet mağduru (+6 Puan)');
+  if (state.e_kadinReis) selectedFragility.push('Kadın hane reisi (+5 Puan)');
+  if (state.e_esiCezaevinde) selectedFragility.push('Eşi cezaevinde (+5 Puan)');
+  if (state.e_afetGelirKaybi) selectedFragility.push('Afet nedeniyle gelir kaybı (+5 Puan)');
+  if (state.e_maddeBagimliligi) selectedFragility.push('Madde / alkol bağımlılığı (+5 Puan)');
+  if (state.e_sosyalGuvencesiz) selectedFragility.push('Sosyal güvencesiz / kimsesiz (+5 Puan)');
+  if (state.e_icraBorcBaskisi) selectedFragility.push('Borç / icra / haciz baskısı (+4 Puan)');
+  if (state.e_gebelikBebek) selectedFragility.push('Bakıma muhtaç bebek / riskli gebelik (+4 Puan)');
+  if (state.e_bosanmis) selectedFragility.push('Boşanmış (+3 Puan)');
+  if (state.e_dul) selectedFragility.push('Dul (Eşi vefat etmiş) (+3 Puan)');
+  if (state.e_hukumluYakin) selectedFragility.push('Denetimli serbestlik / Eski hükümlü (+3 Puan)');
+  // OECD 4 kademeli hane büyüklüğü skalası
   const hhSize = state.householdSize || 1;
-  if (hhSize >= 5) {
-    selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +3 Puan`);
-  } else if (hhSize >= 1) {
-    selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +1 Puan`);
+  if (hhSize >= 7) selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +6 Puan`);
+  else if (hhSize >= 5) selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +4 Puan`);
+  else if (hhSize >= 3) selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +2 Puan`);
+  else selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +1 Puan`);
+  // Varlık Testi / Ceza Puanları
+  if (state.a_aracSahibi) selectedFragility.push('⚠ Araç Tescil Kaydı Tespit — Ceza: −15 Puan');
+  if (state.a_birdenFazlaTasinmaz) selectedFragility.push('⚠ Birden Fazla Taşınmaz Kaydı — Ceza: −20 Puan');
+  if (state.a_aktifSgkPrim) selectedFragility.push('⚠ Aktif SGK Prim Tespit — A Bölümü Sıfırlandı');
+  if (state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0) {
+    selectedFragility.push(`⚠ Mükerrer Yardım (${state.a_son3AyYardimKisi} kişi) — Ceza: −${state.a_son3AyYardimKisi * 5} Puan`);
   }
 
   const appliancesList = [
     { label: 'Buzdolabı', val: state.appliance_buzdolabi || 'yeni' },
     { label: 'Çamaşır Makinesi', val: state.appliance_camasir || 'yeni' },
     { label: 'Fırın / Ocak', val: state.appliance_firin || 'yeni' },
-    { label: 'Bulaşık Makinesi', val: state.appliance_bulasik || 'yeni' },
+    { label: 'Bulaşık Makinesi (Konfor — Puanlama Dışı)', val: state.appliance_bulasik || 'yeni' },
     { label: 'Televizyon (TV)', val: state.appliance_tv || 'yeni' },
     { label: 'Telefon', val: state.appliance_telefon || 'yeni' },
     { label: 'Klima / Isıtıcı', val: state.appliance_klima || 'yeni' },

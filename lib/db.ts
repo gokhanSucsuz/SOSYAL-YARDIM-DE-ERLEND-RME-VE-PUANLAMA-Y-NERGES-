@@ -6,6 +6,7 @@ export interface AssessmentResult {
   scoreE: number;
   scoreF: number;
   scoreG?: number;
+  scorePenalty?: number; // Ceza puanı (araç, taşınmaz, mükerrer yardım vb.)
   totalScore: number;
   assistance: { text: string; amount: number };
   priorities: string[];
@@ -140,14 +141,100 @@ export interface Assessment {
   householdNo?: string;
   status?: 'pending' | 'approved';
   customOrder?: number;
-  data: any; // Raw state data
+  data: any; // Raw state data (şifreli olabilir)
   result: AssessmentResult;
+  _encrypted?: boolean; // KVKK: hassas alanlar AES-GCM ile şifreli mi?
 }
 
 const DB_NAME = 'SocialAssistanceDB';
 const STORE_NAME = 'assessments';
 const MEETING_STORE_NAME = 'meetings';
 const DB_VERSION = 2;
+
+// ============================================================
+// KVKK UYUMLU ŞİFRELEME KATMANI (AES-GCM 256-bit)
+// Web Crypto API — PBKDF2 ile türetilmiş anahtar
+// ============================================================
+const _APP_KEY_MATERIAL = 'SYDV-EDIRNE-SECURE-ASSESSMENT-KEY-V2';
+const _APP_KEY_SALT = new TextEncoder().encode('sydv-edirne-crypto-salt-2024-v1');
+let _cachedCryptoKey: CryptoKey | null = null;
+
+const _getEncryptionKey = async (): Promise<CryptoKey> => {
+  if (_cachedCryptoKey) return _cachedCryptoKey;
+  if (typeof window === 'undefined' || !window.crypto?.subtle) {
+    throw new Error('Web Crypto API kullanılamıyor.');
+  }
+  const rawKey = new TextEncoder().encode(_APP_KEY_MATERIAL);
+  const keyMaterial = await window.crypto.subtle.importKey(
+    'raw', rawKey, 'PBKDF2', false, ['deriveKey']
+  );
+  _cachedCryptoKey = await window.crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: _APP_KEY_SALT, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+  return _cachedCryptoKey;
+};
+
+export const encryptField = async (value: any): Promise<string> => {
+  try {
+    const key = await _getEncryptionKey();
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    const encoded = new TextEncoder().encode(JSON.stringify(value));
+    const encrypted = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+    const combined = new Uint8Array(iv.byteLength + encrypted.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(encrypted), iv.byteLength);
+    return '__ENC__' + btoa(String.fromCharCode(...Array.from(combined)));
+  } catch {
+    return JSON.stringify(value);
+  }
+};
+
+export const decryptField = async (encryptedStr: any): Promise<any> => {
+  if (typeof encryptedStr !== 'string' || !encryptedStr.startsWith('__ENC__')) {
+    // Eski şifresiz veri — doğrudan döndür
+    if (typeof encryptedStr === 'string') {
+      try { return JSON.parse(encryptedStr); } catch { return encryptedStr; }
+    }
+    return encryptedStr;
+  }
+  try {
+    const key = await _getEncryptionKey();
+    const base64 = encryptedStr.slice(7); // '__ENC__' prefix kaldır
+    const combined = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+    const iv = combined.slice(0, 12);
+    const encrypted = combined.slice(12);
+    const decrypted = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
+    return JSON.parse(new TextDecoder().decode(decrypted));
+  } catch {
+    return encryptedStr;
+  }
+};
+
+const _encryptAssessment = async (a: Assessment): Promise<Assessment> => ({
+  ...a,
+  applicantName: await encryptField(a.applicantName),
+  applicantTc: await encryptField(a.applicantTc),
+  applicantAddress: a.applicantAddress ? await encryptField(a.applicantAddress) : undefined,
+  phoneNumber: a.phoneNumber ? await encryptField(a.phoneNumber) : undefined,
+  data: await encryptField(a.data),
+  _encrypted: true,
+});
+
+const _decryptAssessment = async (a: Assessment): Promise<Assessment> => {
+  if (!a._encrypted) return a; // Geriye dönük uyumluluk
+  return {
+    ...a,
+    applicantName: await decryptField(a.applicantName),
+    applicantTc: await decryptField(a.applicantTc),
+    applicantAddress: a.applicantAddress ? await decryptField(a.applicantAddress) : undefined,
+    phoneNumber: a.phoneNumber ? await decryptField(a.phoneNumber) : undefined,
+    data: await decryptField(a.data),
+  };
+};
 
 export const initDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -216,10 +303,12 @@ export const deleteMeeting = async (id: string): Promise<void> => {
 
 export const saveAssessment = async (assessment: Assessment): Promise<void> => {
   const db = await initDB();
+  // KVKK: Hassas alanları şifrele
+  const toStore = await _encryptAssessment(assessment);
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
-    const request = store.put(assessment);
+    const request = store.put(toStore);
     request.onsuccess = () => resolve();
     request.onerror = () => reject(request.error);
   });
@@ -232,7 +321,11 @@ export const getAssessmentsByPersonnel = async (personnelId: string): Promise<As
     const store = tx.objectStore(STORE_NAME);
     const index = store.index('personnelId');
     const request = index.getAll(personnelId);
-    request.onsuccess = () => resolve(request.result.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+    request.onsuccess = async () => {
+      const sorted = request.result.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      const decrypted = await Promise.all(sorted.map(_decryptAssessment));
+      resolve(decrypted);
+    };
     request.onerror = () => reject(request.error);
   });
 };
@@ -243,7 +336,11 @@ export const getAllAssessments = async (): Promise<Assessment[]> => {
     const tx = db.transaction(STORE_NAME, 'readonly');
     const store = tx.objectStore(STORE_NAME);
     const request = store.getAll();
-    request.onsuccess = () => resolve(request.result.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+    request.onsuccess = async () => {
+      const sorted = request.result.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      const decrypted = await Promise.all(sorted.map(_decryptAssessment));
+      resolve(decrypted);
+    };
     request.onerror = () => reject(request.error);
   });
 };
@@ -254,7 +351,10 @@ export const getAssessmentById = async (id: string): Promise<Assessment> => {
     const tx = db.transaction(STORE_NAME, 'readonly');
     const store = tx.objectStore(STORE_NAME);
     const request = store.get(id);
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = async () => {
+      const decrypted = await _decryptAssessment(request.result);
+      resolve(decrypted);
+    };
     request.onerror = () => reject(request.error);
   });
 };
