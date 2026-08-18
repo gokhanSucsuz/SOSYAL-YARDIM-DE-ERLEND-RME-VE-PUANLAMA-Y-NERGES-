@@ -496,6 +496,28 @@ export default function GuidePage() {
           </div>
         </div>
 
+        {/* MongoDB Replica Set / Transactions Section */}
+        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6">
+          <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+            <Layers className="text-indigo-700" size={22} />
+            8. Veritabanı Altyapısı ve Güvenli Toplu İşlemler (MongoDB Transactions)
+          </h3>
+
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Sistemde binlerce kaydın aynı anda onaylanması veya reddedilmesi (Toplu Onaylama) gibi kritik operasyonlarda veritabanı tutarlılığını sağlamak için <strong>MongoDB Transactions (Atomik İşlemler)</strong> altyapısı kullanılmaktadır. Bu sayede, toplu işlem sırasında olası bir sunucu hatası durumunda veriler otomatik olarak eski haline (Rollback) getirilir.
+          </p>
+
+          <div className="bg-amber-50 rounded-xl p-5 border border-amber-200">
+            <h4 className="font-extrabold text-amber-900 text-sm flex items-center gap-2 mb-2">
+              <AlertTriangle size={18} />
+              Kendi Sunucunuza (Local Hosting) Geçiş Hakkında Kritik Uyarı
+            </h4>
+            <p className="text-xs text-amber-950 font-medium leading-relaxed">
+              MongoDB Transactions (Toplu işlemler vb.) özelliği, veritabanının bir <strong>Replica Set</strong> olarak yapılandırılmış olmasını zorunlu kılar. Şu an kullandığınız <em>MongoDB Atlas internet hizmeti</em> bu desteğe varsayılan olarak sahiptir. İleride sistemi kurumunuzun kendi iç sunucusuna (Local Server) taşıdığınızda, MongoDB&apos;yi standart tekli kurulum yerine mutlaka <strong>Replica Set (rs0)</strong> konfigürasyonunda kurmalısınız. Aksi takdirde toplu onaylama gibi transaction gerektiren özellikler çalışmayacaktır.
+            </p>
+          </div>
+        </div>
+
       </main>
     </div>
   );

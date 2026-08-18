@@ -22,7 +22,7 @@ export const AssessmentSchema = z.object({
   householdNo: z.string().optional(),
   status: z.enum(['pending', 'approved']).optional(),
   customOrder: z.number().optional(),
-  data: z.record(z.any()), // Form data
+  data: z.record(z.string(), z.any()), // Form data
   result: z.object({
     scoreA: z.number(),
     scoreB: z.number(),

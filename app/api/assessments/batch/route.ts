@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Geçersiz durum' }, { status: 400 });
     }
 
-    const sessionData = await getSession();
+    const sessionData = await getSession(req);
     const actorId = sessionData?.id || 'unknown';
     const actorName = sessionData?.name || 'unknown';
     const actorRole = sessionData?.role || 'unknown';
-    const ipAddress = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
+    const ipAddress = req.headers.get('x-forwarded-for') || 'unknown';
 
     // Start MongoDB session for transaction
     const dbSession = await mongoose.startSession();

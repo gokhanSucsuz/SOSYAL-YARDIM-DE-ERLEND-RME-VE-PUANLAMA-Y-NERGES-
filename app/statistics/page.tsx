@@ -123,7 +123,7 @@ export default function StatisticsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
-    const fetch = async () => {
+    const loadData = async () => {
       const storedUser = localStorage.getItem('currentUser');
       if (!storedUser) {
         router.push('/');

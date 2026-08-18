@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
     
-    const session = await getSession();
+    const session = await getSession(req);
     if (session?.role !== 'superadmin') {
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 403 });
     }

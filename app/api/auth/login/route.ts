@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });
     }
 
-    const ipAddress = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
+    const ipAddress = req.headers.get('x-forwarded-for') || 'unknown';
     const now = new Date();
 
     // Check rate limit lock

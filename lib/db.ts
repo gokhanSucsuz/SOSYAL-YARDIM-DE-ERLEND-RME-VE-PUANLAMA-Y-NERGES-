@@ -206,8 +206,8 @@ export const getAssessmentById = async (id: string): Promise<Assessment> => {
 };
 
 export const migrateAssessmentsToMeeting = async (meetingId: string): Promise<void> => {
-  const assessments = await getAllAssessments();
-  const unassigned = assessments.filter(a => !a.meetingId);
+  const assessments = await getAllAssessments(1, 10000);
+  const unassigned = assessments.data.filter(a => !a.meetingId);
   for (const a of unassigned) {
     a.meetingId = meetingId;
     await saveAssessment(a);
