@@ -188,7 +188,7 @@ export default function PersonnelPage() {
   }, [router]);
 
   // Aggregate stats per personnel
-  const personnelStats = useMemo(() => {
+  const personnelStats = (() => {
     const map = new Map<string, PersonnelStats>();
 
     assessments.forEach(a => {
@@ -225,9 +225,9 @@ export default function PersonnelPage() {
     return Array.from(map.values())
       .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase().trim()))
       .sort((a, b) => b.totalAssessments - a.totalAssessments);
-  }, [assessments, searchQuery]);
+  })();
 
-  const filteredDetails = useMemo(() => {
+  const filteredDetails = (() => {
     if (!selectedPersonnel) return [];
     
     return selectedPersonnel.assessments
@@ -241,7 +241,7 @@ export default function PersonnelPage() {
         return true;
       })
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [selectedPersonnel, filterMeetingId, detailSearchQuery]);
+  })();
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -623,7 +623,7 @@ export default function PersonnelPage() {
                     onClick={handleExportPersonnelDetail}
                     className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg flex items-center gap-2 font-bold transition-colors whitespace-nowrap"
                   >
-                    <Download size={18} /> Excel'e Aktar
+                    <Download size={18} /> Excel&apos;e Aktar
                   </button>
                 </div>
               </div>
