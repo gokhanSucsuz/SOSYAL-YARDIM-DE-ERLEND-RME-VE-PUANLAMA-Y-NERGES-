@@ -3,6 +3,7 @@ import connectToDatabase from '@/lib/mongodb';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 import { encryptSession } from '@/lib/auth';
+import AuditLog from '@/models/AuditLog';
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,6 +30,29 @@ export async function POST(req: NextRequest) {
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });
+    }
+
+    const ipAddress = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
+    const now = new Date();
+
+    // Check rate limit lock
+    if (user.lockUntil && user.lockUntil > now) {
+      const remainingMins = Math.ceil((user.lockUntil.getTime() - now.getTime()) / 60000);
+      
+      await AuditLog.create({
+        action: 'LOGIN_RATE_LIMITED',
+        actorId: user.id,
+        actorName: user.name,
+        actorRole: user.role,
+        targetResource: 'AUTH',
+        ipAddress,
+        details: { email }
+      });
+
+      return NextResponse.json(
+        { error: `Çok fazla hatalı giriş. Hesap ${remainingMins} dakika kilitlendi.` },
+        { status: 429 }
+      );
     }
 
     // Manager first login without password
@@ -61,7 +85,35 @@ export async function POST(req: NextRequest) {
 
     const isMatch = await bcrypt.compare(password, user.passwordHash || '');
     if (!isMatch) {
-      return NextResponse.json({ error: 'Şifre hatalı' }, { status: 401 });
+      // Increment failed attempts
+      user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
+      let errorMsg = 'Şifre hatalı';
+      
+      if (user.failedLoginAttempts >= 5) {
+        user.lockUntil = new Date(Date.now() + 15 * 60000); // Lock for 15 mins
+        errorMsg = 'Üst üste 5 hatalı giriş nedeniyle hesap 15 dakika kilitlendi.';
+      }
+      
+      await user.save();
+      
+      await AuditLog.create({
+        action: 'LOGIN_FAILED_PASSWORD',
+        actorId: user.id,
+        actorName: user.name,
+        actorRole: user.role,
+        targetResource: 'AUTH',
+        ipAddress,
+        details: { attempts: user.failedLoginAttempts }
+      });
+
+      return NextResponse.json({ error: errorMsg }, { status: 401 });
+    }
+
+    // Reset failed attempts on success
+    if (user.failedLoginAttempts > 0) {
+      user.failedLoginAttempts = 0;
+      user.lockUntil = null;
+      await user.save();
     }
 
     let needsSetup = false;
@@ -124,6 +176,17 @@ export async function POST(req: NextRequest) {
       sameSite: 'lax',
       path: '/'
     });
+    
+    // Log successful login
+    await AuditLog.create({
+      action: 'LOGIN_SUCCESS',
+      actorId: user.id,
+      actorName: user.name,
+      actorRole: user.role,
+      targetResource: 'AUTH',
+      ipAddress
+    });
+
     return res;
 
   } catch (error: any) {

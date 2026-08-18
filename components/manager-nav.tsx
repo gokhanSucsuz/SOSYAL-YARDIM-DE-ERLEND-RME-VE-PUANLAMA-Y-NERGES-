@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 export function ManagerNav() {
   const pathname = usePathname();
   const [isManager, setIsManager] = useState(false);
+  const [isSuperadmin, setIsSuperadmin] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
@@ -16,6 +17,9 @@ export function ManagerNav() {
         const user = JSON.parse(userStr);
         if (user.role === 'manager' || user.role === 'superadmin') {
           setIsManager(true);
+        }
+        if (user.role === 'superadmin') {
+          setIsSuperadmin(true);
         }
       } catch {}
     }
@@ -66,13 +70,27 @@ export function ManagerNav() {
           <Link
             href="/settings"
             className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
-              pathname.startsWith('/settings')
+              pathname === '/settings'
                 ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5' 
                 : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
             }`}
           >
             <Settings size={18} className="text-blue-600" />
             <span>Sistem Ayarları</span>
+          </Link>
+        )}
+
+        {isSuperadmin && (
+          <Link
+            href="/settings/audit-logs"
+            className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
+              pathname.startsWith('/settings/audit-logs')
+                ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5' 
+                : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
+            }`}
+          >
+            <Settings size={18} className="text-emerald-600" />
+            <span>Denetim Kayıtları</span>
           </Link>
         )}
       </div>

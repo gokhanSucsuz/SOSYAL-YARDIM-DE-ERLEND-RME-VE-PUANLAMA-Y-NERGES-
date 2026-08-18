@@ -139,6 +139,14 @@ export interface Assessment {
   result: AssessmentResult;
 }
 
+export interface PaginatedAssessments {
+  data: Assessment[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 // SERVER API CALLS
 
 export const saveMeeting = async (meeting: Meeting): Promise<void> => {
@@ -170,14 +178,23 @@ export const saveAssessment = async (assessment: Assessment): Promise<void> => {
   if (!res.ok) throw new Error('Failed to save assessment');
 };
 
-export const getAssessmentsByPersonnel = async (personnelId: string): Promise<Assessment[]> => {
-  const res = await fetch(`/api/assessments?personnelId=${encodeURIComponent(personnelId)}`);
+export const batchUpdateAssessments = async (ids: string[], status: 'approved' | 'pending'): Promise<void> => {
+  const res = await fetch('/api/assessments/batch', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids, status })
+  });
+  if (!res.ok) throw new Error('Failed to batch update assessments');
+};
+
+export const getAssessmentsByPersonnel = async (personnelId: string, page = 1, limit = 50): Promise<PaginatedAssessments> => {
+  const res = await fetch(`/api/assessments?personnelId=${encodeURIComponent(personnelId)}&page=${page}&limit=${limit}`);
   if (!res.ok) throw new Error('Failed to fetch assessments');
   return res.json();
 };
 
-export const getAllAssessments = async (): Promise<Assessment[]> => {
-  const res = await fetch('/api/assessments');
+export const getAllAssessments = async (page = 1, limit = 50): Promise<PaginatedAssessments> => {
+  const res = await fetch(`/api/assessments?page=${page}&limit=${limit}`);
   if (!res.ok) throw new Error('Failed to fetch assessments');
   return res.json();
 };

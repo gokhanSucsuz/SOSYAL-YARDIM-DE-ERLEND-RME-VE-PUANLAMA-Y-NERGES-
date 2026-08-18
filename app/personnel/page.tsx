@@ -63,13 +63,13 @@ export default function PersonnelPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [loadedMeetings, loadedAssessments, usersRes] = await Promise.all([
+      const [meetingsRes, assessmentsRes, usersRes] = await Promise.all([
         getAllMeetings(),
         getAllAssessments(),
         fetch('/api/users')
       ]);
-      setMeetings(loadedMeetings);
-      setAssessments(loadedAssessments);
+      setMeetings(meetingsRes);
+      setAssessments(assessmentsRes.data);
       if (usersRes.ok) {
         setSystemUsers(await usersRes.json());
       }

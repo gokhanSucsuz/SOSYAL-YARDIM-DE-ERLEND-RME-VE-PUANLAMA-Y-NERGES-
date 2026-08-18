@@ -34,7 +34,7 @@ function NewAssessmentContent() {
       setUser(JSON.parse(userStr));
     }
     // TC geçmiş araması için tüm kayıtları yükle
-    getAllAssessments().then(setAllAssessments).catch(() => {});
+    getAllAssessments().then(res => setAllAssessments(res.data)).catch(() => {});
   }, [router]);
 
   const [state, setState] = useState({

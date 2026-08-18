@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { 
   getAllAssessments, getAssessmentsByPersonnel, Assessment, 
   saveAssessment, deleteAssessment, Meeting, getAllMeetings, 
-  saveMeeting, deleteMeeting, isMeetingLocked 
+  saveMeeting, deleteMeeting, isMeetingLocked, batchUpdateAssessments 
 } from '@/lib/db';
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
@@ -107,9 +107,11 @@ export default function Dashboard() {
         const loadedMeetings = await getAllMeetings();
         setMeetings(loadedMeetings);
         if (currentUser.role === 'manager' || currentUser.role === 'superadmin') {
-          setAssessments(await getAllAssessments());
+          const res = await getAllAssessments();
+          setAssessments(res.data);
         } else {
-          setAssessments(await getAssessmentsByPersonnel(currentUser.id));
+          const res = await getAssessmentsByPersonnel(currentUser.id);
+          setAssessments(res.data);
         }
       } catch (err) {
         console.error(err);
@@ -283,10 +285,16 @@ export default function Dashboard() {
   };
 
   const reloadAssessments = async () => {
-    if (isManager || user.role === 'superadmin') {
-      setAssessments(await getAllAssessments());
-    } else {
-      setAssessments(await getAssessmentsByPersonnel(user.id));
+    try {
+      if (user.role === 'manager' || user.role === 'superadmin') {
+        const res = await getAllAssessments();
+        setAssessments(res.data);
+      } else {
+        const res = await getAssessmentsByPersonnel(user.id);
+        setAssessments(res.data);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -635,44 +643,38 @@ export default function Dashboard() {
     setBatchModal(prev => ({
       ...prev,
       step: 'processing',
-      progress: 0,
+      progress: 30,
       processedCount: 0,
     }));
 
     const isApprove = batchModal.type === 'approve_all' || batchModal.type === 'approve_selected';
+    const status = isApprove ? 'approved' : 'pending';
+    const targetIds = batchModal.targetItems.map(i => i.id);
 
-    for (let i = 0; i < totalItems; i++) {
-      const item = batchModal.targetItems[i];
-      const updated: Assessment = {
-        ...item,
-        status: isApprove ? 'approved' : 'pending',
-        managerName: isApprove ? (user?.name || 'Vakıf Müdürü') : undefined,
-      };
-
-      await saveAssessment(updated);
-
-      // Short delay for visual progress bar animation smoothing
-      await new Promise(res => setTimeout(res, 100));
-
-      const count = i + 1;
-      const pct = Math.round((count / totalItems) * 100);
-
+    try {
+      // Call transaction-safe API
+      await batchUpdateAssessments(targetIds, status);
+      
       setBatchModal(prev => ({
         ...prev,
-        processedCount: count,
-        progress: pct,
+        processedCount: totalItems,
+        progress: 100,
       }));
+
+      // Reload assessments after updates
+      await reloadAssessments();
+
+      // Mark completion
+      setBatchModal(prev => ({
+        ...prev,
+        step: 'done',
+        progress: 100,
+      }));
+    } catch (err) {
+      console.error(err);
+      await showAlert('Toplu işlem sırasında hata oluştu. İşlem geri alındı.', 'warning');
+      setBatchModal(prev => ({ ...prev, step: 'confirm' }));
     }
-
-    // Reload assessments after updates
-    await reloadAssessments();
-
-    // Mark completion
-    setBatchModal(prev => ({
-      ...prev,
-      step: 'done',
-      progress: 100,
-    }));
   };
 
   // Quick Single Item Action

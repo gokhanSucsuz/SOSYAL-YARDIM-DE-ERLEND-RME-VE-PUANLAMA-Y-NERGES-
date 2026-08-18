@@ -135,10 +135,15 @@ export default function StatisticsPage() {
         return;
       }
       setUser(u);
-      setMeetings(await getAllMeetings());
-      setAssessments(await getAllAssessments());
+      try {
+        setMeetings(await getAllMeetings());
+        const res = await getAllAssessments();
+        setAssessments(res.data);
+      } catch (error) {
+        console.error(error);
+      }
     };
-    fetch();
+    loadData();
   }, [router]);
 
   // Filter meetings by date
