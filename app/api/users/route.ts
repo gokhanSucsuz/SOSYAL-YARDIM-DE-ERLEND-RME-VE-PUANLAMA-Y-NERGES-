@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     if (session.role !== 'superadmin') {
        query = { role: 'personnel' };
     }
-    const users = await User.find(query, 'name email role isTwoFactorEnabled');
+    const users = await User.find(query);
     const mappedUsers = users.map(u => ({
       id: u._id.toString(),
       name: u.name,
