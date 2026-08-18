@@ -145,7 +145,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  if (sessionPayload.needsSetup && !pathname.startsWith('/api/auth/setup')) {
+  if (sessionPayload.needsSetup && !pathname.startsWith('/api/auth/setup') && pathname !== '/api/auth/me') {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Şifre belirlemeniz gerekmektedir.' }, { status: 403 });
     }
