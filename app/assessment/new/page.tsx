@@ -13,11 +13,13 @@ import { saveAssessment, getAllAssessments, calculateAssistanceFromScore } from 
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
+import { useDialog } from '@/components/DialogProvider';
 
 function NewAssessmentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const meetingId = searchParams?.get('meetingId') || undefined;
+  const { showAlert } = useDialog();
   
   const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(0);
@@ -327,7 +329,7 @@ function NewAssessmentContent() {
       await saveAssessment(assessmentData);
       router.push('/');
     } catch (err) {
-      alert("Kayıt sırasında hata oluştu!");
+      showAlert("Kayıt sırasında hata oluştu!", "error");
     }
   };
 

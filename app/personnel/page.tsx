@@ -9,6 +9,7 @@ import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db
 import Link from 'next/link';
 import { AppHeader } from '@/components/app-header';
 import { ManagerNav } from '@/components/manager-nav';
+import { useDialog } from '@/components/DialogProvider';
 
 interface PersonnelStats {
   id: string;
@@ -25,6 +26,7 @@ interface PersonnelStats {
 export default function PersonnelPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const { showConfirm } = useDialog();
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
@@ -176,7 +178,7 @@ export default function PersonnelPage() {
   };
 
   const handleDeleteUser = async (id: string) => {
-    if (!confirm('Bu personeli silmek istediğinize emin misiniz?')) return;
+    if (!(await showConfirm('Bu personeli silmek istediğinize emin misiniz?'))) return;
     try {
       const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
       if (res.ok) {
@@ -191,7 +193,7 @@ export default function PersonnelPage() {
   };
 
   const handleToggle2FA = async (id: string, newStatus: boolean) => {
-    if (!confirm(`Bu kullanıcının 2FA sistemini ${newStatus ? 'açmak' : 'kapatmak'} istediğinize emin misiniz?`)) return;
+    if (!(await showConfirm(`Bu kullanıcının 2FA sistemini ${newStatus ? 'açmak' : 'kapatmak'} istediğinize emin misiniz?`))) return;
     try {
       const res = await fetch(`/api/users/${id}`, { 
         method: 'PUT',

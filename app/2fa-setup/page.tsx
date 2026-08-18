@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, ArrowRight, Loader2, QrCode } from 'lucide-react';
+import { useDialog } from '@/components/DialogProvider';
 import Image from 'next/image';
 
 export default function TwoFactorSetup() {
@@ -13,6 +14,7 @@ export default function TwoFactorSetup() {
   const [qrCode, setQrCode] = useState('');
   const [secret, setSecret] = useState('');
   const [isGenerating, setIsGenerating] = useState(true);
+  const { showAlert } = useDialog();
 
   useEffect(() => {
     // Generate QR Code on mount
@@ -50,7 +52,7 @@ export default function TwoFactorSetup() {
       const data = await res.json();
 
       if (res.ok) {
-        alert('2FA başarıyla aktifleştirildi!');
+        await showAlert('2FA başarıyla aktifleştirildi!', 'success');
         router.push('/settings'); // Redirect to settings or home
       } else {
         setError(data.error || 'Doğrulama başarısız');
