@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BarChart3, Users } from 'lucide-react';
+import { Home, BarChart3, Users, Settings } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function ManagerNav() {
@@ -61,6 +61,20 @@ export function ManagerNav() {
           <Users size={18} className="text-blue-600" />
           <span>Personel Yönetimi</span>
         </Link>
+        
+        {isManager && (
+          <Link
+            href="/settings"
+            className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
+              pathname.startsWith('/settings')
+                ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5' 
+                : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
+            }`}
+          >
+            <Settings size={18} className="text-blue-600" />
+            <span>Sistem Ayarları</span>
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -183,6 +183,10 @@ export default function PersonnelPage() {
       return;
     }
     
+    if (currentUser.role === 'superadmin') {
+      setViewState('manage');
+    }
+    
     setUser(currentUser);
     loadData();
   }, [router]);
