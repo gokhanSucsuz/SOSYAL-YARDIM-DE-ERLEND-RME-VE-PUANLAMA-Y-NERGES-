@@ -33,6 +33,9 @@ export default function SuperAdminLogin() {
       if (res.ok) {
         if (data.requires2FA) {
           router.push('/2fa-verify');
+        } else if (data.needs2FASetup) {
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+          router.push('/2fa-setup');
         } else {
           localStorage.setItem('currentUser', JSON.stringify(data.user));
           router.push('/');

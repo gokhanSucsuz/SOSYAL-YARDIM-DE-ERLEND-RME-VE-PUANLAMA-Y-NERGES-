@@ -70,23 +70,42 @@ export async function POST(req: NextRequest) {
     }
 
     if (user.isTwoFactorEnabled && !needsSetup) {
-      // 2FA is enabled, issue a temporary token
-      const tempSessionData = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        requires2FA: true
-      };
-      const session = await encryptSession(tempSessionData);
-      const res = NextResponse.json({ success: true, requires2FA: true });
-      res.cookies.set('session', session, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/'
-      });
-      return res;
+      // 2FA is enabled
+      if (!user.twoFactorSecret) {
+        const sessionData = {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          needsSetup: false
+        };
+        const session = await encryptSession(sessionData);
+        const res = NextResponse.json({ success: true, needs2FASetup: true, user: { name: user.name, role: user.role } });
+        res.cookies.set('session', session, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/'
+        });
+        return res;
+      } else {
+        const tempSessionData = {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          requires2FA: true
+        };
+        const session = await encryptSession(tempSessionData);
+        const res = NextResponse.json({ success: true, requires2FA: true });
+        res.cookies.set('session', session, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/'
+        });
+        return res;
+      }
     }
 
     const sessionData = {

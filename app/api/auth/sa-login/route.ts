@@ -54,22 +54,42 @@ export async function POST(req: NextRequest) {
 
     // 2FA kontrolü (eğer ihtiyaç varsa ve şifre kurulum aşamasında değilse)
     if (user.isTwoFactorEnabled && !needsSetup) {
-      const tempSessionData = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        requires2FA: true
-      };
-      const session = await encryptSession(tempSessionData);
-      const res = NextResponse.json({ success: true, requires2FA: true });
-      res.cookies.set('session', session, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/'
-      });
-      return res;
+      if (!user.twoFactorSecret) {
+        // needs 2FA setup
+        const sessionData = {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          needsSetup: false
+        };
+        const session = await encryptSession(sessionData);
+        const res = NextResponse.json({ success: true, needs2FASetup: true, user: { name: user.name, role: user.role } });
+        res.cookies.set('session', session, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/'
+        });
+        return res;
+      } else {
+        const tempSessionData = {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          requires2FA: true
+        };
+        const session = await encryptSession(tempSessionData);
+        const res = NextResponse.json({ success: true, requires2FA: true });
+        res.cookies.set('session', session, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/'
+        });
+        return res;
+      }
     }
 
     const sessionData = {

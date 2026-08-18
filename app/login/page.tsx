@@ -81,11 +81,18 @@ export default function Login() {
       const data = await res.json();
 
       if (res.ok) {
-        if (data.needsSetup) {
-          setNeedsSetup(true);
+        if (data.requires2FA) {
+          router.push('/2fa-verify');
+        } else if (data.needs2FASetup) {
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+          router.push('/2fa-setup');
         } else {
           localStorage.setItem('currentUser', JSON.stringify(data.user));
-          router.push('/');
+          if (data.needsSetup) {
+            setNeedsSetup(true);
+          } else {
+            router.push('/');
+          }
         }
       } else {
         setError(data.error || 'Giriş başarısız');
