@@ -130,7 +130,7 @@ export default function StatisticsPage() {
         return;
       }
       const u = JSON.parse(storedUser);
-      if (u.role !== 'manager') {
+      if (u.role !== 'manager' && u.role !== 'superadmin') {
         router.push('/');
         return;
       }
