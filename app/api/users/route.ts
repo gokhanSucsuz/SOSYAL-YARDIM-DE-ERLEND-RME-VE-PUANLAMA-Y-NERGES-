@@ -17,8 +17,15 @@ export async function GET(req: NextRequest) {
     if (session.role !== 'superadmin') {
        query = { role: 'personnel' };
     }
-    const users = await User.find(query, 'id name email role isTwoFactorEnabled');
-    return NextResponse.json(users);
+    const users = await User.find(query, 'name email role isTwoFactorEnabled');
+    const mappedUsers = users.map(u => ({
+      id: u._id.toString(),
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      isTwoFactorEnabled: u.isTwoFactorEnabled
+    }));
+    return NextResponse.json(mappedUsers);
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
