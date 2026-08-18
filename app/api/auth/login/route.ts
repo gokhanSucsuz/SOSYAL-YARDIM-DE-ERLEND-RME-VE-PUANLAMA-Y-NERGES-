@@ -23,12 +23,12 @@ export async function POST(req: NextRequest) {
     const { email, password } = await req.json();
 
     if (!email) {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+      return NextResponse.json({ error: 'E-posta adresi gereklidir' }, { status: 400 });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });
     }
 
     // Manager first login without password
@@ -56,12 +56,12 @@ export async function POST(req: NextRequest) {
 
     // Normal login with password
     if (!password) {
-      return NextResponse.json({ error: 'Password is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Şifre gereklidir' }, { status: 400 });
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash || '');
     if (!isMatch) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });
     }
 
     const sessionData = {
@@ -83,6 +83,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Login error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error', stack: error.stack }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Sunucu içi hata', stack: error.stack }, { status: 500 });
   }
 }

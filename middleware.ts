@@ -42,6 +42,9 @@ export async function middleware(req: NextRequest) {
   }
 
   if (!isGoogleVerified) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Yetkisiz erişim. Lütfen ana sayfadan Google ile giriş yapın.' }, { status: 401 });
+    }
     if (pathname !== '/gate') {
       return NextResponse.redirect(new URL('/gate', req.url));
     }
@@ -67,6 +70,9 @@ export async function middleware(req: NextRequest) {
   const sessionCookie = req.cookies.get('session')?.value;
 
   if (!sessionCookie) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Oturum süresi doldu. Lütfen tekrar giriş yapın.' }, { status: 401 });
+    }
     return NextResponse.redirect(new URL('/login', req.url));
   }
 
@@ -74,6 +80,9 @@ export async function middleware(req: NextRequest) {
     const { payload } = await jwtVerify(sessionCookie, key, { algorithms: ['HS256'] });
 
     if (payload.needsSetup && !pathname.startsWith('/api/auth/setup')) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Şifre belirlemeniz gerekmektedir.' }, { status: 403 });
+      }
       return NextResponse.redirect(new URL('/login', req.url));
     }
 
@@ -83,6 +92,9 @@ export async function middleware(req: NextRequest) {
 
     return NextResponse.next();
   } catch (error) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Geçersiz oturum. Lütfen tekrar giriş yapın.' }, { status: 401 });
+    }
     return NextResponse.redirect(new URL('/login', req.url));
   }
 }

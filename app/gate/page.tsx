@@ -58,14 +58,14 @@ export default function GatePage() {
           </div>
         )}
 
-        <div className="flex flex-col items-center justify-center bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50 min-h-[120px]">
-          {loading ? (
-            <div className="text-slate-400 font-bold animate-pulse flex flex-col items-center gap-2">
-              <ShieldCheck size={24} className="text-emerald-500" />
-              Doğrulanıyor...
-            </div>
-          ) : (
-            <GoogleOAuthProvider clientId={clientId}>
+        <GoogleOAuthProvider clientId={clientId}>
+          <div className="flex flex-col items-center justify-center bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50 min-h-[120px]">
+            {loading ? (
+              <div className="text-slate-400 font-bold animate-pulse flex flex-col items-center gap-2">
+                <ShieldCheck size={24} className="text-emerald-500" />
+                Doğrulanıyor...
+              </div>
+            ) : (
               <GoogleLogin
                 onSuccess={handleSuccess}
                 onError={() => {
@@ -76,9 +76,9 @@ export default function GatePage() {
                 text="continue_with"
                 size="large"
               />
-            </GoogleOAuthProvider>
-          )}
-        </div>
+            )}
+          </div>
+        </GoogleOAuthProvider>
       </div>
     </div>
   );
