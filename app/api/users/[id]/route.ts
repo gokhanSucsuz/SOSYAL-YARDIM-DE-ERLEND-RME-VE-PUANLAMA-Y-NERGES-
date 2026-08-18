@@ -40,7 +40,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const { id } = await params;
-    const { password, isTwoFactorEnabled, name, email, role } = await req.json();
+    const { password, isTwoFactorEnabled, name, email, role, reset2FA } = await req.json();
 
     await connectToDatabase();
     const user = await User.findById(id);
@@ -75,10 +75,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     if (isTwoFactorEnabled !== undefined && session.role === 'superadmin') {
       user.isTwoFactorEnabled = isTwoFactorEnabled;
-      // If disabled, also clear the secret to force re-setup if enabled again
-      if (!isTwoFactorEnabled) {
-        user.twoFactorSecret = '';
-      }
+    }
+
+    if (reset2FA && session.role === 'superadmin') {
+      user.twoFactorSecret = '';
     }
 
     await user.save();

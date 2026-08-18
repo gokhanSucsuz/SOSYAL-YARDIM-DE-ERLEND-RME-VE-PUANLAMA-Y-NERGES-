@@ -317,6 +317,27 @@ export default function PersonnelPage() {
     }
   };
 
+  const handleReset2FA = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!(await showConfirm('Bu personelin 2FA Google Authenticator kurulumunu sıfırlamak istediğinize emin misiniz? (Yeni cihaz için QR kodu tekrar gösterilecektir)'))) return;
+    try {
+      const res = await fetch(`/api/users/${editingUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reset2FA: true })
+      });
+      if (res.ok) {
+        setManageSuccess('2FA Kurulumu sıfırlandı.');
+        setEditingUser(null);
+        loadData();
+      } else {
+        setManageError('Sıfırlama başarısız.');
+      }
+    } catch (err) {
+      setManageError('Hata oluştu.');
+    }
+  };
+
   const handleDeleteUser = async (id: string) => {
     if (!(await showConfirm('Bu personeli silmek istediğinize emin misiniz?'))) return;
     try {
@@ -757,13 +778,20 @@ export default function PersonnelPage() {
                 </div>
               )}
               
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
-                <button type="button" onClick={() => setEditingUser(null)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 font-bold rounded-lg transition-colors">
-                  İptal
-                </button>
-                <button type="submit" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">
-                  Kaydet
-                </button>
+              <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
+                {user?.role === 'superadmin' && editingUser?.isTwoFactorEnabled ? (
+                  <button type="button" onClick={handleReset2FA} className="px-4 py-2 text-red-600 hover:bg-red-50 text-sm font-bold rounded-lg transition-colors w-full sm:w-auto text-left">
+                    2FA Kurulumunu Sıfırla (Yeni Cihaz)
+                  </button>
+                ) : <div />}
+                <div className="flex gap-2 w-full sm:w-auto justify-end">
+                  <button type="button" onClick={() => setEditingUser(null)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 font-bold rounded-lg transition-colors">
+                    İptal
+                  </button>
+                  <button type="submit" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">
+                    Kaydet
+                  </button>
+                </div>
               </div>
             </form>
           </div>
