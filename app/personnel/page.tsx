@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye, UserPlus, Trash2, KeyRound
+  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye, UserPlus, Trash2, KeyRound, ArrowRight
 } from 'lucide-react';
 import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db';
 import Link from 'next/link';
 import { AppHeader } from '@/components/app-header';
+import { ManagerNav } from '@/components/manager-nav';
 
 interface PersonnelStats {
   id: string;
@@ -221,7 +222,7 @@ export default function PersonnelPage() {
       <AppHeader subtitle="👥 Personel Yönetimi" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+        <ManagerNav />
         {/* VIEW SELECTOR */}
         {viewState !== 'detail' && (
           <div className="flex bg-slate-200 p-1 rounded-xl mb-6 w-full max-w-sm">

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
@@ -14,6 +13,7 @@ import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db
 import { useDialog } from '@/components/DialogProvider';
 import { AppHeader } from '@/components/app-header';
 import { LogoImage } from '@/components/logo-image';
+import { ManagerNav } from '@/components/manager-nav';
 
 const COLORS = {
   emerald: '#10b981',
@@ -343,6 +343,7 @@ export default function StatisticsPage() {
       />
 
       <div className="max-w-7xl mx-auto px-4 mt-8 space-y-6">
+        <ManagerNav />
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2">
             <Calendar className="text-slate-400" size={18}/>

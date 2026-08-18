@@ -23,6 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LogoImage } from '@/components/logo-image';
 import { useDialog } from '@/components/DialogProvider';
 import { ManagerStatsView } from '@/components/manager-stats-view';
+import { ManagerNav } from '@/components/manager-nav';
 
 interface BatchModalState {
   isOpen: boolean;
@@ -1249,33 +1250,7 @@ export default function Dashboard() {
 
       <main className="flex-1 w-full max-w-[1920px] mx-auto p-3 sm:p-6 lg:p-8 space-y-5 no-print">
         
-        <div className="space-y-3">
-          <div className="bg-slate-200/80 p-1.5 rounded-2xl flex flex-wrap sm:flex-nowrap items-center gap-2 border border-slate-300/70 shadow-xs">
-            <div className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-default bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5">
-              <Home size={18} className="text-blue-600" />
-              <span>İnceleme Listesi & Hane İşlemleri</span>
-            </div>
-
-            {isManager && (
-              <>
-                <Link
-                  href="/statistics"
-                  className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white"
-                >
-                  <BarChart3 size={18} className="text-blue-600" />
-                  <span>Detaylı İstatistik ve Bütçe Raporları</span>
-                </Link>
-                <Link
-                  href="/personnel"
-                  className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white"
-                >
-                  <Users size={18} className="text-blue-600" />
-                  <span>Personel Yönetimi</span>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
+        <ManagerNav />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>

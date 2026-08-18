@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { AppHeader } from '@/components/app-header';
+import { ManagerNav } from '@/components/manager-nav';
 
 export default function SettingsPage() {
   const { showAlert, showConfirm } = useDialog();
@@ -205,6 +206,7 @@ export default function SettingsPage() {
 
       {/* MAIN CONTAINER */}
       <main className="flex-1 max-w-5xl mx-auto w-full p-6 lg:p-8 space-y-6">
+        <ManagerNav />
         
         {/* SUCCESS NOTIFICATION BANNER */}
         {savedSuccess && (
