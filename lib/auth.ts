@@ -8,7 +8,7 @@ export interface SessionPayload {
   id: string;
   email: string;
   name: string;
-  role: 'manager' | 'personnel';
+  role: 'superadmin' | 'manager' | 'personnel';
   [key: string]: any;
 }
 
