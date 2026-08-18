@@ -424,8 +424,8 @@ export default function PresentationPage() {
             <div className="p-4 rounded-xl bg-slate-100 border border-slate-300 flex flex-col justify-between text-center space-y-3">
               <div>
                 <span className="text-[10px] font-extrabold text-slate-700 uppercase block">UYGUN DEĞİL</span>
-                <span className="text-xl font-black text-slate-800 block mt-1">0 - 30</span>
-                <p className="text-[10px] font-bold text-slate-600">Taban Puan Bandı</p>
+                <span className="text-xl font-black text-slate-800 block mt-1">0 - 50</span>
+                <p className="text-[10px] font-bold text-slate-600">51 Puanlık Taban Bandı</p>
               </div>
               <div className="pt-2 border-t border-slate-300 text-xs font-black text-slate-800">
                 0 TL / Ayni Yardım

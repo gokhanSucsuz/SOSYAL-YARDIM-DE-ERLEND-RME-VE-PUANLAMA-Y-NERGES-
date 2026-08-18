@@ -245,8 +245,8 @@ export default function GuidePage() {
             <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-bold text-slate-700 uppercase block mb-1">Uygun Değil / Ayni</span>
-                <span className="text-2xl font-black text-slate-800">0 - 30</span>
-                <p className="text-[11px] font-semibold text-slate-600 mt-1">31 Puanlık Taban Bandı</p>
+                <span className="text-2xl font-black text-slate-800">0 - 50</span>
+                <p className="text-[11px] font-semibold text-slate-600 mt-1">51 Puanlık Taban Bandı</p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-200 text-xs font-bold text-slate-700">
                 0 TL / Ayni Yardım
