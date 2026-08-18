@@ -47,7 +47,7 @@ export function AppHeader({ showScores, onToggleScores, actions, subtitle }: App
 
   if (!user) return null;
 
-  const isManager = user.role === 'manager';
+  const isManager = user.role === 'manager' || user.role === 'superadmin';
 
   return (
     <header className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-20 no-print shadow-lg border-b border-red-900/60 relative">

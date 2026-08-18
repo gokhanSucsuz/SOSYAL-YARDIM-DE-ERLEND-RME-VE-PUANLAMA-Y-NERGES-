@@ -105,7 +105,7 @@ export default function Dashboard() {
       try {
         const loadedMeetings = await getAllMeetings();
         setMeetings(loadedMeetings);
-        if (currentUser.role === 'manager') {
+        if (currentUser.role === 'manager' || currentUser.role === 'superadmin') {
           setAssessments(await getAllAssessments());
         } else {
           setAssessments(await getAssessmentsByPersonnel(currentUser.id));
@@ -244,7 +244,7 @@ export default function Dashboard() {
   }, [meetings, assessments]);
 
   const personnelPendingStats = useMemo(() => {
-    if (user?.role !== 'manager' || !filterMeetingId) return null;
+    if ((user?.role !== 'manager' && user?.role !== 'superadmin') || !filterMeetingId) return null;
     const stats: Record<string, { pending: number; approved: number; total: number }> = {};
     
     assessments.forEach(a => {
@@ -282,7 +282,7 @@ export default function Dashboard() {
   };
 
   const reloadAssessments = async () => {
-    if (user.role === 'manager') {
+    if (user.role === 'manager' || user.role === 'superadmin') {
       setAssessments(await getAllAssessments());
     } else {
       setAssessments(await getAssessmentsByPersonnel(user.id));
@@ -1072,6 +1072,9 @@ export default function Dashboard() {
   const printableRecords = printOnlySelected
     ? filteredAndSortedAssessments.filter(a => selectedIds.includes(a.id))
     : filteredAndSortedAssessments;
+
+  const isManager = user.role === 'manager' || user.role === 'superadmin';
+  const isSuperAdmin = user.role === 'superadmin';
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
