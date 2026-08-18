@@ -42,21 +42,13 @@ export async function POST(req: NextRequest) {
     if (!user.passwordHash) {
       // Şifre yok, direk geç (zaten needsSetup true oldu)
     } else {
-      // GEÇİCİ SIFIRLAMA KODU (sadece kullanıcının kilitlendiği bu anlık durumu çözmek için)
-      if (password === 'sydv-reset') {
-        user.passwordHash = '';
-        user.forcePasswordReset = true;
-        await user.save();
-        needsSetup = true;
-      } else {
-        // Şifre varsa mutlaka kontrol et
-        if (!password) {
-          return NextResponse.json({ error: 'Lütfen şifrenizi girin' }, { status: 400 });
-        }
-        const isMatch = await bcrypt.compare(password, user.passwordHash);
-        if (!isMatch) {
-          return NextResponse.json({ error: 'Şifre hatalı' }, { status: 401 });
-        }
+      // Şifre varsa mutlaka kontrol et
+      if (!password) {
+        return NextResponse.json({ error: 'Lütfen şifrenizi girin' }, { status: 400 });
+      }
+      const isMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!isMatch) {
+        return NextResponse.json({ error: 'Şifre hatalı' }, { status: 401 });
       }
     }
 
