@@ -7,14 +7,17 @@ import { getSession } from '@/lib/auth';
 export async function GET(req: NextRequest) {
   try {
     const session = await getSession(req);
-    // Allow personnel and managers to get the user list
+    // Allow personnel, managers, and superadmins to get the user list (usually personnel list for managers/personnel)
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await connectToDatabase();
-    // Exclude manager from the list generally or just return personnel
-    const users = await User.find({ role: 'personnel' }, 'id name email role');
+    let query = {};
+    if (session.role !== 'superadmin') {
+       query = { role: 'personnel' };
+    }
+    const users = await User.find(query, 'id name email role isTwoFactorEnabled');
     return NextResponse.json(users);
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -24,13 +27,21 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getSession(req);
-    if (!session || session.role !== 'manager') {
+    if (!session || (session.role !== 'manager' && session.role !== 'superadmin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { email, name, password } = await req.json();
+    const { email, name, password, role } = await req.json();
     if (!email || !name || !password) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Determine the role to assign
+    let assignRole = 'personnel';
+    if (session.role === 'superadmin' && role) {
+      if (role === 'manager' || role === 'personnel') {
+        assignRole = role;
+      }
     }
 
     await connectToDatabase();
@@ -45,12 +56,12 @@ export async function POST(req: NextRequest) {
     const user = new User({
       email,
       name,
-      role: 'personnel',
+      role: assignRole,
       passwordHash: hash
     });
     await user.save();
 
-    return NextResponse.json({ success: true, user: { id: user.id, name: user.name, email: user.email } }, { status: 201 });
+    return NextResponse.json({ success: true, user: { id: user.id, name: user.name, email: user.email, role: user.role } }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

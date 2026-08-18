@@ -7,12 +7,23 @@ import { getSession } from '@/lib/auth';
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession(req);
-    if (!session || session.role !== 'manager') {
+    if (!session || (session.role !== 'manager' && session.role !== 'superadmin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { id } = await params;
     await connectToDatabase();
+
+    const userToDelete = await User.findById(id);
+    if (!userToDelete) {
+       return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Manager cannot delete manager or superadmin
+    if (session.role === 'manager' && userToDelete.role !== 'personnel') {
+       return NextResponse.json({ error: 'Forbidden to delete this user' }, { status: 403 });
+    }
+
     await User.findByIdAndDelete(id);
 
     return NextResponse.json({ success: true });
@@ -24,7 +35,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession(req);
-    if (!session || session.role !== 'manager') {
+    if (!session || (session.role !== 'manager' && session.role !== 'superadmin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -38,6 +49,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     await connectToDatabase();
     const user = await User.findById(id);
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+    // Manager cannot edit manager or superadmin
+    if (session.role === 'manager' && user.role !== 'personnel') {
+       return NextResponse.json({ error: 'Forbidden to edit this user' }, { status: 403 });
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);

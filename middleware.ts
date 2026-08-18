@@ -79,6 +79,21 @@ export async function middleware(req: NextRequest) {
   try {
     const { payload } = await jwtVerify(sessionCookie, key, { algorithms: ['HS256'] });
 
+    if (payload.requires2FA) {
+      if (!pathname.startsWith('/api/auth/2fa') && pathname !== '/2fa-verify') {
+        if (pathname.startsWith('/api/')) {
+          return NextResponse.json({ error: '2FA doğrulaması gereklidir.' }, { status: 403 });
+        }
+        return NextResponse.redirect(new URL('/2fa-verify', req.url));
+      }
+      return NextResponse.next();
+    }
+
+    // If they are verified and try to go to 2fa-verify, redirect home
+    if (pathname === '/2fa-verify') {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+
     if (payload.needsSetup && !pathname.startsWith('/api/auth/setup')) {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Şifre belirlemeniz gerekmektedir.' }, { status: 403 });
@@ -86,7 +101,11 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/login', req.url));
     }
 
-    if (pathname.startsWith('/personnel') && payload.role !== 'manager') {
+    if (pathname.startsWith('/personnel') && payload.role !== 'manager' && payload.role !== 'superadmin') {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+
+    if (pathname.startsWith('/admin') && payload.role !== 'superadmin') {
       return NextResponse.redirect(new URL('/', req.url));
     }
 

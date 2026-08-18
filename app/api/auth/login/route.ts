@@ -64,6 +64,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });
     }
 
+    if (user.isTwoFactorEnabled) {
+      // 2FA is enabled, issue a temporary token
+      const tempSessionData = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        requires2FA: true
+      };
+      const session = await encryptSession(tempSessionData);
+      const res = NextResponse.json({ success: true, requires2FA: true });
+      res.cookies.set('session', session, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/'
+      });
+      return res;
+    }
+
     const sessionData = {
       id: user.id,
       email: user.email,
