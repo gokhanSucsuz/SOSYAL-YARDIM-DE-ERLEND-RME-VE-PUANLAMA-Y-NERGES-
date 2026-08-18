@@ -450,14 +450,58 @@ export default function PresentationPage() {
         </section>
 
 
-        {/* ==================== SECTION 6: SUMMARY & CONCLUSION ==================== */}
+        {/* ==================== SECTION 6: KVKK & CYBER SECURITY ==================== */}
+        <section className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6 print-shadow-none print-break-before print:p-8">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <div className="bg-red-600/10 p-2.5 rounded-xl text-red-600">
+              <Lock size={24} />
+            </div>
+            <div>
+              <h2 className="text-xl font-extrabold text-slate-900">5. KVKK UYUMLULUĞU VE İLERİ DÜZEY SİBER GÜVENLİK ALTYAPISI</h2>
+              <p className="text-xs text-slate-500 font-medium">Uçtan uca şifreleme, iki aşamalı doğrulama ve veri koruma katmanları</p>
+            </div>
+          </div>
+
+          <div className="bg-red-50 border border-red-200 p-4 rounded-xl text-xs text-red-950 space-y-2">
+            <strong className="text-red-900 font-extrabold text-sm flex items-center gap-2">
+              <ShieldCheck size={16} /> KVKK Mahremiyetine Tam Uyum (Kriptolojik Koruma)
+            </strong>
+            <p className="leading-relaxed">
+              Sosyal yardım başvurusu yapan vatandaşların isim, soyisim, T.C. kimlik no, ev adresi ve iletişim bilgileri gibi tüm <strong>özel nitelikli kişisel verileri</strong> veritabanına kaydedilirken <strong>AES-256 (Banka Düzeyi)</strong> şifreleme algoritması ile korunmaktadır (Mongoose Field Encryption). Olası bir sızıntı durumunda dahi şifre anahtarı olmadan veriler okunamaz.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+              <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-200 pb-1.5">
+                <Smartphone size={16} className="text-blue-600" /> 
+                <span>2FA Çift Aşamalı Doğrulama</span>
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Yüksek yetkili hesaplar (Süper Admin vb.) için sisteme girişler sadece şifre ile değil, cep telefonunda üretilen dinamik <strong>Google Authenticator (2FA)</strong> kodları ile sağlanır.
+              </p>
+            </div>
+
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+              <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-200 pb-1.5">
+                <Zap size={16} className="text-emerald-600" /> 
+                <span>JWE (JSON Web Encryption) Token</span>
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Kullanıcı oturumları (session) standart imzalı tokenlar yerine, içi tamamen şifrelenmiş olan <strong>JWE</strong> mimarisi ile korunur. Böylece oturum çalınma (Hijacking) riskleri sıfıra indirgenir.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ==================== SECTION 7: SUMMARY & CONCLUSION ==================== */}
         <section className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6 print-shadow-none print-break-inside-avoid print:p-8">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="bg-purple-600/10 p-2.5 rounded-xl text-purple-600">
               <Sparkles size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-slate-900">5. SONUÇ VE VİZYON DEĞERLENDİRMESİ</h2>
+              <h2 className="text-xl font-extrabold text-slate-900">6. SONUÇ VE VİZYON DEĞERLENDİRMESİ</h2>
               <p className="text-xs text-slate-500 font-medium">Kurumsal vizyon, dijitalleşme vizyonu ve sürdürülebilirlik</p>
             </div>
           </div>

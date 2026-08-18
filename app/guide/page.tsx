@@ -456,6 +456,46 @@ export default function GuidePage() {
           </div>
         </div>
 
+        {/* KVKK & Data Security Section */}
+        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6">
+          <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+            <ShieldCheck className="text-blue-700" size={22} />
+            7. KVKK Uyumluluğu ve İleri Düzey Siber Güvenlik Altyapısı
+          </h3>
+
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Sistemde yer alan başvuru sahiplerine ve personellere ait tüm hassas kişisel veriler, uluslararası siber güvenlik standartlarına (AES-256-CBC) ve <strong>6698 Sayılı Kişisel Verilerin Korunması Kanunu (KVKK)</strong> hükümlerine tam uyumlu olarak kriptolojik koruma altındadır.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            
+            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex items-center gap-2 text-slate-900 font-extrabold text-sm border-b border-slate-200 pb-2">
+                <Lock size={18} className="text-slate-700" />
+                <span>Veritabanı Şifreleme (Mongoose Field Encryption)</span>
+              </div>
+              <ul className="text-xs text-slate-700 space-y-2 list-disc pl-5 font-medium leading-relaxed">
+                <li>Vatandaşlara ait T.C. Kimlik Numarası, Ad Soyad, Telefon Numarası, Ev Adresi ve sosyal inceleme formundaki özel nitelikli tüm JSON verileri veritabanında <strong>şifrelenmiş (encrypted)</strong> olarak tutulur.</li>
+                <li>Sunucu veya veritabanı (MongoDB) doğrudan ele geçirilse dahi, özel 64 karakterli AES-256 <code>ENCRYPTION_KEY</code> olmadan veriler kesinlikle okunamaz ve anlamsız karakterler dizisi olarak görünür.</li>
+                <li>Veriler ancak personel güvenli yetkiyle sisteme girdiğinde anlık olarak çözülerek ekrana yansıtılır (On-the-fly Decryption).</li>
+              </ul>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex items-center gap-2 text-slate-900 font-extrabold text-sm border-b border-slate-200 pb-2">
+                <Smartphone size={18} className="text-slate-700" />
+                <span>2FA Çift Aşamalı Doğrulama & Oturum Güvenliği</span>
+              </div>
+              <ul className="text-xs text-slate-700 space-y-2 list-disc pl-5 font-medium leading-relaxed">
+                <li>Süper Admin ve kritik yetkilere sahip yöneticiler için <strong>Google Authenticator</strong> destekli 2 Adımlı Doğrulama (2FA) sistemi zorunlu tutulabilir.</li>
+                <li>Kullanıcı şifreleri veritabanında düz metin yerine güçlü <strong>Bcrypt</strong> algoritmasıyla &quot;hash&quot;lenerek saklanır (Geri döndürülemez).</li>
+                <li>Giriş yapan personellerin oturumları, AES-GCM kullanılarak imzalanan ve şifrelenen <strong>JWE (JSON Web Encryption)</strong> JWT tokenları ile korunur; dışarıdan müdahale (XSS/CSRF) engellenir.</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
       </main>
     </div>
   );
