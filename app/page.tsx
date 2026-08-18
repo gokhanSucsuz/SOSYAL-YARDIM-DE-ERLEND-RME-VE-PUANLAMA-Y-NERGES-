@@ -282,7 +282,7 @@ export default function Dashboard() {
   };
 
   const reloadAssessments = async () => {
-    if (user.role === 'manager' || user.role === 'superadmin') {
+    if (isManager || user.role === 'superadmin') {
       setAssessments(await getAllAssessments());
     } else {
       setAssessments(await getAssessmentsByPersonnel(user.id));
@@ -1131,14 +1131,14 @@ export default function Dashboard() {
           <div className="min-w-0">
             <h1 className="text-xs sm:text-base font-extrabold leading-tight tracking-wide">T.C. EDİRNE SYDV SOSYAL YARDIM DEĞERLENDİRME SİSTEMİ</h1>
             <p className="text-[10px] sm:text-xs text-red-200 font-semibold tracking-widest uppercase">
-              {user.role === 'manager' ? '🔐 Müdür Yetkilisi Yönetim Paneli' : '👤 Personel İnceleme Paneli'}
+              {isManager ? '🔐 Müdür Yetkilisi Yönetim Paneli' : '👤 Personel İnceleme Paneli'}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0 ml-3">
           <div className="hidden md:block text-right border-r border-red-600/50 pr-3 mr-1">
-            <p className="text-[10px] text-red-200 font-medium">{user.role === 'manager' ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
+            <p className="text-[10px] text-red-200 font-medium">{isManager ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
             <p className="text-sm font-bold truncate max-w-[140px]">{user.name}</p>
           </div>
 
@@ -1186,7 +1186,7 @@ export default function Dashboard() {
                     <p className="text-xs font-bold text-slate-700 mt-0.5 md:hidden">{user.name}</p>
                   </div>
 
-                  {user?.role === 'manager' && (
+                  {isManager && (
                     <Link
                       href="/settings"
                       onClick={() => setIsNavMenuOpen(false)}
@@ -1198,7 +1198,7 @@ export default function Dashboard() {
                       <span>Sistem Ayarları</span>
                     </Link>
                   )}
-                  {user?.role === 'manager' && (
+                  {isManager && (
                     <Link
                       href="/personnel"
                       onClick={() => setIsNavMenuOpen(false)}
@@ -1256,7 +1256,7 @@ export default function Dashboard() {
               <span>İnceleme Listesi & Hane İşlemleri</span>
             </div>
 
-            {user?.role === 'manager' && (
+            {isManager && (
               <>
                 <Link
                   href="/statistics"
@@ -1288,7 +1288,7 @@ export default function Dashboard() {
           </div>
           
           <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-            {user.role === 'manager' && (
+            {isManager && (
               <>
                 <button
                   onClick={() => setNewMeetingModalOpen(true)}
@@ -1351,7 +1351,7 @@ export default function Dashboard() {
                 <span>Özet Liste</span>
               </button>
 
-              {user.role === 'manager' && selectedPendingCount > 0 && (
+              {isManager && selectedPendingCount > 0 && (
                 <button
                   onClick={openApproveSelectedModal}
                   className="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
@@ -1360,7 +1360,7 @@ export default function Dashboard() {
                   <span>Seçilenleri Onayla ({selectedPendingCount})</span>
                 </button>
               )}
-              {user.role === 'manager' && selectedApprovedCount > 0 && (
+              {isManager && selectedApprovedCount > 0 && (
                 <button
                   onClick={openRevokeSelectedModal}
                   className="bg-amber-600 hover:bg-amber-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
@@ -1521,11 +1521,11 @@ export default function Dashboard() {
                 </div>
                 <h4 className="text-lg font-bold text-slate-700 mb-2">Henüz Toplantı Bulunmuyor</h4>
                 <p className="text-slate-500 max-w-md mx-auto text-sm">
-                  {user?.role === 'manager' 
+                  {isManager 
                     ? "Sistemde hiç toplantı kaydı yok. Hane incelemelerini başlatmak için sağ üstteki butondan yeni bir toplantı oluşturunuz."
                     : "Henüz bir toplantı oluşturulmamış. Lütfen müdür yetkilinizin bir toplantı oluşturmasını bekleyiniz."}
                 </p>
-                {user?.role === 'manager' && (
+                {isManager && (
                   <button
                     onClick={() => setNewMeetingModalOpen(true)}
                     className="mt-6 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md shadow-indigo-900/20"
@@ -1587,7 +1587,7 @@ export default function Dashboard() {
                             <Calendar size={13} className="text-slate-400" />
                             Toplantı Tarihi: <strong className="text-slate-800 font-extrabold">{new Date(m.date).toLocaleDateString('tr-TR')}</strong>
                           </span>
-                          {user.role === 'manager' && (
+                          {isManager && (
                             <button
                               type="button"
                               onClick={(e) => handleOpenEditMeeting(m, e)}
@@ -1603,7 +1603,7 @@ export default function Dashboard() {
                           {m.description || "Açıklama girilmemiş."}
                         </p>
 
-                        {user?.role === 'manager' && (() => {
+                        {isManager && (() => {
                           const stats = meetingStatsMap.get(m.id);
                           const mBudget = m.budgetTL || 0;
                           const mPlanned = stats?.plannedAidTL || 0;
@@ -1679,7 +1679,7 @@ export default function Dashboard() {
                         </div>
 
                         <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                          {user.role === 'manager' ? (
+                          {isManager ? (
                             <button
                               type="button"
                               onClick={(e) => handleToggleMeetingStatus(m, e)}
@@ -1747,7 +1747,7 @@ export default function Dashboard() {
                  </div>
                </div>
 
-               {user.role === 'manager' && filterMeetingId && (
+               {isManager && filterMeetingId && (
                  <button
                    onClick={() => {
                      const currentM = meetings.find(m => m.id === filterMeetingId);
@@ -1773,7 +1773,7 @@ export default function Dashboard() {
                const excessTL = isExceeded ? mPlanned - mBudget : 0;
                const remainingTL = mBudget - mPlanned;
 
-               if (user?.role !== 'manager') {
+               if (!isManager) {
                  return (
                    <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
                      <div className="flex items-center gap-2">
@@ -2004,7 +2004,7 @@ export default function Dashboard() {
                   <th className="px-3 py-2.5 font-extrabold">T.C. Kimlik</th>
                   <th className="px-3 py-2.5 font-extrabold">Başvuru Sahibi Adı</th>
                   <th className="px-3 py-2.5 font-extrabold text-center">Hane</th>
-                  {user.role === 'manager' && <th className="px-3 py-2.5 font-extrabold">Personel</th>}
+                  {isManager && <th className="px-3 py-2.5 font-extrabold">Personel</th>}
                   <th className="px-3 py-2.5 font-extrabold text-center">Puan</th>
                   <th className="px-3 py-2.5 font-extrabold">Onay Durumu</th>
                   <th className="px-3 py-2.5 font-extrabold">Karar / Yardım</th>
@@ -2023,13 +2023,13 @@ export default function Dashboard() {
                       <td className="px-3 py-3">{item.applicantTc}</td>
                       <td className="px-3 py-3 font-extrabold">{item.applicantName}</td>
                       <td className="px-3 py-3 text-center">{item.householdSize}</td>
-                      {user.role === 'manager' && <td className="px-3 py-3">{item.personnelName}</td>}
+                      {isManager && <td className="px-3 py-3">{item.personnelName}</td>}
                       <td className="px-3 py-3 text-center font-bold">{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore}</td>
                       <td className="px-3 py-3 font-black uppercase text-[10px]">{isApproved ? 'ONAYLI' : 'BEKLİYOR'}</td>
                       <td className="px-3 py-3 font-bold">{user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "RED" : item.result.assistance?.text}</td>
                       <td className="px-3 py-3 text-right">
                         <div className="inline-flex gap-1">
-                          {user.role === 'manager' && !isApproved && <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 text-white p-1 rounded">✓</button>}
+                          {isManager && !isApproved && <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 text-white p-1 rounded">✓</button>}
                           <button onClick={() => handlePrintSingleDetailed(item)} className="bg-blue-600 text-white p-1 rounded">📄</button>
                           <Link href={`/assessment/${item.id}`} className="bg-slate-900 text-white p-1 rounded">👁️</Link>
                           {!isApproved && <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 text-white p-1 rounded">🗑️</button>}
