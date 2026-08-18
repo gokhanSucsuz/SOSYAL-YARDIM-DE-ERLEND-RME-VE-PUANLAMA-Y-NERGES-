@@ -27,6 +27,7 @@ export function LogoImage({
 
   if (!hasError) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={imgSrc}
         alt={alt}

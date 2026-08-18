@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
 import { useDialog } from '@/components/DialogProvider';
