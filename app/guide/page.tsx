@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 import React from 'react';
 import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
-import { ShieldCheck, ArrowLeft, BookOpen, Scale, Award, AlertTriangle, FileText, CheckCircle2, Home, HeartHandshake, HelpCircle, Layers, Check, Presentation, BarChart3, Smartphone, Download, Printer } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, BookOpen, Scale, Award, AlertTriangle, FileText, CheckCircle2, Home, HeartHandshake, HelpCircle, Layers, Check, Presentation, BarChart3, Smartphone, Download, Printer, Lock } from 'lucide-react';
 
 export default function GuidePage() {
   return (
