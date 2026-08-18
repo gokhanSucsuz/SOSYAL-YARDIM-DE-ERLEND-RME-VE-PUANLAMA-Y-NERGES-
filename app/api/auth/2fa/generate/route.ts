@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 });
     }
 
-    if (user.isTwoFactorEnabled) {
+    if (user.isTwoFactorEnabled && user.twoFactorSecret) {
       return NextResponse.json({ error: '2FA zaten aktif.' }, { status: 400 });
     }
 

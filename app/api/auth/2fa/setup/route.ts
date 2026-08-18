@@ -31,9 +31,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 });
     }
 
-    if (user.isTwoFactorEnabled) {
-      return NextResponse.json({ error: '2FA zaten aktif.' }, { status: 400 });
-    }
+    // Admin tarafından isTwoFactorEnabled true yapılmış olabilir, bu yüzden burada engellemiyoruz.
     
     if (!user.twoFactorSecret) {
         return NextResponse.json({ error: 'Önce QR kodu oluşturun' }, { status: 400 });
