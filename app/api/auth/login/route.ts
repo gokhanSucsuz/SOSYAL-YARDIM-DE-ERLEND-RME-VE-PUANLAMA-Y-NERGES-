@@ -1,0 +1,88 @@
+import { NextRequest, NextResponse } from 'next/server';
+import connectToDatabase from '@/lib/mongodb';
+import User from '@/models/User';
+import bcrypt from 'bcryptjs';
+import { encryptSession } from '@/lib/auth';
+
+export async function POST(req: NextRequest) {
+  try {
+    await connectToDatabase();
+    
+    // Ensure manager exists
+    let manager = await User.findOne({ email: 'edirnesydv@gmail.com' });
+    if (!manager) {
+      manager = new User({
+        email: 'edirnesydv@gmail.com',
+        name: 'Vakıf Müdürü',
+        role: 'manager',
+        passwordHash: null
+      });
+      await manager.save();
+    }
+
+    const { email, password } = await req.json();
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    }
+
+    // Manager first login without password
+    if (user.role === 'manager' && !user.passwordHash) {
+      // Must set password, we will redirect to setup from frontend, but we need to log them in first or provide a temporary token
+      // Let's create a full session anyway, but frontend will see they don't have a password
+      const sessionData = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        needsSetup: true
+      };
+      
+      const session = await encryptSession(sessionData);
+      const res = NextResponse.json({ success: true, needsSetup: true, user: { name: user.name, role: user.role } });
+      res.cookies.set('session', session, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/'
+      });
+      return res;
+    }
+
+    // Normal login with password
+    if (!password) {
+      return NextResponse.json({ error: 'Password is required' }, { status: 400 });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.passwordHash || '');
+    if (!isMatch) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    }
+
+    const sessionData = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role
+    };
+
+    const session = await encryptSession(sessionData);
+    const res = NextResponse.json({ success: true, user: { name: user.name, role: user.role } });
+    res.cookies.set('session', session, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+    return res;
+
+  } catch (error) {
+    console.error('Login error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

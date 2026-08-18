@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye
+  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye, UserPlus, Trash2, KeyRound
 } from 'lucide-react';
 import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db';
 import Link from 'next/link';
@@ -28,6 +28,12 @@ export default function PersonnelPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Users from API
+  const [systemUsers, setSystemUsers] = useState<any[]>([]);
+
+  // View state: 'list' | 'detail' | 'manage'
+  const [viewState, setViewState] = useState<'list' | 'detail' | 'manage'>('list');
+
   // States for personnel list view
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -35,6 +41,33 @@ export default function PersonnelPage() {
   const [selectedPersonnel, setSelectedPersonnel] = useState<PersonnelStats | null>(null);
   const [detailSearchQuery, setDetailSearchQuery] = useState('');
   const [filterMeetingId, setFilterMeetingId] = useState<string>('all');
+
+  // States for manage view
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [manageError, setManageError] = useState('');
+  const [manageSuccess, setManageSuccess] = useState('');
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [loadedMeetings, loadedAssessments, usersRes] = await Promise.all([
+        getAllMeetings(),
+        getAllAssessments(),
+        fetch('/api/users')
+      ]);
+      setMeetings(loadedMeetings);
+      setAssessments(loadedAssessments);
+      if (usersRes.ok) {
+        setSystemUsers(await usersRes.json());
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
@@ -51,22 +84,6 @@ export default function PersonnelPage() {
     }
     
     setUser(currentUser);
-
-    const loadData = async () => {
-      try {
-        const [loadedMeetings, loadedAssessments] = await Promise.all([
-          getAllMeetings(),
-          getAllAssessments()
-        ]);
-        setMeetings(loadedMeetings);
-        setAssessments(loadedAssessments);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadData();
   }, [router]);
 
@@ -75,7 +92,6 @@ export default function PersonnelPage() {
     const map = new Map<string, PersonnelStats>();
 
     assessments.forEach(a => {
-      // Use personnelName as key if personnelId is missing, though personnelId should be there
       const pKey = a.personnelId || a.personnelName;
       if (!map.has(pKey)) {
         map.set(pKey, {
@@ -101,19 +117,16 @@ export default function PersonnelPage() {
 
       if (a.result?.isRejected) p.rejectedCount++;
 
-      // Track last active date based on meeting or assessment date
       if (!p.lastActive || new Date(a.date) > new Date(p.lastActive)) {
         p.lastActive = a.date;
       }
     });
 
-    // Convert to array and filter by search query
     return Array.from(map.values())
       .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase().trim()))
       .sort((a, b) => b.totalAssessments - a.totalAssessments);
   }, [assessments, searchQuery]);
 
-  // Detailed view filtered assessments
   const filteredDetails = useMemo(() => {
     if (!selectedPersonnel) return [];
     
@@ -130,6 +143,52 @@ export default function PersonnelPage() {
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [selectedPersonnel, filterMeetingId, detailSearchQuery]);
 
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setManageError('');
+    setManageSuccess('');
+    
+    if (!newUserName || !newUserEmail || !newUserPassword) {
+      setManageError('Lütfen tüm alanları doldurun.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newUserName, email: newUserEmail, password: newUserPassword })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setManageSuccess('Personel başarıyla eklendi.');
+        setNewUserName('');
+        setNewUserEmail('');
+        setNewUserPassword('');
+        loadData(); // refresh list
+      } else {
+        setManageError(data.error || 'Eklenemedi');
+      }
+    } catch (err) {
+      setManageError('Bir hata oluştu');
+    }
+  };
+
+  const handleDeleteUser = async (id: string) => {
+    if (!confirm('Bu personeli silmek istediğinize emin misiniz?')) return;
+    try {
+      const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setManageSuccess('Personel silindi.');
+        loadData();
+      } else {
+        setManageError('Silinemedi.');
+      }
+    } catch (err) {
+      setManageError('Hata oluştu');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -143,13 +202,89 @@ export default function PersonnelPage() {
       <AppHeader subtitle="👥 Personel Yönetimi" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {!selectedPersonnel ? (
-          /* PERSONNEL LIST VIEW */
+        
+        {/* VIEW SELECTOR */}
+        {viewState !== 'detail' && (
+          <div className="flex bg-slate-200 p-1 rounded-xl mb-6 w-full max-w-sm">
+            <button
+              onClick={() => setViewState('list')}
+              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${viewState === 'list' ? 'bg-white text-slate-800 shadow' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              Performans Özetleri
+            </button>
+            <button
+              onClick={() => setViewState('manage')}
+              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${viewState === 'manage' ? 'bg-white text-slate-800 shadow' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              Hesap Yönetimi
+            </button>
+          </div>
+        )}
+
+        {viewState === 'manage' && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-extrabold text-slate-800">Personel Hesap Yönetimi</h2>
+            <p className="text-sm text-slate-500">Sisteme yeni personel ekleyebilir veya silebilirsiniz.</p>
+            
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><UserPlus size={18}/> Yeni Personel Ekle</h3>
+              <form onSubmit={handleAddUser} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Ad Soyad</label>
+                  <input type="text" value={newUserName} onChange={e => setNewUserName(e.target.value)} className="w-full px-3 py-2 border rounded-xl" required />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Giriş Kullanıcı Adı</label>
+                  <input type="text" value={newUserEmail} onChange={e => setNewUserEmail(e.target.value)} className="w-full px-3 py-2 border rounded-xl" placeholder="E-posta veya kullanıcı adı" required />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Şifre</label>
+                  <input type="password" value={newUserPassword} onChange={e => setNewUserPassword(e.target.value)} className="w-full px-3 py-2 border rounded-xl" placeholder="En az 6 karakter" required />
+                </div>
+                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl transition-colors">Ekle</button>
+              </form>
+              {manageError && <p className="text-red-600 text-sm mt-3">{manageError}</p>}
+              {manageSuccess && <p className="text-emerald-600 text-sm mt-3">{manageSuccess}</p>}
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-500">
+                    <th className="px-6 py-4 font-bold">Ad Soyad</th>
+                    <th className="px-6 py-4 font-bold">Kullanıcı Adı</th>
+                    <th className="px-6 py-4 font-bold">Rol</th>
+                    <th className="px-6 py-4 font-bold text-right">İşlem</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {systemUsers.map(u => (
+                    <tr key={u.id} className="border-b border-slate-100">
+                      <td className="px-6 py-4 font-bold text-slate-800">{u.name}</td>
+                      <td className="px-6 py-4 text-slate-600">{u.email}</td>
+                      <td className="px-6 py-4 text-slate-600">{u.role}</td>
+                      <td className="px-6 py-4 text-right">
+                        <button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg" title="Sil">
+                          <Trash2 size={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {systemUsers.length === 0 && (
+                    <tr><td colSpan={4} className="text-center p-6 text-slate-500">Sistemde personel kaydı yok.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {viewState === 'list' && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-extrabold text-slate-800">Personel Listesi</h2>
-                <p className="text-sm text-slate-500 mt-1">Sistemdeki tüm personellerin genel performans ve inceleme özetleri.</p>
+                <h2 className="text-xl font-extrabold text-slate-800">Personel Performans Listesi</h2>
+                <p className="text-sm text-slate-500 mt-1">Sistemdeki personellerin genel inceleme özetleri.</p>
               </div>
               <div className="relative w-full sm:w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -166,8 +301,8 @@ export default function PersonnelPage() {
             {personnelStats.length === 0 ? (
               <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
                 <Users size={48} className="mx-auto text-slate-300 mb-4" />
-                <h3 className="text-lg font-bold text-slate-700">Kayıtlı Personel Bulunamadı</h3>
-                <p className="text-slate-500 mt-2">Arama kriterlerine uygun personel kaydı mevcut değil.</p>
+                <h3 className="text-lg font-bold text-slate-700">Kayıt Bulunamadı</h3>
+                <p className="text-slate-500 mt-2">Henüz inceleme yapan bir personel bulunmuyor.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -206,10 +341,10 @@ export default function PersonnelPage() {
                     </div>
                     <div className="bg-slate-50 px-6 py-4 flex items-center justify-between">
                       <div className="text-xs text-slate-500 font-medium">
-                        Son Ziyaret: {p.lastActive ? new Date(p.lastActive).toLocaleDateString('tr-TR') : '-'}
+                        Son: {p.lastActive ? new Date(p.lastActive).toLocaleDateString('tr-TR') : '-'}
                       </div>
                       <button
-                        onClick={() => setSelectedPersonnel(p)}
+                        onClick={() => { setSelectedPersonnel(p); setViewState('detail'); }}
                         className="text-blue-600 hover:text-blue-800 text-sm font-bold flex items-center gap-1 group-hover:underline"
                       >
                         Detayları Gör <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -220,8 +355,9 @@ export default function PersonnelPage() {
               </div>
             )}
           </div>
-        ) : (
-          /* PERSONNEL DETAIL VIEW */
+        )}
+
+        {viewState === 'detail' && selectedPersonnel && (
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <button
@@ -229,6 +365,7 @@ export default function PersonnelPage() {
                   setSelectedPersonnel(null);
                   setDetailSearchQuery('');
                   setFilterMeetingId('all');
+                  setViewState('list');
                 }}
                 className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-xl transition-colors bg-slate-100"
               >
@@ -240,7 +377,6 @@ export default function PersonnelPage() {
               </div>
             </div>
 
-            {/* Quick Stats Banner */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-blue-50 text-blue-600 rounded-xl"><FileText size={24} /></div>
@@ -272,7 +408,6 @@ export default function PersonnelPage() {
               </div>
             </div>
 
-            {/* Filters & Table */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="relative w-full md:w-80">
@@ -384,7 +519,6 @@ export default function PersonnelPage() {
   );
 }
 
-// Ensure proper arrow right icon is available
 const ArrowRight = ({ size, className }: { size: number, className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <line x1="5" y1="12" x2="19" y2="12"></line>
