@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Lock, Mail, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 import { useState } from 'react';
 import { LogoImage } from '@/components/logo-image';
+import Link from 'next/link';
 
 export default function SuperAdminLogin() {
   const router = useRouter();
