@@ -9,6 +9,7 @@ import {
   BarChart3, Home, Eye, EyeOff
 } from 'lucide-react';
 import { LogoImage } from '@/components/logo-image';
+import { googleLogout } from '@react-oauth/google';
 
 interface AppHeaderProps {
   /** If provided, a "Puan/Karar Göster/Gizle" toggle button will appear for personnel */
@@ -32,9 +33,16 @@ export function AppHeader({ showScores, onToggleScores, actions, subtitle }: App
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      googleLogout(); // Clear Google Sign-In state
+    } catch (e) {}
     localStorage.removeItem('currentUser');
-    router.push('/login');
+    
+    // Yönlendirme middleware tarafından otomatik olarak /gate'e düşecektir
+    // çünkü google_gate_session çerezi de silindi.
+    router.push('/gate');
   };
 
   if (!user) return null;

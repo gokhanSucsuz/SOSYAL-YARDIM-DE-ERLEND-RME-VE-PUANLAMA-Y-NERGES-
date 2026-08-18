@@ -272,9 +272,13 @@ export default function Dashboard() {
     );
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {}
     localStorage.removeItem('currentUser');
-    router.push('/login');
+    
+    router.push('/gate');
   };
 
   const reloadAssessments = async () => {

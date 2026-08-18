@@ -7,5 +7,10 @@ export async function POST() {
     expires: new Date(0),
     path: '/'
   });
+  res.cookies.set('google_gate_session', '', {
+    httpOnly: true,
+    expires: new Date(0),
+    path: '/'
+  });
   return res;
 }
