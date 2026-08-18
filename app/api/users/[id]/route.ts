@@ -40,7 +40,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const { id } = await params;
-    const { password, isTwoFactorEnabled } = await req.json();
+    const { password, isTwoFactorEnabled, name, email, role } = await req.json();
 
     await connectToDatabase();
     const user = await User.findById(id);
@@ -49,6 +49,22 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     // Manager cannot edit manager or superadmin
     if (session.role === 'manager' && user.role !== 'personnel') {
        return NextResponse.json({ error: 'Forbidden to edit this user' }, { status: 403 });
+    }
+
+    // Process general info updates
+    if (name) user.name = name;
+    if (email && email !== user.email) {
+      // check if email is taken
+      const existing = await User.findOne({ email });
+      if (existing) return NextResponse.json({ error: 'Bu e-posta adresi zaten kullanılıyor.' }, { status: 400 });
+      user.email = email;
+    }
+    
+    // Process role update
+    if (role && session.role === 'superadmin') {
+      if (role === 'manager' || role === 'personnel') {
+        user.role = role;
+      }
     }
 
     if (password) {

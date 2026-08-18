@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye, UserPlus, Trash2, KeyRound
+  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye, UserPlus, Trash2, KeyRound, Download, Edit2, X 
 } from 'lucide-react';
 import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db';
 import Link from 'next/link';
@@ -26,7 +26,7 @@ interface PersonnelStats {
 export default function PersonnelPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
-  const { showConfirm } = useDialog();
+  const { showConfirm, showAlert } = useDialog();
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,8 +49,16 @@ export default function PersonnelPage() {
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
+  const [newUserRole, setNewUserRole] = useState('personnel');
   const [manageError, setManageError] = useState('');
   const [manageSuccess, setManageSuccess] = useState('');
+
+  // States for edit user modal
+  const [editingUser, setEditingUser] = useState<any>(null);
+  const [editName, setEditName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editPassword, setEditPassword] = useState('');
+  const [editRole, setEditRole] = useState('personnel');
 
   const loadData = async () => {
     setLoading(true);
@@ -69,6 +77,95 @@ export default function PersonnelPage() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportPersonnel = async () => {
+    if (!personnelStats || personnelStats.length === 0) {
+      await showAlert('Dışa aktarılacak personel kaydı bulunamadı.', 'warning');
+      return;
+    }
+    try {
+      const ExcelJS = (await import('exceljs')).default;
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Personel Performans Listesi');
+      worksheet.columns = [
+        { header: 'Personel Adı', key: 'name', width: 30 },
+        { header: 'Toplam İnceleme', key: 'totalAssessments', width: 20 },
+        { header: 'Onaylanan', key: 'approvedCount', width: 15 },
+        { header: 'Bekleyen', key: 'pendingCount', width: 15 },
+        { header: 'Reddedilen', key: 'rejectedCount', width: 15 },
+        { header: 'Ort. Puan', key: 'avgScore', width: 15 },
+        { header: 'Son Aktivite', key: 'lastActive', width: 25 },
+      ];
+      worksheet.getRow(1).font = { bold: true };
+      personnelStats.forEach(p => {
+        worksheet.addRow({
+          name: p.name || 'Bilinmiyor',
+          totalAssessments: p.totalAssessments,
+          approvedCount: p.approvedCount,
+          pendingCount: p.pendingCount,
+          rejectedCount: p.rejectedCount,
+          avgScore: p.totalAssessments > 0 ? (p.totalScore / p.totalAssessments).toFixed(1) : 0,
+          lastActive: p.lastActive ? new Date(p.lastActive).toLocaleString('tr-TR') : 'Hiç aktif olmadı'
+        });
+      });
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Personel_Performans_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      await showAlert('Excel oluşturulurken hata oluştu.', 'error');
+    }
+  };
+
+  const handleExportPersonnelDetail = async () => {
+    if (!filteredDetails || filteredDetails.length === 0) {
+      await showAlert('Dışa aktarılacak detay kaydı bulunamadı.', 'warning');
+      return;
+    }
+    try {
+      const ExcelJS = (await import('exceljs')).default;
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Personel İncelemeleri');
+      worksheet.columns = [
+        { header: 'Ziyaret Tarihi', key: 'date', width: 20 },
+        { header: 'T.C. Kimlik No', key: 'tc', width: 15 },
+        { header: 'Başvuru Sahibi', key: 'name', width: 25 },
+        { header: 'Durum', key: 'status', width: 15 },
+        { header: 'Puan', key: 'score', width: 10 },
+      ];
+      worksheet.getRow(1).font = { bold: true };
+      filteredDetails.forEach(d => {
+        let statusText = 'Bekliyor';
+        if (d.status === 'approved') statusText = 'Onaylandı';
+        if (d.result?.isRejected) statusText = 'Reddedildi';
+        worksheet.addRow({
+          date: new Date(d.date).toLocaleString('tr-TR'),
+          tc: d.applicantTc || '-',
+          name: d.applicantName || '-',
+          status: statusText,
+          score: d.result?.totalScore || 0
+        });
+      });
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Personel_Detay_${selectedPersonnel?.name || 'Rapor'}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      await showAlert('Excel oluşturulurken hata oluştu.', 'error');
     }
   };
 
@@ -160,7 +257,7 @@ export default function PersonnelPage() {
       const res = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newUserName, email: newUserEmail, password: newUserPassword })
+        body: JSON.stringify({ name: newUserName, email: newUserEmail, password: newUserPassword, role: newUserRole })
       });
       const data = await res.json();
       if (res.ok) {
@@ -168,9 +265,52 @@ export default function PersonnelPage() {
         setNewUserName('');
         setNewUserEmail('');
         setNewUserPassword('');
-        loadData(); // refresh list
+        setNewUserRole('personnel');
+        loadData();
       } else {
         setManageError(data.error || 'Eklenemedi');
+      }
+    } catch (err) {
+      setManageError('Bir hata oluştu');
+    }
+  };
+
+  const handleOpenEditModal = (u: any) => {
+    setEditingUser(u);
+    setEditName(u.name);
+    setEditEmail(u.email);
+    setEditPassword('');
+    setEditRole(u.role);
+  };
+
+  const handleSaveEditUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setManageError('');
+    setManageSuccess('');
+    if (!editName || !editEmail || !editRole) {
+      setManageError('Ad, E-posta ve Rol alanları zorunludur.');
+      return;
+    }
+    
+    try {
+      const body: any = { name: editName, email: editEmail, role: editRole };
+      if (editPassword) {
+        body.password = editPassword;
+      }
+      
+      const res = await fetch(`/api/users/${editingUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        setManageSuccess('Personel başarıyla güncellendi.');
+        setEditingUser(null);
+        loadData();
+      } else {
+        setManageError(data.error || 'Güncellenemedi');
       }
     } catch (err) {
       setManageError('Bir hata oluştu');
@@ -296,7 +436,10 @@ export default function PersonnelPage() {
                           </button>
                         </td>
                       )}
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4 text-right flex justify-end gap-2">
+                        <button onClick={() => handleOpenEditModal(u)} className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg" title="Düzenle">
+                          <Edit2 size={18} />
+                        </button>
                         <button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg" title="Sil">
                           <Trash2 size={18} />
                         </button>
@@ -318,6 +461,14 @@ export default function PersonnelPage() {
               <div>
                 <h2 className="text-xl font-extrabold text-slate-800">Personel Performans Listesi</h2>
                 <p className="text-sm text-slate-500 mt-1">Sistemdeki personellerin genel inceleme özetleri.</p>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={handleExportPersonnel}
+                  className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg flex items-center gap-2 font-bold transition-colors"
+                >
+                  <Download size={18} /> Excel İndir
+                </button>
               </div>
               <div className="relative w-full sm:w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -453,19 +604,27 @@ export default function PersonnelPage() {
                     className="w-full pl-9 pr-4 py-2 text-sm font-medium rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   />
                 </div>
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-600">
-                  <Calendar size={16} className="text-slate-500" />
-                  <span>Toplantı:</span>
-                  <select
-                    value={filterMeetingId}
-                    onChange={(e) => setFilterMeetingId(e.target.value)}
-                    className="bg-white border border-slate-300 text-slate-800 py-2 px-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm w-48"
+                <div className="flex flex-col md:flex-row items-center gap-4">
+                  <div className="flex items-center gap-2 text-sm font-bold text-slate-600">
+                    <Calendar size={16} className="text-slate-500" />
+                    <span>Toplantı:</span>
+                    <select
+                      value={filterMeetingId}
+                      onChange={(e) => setFilterMeetingId(e.target.value)}
+                      className="bg-white border border-slate-300 text-slate-800 py-2 px-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm w-48"
+                    >
+                      <option value="all">Tüm Toplantılar</option>
+                      {meetings.map(m => (
+                        <option key={m.id} value={m.id}>{m.meetingNo} ({new Date(m.date).toLocaleDateString('tr-TR')})</option>
+                      ))}
+                    </select>
+                  </div>
+                  <button 
+                    onClick={handleExportPersonnelDetail}
+                    className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg flex items-center gap-2 font-bold transition-colors whitespace-nowrap"
                   >
-                    <option value="all">Tüm Toplantılar</option>
-                    {meetings.map(m => (
-                      <option key={m.id} value={m.id}>{m.meetingNo} ({new Date(m.date).toLocaleDateString('tr-TR')})</option>
-                    ))}
-                  </select>
+                    <Download size={18} /> Excel'e Aktar
+                  </button>
                 </div>
               </div>
 
@@ -548,6 +707,69 @@ export default function PersonnelPage() {
           </div>
         )}
       </main>
+
+      {/* EDIT USER MODAL */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden text-slate-800">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-lg text-slate-800">Personel Düzenle</h3>
+              <button onClick={() => setEditingUser(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSaveEditUser} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Ad Soyad</label>
+                <input 
+                  type="text" 
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  value={editName} onChange={e => setEditName(e.target.value)} required 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">E-posta</label>
+                <input 
+                  type="email" 
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  value={editEmail} onChange={e => setEditEmail(e.target.value)} required 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Yeni Şifre (Boş bırakırsanız değişmez)</label>
+                <input 
+                  type="password" 
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  value={editPassword} onChange={e => setEditPassword(e.target.value)} placeholder="••••••••" 
+                />
+              </div>
+              {user?.role === 'superadmin' && (
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Yetki Rolü</label>
+                  <select 
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={editRole} onChange={e => setEditRole(e.target.value)}
+                  >
+                    <option value="personnel">Personel</option>
+                    <option value="manager">Müdür (Manager)</option>
+                  </select>
+                </div>
+              )}
+              
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                <button type="button" onClick={() => setEditingUser(null)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 font-bold rounded-lg transition-colors">
+                  İptal
+                </button>
+                <button type="submit" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">
+                  Kaydet
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
