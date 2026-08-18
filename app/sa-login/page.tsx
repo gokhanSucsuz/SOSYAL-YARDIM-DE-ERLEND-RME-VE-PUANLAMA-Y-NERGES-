@@ -82,7 +82,10 @@ export default function SuperAdminLogin() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-slate-300 mb-1">Şifre</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-bold text-slate-300">Şifre</label>
+              <Link href="/forgot-password" className="text-[11px] font-bold text-amber-500 hover:text-amber-400 underline">Şifremi Unuttum</Link>
+            </div>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
               <input
@@ -90,8 +93,7 @@ export default function SuperAdminLogin() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-600 bg-slate-900 text-white font-medium focus:ring-2 focus:ring-amber-500 outline-none"
-                placeholder="Şifreniz"
-                required
+                placeholder="İlk giriş için boş bırakın"
               />
               <button 
                 type="button" 
@@ -101,6 +103,7 @@ export default function SuperAdminLogin() {
                 {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
               </button>
             </div>
+            <p className="text-[10px] text-slate-400 mt-2 font-medium">Sisteme ilk defa giriyorsanız şifre kısmını boş bırakıp ilerleyin.</p>
           </div>
 
           {error && <p className="text-red-400 text-sm font-semibold text-center bg-red-950/50 py-2 rounded-lg border border-red-900/50">{error}</p>}

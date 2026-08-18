@@ -8,6 +8,7 @@ export interface IUser extends Document {
   passwordHash?: string;
   twoFactorSecret?: string;
   isTwoFactorEnabled: boolean;
+  forcePasswordReset?: boolean;
 }
 
 const UserSchema: Schema = new Schema(
@@ -18,6 +19,7 @@ const UserSchema: Schema = new Schema(
     passwordHash: { type: String }, // null for manager initially
     twoFactorSecret: { type: String },
     isTwoFactorEnabled: { type: Boolean, default: false },
+    forcePasswordReset: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

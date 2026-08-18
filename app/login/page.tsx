@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { InstallPwaModal } from '@/components/install-pwa-modal';
 import { LogoImage } from '@/components/logo-image';
+import Link from 'next/link';
 
 export default function Login() {
   const router = useRouter();
@@ -149,7 +150,7 @@ export default function Login() {
           <div className="flex justify-center mb-6">
             <ShieldCheck size={64} className="text-red-700" />
           </div>
-          <h2 className="text-2xl font-black mb-2 text-center text-slate-900">Müdür Şifre Belirleme</h2>
+          <h2 className="text-2xl font-black mb-2 text-center text-slate-900">Güvenlik: Şifre Belirleme</h2>
           <p className="text-sm text-slate-500 text-center mb-6">Sisteme ilk kez giriş yapıyorsunuz. Güvenliğiniz için lütfen yeni bir şifre belirleyin.</p>
           
           <form onSubmit={handleSetup} className="space-y-4">
@@ -257,9 +258,12 @@ export default function Login() {
           )}
 
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">
-              Şifre {activeTab === 'manager' && <span className="text-xs text-slate-400 font-normal">(İlk girişte boş bırakın)</span>}
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-bold text-slate-700">
+                Şifre {activeTab === 'manager' && <span className="text-xs text-slate-400 font-normal">(İlk girişte boş bırakın)</span>}
+              </label>
+              <Link href="/forgot-password" className="text-[11px] font-bold text-blue-600 hover:text-blue-700 underline">Şifremi Unuttum</Link>
+            </div>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
               <input

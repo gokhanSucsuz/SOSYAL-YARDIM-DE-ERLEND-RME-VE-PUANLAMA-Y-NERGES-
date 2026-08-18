@@ -40,11 +40,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const { id } = await params;
-    const { password } = await req.json();
-
-    if (!password) {
-      return NextResponse.json({ error: 'Password is required' }, { status: 400 });
-    }
+    const { password, isTwoFactorEnabled } = await req.json();
 
     await connectToDatabase();
     const user = await User.findById(id);
@@ -55,9 +51,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
        return NextResponse.json({ error: 'Forbidden to edit this user' }, { status: 403 });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-    user.passwordHash = hash;
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(password, salt);
+      user.passwordHash = hash;
+    }
+
+    if (isTwoFactorEnabled !== undefined && session.role === 'superadmin') {
+      user.isTwoFactorEnabled = isTwoFactorEnabled;
+      // If disabled, also clear the secret to force re-setup if enabled again
+      if (!isTwoFactorEnabled) {
+        user.twoFactorSecret = '';
+      }
+    }
+
     await user.save();
 
     return NextResponse.json({ success: true });

@@ -77,8 +77,8 @@ export default function PersonnelPage() {
     }
     const currentUser = JSON.parse(userStr);
     
-    // Only managers can access this page
-    if (currentUser.role !== 'manager') {
+    // Only managers and superadmins can access this page
+    if (currentUser.role !== 'manager' && currentUser.role !== 'superadmin') {
       router.push('/');
       return;
     }
@@ -189,6 +189,25 @@ export default function PersonnelPage() {
     }
   };
 
+  const handleToggle2FA = async (id: string, newStatus: boolean) => {
+    if (!confirm(`Bu kullanıcının 2FA sistemini ${newStatus ? 'açmak' : 'kapatmak'} istediğinize emin misiniz?`)) return;
+    try {
+      const res = await fetch(`/api/users/${id}`, { 
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isTwoFactorEnabled: newStatus })
+      });
+      if (res.ok) {
+        setManageSuccess(`2FA ${newStatus ? 'açıldı' : 'kapatıldı'}.`);
+        loadData();
+      } else {
+        setManageError('2FA güncellenemedi.');
+      }
+    } catch (err) {
+      setManageError('Hata oluştu');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -254,6 +273,7 @@ export default function PersonnelPage() {
                     <th className="px-6 py-4 font-bold">Ad Soyad</th>
                     <th className="px-6 py-4 font-bold">Kullanıcı Adı</th>
                     <th className="px-6 py-4 font-bold">Rol</th>
+                    {user?.role === 'superadmin' && <th className="px-6 py-4 font-bold text-center">2FA Durumu</th>}
                     <th className="px-6 py-4 font-bold text-right">İşlem</th>
                   </tr>
                 </thead>
@@ -263,6 +283,16 @@ export default function PersonnelPage() {
                       <td className="px-6 py-4 font-bold text-slate-800">{u.name}</td>
                       <td className="px-6 py-4 text-slate-600">{u.email}</td>
                       <td className="px-6 py-4 text-slate-600">{u.role}</td>
+                      {user?.role === 'superadmin' && (
+                        <td className="px-6 py-4 text-center">
+                          <button 
+                            onClick={() => handleToggle2FA(u.id, !u.isTwoFactorEnabled)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${u.isTwoFactorEnabled ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                          >
+                            {u.isTwoFactorEnabled ? 'Açık (Kapat)' : 'Kapalı (Aç)'}
+                          </button>
+                        </td>
+                      )}
                       <td className="px-6 py-4 text-right">
                         <button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg" title="Sil">
                           <Trash2 size={18} />

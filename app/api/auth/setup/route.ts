@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
     const hash = await bcrypt.hash(password, salt);
     
     user.passwordHash = hash;
+    user.forcePasswordReset = false; // Reset the flag
     await user.save();
 
     // Create a new session without needsSetup

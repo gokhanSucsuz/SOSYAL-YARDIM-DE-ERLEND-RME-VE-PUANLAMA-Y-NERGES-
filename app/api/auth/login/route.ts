@@ -61,10 +61,15 @@ export async function POST(req: NextRequest) {
 
     const isMatch = await bcrypt.compare(password, user.passwordHash || '');
     if (!isMatch) {
-      return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });
+      return NextResponse.json({ error: 'Şifre hatalı' }, { status: 401 });
     }
 
-    if (user.isTwoFactorEnabled) {
+    let needsSetup = false;
+    if (user.forcePasswordReset) {
+      needsSetup = true;
+    }
+
+    if (user.isTwoFactorEnabled && !needsSetup) {
       // 2FA is enabled, issue a temporary token
       const tempSessionData = {
         id: user.id,
@@ -88,11 +93,12 @@ export async function POST(req: NextRequest) {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role
+      role: user.role,
+      needsSetup
     };
 
     const session = await encryptSession(sessionData);
-    const res = NextResponse.json({ success: true, user: { name: user.name, role: user.role } });
+    const res = NextResponse.json({ success: true, user: { name: user.name, role: user.role, needsSetup } });
     res.cookies.set('session', session, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
