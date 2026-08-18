@@ -49,6 +49,7 @@ export default function EditAssessmentWizard() {
     b_yetim: false,
     b_koruyucuAile: false,
     b_yabanciUyruklu: false,
+    b_dusukEngelli: false,
     b_ozelSebepMetin: "",
     b_ozelSebepPuan: 0,
     b_cokluOzelDurumluBirey: false,
