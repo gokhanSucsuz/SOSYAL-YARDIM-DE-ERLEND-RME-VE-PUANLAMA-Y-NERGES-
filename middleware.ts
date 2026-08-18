@@ -21,6 +21,62 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // Fetch maintenance mode
+  let isMaintenanceMode = false;
+  try {
+    const maintenanceRes = await fetch(`${req.nextUrl.origin}/api/settings/maintenance`, {
+      next: { revalidate: 15 } // Cache for 15 seconds
+    });
+    if (maintenanceRes.ok) {
+      const data = await maintenanceRes.json();
+      isMaintenanceMode = data.isMaintenanceMode;
+    }
+  } catch (e) {
+    // Fail silently if API is unreachable during build or network issue
+  }
+
+  // Parse session early to know if superadmin
+  let sessionPayload: any = null;
+  const sessionCookie = req.cookies.get('session')?.value;
+  if (sessionCookie) {
+    try {
+      const { payload } = await jwtVerify(sessionCookie, key, { algorithms: ['HS256'] });
+      sessionPayload = payload;
+    } catch (e) {
+      // Invalid session
+    }
+  }
+  const isSuperAdmin = sessionPayload?.role === 'superadmin';
+
+  // --- MAINTENANCE MODE ENFORCEMENT ---
+  if (isMaintenanceMode && !isSuperAdmin) {
+    // Allow access to maintenance page and sa-login
+    if (
+      pathname === '/maintenance' ||
+      pathname === '/sa-login' ||
+      pathname.startsWith('/api/auth/sa-login') ||
+      pathname === '/api/settings/maintenance'
+    ) {
+      return NextResponse.next();
+    }
+    
+    // Redirect everything else
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Sistem şu an bakımdadır.' }, { status: 503 });
+    }
+    return NextResponse.redirect(new URL('/maintenance', req.url));
+  }
+
+  // If NOT in maintenance mode, redirect away from /maintenance
+  if (!isMaintenanceMode && pathname === '/maintenance') {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
+
+  // Allow /sa-login to bypass google gate
+  if (pathname === '/sa-login' || pathname.startsWith('/api/auth/sa-login')) {
+    return NextResponse.next();
+  }
+
   // --- 1. GOOGLE GATEKEEPER ---
   const googleSessionCookie = req.cookies.get('google_gate_session')?.value;
   let isGoogleVerified = false;
@@ -67,55 +123,44 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const sessionCookie = req.cookies.get('session')?.value;
-
-  if (!sessionCookie) {
+  if (!sessionCookie || !sessionPayload) {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Oturum süresi doldu. Lütfen tekrar giriş yapın.' }, { status: 401 });
     }
     return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  try {
-    const { payload } = await jwtVerify(sessionCookie, key, { algorithms: ['HS256'] });
-
-    if (payload.requires2FA) {
-      if (!pathname.startsWith('/api/auth/2fa') && pathname !== '/2fa-verify') {
-        if (pathname.startsWith('/api/')) {
-          return NextResponse.json({ error: '2FA doğrulaması gereklidir.' }, { status: 403 });
-        }
-        return NextResponse.redirect(new URL('/2fa-verify', req.url));
-      }
-      return NextResponse.next();
-    }
-
-    // If they are verified and try to go to 2fa-verify, redirect home
-    if (pathname === '/2fa-verify') {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
-
-    if (payload.needsSetup && !pathname.startsWith('/api/auth/setup')) {
+  if (sessionPayload.requires2FA) {
+    if (!pathname.startsWith('/api/auth/2fa') && pathname !== '/2fa-verify') {
       if (pathname.startsWith('/api/')) {
-        return NextResponse.json({ error: 'Şifre belirlemeniz gerekmektedir.' }, { status: 403 });
+        return NextResponse.json({ error: '2FA doğrulaması gereklidir.' }, { status: 403 });
       }
-      return NextResponse.redirect(new URL('/login', req.url));
+      return NextResponse.redirect(new URL('/2fa-verify', req.url));
     }
-
-    if (pathname.startsWith('/personnel') && payload.role !== 'manager' && payload.role !== 'superadmin') {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
-
-    if (pathname.startsWith('/admin') && payload.role !== 'superadmin') {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
-
     return NextResponse.next();
-  } catch (error) {
+  }
+
+  // If they are verified and try to go to 2fa-verify, redirect home
+  if (pathname === '/2fa-verify') {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
+
+  if (sessionPayload.needsSetup && !pathname.startsWith('/api/auth/setup')) {
     if (pathname.startsWith('/api/')) {
-      return NextResponse.json({ error: 'Geçersiz oturum. Lütfen tekrar giriş yapın.' }, { status: 401 });
+      return NextResponse.json({ error: 'Şifre belirlemeniz gerekmektedir.' }, { status: 403 });
     }
     return NextResponse.redirect(new URL('/login', req.url));
   }
+
+  if (pathname.startsWith('/personnel') && sessionPayload.role !== 'manager' && sessionPayload.role !== 'superadmin') {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
+
+  if (pathname.startsWith('/admin') && sessionPayload.role !== 'superadmin') {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
