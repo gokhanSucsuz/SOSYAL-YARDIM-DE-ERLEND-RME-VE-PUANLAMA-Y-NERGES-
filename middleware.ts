@@ -97,7 +97,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!isGoogleVerified) {
+  if (!isGoogleVerified && !isSuperAdmin) {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Yetkisiz erişim. Lütfen ana sayfadan Google ile giriş yapın.' }, { status: 401 });
     }
