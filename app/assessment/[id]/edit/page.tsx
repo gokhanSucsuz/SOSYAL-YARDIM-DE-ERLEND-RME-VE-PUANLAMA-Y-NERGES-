@@ -99,6 +99,13 @@ export default function EditAssessmentWizard() {
     f_aciliyet: 0,
     f_sosyalDestek: 0,
     f_risk: 0,
+    // Varlık Testi (Sistem Kontrolleri Adımı)
+    a_aracSahibi: false,
+    a_birdenFazlaTasinmaz: false,
+    a_aktifSgkPrim: false,
+    // Yardım Yığılması (Mükerrerlik)
+    a_son3AyYardimAldi: false,
+    a_son3AyYardimKisi: 0,
     // Check
     systemChecksDone: false,
     falseStatement: false,
