@@ -7,15 +7,56 @@ const key = new TextEncoder().encode(JWT_SECRET);
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Protect all routes except /login and some api routes and public assets
+  // Ignore static/public paths
   if (
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/api/auth/login') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon.ico') ||
     pathname.startsWith('/manifest.json') ||
     pathname.startsWith('/icons')
   ) {
+    return NextResponse.next();
+  }
+
+  // --- 1. GOOGLE GATEKEEPER ---
+  const googleSessionCookie = req.cookies.get('google_gate_session')?.value;
+  let isGoogleVerified = false;
+
+  if (googleSessionCookie) {
+    try {
+      const { payload } = await jwtVerify(googleSessionCookie, key, { algorithms: ['HS256'] });
+      if (payload.isGoogleVerified && payload.email === 'edirnesydv@gmail.com') {
+        isGoogleVerified = true;
+      }
+    } catch (err) {
+      // Invalid google session
+    }
+  }
+
+  // Allow passing to the google verification API
+  if (pathname.startsWith('/api/auth/google')) {
+    return NextResponse.next();
+  }
+
+  if (!isGoogleVerified) {
+    if (pathname !== '/gate') {
+      return NextResponse.redirect(new URL('/gate', req.url));
+    }
+    return NextResponse.next();
+  }
+
+  if (pathname === '/gate' && isGoogleVerified) {
+    // Already verified, no need to be at the gate
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
+  // --- 2. INTERNAL APP SESSION ---
+  // Allow passing to the login API
+  if (pathname.startsWith('/api/auth/login')) {
+    return NextResponse.next();
+  }
+
+  // If path is /login, they are allowed to see it since they passed the gate
+  if (pathname === '/login') {
     return NextResponse.next();
   }
 
@@ -28,33 +69,22 @@ export async function middleware(req: NextRequest) {
   try {
     const { payload } = await jwtVerify(sessionCookie, key, { algorithms: ['HS256'] });
 
-    // If needsSetup is true, force redirect to /login (where we will show setup modal)
-    // EXCEPT for /api/auth/setup itself
     if (payload.needsSetup && !pathname.startsWith('/api/auth/setup')) {
       return NextResponse.redirect(new URL('/login', req.url));
     }
 
-    // Role-based protection
     if (pathname.startsWith('/personnel') && payload.role !== 'manager') {
       return NextResponse.redirect(new URL('/', req.url));
     }
 
     return NextResponse.next();
   } catch (error) {
-    // Token is invalid or expired
     return NextResponse.redirect(new URL('/login', req.url));
   }
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api/auth/login (API route)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
-    '/((?!api/auth/login|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
   ],
 };
