@@ -7,14 +7,12 @@ import { getSession } from '@/lib/auth';
 export async function GET(req: NextRequest) {
   try {
     const session = await getSession(req);
-    // Allow personnel, managers, and superadmins to get the user list (usually personnel list for managers/personnel)
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // session could be null on the login page.
+    // middleware ensures they have google_gate_session to even get here.
 
     await connectToDatabase();
     let query = {};
-    if (session.role !== 'superadmin') {
+    if (!session || session.role !== 'superadmin') {
        query = { role: 'personnel' };
     }
     const users = await User.find(query);

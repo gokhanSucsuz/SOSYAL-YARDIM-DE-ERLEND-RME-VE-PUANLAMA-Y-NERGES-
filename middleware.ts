@@ -113,8 +113,11 @@ export async function middleware(req: NextRequest) {
   }
 
   // --- 2. INTERNAL APP SESSION ---
-  // Allow passing to the login API
-  if (pathname.startsWith('/api/auth/login')) {
+  // Allow passing to the login API and fetching users list for login dropdown
+  if (
+    pathname.startsWith('/api/auth/login') ||
+    (req.method === 'GET' && pathname === '/api/users')
+  ) {
     return NextResponse.next();
   }
 
