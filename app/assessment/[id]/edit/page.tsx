@@ -351,7 +351,8 @@ export default function EditAssessmentWizard() {
       await saveAssessment(assessmentData);
       router.push(`/assessment/${assessmentId}`);
     } catch (err) {
-      await showAlert("Kayıt sırasında hata oluştu!");
+      console.error(err);
+      await showAlert("Kayıt sırasında hata oluştu! " + (err instanceof Error ? err.message : ''), 'warning');
     }
   };
 

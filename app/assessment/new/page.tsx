@@ -329,7 +329,8 @@ function NewAssessmentContent() {
       await saveAssessment(assessmentData);
       router.push('/');
     } catch (err) {
-      showAlert("Kayıt sırasında hata oluştu!", "error");
+      console.error(err);
+      showAlert("Kayıt sırasında hata oluştu! " + (err instanceof Error ? err.message : ''), "error");
     }
   };
 

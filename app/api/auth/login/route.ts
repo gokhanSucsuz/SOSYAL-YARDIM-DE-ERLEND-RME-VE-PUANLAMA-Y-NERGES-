@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       };
       
       const session = await encryptSession(sessionData);
-      const res = NextResponse.json({ success: true, needsSetup: true, user: { name: user.name, role: user.role } });
+      const res = NextResponse.json({ success: true, needsSetup: true, user: { id: user.id, name: user.name, role: user.role } });
       res.cookies.set('session', session, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
           needsSetup: false
         };
         const session = await encryptSession(sessionData);
-        const res = NextResponse.json({ success: true, needs2FASetup: true, user: { name: user.name, role: user.role } });
+        const res = NextResponse.json({ success: true, needs2FASetup: true, user: { id: user.id, name: user.name, role: user.role } });
         res.cookies.set('session', session, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
@@ -169,7 +169,7 @@ export async function POST(req: NextRequest) {
     };
 
     const session = await encryptSession(sessionData);
-    const res = NextResponse.json({ success: true, user: { name: user.name, role: user.role, needsSetup } });
+    const res = NextResponse.json({ success: true, user: { id: user.id, name: user.name, role: user.role, needsSetup } });
     res.cookies.set('session', session, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

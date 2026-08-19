@@ -175,7 +175,17 @@ export const saveAssessment = async (assessment: Assessment): Promise<void> => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(assessment)
   });
-  if (!res.ok) throw new Error('Failed to save assessment');
+  if (!res.ok) {
+    let errMessage = 'Failed to save assessment';
+    try {
+      const errData = await res.json();
+      errMessage = errData.error || errMessage;
+      if (errData.details) {
+        errMessage += ' - ' + JSON.stringify(errData.details);
+      }
+    } catch (e) {}
+    throw new Error(errMessage);
+  }
 };
 
 export const batchUpdateAssessments = async (ids: string[], status: 'approved' | 'pending'): Promise<void> => {

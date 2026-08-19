@@ -82,8 +82,8 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json(assessment, { status: 201 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving assessment:', error);
-    return NextResponse.json({ error: 'Failed to save assessment' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to save assessment', stack: error.stack }, { status: 500 });
   }
 }
