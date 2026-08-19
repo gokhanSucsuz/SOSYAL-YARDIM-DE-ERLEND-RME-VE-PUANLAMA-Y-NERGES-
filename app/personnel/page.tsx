@@ -136,8 +136,11 @@ export default function PersonnelPage() {
       const worksheet = workbook.addWorksheet('Personel İncelemeleri');
       worksheet.columns = [
         { header: 'Ziyaret Tarihi', key: 'date', width: 20 },
+        { header: 'Hane Ref No', key: 'householdNo', width: 15 },
         { header: 'T.C. Kimlik No', key: 'tc', width: 15 },
         { header: 'Başvuru Sahibi', key: 'name', width: 25 },
+        { header: 'Hane Kişi', key: 'householdSize', width: 10 },
+        { header: 'İkamet Adresi', key: 'address', width: 40 },
         { header: 'Durum', key: 'status', width: 15 },
         { header: 'Puan', key: 'score', width: 10 },
       ];
@@ -148,8 +151,11 @@ export default function PersonnelPage() {
         if (d.result?.isRejected) statusText = 'Reddedildi';
         worksheet.addRow({
           date: new Date(d.date).toLocaleString('tr-TR'),
+          householdNo: d.householdNo || '-',
           tc: d.applicantTc || '-',
           name: d.applicantName || '-',
+          householdSize: d.householdSize || 1,
+          address: d.applicantAddress || '-',
           status: statusText,
           score: d.result?.totalScore || 0
         });
@@ -434,8 +440,8 @@ export default function PersonnelPage() {
               {manageSuccess && <p className="text-emerald-600 text-sm mt-3">{manageSuccess}</p>}
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <table className="w-full text-left text-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap md:whitespace-normal">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-slate-500">
                     <th className="px-6 py-4 font-bold">Ad Soyad</th>
@@ -715,8 +721,10 @@ export default function PersonnelPage() {
                             <td className="px-6 py-4 text-right">
                               <Link
                                 href={`/assessment/${a.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="inline-flex items-center justify-center p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-colors"
-                                title="İnceleme Detayına Git"
+                                title="İnceleme Detayını Yeni Sekmede Aç"
                               >
                                 <Eye size={18} />
                               </Link>
