@@ -799,6 +799,7 @@ export default function PersonnelPage() {
                 </table>
               </div>
             </div>
+            )}
           </div>
         )}
       </main>
