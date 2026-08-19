@@ -1964,8 +1964,8 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="hidden md:block w-full overflow-x-auto xl:overflow-x-visible">
-            <table className="w-full text-left border-collapse table-auto">
+          <div className="w-full overflow-x-auto">
+            <table className="w-full text-left border-collapse table-auto whitespace-nowrap md:whitespace-normal">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 text-[10px] uppercase tracking-wider border-b border-slate-200">
                   <th className="px-2 py-2.5 font-black text-center w-8">

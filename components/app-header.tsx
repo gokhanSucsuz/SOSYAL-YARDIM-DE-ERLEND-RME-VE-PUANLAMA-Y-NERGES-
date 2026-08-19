@@ -52,28 +52,29 @@ export function AppHeader({ showScores, onToggleScores, actions, subtitle }: App
   return (
     <header className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-20 no-print shadow-lg border-b border-red-900/60 relative">
       {/* Left: Logo + Title */}
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <LogoImage
-          className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl shadow-md border-2 border-white/30 object-cover shrink-0"
+          className="w-9 h-9 sm:w-12 sm:h-12 rounded-2xl shadow-md border-2 border-white/30 object-cover shrink-0"
         />
         <div className="min-w-0">
-          <h1 className="text-xs sm:text-base font-extrabold leading-tight tracking-wide">
-            T.C. EDİRNE SYDV SOSYAL YARDIM DEĞERLENDİRME SİSTEMİ
+          <h1 className="text-[10px] sm:text-sm md:text-base font-extrabold leading-tight tracking-wide truncate">
+            <span className="hidden sm:inline">T.C. EDİRNE SYDV SOSYAL YARDIM DEĞERLENDİRME SİSTEMİ</span>
+            <span className="sm:hidden">EDİRNE SYDV OTOMASYONU</span>
           </h1>
-          <p className="text-[10px] sm:text-xs text-red-200 font-semibold tracking-widest uppercase">
+          <p className="text-[9px] sm:text-xs text-red-200 font-semibold tracking-widest uppercase truncate">
             {subtitle
               ? subtitle
               : isManager
-              ? '🔐 Müdür Yetkilisi Yönetim Paneli'
-              : '👤 Personel İnceleme Paneli'}
+              ? '🔐 Müdür Yetkilisi Yönetimi'
+              : '👤 Personel Paneli'}
           </p>
         </div>
       </div>
 
       {/* Right: Actions + Menu + Logout */}
-      <div className="flex items-center gap-2 shrink-0 ml-3">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-2">
         {/* User info */}
-        <div className="hidden md:block text-right border-r border-red-600/50 pr-3 mr-1">
+        <div className="hidden lg:block text-right border-r border-red-600/50 pr-3 mr-1">
           <p className="text-[10px] text-red-200 font-medium">
             {isManager ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}
           </p>
@@ -81,22 +82,22 @@ export function AppHeader({ showScores, onToggleScores, actions, subtitle }: App
         </div>
 
         {/* Extra action buttons */}
-        {actions && <div className="flex items-center gap-2">{actions}</div>}
+        {actions && <div className="flex items-center gap-1 sm:gap-2">{actions}</div>}
 
         {/* Score toggle for personnel */}
         {!isManager && onToggleScores && (
           <button
             onClick={onToggleScores}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border focus:outline-none ${
+            className={`flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border focus:outline-none ${
               showScores
                 ? 'bg-blue-600/30 border-blue-400/50 text-blue-100 hover:bg-blue-600/50'
                 : 'bg-white/10 border-white/20 hover:bg-white/20 text-white'
             }`}
-            title={showScores ? 'Puan ve Kararları Gizle' : 'Puan ve Kararları Göster'}
+            title={showScores ? 'Puan/Karar Gizle' : 'Puan/Karar Göster'}
           >
             {showScores ? <EyeOff size={16} /> : <Eye size={16} />}
-            <span className="hidden sm:inline">
-              {showScores ? 'Puan ve Kararları Gizle' : 'Puan ve Kararları Göster'}
+            <span className="hidden md:inline">
+              {showScores ? 'Gizle' : 'Göster'}
             </span>
           </button>
         )}

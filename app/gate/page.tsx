@@ -80,6 +80,13 @@ export default function GatePage() {
           </div>
         </GoogleOAuthProvider>
       </div>
+
+      {/* Hidden Superadmin Login Link for Mobile (Tap bottom right corner) */}
+      <div 
+        className="fixed bottom-0 right-0 w-16 h-16 opacity-0 z-50 cursor-default"
+        onClick={() => router.push('/sa-login')}
+        title="Sistem Yöneticisi"
+      />
     </div>
   );
 }
