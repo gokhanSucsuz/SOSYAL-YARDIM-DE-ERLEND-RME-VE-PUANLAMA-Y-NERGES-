@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2, Info,
-  Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug, User, MapPin, Phone, Hash, Users, Activity
+  Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug, User, MapPin, Phone, Hash, Users, Activity, Minus, Plus
 } from 'lucide-react';
 import { saveAssessment, getAllAssessments, calculateAssistanceFromScore } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
@@ -529,13 +529,31 @@ function NewAssessmentContent() {
                           <label className="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <Users size={14} className="text-blue-400" /> Hanedeki Toplam Kişi Sayısı
                           </label>
-                          <input 
-                            type="number" 
-                            min="1"
-                            value={state.householdSize}
-                            onChange={e => set('householdSize', parseInt(e.target.value) || 1)}
-                            className="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
-                          />
+                          <div className="flex items-center w-full bg-slate-800/80 border border-slate-700 rounded-2xl overflow-hidden shadow-inner focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                            <button
+                              type="button"
+                              onClick={() => set('householdSize', Math.max(1, (state.householdSize || 1) - 1))}
+                              className="px-4 py-3.5 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                            >
+                              <Minus size={20} />
+                            </button>
+                            <input 
+                              type="number" 
+                              min="1"
+                              value={state.householdSize || ''}
+                              onChange={e => set('householdSize', parseInt(e.target.value) || 1)}
+                              onFocus={e => e.target.select()}
+                              className="flex-1 w-full bg-transparent py-3.5 px-2 text-center text-base font-bold text-white outline-none appearance-none"
+                              style={{ MozAppearance: 'textfield' }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => set('householdSize', (state.householdSize || 1) + 1)}
+                              className="px-4 py-3.5 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                            >
+                              <Plus size={20} />
+                            </button>
+                          </div>
                         </div>
                         <div className="md:col-span-2">
                           <label className="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">

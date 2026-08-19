@@ -8,7 +8,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { 
   ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, CheckCircle2, Info,
-  Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug
+  Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug, Minus, Plus
 } from 'lucide-react';
 import { saveAssessment, getAssessmentById, calculateAssistanceFromScore, getAllMeetings, isMeetingLocked } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
@@ -461,13 +461,31 @@ export default function EditAssessmentWizard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-1">
                       <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Hanedeki Kişi Sayısı</label>
-                      <input 
-                        type="number" 
-                        min="1"
-                        value={state.householdSize}
-                        onChange={e => set('householdSize', parseInt(e.target.value) || 1)}
-                        className="w-full border border-slate-300 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
-                      />
+                      <div className="flex items-center w-full border border-slate-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
+                        <button
+                          type="button"
+                          onClick={() => set('householdSize', Math.max(1, (state.householdSize || 1) - 1))}
+                          className="px-4 py-3 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors bg-slate-50 border-r border-slate-200"
+                        >
+                          <Minus size={20} />
+                        </button>
+                        <input 
+                          type="number" 
+                          min="1"
+                          value={state.householdSize || ''}
+                          onChange={e => set('householdSize', parseInt(e.target.value) || 1)}
+                          onFocus={e => e.target.select()}
+                          className="flex-1 w-full bg-white py-3 px-2 text-center text-lg font-medium text-slate-900 outline-none appearance-none"
+                          style={{ MozAppearance: 'textfield' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => set('householdSize', (state.householdSize || 1) + 1)}
+                          className="px-4 py-3 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors bg-slate-50 border-l border-slate-200"
+                        >
+                          <Plus size={20} />
+                        </button>
+                      </div>
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Açık Adres</label>
