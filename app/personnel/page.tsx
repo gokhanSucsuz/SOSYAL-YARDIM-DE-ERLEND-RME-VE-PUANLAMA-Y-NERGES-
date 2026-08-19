@@ -21,6 +21,7 @@ interface PersonnelStats {
   totalScore: number;
   lastActive: string | null;
   assessments: Assessment[];
+  uniqueMeetingIds: Set<string>;
 }
 
 export default function PersonnelPage() {
@@ -213,7 +214,8 @@ export default function PersonnelPage() {
           rejectedCount: 0,
           totalScore: 0,
           lastActive: null,
-          assessments: []
+          assessments: [],
+          uniqueMeetingIds: new Set()
         });
       }
       
@@ -221,6 +223,7 @@ export default function PersonnelPage() {
       p.totalAssessments++;
       p.totalScore += a.result?.totalScore || 0;
       p.assessments.push(a);
+      if (a.meetingId) p.uniqueMeetingIds.add(a.meetingId);
 
       if (a.status === 'approved') p.approvedCount++;
       else p.pendingCount++;
@@ -251,6 +254,30 @@ export default function PersonnelPage() {
         return true;
       })
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  })();
+
+  const personnelMeetingStats = (() => {
+    if (!selectedPersonnel) return [];
+    const pMeetings = new Map<string, { id: string, meetingNo: string, date: string, total: number, approved: number }>();
+    
+    selectedPersonnel.assessments.forEach(a => {
+      if (!a.meetingId) return;
+      if (!pMeetings.has(a.meetingId)) {
+        const mObj = meetings.find(m => m.id === a.meetingId);
+        pMeetings.set(a.meetingId, {
+          id: a.meetingId,
+          meetingNo: mObj ? mObj.meetingNo : 'Bilinmeyen Toplantı',
+          date: mObj ? mObj.date : a.date,
+          total: 0,
+          approved: 0
+        });
+      }
+      const mStat = pMeetings.get(a.meetingId)!;
+      mStat.total++;
+      if (a.status === 'approved') mStat.approved++;
+    });
+    
+    return Array.from(pMeetings.values()).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   })();
 
   const handleAddUser = async (e: React.FormEvent) => {
@@ -539,18 +566,22 @@ export default function PersonnelPage() {
                         </div>
                       </div>
                       
-                      <div className="grid grid-cols-3 gap-2 mt-6">
-                        <div className="bg-slate-50 rounded-xl p-3 text-center">
-                          <p className="text-[10px] font-bold text-slate-500 uppercase">Toplam</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-6">
+                        <div className="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">İnceleme</p>
                           <p className="text-lg font-black text-slate-800">{p.totalAssessments}</p>
                         </div>
-                        <div className="bg-emerald-50 rounded-xl p-3 text-center">
-                          <p className="text-[10px] font-bold text-emerald-600 uppercase">Onaylı</p>
-                          <p className="text-lg font-black text-emerald-700">{p.approvedCount}</p>
+                        <div className="bg-blue-50 rounded-xl p-3 text-center border border-blue-100">
+                          <p className="text-[10px] font-bold text-blue-600 uppercase tracking-tight">Ort. Puan</p>
+                          <p className="text-lg font-black text-blue-700">{p.totalAssessments > 0 ? (p.totalScore / p.totalAssessments).toFixed(1) : '-'}</p>
                         </div>
-                        <div className="bg-amber-50 rounded-xl p-3 text-center">
-                          <p className="text-[10px] font-bold text-amber-600 uppercase">Bekleyen</p>
-                          <p className="text-lg font-black text-amber-700">{p.pendingCount}</p>
+                        <div className="bg-red-50 rounded-xl p-3 text-center border border-red-100">
+                          <p className="text-[10px] font-bold text-red-600 uppercase tracking-tight">Red Oranı</p>
+                          <p className="text-lg font-black text-red-700">{p.totalAssessments > 0 ? ((p.rejectedCount / p.totalAssessments) * 100).toFixed(0) : '0'}%</p>
+                        </div>
+                        <div className="bg-purple-50 rounded-xl p-3 text-center border border-purple-100">
+                          <p className="text-[10px] font-bold text-purple-600 uppercase tracking-tight">Toplantı</p>
+                          <p className="text-lg font-black text-purple-700">{p.uniqueMeetingIds.size}</p>
                         </div>
                       </div>
                     </div>
@@ -623,41 +654,72 @@ export default function PersonnelPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="relative w-full md:w-80">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input
-                    type="text"
-                    placeholder="Başvuru sahibi, TC no..."
-                    value={detailSearchQuery}
-                    onChange={(e) => setDetailSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 text-sm font-medium rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  />
+            {filterMeetingId === 'all' ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+                  <h3 className="text-lg font-bold text-slate-800">Toplantı Dosyaları</h3>
+                  <p className="text-sm text-slate-500 font-medium">İnceleme detaylarını görmek için bir toplantı seçin</p>
                 </div>
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                  <div className="flex items-center gap-2 text-sm font-bold text-slate-600">
-                    <Calendar size={16} className="text-slate-500" />
-                    <span>Toplantı:</span>
-                    <select
-                      value={filterMeetingId}
-                      onChange={(e) => setFilterMeetingId(e.target.value)}
-                      className="bg-white border border-slate-300 text-slate-800 py-2 px-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm w-48"
-                    >
-                      <option value="all">Tüm Toplantılar</option>
-                      {meetings.map(m => (
-                        <option key={m.id} value={m.id}>{m.meetingNo} ({new Date(m.date).toLocaleDateString('tr-TR')})</option>
-                      ))}
-                    </select>
+                {personnelMeetingStats.length === 0 ? (
+                  <p className="text-slate-500 text-center py-10">Personelin henüz kayıtlı bir toplantı incelemesi bulunmuyor.</p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {personnelMeetingStats.map(m => (
+                      <div 
+                        key={m.id} 
+                        onClick={() => setFilterMeetingId(m.id)}
+                        className="bg-white border border-slate-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-lg cursor-pointer transition-all group"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="p-2 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors"><Calendar size={20} /></div>
+                          <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md border border-slate-200">{new Date(m.date).toLocaleDateString('tr-TR')}</span>
+                        </div>
+                        <h4 className="font-extrabold text-slate-800 text-lg mb-4 group-hover:text-blue-700 transition-colors">
+                          Toplantı No: {m.meetingNo}
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-slate-50 p-2.5 rounded-xl text-center border border-slate-100 group-hover:border-slate-200 transition-colors">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">İnceleme</p>
+                            <p className="text-lg font-black text-slate-700">{m.total}</p>
+                          </div>
+                          <div className="bg-emerald-50 p-2.5 rounded-xl text-center border border-emerald-100 group-hover:bg-emerald-100 transition-colors">
+                            <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Onaylı</p>
+                            <p className="text-lg font-black text-emerald-700">{m.approved}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <button 
-                    onClick={handleExportPersonnelDetail}
-                    className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg flex items-center gap-2 font-bold transition-colors whitespace-nowrap"
-                  >
-                    <Download size={18} /> Excel&apos;e Aktar
-                  </button>
-                </div>
+                )}
               </div>
+            ) : (
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="relative w-full md:w-80">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input
+                      type="text"
+                      placeholder="Başvuru sahibi, TC no..."
+                      value={detailSearchQuery}
+                      onChange={(e) => setDetailSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-4 py-2 text-sm font-medium rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                  <div className="flex flex-col md:flex-row items-center gap-4">
+                    <button 
+                      onClick={() => setFilterMeetingId('all')}
+                      className="px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg flex items-center gap-2 font-bold transition-colors whitespace-nowrap shadow-sm"
+                    >
+                      <ArrowLeft size={16} /> Toplantılara Dön
+                    </button>
+                    <button 
+                      onClick={handleExportPersonnelDetail}
+                      className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg flex items-center gap-2 font-bold transition-colors whitespace-nowrap"
+                    >
+                      <Download size={18} /> Excel&apos;e Aktar
+                    </button>
+                  </div>
+                </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-sm">
