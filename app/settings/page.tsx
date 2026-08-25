@@ -14,8 +14,7 @@ import {
   CheckCircle2, AlertTriangle, Settings, Sliders, Info, ShieldAlert, Award, Shield, Key, Power
 } from 'lucide-react';
 import Link from 'next/link';
-import { AppHeader } from '@/components/app-header';
-import { ManagerNav } from '@/components/manager-nav';
+import { SidebarLayout } from '@/components/sidebar';
 
 export default function SettingsPage() {
   const { showAlert, showConfirm } = useDialog();
@@ -181,32 +180,30 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
-      <AppHeader
-        subtitle="⚙️ Sistem ve Yardım Kriter Ayarları"
-        actions={
+    <SidebarLayout>
+      <div className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col">
+        <header className="px-6 py-4 flex items-center justify-between bg-white border-b border-slate-200">
+          <h1 className="font-black text-lg">⚙️ Sistem ve Yardım Kriter Ayarları</h1>
           <div className="flex items-center gap-2">
             <button
               onClick={handleResetDefaults}
-              className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white px-3 py-2 rounded-xl text-xs font-bold transition-colors border border-white/20"
+              className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition-colors"
             >
               <RotateCcw size={14} />
               <span className="hidden sm:inline">Sıfırla</span>
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-white px-3 py-2 rounded-xl text-xs font-extrabold transition-all shadow-md active:scale-95"
+              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs font-extrabold transition-all shadow-md active:scale-95"
             >
               <Save size={14} />
               <span>Kaydet</span>
             </button>
           </div>
-        }
-      />
+        </header>
 
-      {/* MAIN CONTAINER */}
-      <main className="flex-1 max-w-5xl mx-auto w-full p-6 lg:p-8 space-y-6">
-        <ManagerNav />
+        {/* MAIN CONTAINER */}
+        <main className="flex-1 max-w-5xl mx-auto w-full p-6 lg:p-8 space-y-6">
         
         {/* SUCCESS NOTIFICATION BANNER */}
         {savedSuccess && (
@@ -459,5 +456,6 @@ export default function SettingsPage() {
 
       </main>
     </div>
+    </SidebarLayout>
   );
 }

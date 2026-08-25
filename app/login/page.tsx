@@ -153,9 +153,9 @@ export default function Login() {
   if (needsSetup) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 p-4">
-        <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-red-950/10 border border-slate-200 w-full max-w-md">
+        <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-teal-950/10 border border-slate-200 w-full max-w-md">
           <div className="flex justify-center mb-6">
-            <ShieldCheck size={64} className="text-red-700" />
+            <ShieldCheck size={64} className="text-teal-700" />
           </div>
           <h2 className="text-2xl font-black mb-2 text-center text-slate-900">Güvenlik: Şifre Belirleme</h2>
           <p className="text-sm text-slate-500 text-center mb-6">Sisteme ilk kez giriş yapıyorsunuz. Güvenliğiniz için lütfen yeni bir şifre belirleyin.</p>
@@ -169,7 +169,7 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
-                  className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 outline-none"
+                  className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none"
                   placeholder="En az 6 karakter"
                   required
                 />
@@ -182,11 +182,11 @@ export default function Login() {
                 </button>
               </div>
             </div>
-            {error && <p className="text-red-600 text-sm font-semibold">{error}</p>}
+            {error && <p className="text-rose-600 text-sm font-semibold">{error}</p>}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3 rounded-xl transition-colors"
+              className="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 rounded-xl transition-colors"
             >
               {loading ? 'Kaydediliyor...' : 'Şifreyi Kaydet ve Giriş Yap'}
             </button>
@@ -197,13 +197,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 relative p-4 py-12 selection:bg-red-600 selection:text-white">
-      <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-red-950/10 border border-slate-200 w-full max-w-md relative overflow-hidden text-slate-900">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-700 via-red-600 to-red-800"></div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 relative p-4 py-12 selection:bg-teal-600 selection:text-white">
+      <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-teal-950/10 border border-slate-200 w-full max-w-md relative overflow-hidden text-slate-900">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-700 via-teal-600 to-teal-800"></div>
         
         <div className="flex justify-center mb-6 mt-2">
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-red-800 rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-teal-600 to-teal-800 rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
             <LogoImage className="relative w-20 h-20 rounded-2xl shadow-xl border-2 border-slate-200 object-cover" />
           </div>
         </div>
@@ -218,13 +218,13 @@ export default function Login() {
         <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
           <button
             onClick={() => setActiveTab('manager')}
-            className={`flex-1 flex justify-center items-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-colors ${activeTab === 'manager' ? 'bg-white text-red-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 flex justify-center items-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-colors ${activeTab === 'manager' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
             <ShieldCheck size={16} /> Müdür
           </button>
           <button
             onClick={() => setActiveTab('personnel')}
-            className={`flex-1 flex justify-center items-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-colors ${activeTab === 'personnel' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 flex justify-center items-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-colors ${activeTab === 'personnel' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
             <User size={16} /> Personel
           </button>
@@ -252,7 +252,7 @@ export default function Login() {
                 <select
                   value={selectedEmail}
                   onChange={e => setSelectedEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white font-medium"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none bg-white font-medium"
                   required
                 >
                   {users.length === 0 && <option value="">Sistemde kayıtlı personel yok</option>}
@@ -277,7 +277,7 @@ export default function Login() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 outline-none"
+                className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none"
                 placeholder="Şifreniz"
               />
               <button 
@@ -290,13 +290,13 @@ export default function Login() {
             </div>
           </div>
 
-          {error && <p className="text-red-600 text-sm font-semibold text-center bg-red-50 py-2 rounded-lg">{error}</p>}
+          {error && <p className="text-rose-600 text-sm font-semibold text-center bg-rose-50 py-2 rounded-lg">{error}</p>}
 
           <button
             type="submit"
             disabled={loading || (activeTab === 'personnel' && users.length === 0)}
             className={`w-full text-white font-bold py-3 rounded-xl transition-colors shadow-lg ${
-              activeTab === 'manager' ? 'bg-red-700 hover:bg-red-800 shadow-red-900/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/20'
+              activeTab === 'manager' ? 'bg-teal-700 hover:bg-teal-800 shadow-teal-900/20' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-900/20'
             }`}
           >
             {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
@@ -308,10 +308,10 @@ export default function Login() {
       <div className="bg-white p-6 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 w-full max-w-md mt-6 relative overflow-hidden text-slate-900">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-100 text-blue-700 p-2.5 rounded-xl"><Smartphone size={22} /></div>
+            <div className="bg-indigo-100 text-indigo-700 p-2.5 rounded-xl"><Smartphone size={22} /></div>
             <h2 className="font-bold text-slate-800 text-lg">Mobil Uygulamayı Yükle</h2>
           </div>
-          <button onClick={() => setShowInstallHelp(!showInstallHelp)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+          <button onClick={() => setShowInstallHelp(!showInstallHelp)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors">
             {showInstallHelp ? <ChevronUp size={22} /> : <Info size={22} />}
           </button>
         </div>
@@ -324,7 +324,7 @@ export default function Login() {
             </motion.div>
           )}
         </AnimatePresence>
-        <button onClick={handleInstallClick} className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl font-bold transition-all shadow-md mt-2">
+        <button onClick={handleInstallClick} className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-2xl font-bold transition-all shadow-md mt-2">
           <Download size={20} /> Hemen Yükle
         </button>
       </div>

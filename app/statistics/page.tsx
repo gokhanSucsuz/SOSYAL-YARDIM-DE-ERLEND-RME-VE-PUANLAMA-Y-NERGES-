@@ -11,9 +11,8 @@ import {
 } from 'lucide-react';
 import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db';
 import { useDialog } from '@/components/DialogProvider';
-import { AppHeader } from '@/components/app-header';
 import { LogoImage } from '@/components/logo-image';
-import { ManagerNav } from '@/components/manager-nav';
+import { SidebarLayout } from '@/components/sidebar';
 
 const COLORS = {
   emerald: '#10b981',
@@ -332,24 +331,27 @@ export default function StatisticsPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 no-print">
-      <AppHeader
-        subtitle="📊 Gelişmiş İstatistik Raporları"
-        actions={
-          <div className="hidden sm:flex items-center gap-2">
+    <SidebarLayout>
+    <div className="min-h-screen bg-slate-50/50 pb-20 no-print">
+
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        {/* Page title + actions */}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-black text-slate-900">📊 Gelişmiş İstatistik Raporları</h2>
+            <p className="text-xs text-slate-500 font-medium">Toplantı bazlı kapsamlı analiz ve raporlama paneli</p>
+          </div>
+          <div className="flex items-center gap-2">
             <button onClick={handleExportExcel} className="bg-emerald-600 hover:bg-emerald-500 px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition-colors text-white">
               <FileSpreadsheet size={15} /> Excel
             </button>
-            <button onClick={handleExportPDF} className="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition-colors text-white border border-white/30">
+            <button onClick={handleExportPDF} className="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition-colors text-white">
               <Printer size={15} /> PDF
             </button>
           </div>
-        }
-      />
+        </div>
 
-      <div className="max-w-7xl mx-auto px-4 mt-8 space-y-6">
-        <ManagerNav />
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
+        <div className="card p-4 flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2">
             <Calendar className="text-slate-400" size={18}/>
             <span className="font-semibold text-slate-700">Tarih Aralığı:</span>
@@ -612,5 +614,6 @@ export default function StatisticsPage() {
       </div>
 
     </div>
+    </SidebarLayout>
   );
 }
