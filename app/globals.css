@@ -69,44 +69,19 @@
 }
 
 /* ============================================================
-   DARK MODE — prefers-color-scheme
+   DARK MODE — next-themes (.dark class)
    ============================================================ */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-page:       #0a0f1e;
-    --bg-surface:    #111827;
-    --bg-surface-2:  #1e293b;
-    --text-primary:  #f1f5f9;
-    --text-secondary:#94a3b8;
-    --border-color:  #1e293b;
-    --scrollbar-track:  #111827;
-    --scrollbar-thumb:  #334155;
-    --scrollbar-hover:  #475569;
-  }
-
-  /* Card overrides */
-  .bg-white  { background-color: var(--bg-surface) !important; }
-  .bg-slate-50 { background-color: var(--bg-page) !important; }
-  .bg-slate-100 { background-color: #1e293b !important; }
-  .text-slate-900 { color: var(--text-primary) !important; }
-  .text-slate-700, .text-slate-800 { color: #cbd5e1 !important; }
-  .text-slate-500, .text-slate-600 { color: #94a3b8 !important; }
-  .border-slate-200 { border-color: var(--border-color) !important; }
-  .border-slate-100 { border-color: #1e293b !important; }
-
-  /* Table alternation */
-  table tbody tr:nth-child(even) { background-color: #131c2e; }
-  table tbody tr:hover { background-color: #1a2a3c !important; }
-
-  /* Inputs */
-  input, select, textarea {
-    background-color: #1e293b !important;
-    color: #f1f5f9 !important;
-    border-color: #334155 !important;
-  }
-  input::placeholder { color: #64748b !important; }
+.dark {
+  --bg-page:       #0a0f1e;
+  --bg-surface:    #111827;
+  --bg-surface-2:  #1e293b;
+  --text-primary:  #f1f5f9;
+  --text-secondary:#94a3b8;
+  --border-color:  #1e293b;
+  --scrollbar-track:  #111827;
+  --scrollbar-thumb:  #334155;
+  --scrollbar-hover:  #475569;
 }
-
 @layer utilities {
   .print-exact {
     -webkit-print-color-adjust: exact !important;

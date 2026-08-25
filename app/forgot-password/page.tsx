@@ -43,16 +43,16 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 p-4">
-      <div className="bg-white p-8 rounded-3xl shadow-xl shadow-blue-900/10 border border-slate-200 w-full max-w-md relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/50 p-4">
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl shadow-blue-900/10 border border-slate-200 dark:border-slate-700 w-full max-w-md relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
         
         <div className="flex justify-center mb-6">
-          <LogoImage className="w-16 h-16 rounded-xl shadow-md border border-slate-100 object-cover" />
+          <LogoImage className="w-16 h-16 rounded-xl shadow-md border border-slate-100 dark:border-slate-800 object-cover" />
         </div>
 
-        <h1 className="text-xl font-black mb-2 text-center text-slate-800">Şifremi Unuttum</h1>
-        <p className="text-sm text-slate-500 text-center mb-8 font-medium leading-relaxed">
+        <h1 className="text-xl font-black mb-2 text-center text-slate-800 dark:text-slate-200">Şifremi Unuttum</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-8 font-medium leading-relaxed">
           Sisteme kayıtlı e-posta adresinizi girin. Size tek kullanımlık geçici bir giriş şifresi göndereceğiz.
         </p>
 
@@ -63,19 +63,19 @@ export default function ForgotPassword() {
             </div>
             <h3 className="font-bold text-emerald-800 text-lg">E-posta Gönderildi</h3>
             <p className="text-sm text-emerald-600 font-medium">{message}</p>
-            <p className="text-xs text-slate-500 pt-2">Giriş sayfasına yönlendiriliyorsunuz...</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 pt-2">Giriş sayfasına yönlendiriliyorsunuz...</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">E-Posta Adresiniz</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">E-Posta Adresiniz</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none font-medium"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 outline-none font-medium"
                   placeholder="isim@sydv.gov.tr"
                   required
                 />
@@ -105,7 +105,7 @@ export default function ForgotPassword() {
         )}
 
         <div className="mt-8 text-center">
-          <Link href="/login" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
+          <Link href="/login" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 transition-colors">
             <ArrowLeft size={16} />
             <span>Giriş Ekranına Dön</span>
           </Link>

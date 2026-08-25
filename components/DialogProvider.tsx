@@ -91,7 +91,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative bg-white rounded-2xl shadow-2xl overflow-hidden max-w-sm w-full mx-auto flex flex-col"
+              className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden max-w-sm w-full mx-auto flex flex-col"
             >
               {dialog.type === 'alert' && (
                 <div className="p-6 pb-0 flex flex-col items-center text-center">

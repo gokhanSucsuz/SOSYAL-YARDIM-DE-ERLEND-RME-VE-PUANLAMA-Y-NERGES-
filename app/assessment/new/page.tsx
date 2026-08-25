@@ -408,14 +408,14 @@ function NewAssessmentContent() {
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/40 ring-2 ring-blue-400/50'
                   : isPassed
                   ? 'bg-slate-800/80 text-blue-300 hover:bg-slate-800 border border-slate-700/50'
-                  : 'bg-slate-900/60 text-slate-500 hover:bg-slate-800/40 border border-slate-800'
+                  : 'bg-slate-900/60 text-slate-500 dark:text-slate-400 hover:bg-slate-800/40 border border-slate-800'
               }`}
             >
               {isPassed ? (
                 <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
               ) : (
                 <span className={`w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-black ${
-                  isActive ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-500'
+                  isActive ? 'bg-white dark:bg-slate-800/20 text-white' : 'bg-slate-800 text-slate-500 dark:text-slate-400'
                 }`}>
                   {idx + 1}
                 </span>
@@ -579,7 +579,7 @@ function NewAssessmentContent() {
                       <p className="text-slate-400 text-xs mt-1">Hane halkı gelir ve sigorta durumuna göre değerlendirme</p>
                     </div>
                     
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-100">
                       <SectionCard title="Gelir Seviyesi" maxScore={40} currentScore={calc.scoreA} hideScore={true}>
                         <div className="space-y-3">
                           <RadioItem label="Kişi başına gelir muhtaçlık sınırının %25 altında" name="income" checked={state.income === 40} onChange={() => set('income', 40)} points={40} />
@@ -588,7 +588,7 @@ function NewAssessmentContent() {
                           <RadioItem label="Muhtaçlık sınırının %75 – 100 arasında" name="income" checked={state.income === 15} onChange={() => set('income', 15)} points={15} />
                           <RadioItem label="Muhtaçlık sınırı üzerinde" name="income" checked={state.income === 0} onChange={() => set('income', 0)} points={0} />
                         </div>
-                        <div className="mt-5 pt-4 border-t border-slate-100">
+                        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
                           <h3 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">İlave / Düzeltme Kriterleri</h3>
                           <div className="grid grid-cols-1 gap-3">
                             <CheckboxItem label="Hanede çalışan yok" checked={state.noWorker} onChange={(v:any) => set('noWorker', v)} points={10} />
@@ -608,7 +608,7 @@ function NewAssessmentContent() {
                       <p className="text-slate-400 text-xs mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
                     </div>
 
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-100">
                       <SectionCard title="Hanehalkı Özel Durumları" maxScore={30} currentScore={calc.scoreB} hideScore={true}>
                         
 
@@ -631,17 +631,17 @@ function NewAssessmentContent() {
                           <CheckboxItem label="Yabancı uyruklu / Sığınmacı" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={3} />
                         </div>
 
-                        <div className="mt-5 pt-4 border-t border-slate-100">
-                          <h3 className="text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
+                          <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
                             <Sparkles size={14} className="text-amber-500" />
                             Özel Sebep / Özel Durum Tanımlama
                           </h3>
-                          <p className="text-xs text-slate-500 mb-3">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
                             Standart kriterlerin dışındaki özel durumlar için açıklama girebilirsiniz.
                           </p>
-                          <div className="space-y-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                          <div className="space-y-3 bg-slate-50 dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
                             <div>
-                              <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                              <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
                                 Özel Sebep Açıklaması
                               </label>
                               <input
@@ -655,7 +655,7 @@ function NewAssessmentContent() {
                                   }
                                 }}
                                 placeholder="Örn: Organ nakli, nadir hastalık, son birkaç günde karşılaşılan acil durum vb."
-                                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-slate-800 font-medium"
+                                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium"
                               />
                             </div>
                             {user?.role === 'personnel' ? (
@@ -665,11 +665,11 @@ function NewAssessmentContent() {
                               </div>
                             ) : (
                               <div>
-                                <label className="block text-[11px] font-bold text-slate-600 mb-1">İlave Puan Değeri (Müdür Yetkisi)</label>
+                                <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">İlave Puan Değeri (Müdür Yetkisi)</label>
                                 <select
                                   value={state.b_ozelSebepPuan || 0}
                                   onChange={(e) => { set('b_ozelSebepPuan', Number(e.target.value)); set('b_ozelSebepPuanBekliyor', false); }}
-                                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-bold text-slate-800"
+                                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200"
                                 >
                                   <option value={0}>Ekleme Yok</option>
                                   <option value={5}>+5 Puan</option>
@@ -692,7 +692,7 @@ function NewAssessmentContent() {
                       <h2 className="text-xl font-black text-white">C. Çocuk ve Eğitim</h2>
                       <p className="text-slate-400 text-xs mt-1">Kademeli ağırlıklı puanlama (Şartlı Eğitim Yardımı ve Dünya Bankası metodolojisi)</p>
                     </div>
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-100">
                       <SectionCard title="Eğitim Durumu (Maks. 15 Puan)" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <CounterItem label="0-6 yaş çocuk (Bakım Yükü)" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={2} />
@@ -714,7 +714,7 @@ function NewAssessmentContent() {
                       <h2 className="text-xl font-black text-white">D. Barınma Durumu</h2>
                       <p className="text-slate-400 text-xs mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
                     </div>
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-100">
                       <SectionCard title="Barınma Şartları (Maks. 10 Puan)" maxScore={10} currentScore={calc.scoreD} hideScore={true}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <CheckboxItem label="Evsiz / Barınaksız / Geçici Sığınma" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={10} />
@@ -740,7 +740,7 @@ function NewAssessmentContent() {
                       <h2 className="text-xl font-black text-white">E. Beyaz Eşya ve Ev Aletleri</h2>
                       <p className="text-slate-400 text-xs mt-1">Temel eşyaların varlık/yıpranma durumu — Bulaşık makinesi lüks eşya sayıldığından puanlama dışıdır (TÜİK/OECD)</p>
                     </div>
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-100">
                       <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE} hideScore={true}>
                         <div className="space-y-3">
                           <ApplianceStatusItem label="Buzdolabı" icon={Box} value={state.appliance_buzdolabi} onChange={(v: any) => set('appliance_buzdolabi', v)} pointsYok={3} pointsEski={1.5} />
@@ -763,10 +763,10 @@ function NewAssessmentContent() {
                       <h2 className="text-xl font-black text-white">F. Sosyal Kırılganlık</h2>
                       <p className="text-slate-400 text-xs mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
                     </div>
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-100">
                       <SectionCard title="Sosyal Kırılganlık ve Nüfus" maxScore={30} currentScore={calc.scoreF} hideScore={true}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 sm:col-span-2">
+                          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
                             <span className="flex items-center gap-2">
                               <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
                               Hane Nüfusu Etkisi — {state.householdSize || 1} Kişi
@@ -811,7 +811,7 @@ function NewAssessmentContent() {
                       </p>
                     </div>
 
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-100">
                       <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreG} hideScore={true}>
                          <div className="space-y-3">
                            <ScoreButtons 
@@ -851,14 +851,14 @@ function NewAssessmentContent() {
                       <p className="text-slate-400 text-xs mt-1">Kayıt öncesi zorunlu kurum veritabanı inceleme başlıkları.</p>
                     </div>
 
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-100">
                       <SectionCard title="Varlık Testi ve Kontrol Listesi" maxScore={0} currentScore={0} hideScore={true}>
                          {/* Zorunlu Onay */}
                          <div className="mb-5 space-y-3">
-                            <label className={`flex items-center p-4 border rounded-2xl cursor-pointer transition-all ${state.systemChecksDone ? 'bg-emerald-50 border-emerald-300 ring-2 ring-emerald-400/30' : 'bg-white border-slate-200 hover:bg-slate-50'}`}>
-                              <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mr-4"
+                            <label className={`flex items-center p-4 border rounded-2xl cursor-pointer transition-all ${state.systemChecksDone ? 'bg-emerald-50 border-emerald-300 ring-2 ring-emerald-400/30' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900'}`}>
+                              <input type="checkbox" className="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500 mr-4"
                                 checked={state.systemChecksDone} onChange={(e) => set('systemChecksDone', e.target.checked)} />
-                              <span className={`font-bold text-sm ${state.systemChecksDone ? 'text-emerald-900' : 'text-slate-800'}`}>
+                              <span className={`font-bold text-sm ${state.systemChecksDone ? 'text-emerald-900' : 'text-slate-800 dark:text-slate-200'}`}>
                                 Zorunlu sistem sorgularını (Araç Tescil, Tapu, SGK) tamamladım ve aşağıdaki sonuçları girdim.
                               </span>
                             </label>
@@ -900,7 +900,7 @@ function NewAssessmentContent() {
                          )}
 
                          <div className="pt-4 border-t border-red-100">
-                           <label className={`flex items-start p-4 border rounded-2xl cursor-pointer transition-all ${state.falseStatement ? 'bg-red-50 border-red-400 ring-2 ring-red-400/30' : 'bg-white border-slate-200 hover:bg-red-50/50'}`}>
+                           <label className={`flex items-start p-4 border rounded-2xl cursor-pointer transition-all ${state.falseStatement ? 'bg-red-50 border-red-400 ring-2 ring-red-400/30' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-red-50/50'}`}>
                              <input type="checkbox" className="w-5 h-5 rounded border-red-300 text-red-600 focus:ring-red-500 mt-0.5"
                                checked={state.falseStatement} onChange={(e) => set('falseStatement', e.target.checked)} />
                              <div className="ml-3 flex flex-col">
@@ -969,7 +969,7 @@ function NewAssessmentContent() {
           disabled={step === 0}
           className={`flex items-center justify-center px-4 py-3 rounded-2xl font-bold text-sm min-h-[48px] transition-all touch-manipulation ${
             step === 0 
-              ? 'bg-slate-800/40 text-slate-600 cursor-not-allowed border border-slate-800' 
+              ? 'bg-slate-800/40 text-slate-600 dark:text-slate-400 cursor-not-allowed border border-slate-800' 
               : 'bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700'
           }`}
         >
@@ -989,7 +989,7 @@ function NewAssessmentContent() {
             disabled={!canProceed}
             className={`flex items-center justify-center px-5 py-3 rounded-2xl font-black text-sm min-h-[48px] transition-all shadow-lg touch-manipulation ${
               !canProceed
-                ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-800'
+                ? 'bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed border border-slate-800'
                 : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30'
             }`}
           >

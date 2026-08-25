@@ -29,13 +29,13 @@ export function ManagerNav() {
 
   return (
     <div className="space-y-3 mb-5 w-full no-print">
-      <div className="bg-slate-200/80 p-1.5 rounded-2xl flex flex-wrap sm:flex-nowrap items-center gap-2 border border-slate-300/70 shadow-xs">
+      <div className="bg-slate-200 dark:bg-slate-700/80 p-1.5 rounded-2xl flex flex-wrap sm:flex-nowrap items-center gap-2 border border-slate-300 dark:border-slate-600/70 shadow-xs">
         <Link
           href="/"
           className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
             pathname === '/' 
-              ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5' 
-              : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md ring-1 ring-slate-950/5' 
+              : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
           }`}
         >
           <Home size={18} className="text-blue-600" />
@@ -46,8 +46,8 @@ export function ManagerNav() {
           href="/statistics"
           className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
             pathname.startsWith('/statistics')
-              ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5' 
-              : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md ring-1 ring-slate-950/5' 
+              : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
           }`}
         >
           <BarChart3 size={18} className="text-blue-600" />
@@ -58,8 +58,8 @@ export function ManagerNav() {
           href="/personnel"
           className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
             pathname.startsWith('/personnel')
-              ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5' 
-              : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md ring-1 ring-slate-950/5' 
+              : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
           }`}
         >
           <Users size={18} className="text-blue-600" />
@@ -71,8 +71,8 @@ export function ManagerNav() {
             href="/settings"
             className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
               pathname === '/settings'
-                ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5' 
-                : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md ring-1 ring-slate-950/5' 
+                : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
             }`}
           >
             <Settings size={18} className="text-blue-600" />
@@ -85,8 +85,8 @@ export function ManagerNav() {
             href="/settings/audit-logs"
             className={`flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all touch-manipulation cursor-pointer ${
               pathname.startsWith('/settings/audit-logs')
-                ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-950/5' 
-                : 'text-slate-700 hover:text-slate-900 bg-white/70 hover:bg-white'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md ring-1 ring-slate-950/5' 
+                : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
             }`}
           >
             <Settings size={18} className="text-emerald-600" />

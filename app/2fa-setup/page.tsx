@@ -65,18 +65,18 @@ export default function TwoFactorSetup() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 p-4 selection:bg-blue-600 selection:text-white">
-      <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-blue-950/10 border border-slate-200 w-full max-w-md relative overflow-hidden text-slate-900">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/50 p-4 selection:bg-blue-600 selection:text-white">
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl shadow-blue-950/10 border border-slate-200 dark:border-slate-700 w-full max-w-md relative overflow-hidden text-slate-900 dark:text-slate-100">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-800"></div>
         
         <div className="flex justify-center mb-4 mt-2">
           <QrCode size={48} className="text-blue-700" />
         </div>
 
-        <h1 className="text-2xl font-black mb-2 text-center text-slate-900 tracking-tight">
+        <h1 className="text-2xl font-black mb-2 text-center text-slate-900 dark:text-slate-100 tracking-tight">
           İki Aşamalı Doğrulama Kurulumu
         </h1>
-        <p className="text-sm text-slate-500 text-center mb-6 font-medium">
+        <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-6 font-medium">
           Google Authenticator uygulamanızla aşağıdaki QR kodu okutun.
         </p>
 
@@ -87,14 +87,14 @@ export default function TwoFactorSetup() {
         ) : (
           <div className="flex flex-col items-center mb-6">
             {qrCode ? (
-              <div className="p-2 bg-white rounded-xl border border-slate-200 shadow-sm mb-4">
+              <div className="p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mb-4">
                 <Image src={qrCode} alt="QR Code" width={200} height={200} />
               </div>
             ) : null}
             {secret && (
               <div className="text-center">
-                <p className="text-xs text-slate-500 mb-1">Kurulum Anahtarı (Manuel giriş için):</p>
-                <code className="bg-slate-100 text-slate-800 px-3 py-1 rounded-md font-mono text-sm border border-slate-200 select-all">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Kurulum Anahtarı (Manuel giriş için):</p>
+                <code className="bg-slate-100 dark:bg-slate-800/50 text-slate-800 dark:text-slate-200 px-3 py-1 rounded-md font-mono text-sm border border-slate-200 dark:border-slate-700 select-all">
                   {secret}
                 </code>
               </div>
@@ -104,7 +104,7 @@ export default function TwoFactorSetup() {
 
         <form onSubmit={handleSetup} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1 text-center">Uygulamadaki Kodu Girin</label>
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 text-center">Uygulamadaki Kodu Girin</label>
             <input
               type="text"
               inputMode="numeric"
@@ -112,7 +112,7 @@ export default function TwoFactorSetup() {
               maxLength={6}
               value={token}
               onChange={e => setToken(e.target.value.replace(/[^0-9]/g, ''))}
-              className="w-full text-center text-3xl tracking-[0.5em] font-mono py-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50"
+              className="w-full text-center text-3xl tracking-[0.5em] font-mono py-4 rounded-xl border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 dark:bg-slate-900"
               placeholder="000000"
               required
               disabled={isGenerating || !qrCode}

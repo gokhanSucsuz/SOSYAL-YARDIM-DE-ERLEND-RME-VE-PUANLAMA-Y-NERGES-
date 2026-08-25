@@ -249,7 +249,7 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
               }
               window.location.reload();
             }}
-            className="text-slate-500 hover:text-white underline decoration-slate-700 transition-colors flex items-center gap-1"
+            className="text-slate-500 dark:text-slate-400 hover:text-white underline decoration-slate-700 transition-colors flex items-center gap-1"
           >
             <RefreshCw size={12} />
             Önbelleği Temizle &amp; Yenile

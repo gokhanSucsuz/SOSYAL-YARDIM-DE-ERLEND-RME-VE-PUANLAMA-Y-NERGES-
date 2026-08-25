@@ -57,8 +57,8 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-pulse text-slate-500 font-medium">Sistem ayarları yükleniyor...</div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="animate-pulse text-slate-500 dark:text-slate-400 font-medium">Sistem ayarları yükleniyor...</div>
       </div>
     );
   }
@@ -66,13 +66,13 @@ export default function SettingsPage() {
   // Security Check: Only Managers and Superadmins can access settings
   if (user?.role !== 'manager' && user?.role !== 'superadmin') {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
-        <div className="bg-white rounded-2xl p-8 border border-red-200 shadow-xl max-w-md w-full space-y-4">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center p-6 text-center">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-red-200 shadow-xl max-w-md w-full space-y-4">
           <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
             <ShieldAlert size={36} />
           </div>
-          <h2 className="text-xl font-black text-slate-900">Yetkisiz Erişim Engellendi</h2>
-          <p className="text-xs text-slate-600 font-medium leading-relaxed">
+          <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">Yetkisiz Erişim Engellendi</h2>
+          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
             Sistem ve yardım kriter ayarları paneline yalnızca <strong>Müdür</strong> rolüne sahip yöneticiler erişebilir.
           </p>
           <Link 
@@ -181,13 +181,13 @@ export default function SettingsPage() {
 
   return (
     <SidebarLayout>
-      <div className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col">
-        <header className="px-6 py-4 flex items-center justify-between bg-white border-b border-slate-200">
+      <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 flex flex-col">
+        <header className="px-6 py-4 flex items-center justify-between bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
           <h1 className="font-black text-lg">⚙️ Sistem ve Yardım Kriter Ayarları</h1>
           <div className="flex items-center gap-2">
             <button
               onClick={handleResetDefaults}
-              className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition-colors"
+              className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs font-bold transition-colors"
             >
               <RotateCcw size={14} />
               <span className="hidden sm:inline">Sıfırla</span>
@@ -236,13 +236,13 @@ export default function SettingsPage() {
         {/* SECURITY & MAINTENANCE MODULES */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 2FA SETUP CARD */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-4 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -z-10"></div>
-            <div className="flex items-center gap-3 text-slate-900 font-black text-lg">
+            <div className="flex items-center gap-3 text-slate-900 dark:text-slate-100 font-black text-lg">
               <div className="p-2 bg-blue-100 text-blue-600 rounded-xl"><Key size={22} /></div>
               <h2>İki Aşamalı Doğrulama (2FA)</h2>
             </div>
-            <p className="text-xs text-slate-600 font-medium leading-relaxed flex-1">
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed flex-1">
               Hesabınızın güvenliğini artırmak için Google Authenticator ile İki Aşamalı Doğrulama&apos;yı kurabilirsiniz.
             </p>
             <Link 
@@ -256,19 +256,19 @@ export default function SettingsPage() {
 
           {/* MAINTENANCE MODE (ONLY FOR SUPERADMIN) */}
           {user?.role === 'superadmin' && (
-            <div className={`rounded-2xl p-6 border shadow-sm flex flex-col gap-4 relative overflow-hidden transition-colors duration-300 ${isMaintenanceMode ? 'bg-red-50 border-red-200' : 'bg-white border-slate-200'}`}>
-              <div className={`absolute top-0 right-0 w-32 h-32 rounded-bl-full -z-10 ${isMaintenanceMode ? 'bg-red-100' : 'bg-slate-50'}`}></div>
-              <div className="flex items-center gap-3 text-slate-900 font-black text-lg">
-                <div className={`p-2 rounded-xl ${isMaintenanceMode ? 'bg-red-200 text-red-700' : 'bg-slate-100 text-slate-600'}`}><Power size={22} /></div>
+            <div className={`rounded-2xl p-6 border shadow-sm flex flex-col gap-4 relative overflow-hidden transition-colors duration-300 ${isMaintenanceMode ? 'bg-red-50 border-red-200' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}>
+              <div className={`absolute top-0 right-0 w-32 h-32 rounded-bl-full -z-10 ${isMaintenanceMode ? 'bg-red-100' : 'bg-slate-50 dark:bg-slate-900'}`}></div>
+              <div className="flex items-center gap-3 text-slate-900 dark:text-slate-100 font-black text-lg">
+                <div className={`p-2 rounded-xl ${isMaintenanceMode ? 'bg-red-200 text-red-700' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400'}`}><Power size={22} /></div>
                 <h2>Sistem Bakım Modu (Kill Switch)</h2>
               </div>
-              <p className="text-xs text-slate-600 font-medium leading-relaxed flex-1">
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed flex-1">
                 Sistemi tamamen dışarıya kapatarak bakım moduna alır. Sadece süper yöneticiler gizli bağlantıdan erişebilir.
               </p>
               <button
                 onClick={handleToggleMaintenance}
                 disabled={loadingMaintenance}
-                className={`mt-2 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all w-full md:w-auto self-start shadow-md ${isMaintenanceMode ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-900/20 animate-pulse' : 'bg-slate-200 hover:bg-slate-300 text-slate-800'}`}
+                className={`mt-2 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all w-full md:w-auto self-start shadow-md ${isMaintenanceMode ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-900/20 animate-pulse' : 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200'}`}
               >
                 {loadingMaintenance ? (
                   <span>Yükleniyor...</span>
@@ -289,13 +289,13 @@ export default function SettingsPage() {
         </div>
 
         {/* INFO CARD */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-slate-900 font-black text-lg">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-black text-lg">
               <Sliders className="text-blue-600" size={22} />
               <h2>Sosyal İnceleme Puanı & Yardım Miktarı Kademeleri</h2>
             </div>
-            <p className="text-xs text-slate-600 font-medium leading-relaxed max-w-2xl">
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed max-w-2xl">
               Aşağıdaki panelden istediğiniz sayıda puan aralığı ve bu aralıklara karşılık gelen nakdi/ayni yardım tutarlarını tanımlayabilirsiniz. Sistem, incelemede hesaplanan toplam puana denk gelen aralığı otomatik seçerek karar ve yardım miktarını belirler.
             </p>
           </div>
@@ -310,7 +310,7 @@ export default function SettingsPage() {
         </div>
 
         {/* TIERS LIST / TABLE */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-0">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden space-y-0">
           <div className="bg-slate-900 text-white px-6 py-3.5 flex justify-between items-center">
             <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
               <Award size={16} className="text-amber-400" />
@@ -333,64 +333,64 @@ export default function SettingsPage() {
                   
                   {/* Min Score */}
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Min Puan</label>
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Min Puan</label>
                     <input
                       type="number"
                       min={0}
                       max={200}
                       value={tier.minScore}
                       onChange={(e) => handleUpdateTier(tier.id, 'minScore', e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-black bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-xs font-black bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
 
                   {/* Max Score */}
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Maks Puan</label>
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Maks Puan</label>
                     <input
                       type="number"
                       min={0}
                       max={200}
                       value={tier.maxScore}
                       onChange={(e) => handleUpdateTier(tier.id, 'maxScore', e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-black bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-xs font-black bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
 
                   {/* Text / Title */}
                   <div className="sm:col-span-4">
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Yardım Açıklama Metni</label>
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Yardım Açıklama Metni</label>
                     <input
                       type="text"
                       value={tier.text}
                       onChange={(e) => handleUpdateTier(tier.id, 'text', e.target.value)}
                       placeholder="Örn: 10.000 TL Nakdi Yardım"
-                      className="w-full px-3 py-2 text-xs font-bold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
 
                   {/* Amount TL */}
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Miktar (TL)</label>
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Miktar (TL)</label>
                     <input
                       type="number"
                       min={0}
                       step={500}
                       value={tier.amount}
                       onChange={(e) => handleUpdateTier(tier.id, 'amount', e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-black bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-emerald-700"
+                      className="w-full px-3 py-2 text-xs font-black bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-emerald-700"
                     />
                   </div>
 
                   {/* Description */}
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Kademe Açıklaması</label>
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Kademe Açıklaması</label>
                     <input
                       type="text"
                       value={tier.description || ''}
                       onChange={(e) => handleUpdateTier(tier.id, 'description', e.target.value)}
                       placeholder="Örn: 1. Derece"
-                      className="w-full px-3 py-2 text-xs font-medium bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
 
@@ -413,24 +413,24 @@ export default function SettingsPage() {
         </div>
 
         {/* BOTTOM SECTION: FALLBACK / REJECTION TEXT */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm space-y-4">
           <div>
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
               Taban Kriter Kararı (Minimum Puan Altında Kalan Durumlar)
             </h3>
-            <p className="text-xs text-slate-500 font-medium mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
               Toplanan toplam puan hiçbir aktif yardım kademesine ulaşmadığında veya yetersiz kaldığında sistemde görüntülenecek resmi karar metni.
             </p>
           </div>
 
           <div className="max-w-xl">
-            <label className="block text-xs font-bold text-slate-700 mb-1">Taban Yardım Karar Metni</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Taban Yardım Karar Metni</label>
             <input
               type="text"
               value={settings.rejectionText || ''}
               onChange={(e) => setSettings(prev => ({ ...prev, rejectionText: e.target.value }))}
               placeholder="Örn: Yardım uygun görülmez (veya Ayni)"
-              className="w-full px-4 py-2.5 text-xs font-bold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2.5 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         </div>
@@ -439,7 +439,7 @@ export default function SettingsPage() {
         <div className="flex items-center justify-between pt-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-bold text-xs"
+            className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100 font-bold text-xs"
           >
             <ArrowLeft size={16} />
             <span>Ana Sayfaya Dön</span>

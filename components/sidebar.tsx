@@ -7,10 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home, BarChart3, Users, Settings, BookOpen, Presentation,
   LogOut, ChevronLeft, ChevronRight, Menu, X, Shield,
-  FileText, ClipboardList
+  FileText, ClipboardList, Sun, Moon
 } from 'lucide-react';
 import { LogoImage } from '@/components/logo-image';
 import { googleLogout } from '@react-oauth/google';
+import { useTheme } from 'next-themes';
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -38,6 +39,7 @@ const NAV_ITEMS: NavItem[] = [
 export function SidebarLayout({ children }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<any>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -119,7 +121,7 @@ export function SidebarLayout({ children }: SidebarProps) {
       </div>
 
       {/* User Profile Card */}
-      <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06] ${isCollapsed && !isMobile ? 'mx-2 p-2 flex justify-center' : ''}`}>
+      <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl bg-white dark:bg-slate-800/[0.04] border border-white/[0.06] ${isCollapsed && !isMobile ? 'mx-2 p-2 flex justify-center' : ''}`}>
         <div className={`flex items-center gap-3 ${isCollapsed && !isMobile ? 'flex-col' : ''}`}>
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md">
             {(user.name || 'U').charAt(0).toUpperCase()}
@@ -144,7 +146,7 @@ export function SidebarLayout({ children }: SidebarProps) {
         {Object.entries(sections).map(([sectionName, items]) => (
           <div key={sectionName}>
             {(!isCollapsed || isMobile) && (
-              <p className="text-[9px] font-extrabold text-slate-500 uppercase tracking-[0.15em] px-3 pt-4 pb-1.5">
+              <p className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] px-3 pt-4 pb-1.5">
                 {sectionName}
               </p>
             )}
@@ -161,7 +163,7 @@ export function SidebarLayout({ children }: SidebarProps) {
                   } ${
                     active
                       ? 'bg-teal-500/15 text-teal-400 shadow-sm'
-                      : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
+                      : 'text-slate-400 hover:text-white hover:bg-white dark:bg-slate-800/[0.06]'
                   }`}
                 >
                   {active && (
@@ -174,7 +176,7 @@ export function SidebarLayout({ children }: SidebarProps) {
                   <item.icon
                     size={19}
                     className={`shrink-0 transition-colors ${
-                      active ? 'text-teal-400' : 'text-slate-500 group-hover:text-slate-300'
+                      active ? 'text-teal-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-300'
                     }`}
                   />
                   {(!isCollapsed || isMobile) && (
@@ -199,7 +201,7 @@ export function SidebarLayout({ children }: SidebarProps) {
         {!isMobile && (
           <button
             onClick={() => setIsCollapsed(prev => !prev)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-slate-300 hover:bg-white/[0.06] transition-all"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white dark:bg-slate-800/[0.06] transition-all"
             title={isCollapsed ? 'Menüyü Genişlet' : 'Menüyü Daralt'}
           >
             {isCollapsed ? (
@@ -213,10 +215,22 @@ export function SidebarLayout({ children }: SidebarProps) {
           </button>
         )}
 
+        {/* Theme Toggle */}
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-teal-400 hover:bg-teal-400/10 transition-all ${
+            isCollapsed && !isMobile ? 'justify-center px-2' : ''
+          }`}
+          title={theme === 'dark' ? 'Açık Temaya Geç' : 'Koyu Temaya Geç'}
+        >
+          {theme === 'dark' ? <Sun size={19} className="shrink-0" /> : <Moon size={19} className="shrink-0" />}
+          {(!isCollapsed || isMobile) && <span>{theme === 'dark' ? 'Açık Tema' : 'Koyu Tema'}</span>}
+        </button>
+
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all ${
             isCollapsed && !isMobile ? 'justify-center px-2' : ''
           }`}
           title="Çıkış Yap"
@@ -260,7 +274,7 @@ export function SidebarLayout({ children }: SidebarProps) {
               {/* Close button */}
               <button
                 onClick={() => setIsMobileOpen(false)}
-                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors z-10"
+                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white dark:bg-slate-800/10 rounded-xl transition-colors z-10"
               >
                 <X size={20} />
               </button>
@@ -277,19 +291,19 @@ export function SidebarLayout({ children }: SidebarProps) {
         }`}
       >
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 glass border-b border-slate-200/50 no-print">
+        <header className="sticky top-0 z-30 glass border-b border-slate-200 dark:border-slate-700/50 no-print">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6">
             {/* Left: Mobile menu toggle + Breadcrumb */}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsMobileOpen(true)}
-                className="md:hidden p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-xl transition-colors"
+                className="md:hidden p-2 text-slate-600 dark:text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-xl transition-colors"
                 title="Menüyü Aç"
               >
                 <Menu size={22} />
               </button>
               <div className="hidden sm:block">
-                <h2 className="text-sm font-bold text-slate-800">
+                <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">
                   {(() => {
                     if (pathname === '/') return 'Gösterge Paneli';
                     if (pathname.startsWith('/statistics')) return 'İstatistik Raporları';
@@ -311,7 +325,7 @@ export function SidebarLayout({ children }: SidebarProps) {
             {/* Right: User info (mobile) */}
             <div className="flex items-center gap-3">
               <div className="text-right mr-1">
-                <p className="text-xs font-bold text-slate-700 truncate max-w-[120px] sm:max-w-[180px]">
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[120px] sm:max-w-[180px]">
                   {user.name}
                 </p>
                 <p className="text-[10px] text-slate-400 font-medium">
