@@ -3,8 +3,7 @@
 export const dynamic = "force-dynamic";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { AppHeader } from "@/components/app-header";
-import { ManagerNav } from "@/components/manager-nav";
+import { SidebarLayout } from "@/components/sidebar";
 import {
   ArrowLeft, ShieldAlert, Activity, Search, RefreshCw,
   CheckCircle2, XCircle, AlertTriangle, Edit3, LogIn, Layers,
@@ -92,7 +91,8 @@ export default function AuditLogsPage() {
 
   if (user?.role !== "superadmin") {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center p-6 text-center">
+      <SidebarLayout>
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center h-full min-h-[80vh]">
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-10 border border-red-200 shadow-xl max-w-md w-full space-y-5">
           <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
             <ShieldAlert size={36} />
@@ -106,14 +106,13 @@ export default function AuditLogsPage() {
           </Link>
         </div>
       </div>
+      </SidebarLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 flex flex-col">
-      <AppHeader subtitle="Sistem Denetim Kayitlari (Audit Logs)" />
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-8 space-y-6">
-        <ManagerNav />
+    <SidebarLayout>
+      <div className="max-w-7xl mx-auto w-full p-4 lg:p-8 space-y-6">
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-6 py-5 flex flex-wrap justify-between items-center gap-4">
@@ -255,7 +254,7 @@ export default function AuditLogsPage() {
             </div>
           )}
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarLayout>
   );
 }

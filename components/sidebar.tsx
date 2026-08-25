@@ -121,7 +121,7 @@ export function SidebarLayout({ children }: SidebarProps) {
       </div>
 
       {/* User Profile Card */}
-      <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl bg-white dark:bg-slate-800/[0.04] border border-white/[0.06] ${isCollapsed && !isMobile ? 'mx-2 p-2 flex justify-center' : ''}`}>
+      <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl bg-white/5 border border-white/10 ${isCollapsed && !isMobile ? 'mx-2 p-2 flex justify-center' : ''}`}>
         <div className={`flex items-center gap-3 ${isCollapsed && !isMobile ? 'flex-col' : ''}`}>
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md">
             {(user.name || 'U').charAt(0).toUpperCase()}
@@ -201,7 +201,7 @@ export function SidebarLayout({ children }: SidebarProps) {
         {!isMobile && (
           <button
             onClick={() => setIsCollapsed(prev => !prev)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white dark:bg-slate-800/[0.06] transition-all"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 hover:bg-white/10 transition-all"
             title={isCollapsed ? 'Menüyü Genişlet' : 'Menüyü Daralt'}
           >
             {isCollapsed ? (
@@ -218,7 +218,7 @@ export function SidebarLayout({ children }: SidebarProps) {
         {/* Theme Toggle */}
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-teal-400 hover:bg-teal-400/10 transition-all ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-teal-400 hover:bg-teal-400/10 transition-all ${
             isCollapsed && !isMobile ? 'justify-center px-2' : ''
           }`}
           title={theme === 'dark' ? 'Açık Temaya Geç' : 'Koyu Temaya Geç'}
@@ -230,7 +230,7 @@ export function SidebarLayout({ children }: SidebarProps) {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all ${
             isCollapsed && !isMobile ? 'justify-center px-2' : ''
           }`}
           title="Çıkış Yap"

@@ -7,8 +7,7 @@ import {
 } from 'lucide-react';
 import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db';
 import Link from 'next/link';
-import { AppHeader } from '@/components/app-header';
-import { ManagerNav } from '@/components/manager-nav';
+import { SidebarLayout } from '@/components/sidebar';
 import { useDialog } from '@/components/DialogProvider';
 
 interface PersonnelStats {
@@ -418,11 +417,8 @@ export default function PersonnelPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <AppHeader subtitle="👥 Personel Yönetimi" />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ManagerNav />
+    <SidebarLayout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* VIEW SELECTOR */}
         {viewState !== 'detail' && (
           <div className="flex bg-slate-200 dark:bg-slate-700 p-1 rounded-xl mb-6 w-full max-w-sm">
@@ -802,7 +798,7 @@ export default function PersonnelPage() {
             )}
           </div>
         )}
-      </main>
+      </div>
 
       {/* EDIT USER MODAL */}
       {editingUser && (
@@ -873,7 +869,7 @@ export default function PersonnelPage() {
         </div>
       )}
 
-    </div>
+    </SidebarLayout>
   );
 }
 
