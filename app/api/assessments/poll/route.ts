@@ -5,8 +5,8 @@ import { getSession } from "@/lib/auth";
 
 /**
  * GET /api/assessments/poll
- * Hafif polling endpoint — tam veri yerine sadece son güncelleme zamanı ve
- * toplam kayıt sayısını döner. Frontend bunu kıyaslayarak tam yenileme yapar.
+ * Hafif polling endpoint â€” tam veri yerine sadece son gÃ¼ncelleme zamanÄ± ve
+ * toplam kayÄ±t sayÄ±sÄ±nÄ± dÃ¶ner. Frontend bunu kÄ±yaslayarak tam yenileme yapar.
  */
 export async function GET(req: NextRequest) {
   try {

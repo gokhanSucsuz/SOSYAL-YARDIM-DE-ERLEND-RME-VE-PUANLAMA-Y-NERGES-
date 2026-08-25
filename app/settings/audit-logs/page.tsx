@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 export const dynamic = "force-dynamic";
 import React, { useEffect, useState, useCallback } from "react";
@@ -53,7 +53,7 @@ export default function AuditLogsPage() {
     fetchLogs(1);
   }, [router]);
 
-  const fetchLogs = useCallback(async (page: number) => {
+  async function fetchLogs(page: number) {
     try {
       setLoading(true);
       const res = await fetch(`/api/audit-logs?page=${page}&limit=50`);
@@ -64,7 +64,8 @@ export default function AuditLogsPage() {
       }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
-  }, []);
+  }
+
 
   const filtered = logs.filter(log => {
     const matchAction = filterAction ? log.action === filterAction : true;
