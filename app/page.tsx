@@ -1904,7 +1904,7 @@ export default function Dashboard() {
           </div>
 
           <div className="w-full overflow-x-auto">
-            <table className="w-full text-left border-collapse table-auto whitespace-nowrap md:whitespace-normal">
+            <table className="hidden md:table w-full text-left border-collapse table-auto whitespace-nowrap md:whitespace-normal">
               <thead>
                 <tr className="bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 text-[10px] uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
                   <th className="px-2 py-2.5 font-black text-center w-8">
@@ -1956,6 +1956,66 @@ export default function Dashboard() {
                 })}
               </tbody>
             </table>
+
+            {/* MOBILE CARD VIEW */}
+            <div className="md:hidden flex flex-col gap-3 mt-2">
+              {filteredAndSortedAssessments.map((item) => {
+                const isSelected = selectedIds.includes(item.id);
+                const isApproved = item.status === 'approved';
+                return (
+                  <div key={`mobile-${item.id}`} className={`p-4 rounded-xl border ${isSelected ? 'border-blue-400 bg-blue-50/50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'} shadow-sm relative transition-colors`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" checked={isSelected} onChange={() => toggleSelectId(item.id)} className="rounded border-slate-300 dark:border-slate-600 text-blue-600 w-4 h-4" />
+                        <span className="font-black text-slate-800 dark:text-slate-200">{item.applicantName}</span>
+                      </div>
+                      <span className={`text-[10px] font-black px-2 py-1 rounded-md uppercase shrink-0 ${isApproved ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-amber-100 text-amber-700 border border-amber-200'}`}>
+                        {isApproved ? 'ONAYLI' : 'BEKLİYOR'}
+                      </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-xs text-slate-600 dark:text-slate-400 mb-3">
+                      <div><span className="font-semibold text-slate-500">T.C:</span> {item.applicantTc}</div>
+                      <div><span className="font-semibold text-slate-500">Tarih:</span> {new Date(item.date).toLocaleDateString('tr-TR')}</div>
+                      <div><span className="font-semibold text-slate-500">Hane:</span> {item.householdSize} Kişi</div>
+                      <div>
+                        <span className="font-semibold text-slate-500">Puan:</span>{' '}
+                        <strong className="text-slate-800 dark:text-slate-200">{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore}</strong>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="font-semibold text-slate-500">Karar:</span>{' '}
+                        <strong className={item.result.isRejected ? 'text-red-600' : 'text-slate-800 dark:text-slate-200'}>
+                          {user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "RED" : item.result.assistance?.text}
+                        </strong>
+                      </div>
+                      <div className="col-span-2 flex items-center gap-2 mt-1 bg-slate-50 dark:bg-slate-900 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
+                        <span className="font-bold text-slate-600 dark:text-slate-400">Sıra No:</span>
+                        <input type="number" value={item.customOrder ?? ''} onChange={(e) => handleUpdateCustomOrder(item, e.target.value ? parseInt(e.target.value) : undefined)} className="w-16 text-center border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 py-0.5" />
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 justify-end pt-3 border-t border-slate-100 dark:border-slate-700">
+                      {isManager && !isApproved && (
+                        <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-bold transition-colors">
+                          <CheckCircle2 size={14}/> Onayla
+                        </button>
+                      )}
+                      <button onClick={() => handlePrintSingleDetailed(item)} className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-bold transition-colors">
+                        <Printer size={14}/> Rapor
+                      </button>
+                      <Link href={`/assessment/${item.id}`} className="bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-bold transition-colors">
+                        <FileText size={14}/> Detay
+                      </Link>
+                      {!isApproved && (
+                        <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg font-bold transition-colors">
+                          <Trash2 size={14}/>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
         )}

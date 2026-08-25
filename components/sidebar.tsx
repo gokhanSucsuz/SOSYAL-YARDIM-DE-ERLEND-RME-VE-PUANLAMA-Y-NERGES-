@@ -162,7 +162,7 @@ export function SidebarLayout({ children }: SidebarProps) {
                   } ${
                     active
                       ? 'bg-teal-500/15 text-teal-400 shadow-sm'
-                      : 'text-slate-400 hover:text-white hover:bg-white dark:bg-slate-800/[0.06]'
+                      : 'text-slate-400 hover:text-white hover:bg-white/10 transition-colors'
                   }`}
                 >
                   {active && (
@@ -285,13 +285,13 @@ export function SidebarLayout({ children }: SidebarProps) {
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${
+        className={`flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 ${
           isCollapsed ? 'md:ml-[72px]' : 'md:ml-[280px]'
         }`}
       >
-        {/* Top Bar */}
-        <header className="sticky top-0 z-30 glass border-b border-slate-200 dark:border-slate-700/50 no-print">
-          <div className="flex items-center justify-between h-16 px-4 sm:px-6">
+        {/* Top Bar (Mobile Only) */}
+        <header className="md:hidden sticky top-0 z-30 glass border-b border-slate-200 dark:border-slate-700/50 no-print">
+          <div className="flex items-center justify-between h-16 px-4">
             {/* Left: Mobile menu toggle + Breadcrumb */}
             <div className="flex items-center gap-3">
               <button
