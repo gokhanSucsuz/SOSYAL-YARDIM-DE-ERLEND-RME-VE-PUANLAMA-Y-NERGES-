@@ -93,8 +93,7 @@ export function SidebarLayout({ children }: SidebarProps) {
   }, {} as Record<string, NavItem[]>);
 
   const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
-    return pathname.startsWith(href);
+    return pathname === href;
   };
 
   const renderSidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => (

@@ -34,6 +34,27 @@ function maskIp(ip: string | null | undefined): string {
   return ip.substring(0, 6) + "…";
 }
 
+function formatDetails(details: any): string {
+  if (!details) return "—";
+  if (typeof details === "string") return details;
+  try {
+    const parts = [];
+    if (details.applicantName) parts.push(`Aday: ${details.applicantName}`);
+    if (details.newStatus) parts.push(`Durum: ${details.newStatus}`);
+    if (details.finalScore !== undefined) parts.push(`Puan: ${details.finalScore}`);
+    if (details.updatedCount) parts.push(`${details.updatedCount} kayıt güncellendi`);
+    
+    if (parts.length > 0) return parts.join(" | ");
+    
+    return Object.entries(details)
+      .filter(([k]) => k !== "_id" && k !== "password")
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(", ");
+  } catch(e) {
+    return "Detay görüntülenemiyor";
+  }
+}
+
 export default function AuditLogsPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -129,7 +150,7 @@ export default function AuditLogsPage() {
             </div>
             <button
               onClick={() => fetchLogs(pagination.page)}
-              className="flex items-center gap-1.5 bg-white dark:bg-slate-800/10 hover:bg-white dark:bg-slate-800/20 text-white text-xs font-bold px-3 py-2 rounded-lg transition-all border border-white/20"
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-2 rounded-lg transition-all border border-white/20 shadow-sm"
               aria-label="Kayitlari Yenile"
             >
               <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
@@ -218,9 +239,9 @@ export default function AuditLogsPage() {
                       </td>
                       <td className="px-5 py-3.5 font-mono text-[11px] text-slate-500 dark:text-slate-400">{maskIp(log.ipAddress)}</td>
                       <td className="px-5 py-3.5 max-w-[180px]">
-                        {log.details ? (
-                          <span className="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/50 px-2 py-1 rounded font-mono truncate block" title={JSON.stringify(log.details)}>
-                            {JSON.stringify(log.details).substring(0, 60)}{JSON.stringify(log.details).length > 60 ? "…" : ""}
+                        {log.details && Object.keys(log.details).length > 0 ? (
+                          <span className="text-[10px] text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded truncate block" title={JSON.stringify(log.details)}>
+                            {formatDetails(log.details).substring(0, 60)}{formatDetails(log.details).length > 60 ? "…" : ""}
                           </span>
                         ) : <span className="text-slate-300">—</span>}
                       </td>
