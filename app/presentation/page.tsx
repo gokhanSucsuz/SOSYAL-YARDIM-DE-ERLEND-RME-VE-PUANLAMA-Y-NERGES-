@@ -148,7 +148,7 @@ export default function PresentationPage() {
                 <span className="text-xs font-semibold text-slate-600">Nesnel & Şeffaf Değerlendirme</span>
               </div>
               <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-center">
-                <span className="text-2xl font-black text-red-900 block">130 Puan</span>
+                <span className="text-2xl font-black text-red-900 block">150 Puan</span>
                 <span className="text-xs font-semibold text-red-700">7 Kategori Algoritmik Tavan</span>
               </div>
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
@@ -229,7 +229,7 @@ export default function PresentationPage() {
                 <li className="flex items-start gap-2.5 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
                   <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong>Daraltılmış Tavan & Kademeli Aralık:</strong> En ağır kırılganlığa sahip haneleri (116-130 Puan) seçip 10.000 TL tavan yardıma ulaştıran sistem.
+                    <strong>Daraltılmış Tavan &amp; Kademeli Aralık:</strong> En ağır kırılganlığa sahip haneleri (136-150 Puan) seçip 10.000 TL tavan yardıma ulaştıran sistem.
                   </div>
                 </li>
                 <li className="flex items-start gap-2.5 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
@@ -532,11 +532,11 @@ export default function PresentationPage() {
           <div className="pt-8 border-t border-slate-200 flex justify-between items-center text-xs text-slate-600 font-semibold">
             <div>
               <p className="font-bold text-slate-900">T.C. Sosyal Yardımlaşma ve Dayanışma Vakfı</p>
-              <p className="text-[11px] text-slate-500">Sosyal İnceleme ve Dijital Dönüşüm Birimi</p>
+              <p className="text-[11px] text-slate-500">Sosyal İnceleme ve Dijital Dönüşüm Birimi &mdash; SYD-NDS v2026</p>
             </div>
             <div className="text-right">
               <p className="text-[11px] text-slate-500">Tarih: {new Date().toLocaleDateString('tr-TR')}</p>
-              <p className="font-bold text-slate-900">Sunum ve Rapor Dokümanı</p>
+              <p className="font-bold text-slate-900">Doküman No: SYD-NDS-2026-SUNUM</p>
             </div>
           </div>
         </section>

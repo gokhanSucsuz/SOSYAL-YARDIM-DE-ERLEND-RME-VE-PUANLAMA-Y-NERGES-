@@ -197,17 +197,47 @@ export const batchUpdateAssessments = async (ids: string[], status: 'approved' |
   if (!res.ok) throw new Error('Failed to batch update assessments');
 };
 
-export const getAssessmentsByPersonnel = async (personnelId: string, page = 1, limit = 50): Promise<PaginatedAssessments> => {
+export const getAssessmentsByPersonnel = async (personnelId: string, page = 1, limit = 1000): Promise<PaginatedAssessments> => {
   const res = await fetch(`/api/assessments?personnelId=${encodeURIComponent(personnelId)}&page=${page}&limit=${limit}`);
   if (!res.ok) throw new Error('Failed to fetch assessments');
   return res.json();
 };
 
-export const getAllAssessments = async (page = 1, limit = 50): Promise<PaginatedAssessments> => {
+export const getAllAssessments = async (page = 1, limit = 1000): Promise<PaginatedAssessments> => {
   const res = await fetch(`/api/assessments?page=${page}&limit=${limit}`);
   if (!res.ok) throw new Error('Failed to fetch assessments');
   return res.json();
 };
+
+/**
+ * Tüm kayıtları sayfalayarak çeker (büyük veri setleri için).
+ * Önce standart limit ile dener; toplam kayıt sayısı limit'i aşarsa
+ * kalan sayfaları da otomatik çeker ve birleştirir.
+ */
+export const fetchAllAssessments = async (personnelId?: string): Promise<Assessment[]> => {
+  const LIMIT = 500;
+  const firstPage = personnelId
+    ? await getAssessmentsByPersonnel(personnelId, 1, LIMIT)
+    : await getAllAssessments(1, LIMIT);
+
+  const allData = [...firstPage.data];
+  const totalPages = firstPage.totalPages;
+
+  if (totalPages > 1) {
+    const remaining = await Promise.all(
+      Array.from({ length: totalPages - 1 }, (_, i) =>
+        personnelId
+          ? getAssessmentsByPersonnel(personnelId, i + 2, LIMIT)
+          : getAllAssessments(i + 2, LIMIT)
+      )
+    );
+    remaining.forEach(page => allData.push(...page.data));
+  }
+
+  return allData;
+};
+
+
 
 export const getAssessmentById = async (id: string): Promise<Assessment> => {
   const res = await fetch(`/api/assessments/${id}`);

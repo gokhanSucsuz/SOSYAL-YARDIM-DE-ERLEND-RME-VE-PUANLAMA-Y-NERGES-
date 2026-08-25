@@ -23,7 +23,7 @@ export default function GuidePage() {
           <div>
             <h1 className="text-lg font-black leading-tight tracking-wide">T.C. EDİRNE SYDV SOSYAL İNCELEME VE PUANLAMA KILAVUZU</h1>
             <p className="text-xs text-red-100 font-bold tracking-widest uppercase">
-              T.C. Edirne Valiliği Sosyal Yardımlaşma ve Dayanışma Vakfı Standart Metodoloji Rehberi
+              T.C. Edirne Valiliği SYDV — SYD-NDS v2026 Standart Metodoloji Rehberi
             </p>
           </div>
         </div>
@@ -76,7 +76,7 @@ export default function GuidePage() {
           </h3>
 
           <p className="text-sm text-slate-600 leading-relaxed">
-            Sistem, akıllı cep telefonlarına ve tabletlere herhangi bir uygulama mağazasına (Google Play Store / App Store) ihtiyaç duymaksızın doğrudan <strong>PWA (Progressive Web App)</strong> olarak yüklenebilir. İnceleme görevlileri sahada internet bağlantısı olmadan da formu mobil uygulamada doldurabilirler.
+            Sistem, akıllı cep telefonlarına ve tabletlere herhangi bir uygulama mağazasına (Google Play Store / App Store) ihtiyaç duymaksızın doğrudan <strong>PWA (Progressive Web App)</strong> olarak yüklenebilir. İnceleme görevlileri sahada <strong>internet bağlantısı olmadan</strong> da formu mobil uygulamada doldurabilir, bağlantı sağlandığında veriler otomatik senkronize edilir.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -308,10 +308,10 @@ export default function GuidePage() {
                 <h4 className="font-bold text-slate-900 text-base">C. ÇOCUK VE EĞİTİM DURUMU (Maksimum 10 Puan)</h4>
                 <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
               </div>
-              <p className="text-xs text-slate-600">Hanedeki öğrenim gören çocuk sayısı üzerinden hesaplanır:</p>
+              <p className="text-xs text-slate-600">Hanedeki öğrenim gören çocuk ve genç sayısı üzerinden kişi başı hesaplanır (Tavan: 10 Puan):</p>
               <ul className="text-xs space-y-1 text-slate-700 list-disc pl-5 font-medium">
-                <li><strong>0-6 Yaş Çocuk:</strong> Kişi başı +2 Puan</li>
-                <li><strong>İlkokul Öğrencisi:</strong> Kişi başı +1 Puan</li>
+                <li><strong>0-6 Yaş Çocuk (Bakım):</strong> Kişi başı +2 Puan</li>
+                <li><strong>İlkokul Öğrencisi:</strong> Kişi başı +2 Puan</li>
                 <li><strong>Ortaokul Öğrencisi:</strong> Kişi başı +2 Puan</li>
                 <li><strong>Lise Öğrencisi:</strong> Kişi başı +3 Puan</li>
                 <li><strong>Mesleki Eğitim Merkezi Öğrencisi:</strong> Kişi başı +3 Puan</li>
@@ -358,9 +358,13 @@ export default function GuidePage() {
                 <li><strong>Kadın Hane Reisi:</strong> +5 Puan</li>
                 <li><strong>Eşi Cezaevinde:</strong> +5 Puan</li>
                 <li><strong>Afet Nedeniyle Gelir Kaybı:</strong> +5 Puan</li>
+                <li><strong>Madde Bağımlılığı / Sosyal Güvencesiz:</strong> +5 Puan</li>
+                <li><strong>Borç / İcra Baskısı:</strong> +4 Puan</li>
+                <li><strong>Bakıma Muhtaç Bebek / Gebelik:</strong> +4 Puan</li>
                 <li><strong>Boşanmış Ebeveyn:</strong> +3 Puan</li>
                 <li><strong>Dul (Eşi Vefat Etmiş):</strong> +3 Puan</li>
-                <li><strong>Hane Nüfusu Puanı:</strong> 1 - 4 Kişi Arası <strong>+1 Puan</strong> | 5 Kişi ve Üzeri <strong>+3 Puan</strong></li>
+                <li><strong>Eski Hükümlü:</strong> +3 Puan</li>
+                <li><strong>Hane Nüfusu Puanı (OECD Ölçeği):</strong> 1-2 kişi <strong>+1 Pn</strong> | 3-4 kişi <strong>+2 Pn</strong> | 5-6 kişi <strong>+4 Pn</strong> | 7+ kişi <strong>+6 Pn</strong></li>
               </ul>
             </div>
 
@@ -449,6 +453,16 @@ export default function GuidePage() {
             <p>
               <strong>Gerçeğe Aykırı Beyan Tespiti:</strong> Başvuru sahibinin gelir, mülkiyet veya aile yapısına ilişkin gerçeğe aykırı beyanda bulunduğu tespit edilirse, sistem başvuruyu <strong>DOĞRUDAN REDDEDER</strong> (Tüm puan sıfırlanır).
             </p>
+
+            <p>
+              <strong>Otomatik Puan Düşüm Sistemi:</strong>
+            </p>
+            <ul className="text-xs space-y-1 text-red-900 list-disc pl-5 font-semibold">
+              <li>Araç Tescil Kaydı Tespiti: <strong>-15 Puan</strong></li>
+              <li>Birden Fazla Taşınmaz Mülkiyet: <strong>-20 Puan</strong></li>
+              <li>Aktif SGK Prim Kaydı: A Kategorisi sıfırlanır</li>
+              <li>Son 3 Ayda Mükerrer Vakıf Nakdi Yardımı: Kişi başı <strong>-5 Puan</strong></li>
+            </ul>
 
             <p>
               <strong>Zorunlu Kurum Sorgulamaları:</strong> SGK sigorta dökümü, Tapu Kadastro mülkiyet kaydı ve EGM Araç tescil sorgusu yapılmadan inceleme formu Müdür onayına gönderilemez.

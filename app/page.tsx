@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation';
 import { 
   getAllAssessments, getAssessmentsByPersonnel, Assessment, 
   saveAssessment, deleteAssessment, Meeting, getAllMeetings, 
-  saveMeeting, deleteMeeting, isMeetingLocked, batchUpdateAssessments 
+  saveMeeting, deleteMeeting, isMeetingLocked, batchUpdateAssessments,
+  fetchAllAssessments
 } from '@/lib/db';
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
@@ -48,6 +49,7 @@ export default function Dashboard() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
 
 
 
@@ -107,12 +109,13 @@ export default function Dashboard() {
         const loadedMeetings = await getAllMeetings();
         setMeetings(loadedMeetings);
         if (currentUser.role === 'manager' || currentUser.role === 'superadmin') {
-          const res = await getAllAssessments();
-          setAssessments(res.data);
+          const allData = await fetchAllAssessments();
+          setAssessments(allData);
         } else {
-          const res = await getAssessmentsByPersonnel(currentUser.id);
-          setAssessments(res.data);
+          const allData = await fetchAllAssessments(currentUser.id);
+          setAssessments(allData);
         }
+        setLastRefreshedAt(new Date());
       } catch (err) {
         console.error(err);
       } finally {
@@ -122,6 +125,42 @@ export default function Dashboard() {
     
     loadData();
   }, [router]);
+
+  // Otomatik Yenileme Polling (30 saniye)
+  useEffect(() => {
+    if (!user) return;
+    const POLL_INTERVAL = 30000; // 30 saniye
+    let lastKnownTotal = assessments.length;
+    let lastKnownUpdatedAt: string | null = null;
+
+    const poll = async () => {
+      try {
+        const params = (user.role === 'personnel') ? `?personnelId=${encodeURIComponent(user.id)}` : '';
+        const res = await fetch(`/api/assessments/poll${params}`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const { total, lastUpdatedAt } = await res.json();
+
+        const hasChanged = total !== lastKnownTotal || lastUpdatedAt !== lastKnownUpdatedAt;
+        if (hasChanged) {
+          lastKnownTotal = total;
+          lastKnownUpdatedAt = lastUpdatedAt;
+          // Değişiklik tespit edildi — tam veriyi yenile
+          const [loadedMeetings, allData] = await Promise.all([
+            getAllMeetings(),
+            fetchAllAssessments(user.role === 'personnel' ? user.id : undefined),
+          ]);
+          setMeetings(loadedMeetings);
+          setAssessments(allData);
+          setLastRefreshedAt(new Date());
+        }
+      } catch {
+        // Ağ hatası durumunda sessizce devam et
+      }
+    };
+
+    const timer = setInterval(poll, POLL_INTERVAL);
+    return () => clearInterval(timer);
+  }, [user, assessments.length]);
 
   // Household search logic
   const householdSearchResults = useMemo(() => {
@@ -287,12 +326,13 @@ export default function Dashboard() {
   const reloadAssessments = async () => {
     try {
       if (user.role === 'manager' || user.role === 'superadmin') {
-        const res = await getAllAssessments();
-        setAssessments(res.data);
+        const allData = await fetchAllAssessments();
+        setAssessments(allData);
       } else {
-        const res = await getAssessmentsByPersonnel(user.id);
-        setAssessments(res.data);
+        const allData = await fetchAllAssessments(user.id);
+        setAssessments(allData);
       }
+      setLastRefreshedAt(new Date());
     } catch (error) {
       console.error(error);
     }
@@ -1143,6 +1183,11 @@ export default function Dashboard() {
           <div className="hidden md:block text-right border-r border-red-600/50 pr-3 mr-1">
             <p className="text-[10px] text-red-200 font-medium">{isManager ? 'Müdür Yetkilisi' : 'İnceleyen Personel'}</p>
             <p className="text-sm font-bold truncate max-w-[140px]">{user.name}</p>
+            {lastRefreshedAt && (
+              <p className="text-[9px] text-red-300/70 font-medium mt-0.5" title="Son otomatik yenileme zamanı">
+                ↻ {lastRefreshedAt.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </p>
+            )}
           </div>
 
           <div className="relative flex items-center gap-2">

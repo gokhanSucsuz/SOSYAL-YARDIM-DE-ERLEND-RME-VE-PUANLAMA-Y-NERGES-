@@ -26,6 +26,57 @@
   --color-secondary-950: #020617;
 }
 
+/* ============================================================
+   DARK MODE — sistem tercihi ile otomatik etkinleşir
+   ============================================================ */
+:root {
+  --bg-page:       #f8fafc;
+  --bg-surface:    #ffffff;
+  --bg-surface-2:  #f1f5f9;
+  --text-primary:  #0f172a;
+  --text-secondary:#475569;
+  --border-color:  #e2e8f0;
+  --scrollbar-track:  #f1f5f9;
+  --scrollbar-thumb:  #cbd5e1;
+  --scrollbar-hover:  #94a3b8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page:       #0f172a;
+    --bg-surface:    #1e293b;
+    --bg-surface-2:  #1e293b;
+    --text-primary:  #f1f5f9;
+    --text-secondary:#94a3b8;
+    --border-color:  #334155;
+    --scrollbar-track:  #1e293b;
+    --scrollbar-thumb:  #334155;
+    --scrollbar-hover:  #475569;
+  }
+
+  /* Beyaz arka planlı kartları dark'ta düzelt */
+  .bg-white  { background-color: var(--bg-surface) !important; }
+  .bg-slate-50 { background-color: var(--bg-page) !important; }
+  .bg-slate-100 { background-color: #1e293b !important; }
+  .text-slate-900 { color: var(--text-primary) !important; }
+  .text-slate-700, .text-slate-800 { color: #cbd5e1 !important; }
+  .text-slate-500, .text-slate-600 { color: #94a3b8 !important; }
+  .border-slate-200 { border-color: var(--border-color) !important; }
+  .border-slate-100 { border-color: #1e293b !important; }
+  
+  /* Tablo satırı alternasyonu dark'ta */
+  table tbody tr:nth-child(even) { background-color: #1a2a3a; }
+  table tbody tr:hover { background-color: #1e3a50 !important; }
+
+  /* Input alanları dark modda */
+  input, select, textarea {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+  }
+  input::placeholder { color: #64748b !important; }
+}
+
 @layer utilities {
   .print-exact {
     -webkit-print-color-adjust: exact !important;
@@ -34,6 +85,16 @@
 }
 
 @media print {
+  /* Dark mode baskıda devre dışı */
+  :root {
+    --bg-page: #ffffff;
+    --bg-surface: #ffffff;
+    --text-primary: #0f172a;
+    color-scheme: light !important;
+  }
+  .bg-white  { background-color: #ffffff !important; }
+  .text-slate-900 { color: #0f172a !important; }
+  
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -41,26 +102,14 @@
 }
 
 body {
-  background-color: var(--color-secondary-50);
-  color: var(--color-secondary-900);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Custom Scrollbar for a premium look */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-secondary-100);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-secondary-300);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-secondary-400);
-}
+/* Premium Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
