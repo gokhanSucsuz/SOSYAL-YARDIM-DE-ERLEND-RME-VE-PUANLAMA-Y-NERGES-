@@ -289,54 +289,14 @@ export function SidebarLayout({ children }: SidebarProps) {
           isCollapsed ? 'md:ml-[72px]' : 'md:ml-[280px]'
         }`}
       >
-        {/* Top Bar (Mobile Only) */}
-        <header className="md:hidden sticky top-0 z-30 glass border-b border-slate-200 dark:border-slate-700/50 no-print">
-          <div className="flex items-center justify-between h-16 px-4">
-            {/* Left: Mobile menu toggle + Breadcrumb */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsMobileOpen(true)}
-                className="md:hidden p-2 text-slate-600 dark:text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-xl transition-colors"
-                title="Menüyü Aç"
-              >
-                <Menu size={22} />
-              </button>
-              <div className="hidden sm:block">
-                <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                  {(() => {
-                    if (pathname === '/') return 'Gösterge Paneli';
-                    if (pathname.startsWith('/statistics')) return 'İstatistik Raporları';
-                    if (pathname.startsWith('/personnel')) return 'Personel Yönetimi';
-                    if (pathname.startsWith('/settings/audit-logs')) return 'Denetim Kayıtları';
-                    if (pathname.startsWith('/settings')) return 'Sistem Ayarları';
-                    if (pathname.startsWith('/guide')) return 'Kılavuz & Metodoloji';
-                    if (pathname.startsWith('/presentation')) return 'Proje Sunumu';
-                    if (pathname.startsWith('/assessment')) return 'İnceleme Detayı';
-                    return 'Sosyal Yardım Sistemi';
-                  })()}
-                </h2>
-                <p className="text-[10px] text-slate-400 font-medium">
-                  T.C. Edirne Sosyal Yardımlaşma ve Dayanışma Vakfı
-                </p>
-              </div>
-            </div>
-
-            {/* Right: User info (mobile) */}
-            <div className="flex items-center gap-3">
-              <div className="text-right mr-1">
-                <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[120px] sm:max-w-[180px]">
-                  {user.name}
-                </p>
-                <p className="text-[10px] text-slate-400 font-medium">
-                  {isManager ? (userRole === 'superadmin' ? 'Süper Yönetici' : 'Müdür') : 'Personel'}
-                </p>
-              </div>
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                {(user.name || 'U').charAt(0).toUpperCase()}
-              </div>
-            </div>
-          </div>
-        </header>
+        {/* Floating Mobile Menu Button (replaces the top transparent header) */}
+        <button
+          onClick={() => setIsMobileOpen(true)}
+          className="md:hidden fixed bottom-6 right-6 z-30 p-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-[0_4px_14px_rgba(13,148,136,0.4)] transition-transform active:scale-95 no-print"
+          title="Menüyü Aç"
+        >
+          <Menu size={24} />
+        </button>
 
         {/* Page Content */}
         <main className="flex-1 main-content-area">
