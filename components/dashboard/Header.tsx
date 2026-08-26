@@ -65,18 +65,18 @@ export function Header({ user, handleLogout }: HeaderProps) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.95 }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden z-50"
+                className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-50"
               >
-                <div className="px-5 py-3 bg-slate-50 border-b border-slate-100">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Sistem Menüsü</p>
-                  <p className="text-sm font-semibold text-slate-800 mt-1 md:hidden">{user.name}</p>
+                <div className="px-5 py-3 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Sistem Menüsü</p>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1 md:hidden">{user.name}</p>
                 </div>
 
                 {user.role === 'manager' && (
                   <Link
                     href="/settings"
                     onClick={() => setIsNavMenuOpen(false)}
-                    className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-700 transition-colors border-b border-slate-100 group"
+                    className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-primary-50 hover:text-primary-700 transition-colors border-b border-slate-100 dark:border-slate-800 group"
                   >
                     <div className="p-2 bg-primary-50 text-primary-600 rounded-md group-hover:bg-primary-600 group-hover:text-white transition-colors shrink-0">
                       <Settings size={16} />
@@ -88,7 +88,7 @@ export function Header({ user, handleLogout }: HeaderProps) {
                 <Link
                   href="/guide"
                   onClick={() => setIsNavMenuOpen(false)}
-                  className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-700 transition-colors border-b border-slate-100 group"
+                  className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-primary-50 hover:text-primary-700 transition-colors border-b border-slate-100 dark:border-slate-800 group"
                 >
                   <div className="p-2 bg-primary-50 text-primary-600 rounded-md group-hover:bg-primary-600 group-hover:text-white transition-colors shrink-0">
                     <BookOpen size={16} />
@@ -99,7 +99,7 @@ export function Header({ user, handleLogout }: HeaderProps) {
                 <Link
                   href="/presentation"
                   onClick={() => setIsNavMenuOpen(false)}
-                  className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-700 transition-colors group"
+                  className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-primary-50 hover:text-primary-700 transition-colors group"
                 >
                   <div className="p-2 bg-primary-50 text-primary-600 rounded-md group-hover:bg-primary-600 group-hover:text-white transition-colors shrink-0">
                     <Presentation size={16} />

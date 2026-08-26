@@ -337,22 +337,22 @@ function NewAssessmentContent() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-slate-900 font-sans flex flex-col text-slate-100 selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-white dark:bg-slate-900 font-sans flex flex-col text-slate-900 dark:text-slate-100 selection:bg-blue-600 selection:text-white">
       
       {/* Dynamic Animated Header */}
-      <header className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-30 sticky top-0">
+      <header className="bg-white dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-30 sticky top-0">
         <div className="flex items-center gap-3">
-          <Link href="/" className="p-2 hover:bg-slate-800 rounded-xl transition-all active:scale-95 touch-manipulation text-slate-300 hover:text-white">
+          <Link href="/" className="p-2 hover:bg-slate-100 dark:bg-slate-800 rounded-xl transition-all active:scale-95 touch-manipulation text-slate-700 dark:text-slate-300 hover:text-white">
             <ArrowLeft size={20} />
           </Link>
           <LogoImage 
-            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-700 object-cover shrink-0" 
+            className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-300 dark:border-slate-700 object-cover shrink-0" 
           />
           <div>
             <h1 className="text-xs sm:text-base font-black tracking-tight uppercase bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
               Saha İnceleme Sihirbazı
             </h1>
-            <p className="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5">
+            <p className="text-[11px] text-slate-600 dark:text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5">
               <span>Adım {step + 1} / {stepsCount}:</span>
               <span className="text-blue-400 font-extrabold bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20">
                 {stepNames[step]}
@@ -363,25 +363,25 @@ function NewAssessmentContent() {
 
         {/* Live Score Pill in Header replaced with Privacy Badge */}
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex flex-col items-end border-r border-slate-800 pr-3.5">
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Görevli Personel</span>
-            <span className="text-xs font-bold text-slate-200">{user.name}</span>
+          <div className="hidden sm:flex flex-col items-end border-r border-slate-200 dark:border-slate-800 pr-3.5">
+            <span className="text-[10px] uppercase font-bold text-slate-600 dark:text-slate-500 dark:text-slate-400 tracking-wider">Görevli Personel</span>
+            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{user.name}</span>
           </div>
 
-          <div className="bg-slate-800/80 border border-slate-700/80 px-3 py-1.5 rounded-2xl text-right shrink-0 flex items-center gap-2">
+          <div className="bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300/80 dark:border-slate-300 dark:border-slate-700/80 px-3 py-1.5 rounded-2xl text-right shrink-0 flex items-center gap-2">
             <div className="p-1 rounded-lg bg-blue-500/20 text-blue-400">
               <ShieldCheck size={16} />
             </div>
             <div>
-              <p className="text-[9px] uppercase font-bold text-slate-400 tracking-widest leading-none">Saha Kayıt Modu</p>
-              <p className="text-xs font-black text-slate-200 mt-0.5 leading-none">Puan Gizli</p>
+              <p className="text-[9px] uppercase font-bold text-slate-600 dark:text-slate-500 dark:text-slate-400 tracking-widest leading-none">Saha Kayıt Modu</p>
+              <p className="text-xs font-black text-slate-800 dark:text-slate-200 mt-0.5 leading-none">Puan Gizli</p>
             </div>
           </div>
         </div>
       </header>
 
       {/* Animated Glowing Progress Bar */}
-      <div className="h-1.5 bg-slate-800 shrink-0 relative overflow-hidden">
+      <div className="h-1.5 bg-slate-100 dark:bg-slate-800 shrink-0 relative overflow-hidden">
         <motion.div 
           className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 shadow-[0_0_12px_rgba(59,130,246,0.8)]"
           initial={{ width: 0 }}
@@ -391,7 +391,7 @@ function NewAssessmentContent() {
       </div>
 
       {/* Touch-Friendly Step Pill Navigation Bar */}
-      <div className="bg-slate-900/80 border-b border-slate-800 px-3 py-2.5 flex items-center gap-1.5 overflow-x-auto shrink-0 shadow-inner no-scrollbar">
+      <div className="bg-white/80 dark:bg-white dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 px-3 py-2.5 flex items-center gap-1.5 overflow-x-auto shrink-0 shadow-inner no-scrollbar">
         {stepNames.map((name, idx) => {
           const isActive = step === idx;
           const isPassed = step > idx;
@@ -407,15 +407,15 @@ function NewAssessmentContent() {
                 isActive
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/40 ring-2 ring-blue-400/50'
                   : isPassed
-                  ? 'bg-slate-800/80 text-blue-300 hover:bg-slate-800 border border-slate-700/50'
-                  : 'bg-slate-900/60 text-slate-500 hover:bg-slate-800/40 border border-slate-800'
+                  ? 'bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 text-blue-300 hover:bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/50'
+                  : 'bg-white dark:bg-slate-900/60 text-slate-600 dark:text-slate-500 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 hover:bg-slate-100/40 dark:bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800'
               }`}
             >
               {isPassed ? (
                 <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
               ) : (
                 <span className={`w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-black ${
-                  isActive ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-500'
+                  isActive ? 'bg-white dark:bg-slate-100 dark:bg-slate-800/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-500 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400'
                 }`}>
                   {idx + 1}
                 </span>
@@ -427,7 +427,7 @@ function NewAssessmentContent() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col pb-28 bg-slate-950/40">
+      <div className="flex-1 flex flex-col pb-28 bg-slate-50 dark:bg-slate-950/40">
         <main className="flex-1 p-4 sm:p-6 lg:p-8 flex flex-col items-center">
           <div className="w-full max-w-3xl flex-1 flex flex-col">
             
@@ -447,25 +447,25 @@ function NewAssessmentContent() {
                         <User className="text-blue-400" size={24} />
                         Başvuru Sahibi & Hane Bilgileri
                       </h2>
-                      <p className="text-xs sm:text-sm text-slate-400 mt-1">Saha incelemesi yapılan hanenin kimlik, iletişim ve ikamet detayları.</p>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-500 dark:text-slate-400 mt-1">Saha incelemesi yapılan hanenin kimlik, iletişim ve ikamet detayları.</p>
                     </div>
 
-                    <div className="bg-slate-900/90 p-5 sm:p-7 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+                    <div className="bg-white dark:bg-slate-900/90 p-5 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                         <div>
-                          <label className="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <User size={14} className="text-blue-400" /> Başvuru Sahibinin Adı Soyadı *
                           </label>
                           <input 
                             type="text" 
                             value={state.applicantName}
                             onChange={e => set('applicantName', e.target.value)}
-                            className="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none shadow-inner"
                             placeholder="Örn: Ayşe Yılmaz"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <Hash size={14} className="text-blue-400" /> T.C. Kimlik Numarası (11 Hane) *
                           </label>
                           <input 
@@ -474,7 +474,7 @@ function NewAssessmentContent() {
                             inputMode="numeric"
                             value={state.applicantTc}
                             onChange={e => set('applicantTc', e.target.value.replace(/[^0-9]/g, ''))}
-                            className="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none shadow-inner"
                             placeholder="11 Haneli TC No"
                           />
                           {state.applicantTc.length > 0 && state.applicantTc.length < 11 && (
@@ -499,26 +499,26 @@ function NewAssessmentContent() {
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <Phone size={14} className="text-blue-400" /> Telefon Numarası
                           </label>
                           <input 
                             type="tel" 
                             value={state.phoneNumber}
                             onChange={e => set('phoneNumber', e.target.value)}
-                            className="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
                             placeholder="Örn: 0555 555 5555"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <Hash size={14} className="text-blue-400" /> Hane Numarası (Sistem Ref)
                           </label>
                           <input 
                             type="text" 
                             value={state.householdNo}
                             onChange={e => set('householdNo', e.target.value)}
-                            className="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
                             placeholder="Örn: HN-12345"
                           />
                         </div>
@@ -526,14 +526,14 @@ function NewAssessmentContent() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-1">
-                          <label className="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <Users size={14} className="text-blue-400" /> Hanedeki Toplam Kişi Sayısı
                           </label>
-                          <div className="flex items-center w-full bg-slate-800/80 border border-slate-700 rounded-2xl overflow-hidden shadow-inner focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                          <div className="flex items-center w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl overflow-hidden shadow-inner focus-within:ring-2 focus-within:ring-blue-500 transition-all">
                             <button
                               type="button"
                               onClick={() => set('householdSize', Math.max(1, (state.householdSize || 1) - 1))}
-                              className="px-4 py-3.5 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                              className="px-4 py-3.5 text-slate-600 dark:text-slate-500 dark:text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                             >
                               <Minus size={20} />
                             </button>
@@ -549,21 +549,21 @@ function NewAssessmentContent() {
                             <button
                               type="button"
                               onClick={() => set('householdSize', (state.householdSize || 1) + 1)}
-                              className="px-4 py-3.5 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                              className="px-4 py-3.5 text-slate-600 dark:text-slate-500 dark:text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                             >
                               <Plus size={20} />
                             </button>
                           </div>
                         </div>
                         <div className="md:col-span-2">
-                          <label className="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <MapPin size={14} className="text-blue-400" /> İkamet Adresi
                           </label>
                           <textarea 
                             value={state.applicantAddress}
                             onChange={e => set('applicantAddress', e.target.value)}
                             rows={2}
-                            className="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
                             placeholder="Mahalle, Cadde/Sokak, Kapı No, Daire..."
                           />
                         </div>
@@ -575,11 +575,11 @@ function NewAssessmentContent() {
                 {step === 1 && (
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
-                      <h2 className="text-xl font-black text-white">A. Ekonomik Durum</h2>
-                      <p className="text-slate-400 text-xs mt-1">Hane halkı gelir ve sigorta durumuna göre değerlendirme</p>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white">A. Ekonomik Durum</h2>
+                      <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Hane halkı gelir ve sigorta durumuna göre değerlendirme</p>
                     </div>
                     
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
                       <SectionCard title="Gelir Seviyesi" maxScore={40} currentScore={calc.scoreA} hideScore={true}>
                         <div className="space-y-3">
                           <RadioItem label="Kişi başına gelir muhtaçlık sınırının %25 altında" name="income" checked={state.income === 40} onChange={() => set('income', 40)} points={40} />
@@ -588,8 +588,8 @@ function NewAssessmentContent() {
                           <RadioItem label="Muhtaçlık sınırının %75 – 100 arasında" name="income" checked={state.income === 15} onChange={() => set('income', 15)} points={15} />
                           <RadioItem label="Muhtaçlık sınırı üzerinde" name="income" checked={state.income === 0} onChange={() => set('income', 0)} points={0} />
                         </div>
-                        <div className="mt-5 pt-4 border-t border-slate-100">
-                          <h3 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">İlave / Düzeltme Kriterleri</h3>
+                        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-200 dark:border-slate-800">
+                          <h3 className="text-[10px] font-bold text-slate-600 dark:text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">İlave / Düzeltme Kriterleri</h3>
                           <div className="grid grid-cols-1 gap-3">
                             <CheckboxItem label="Hanede çalışan yok" checked={state.noWorker} onChange={(v:any) => set('noWorker', v)} points={10} />
                             <CheckboxItem label="Düzenli gelir bulunmuyor" checked={state.noRegularIncome} onChange={(v:any) => set('noRegularIncome', v)} points={5} />
@@ -604,11 +604,11 @@ function NewAssessmentContent() {
                 {step === 2 && (
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
-                      <h2 className="text-xl font-black text-white">B. Dezavantajlı Bireyler</h2>
-                      <p className="text-slate-400 text-xs mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white">B. Dezavantajlı Bireyler</h2>
+                      <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
                     </div>
 
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
                       <SectionCard title="Hanehalkı Özel Durumları" maxScore={30} currentScore={calc.scoreB} hideScore={true}>
                         
 
@@ -631,17 +631,17 @@ function NewAssessmentContent() {
                           <CheckboxItem label="Yabancı uyruklu / Sığınmacı" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={3} />
                         </div>
 
-                        <div className="mt-5 pt-4 border-t border-slate-100">
-                          <h3 className="text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-200 dark:border-slate-800">
+                          <h3 className="text-xs font-bold text-slate-700 dark:text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
                             <Sparkles size={14} className="text-amber-500" />
                             Özel Sebep / Özel Durum Tanımlama
                           </h3>
-                          <p className="text-xs text-slate-500 mb-3">
+                          <p className="text-xs text-slate-600 dark:text-slate-500 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 mb-3">
                             Standart kriterlerin dışındaki özel durumlar için açıklama girebilirsiniz.
                           </p>
-                          <div className="space-y-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                          <div className="space-y-3 bg-slate-50 dark:bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-300 dark:border-slate-700">
                             <div>
-                              <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                              <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 mb-1">
                                 Özel Sebep Açıklaması
                               </label>
                               <input
@@ -655,7 +655,7 @@ function NewAssessmentContent() {
                                   }
                                 }}
                                 placeholder="Örn: Organ nakli, nadir hastalık, son birkaç günde karşılaşılan acil durum vb."
-                                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-slate-800 font-medium"
+                                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-800 dark:text-slate-200 font-medium"
                               />
                             </div>
                             {user?.role === 'personnel' ? (
@@ -665,11 +665,11 @@ function NewAssessmentContent() {
                               </div>
                             ) : (
                               <div>
-                                <label className="block text-[11px] font-bold text-slate-600 mb-1">İlave Puan Değeri (Müdür Yetkisi)</label>
+                                <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 mb-1">İlave Puan Değeri (Müdür Yetkisi)</label>
                                 <select
                                   value={state.b_ozelSebepPuan || 0}
                                   onChange={(e) => { set('b_ozelSebepPuan', Number(e.target.value)); set('b_ozelSebepPuanBekliyor', false); }}
-                                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-bold text-slate-800"
+                                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-800 dark:text-slate-200"
                                 >
                                   <option value={0}>Ekleme Yok</option>
                                   <option value={5}>+5 Puan</option>
@@ -689,10 +689,10 @@ function NewAssessmentContent() {
                 {step === 3 && (
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
-                      <h2 className="text-xl font-black text-white">C. Çocuk ve Eğitim</h2>
-                      <p className="text-slate-400 text-xs mt-1">Kademeli ağırlıklı puanlama (Şartlı Eğitim Yardımı ve Dünya Bankası metodolojisi)</p>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white">C. Çocuk ve Eğitim</h2>
+                      <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Kademeli ağırlıklı puanlama (Şartlı Eğitim Yardımı ve Dünya Bankası metodolojisi)</p>
                     </div>
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
                       <SectionCard title="Eğitim Durumu (Maks. 15 Puan)" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <CounterItem label="0-6 yaş çocuk (Bakım Yükü)" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={2} />
@@ -711,10 +711,10 @@ function NewAssessmentContent() {
                 {step === 4 && (
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
-                      <h2 className="text-xl font-black text-white">D. Barınma Durumu</h2>
-                      <p className="text-slate-400 text-xs mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white">D. Barınma Durumu</h2>
+                      <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
                     </div>
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
                       <SectionCard title="Barınma Şartları (Maks. 10 Puan)" maxScore={10} currentScore={calc.scoreD} hideScore={true}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <CheckboxItem label="Evsiz / Barınaksız / Geçici Sığınma" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={10} />
@@ -737,10 +737,10 @@ function NewAssessmentContent() {
                 {step === 5 && (
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
-                      <h2 className="text-xl font-black text-white">E. Beyaz Eşya ve Ev Aletleri</h2>
-                      <p className="text-slate-400 text-xs mt-1">Temel eşyaların varlık/yıpranma durumu — Bulaşık makinesi lüks eşya sayıldığından puanlama dışıdır (TÜİK/OECD)</p>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white">E. Beyaz Eşya ve Ev Aletleri</h2>
+                      <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Temel eşyaların varlık/yıpranma durumu — Bulaşık makinesi lüks eşya sayıldığından puanlama dışıdır (TÜİK/OECD)</p>
                     </div>
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
                       <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE} hideScore={true}>
                         <div className="space-y-3">
                           <ApplianceStatusItem label="Buzdolabı" icon={Box} value={state.appliance_buzdolabi} onChange={(v: any) => set('appliance_buzdolabi', v)} pointsYok={3} pointsEski={1.5} />
@@ -760,13 +760,13 @@ function NewAssessmentContent() {
                 {step === 6 && (
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
-                      <h2 className="text-xl font-black text-white">F. Sosyal Kırılganlık</h2>
-                      <p className="text-slate-400 text-xs mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white">F. Sosyal Kırılganlık</h2>
+                      <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
                     </div>
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
                       <SectionCard title="Sosyal Kırılganlık ve Nüfus" maxScore={30} currentScore={calc.scoreF} hideScore={true}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 sm:col-span-2">
+                          <div className="bg-slate-50 dark:bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-300 dark:border-slate-700 p-3.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-700 dark:text-slate-300 sm:col-span-2">
                             <span className="flex items-center gap-2">
                               <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
                               Hane Nüfusu Etkisi — {state.householdSize || 1} Kişi
@@ -797,8 +797,8 @@ function NewAssessmentContent() {
                 {step === 7 && (
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
-                      <h2 className="text-xl font-black text-white">G. Sosyal İnceleme Kanaati</h2>
-                      <p className="text-slate-400 text-xs mt-1">Görevlinin saha gözlemine dayalı kanaat değerlendirmesi</p>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white">G. Sosyal İnceleme Kanaati</h2>
+                      <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Görevlinin saha gözlemine dayalı kanaat değerlendirmesi</p>
                     </div>
 
                     <div className="bg-blue-950/60 border border-blue-500/30 rounded-2xl p-4 text-xs text-blue-200 space-y-2">
@@ -811,7 +811,7 @@ function NewAssessmentContent() {
                       </p>
                     </div>
 
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
                       <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreG} hideScore={true}>
                          <div className="space-y-3">
                            <ScoreButtons 
@@ -847,18 +847,18 @@ function NewAssessmentContent() {
                 {step === 8 && (
                   <div className="flex-1 space-y-4">
                     <div className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 border border-amber-500/20 p-5 rounded-3xl backdrop-blur-md">
-                      <h2 className="text-xl font-black text-white">Sistem Kontrolleri</h2>
-                      <p className="text-slate-400 text-xs mt-1">Kayıt öncesi zorunlu kurum veritabanı inceleme başlıkları.</p>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white">Sistem Kontrolleri</h2>
+                      <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Kayıt öncesi zorunlu kurum veritabanı inceleme başlıkları.</p>
                     </div>
 
-                    <div className="text-slate-900">
+                    <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
                       <SectionCard title="Varlık Testi ve Kontrol Listesi" maxScore={0} currentScore={0} hideScore={true}>
                          {/* Zorunlu Onay */}
                          <div className="mb-5 space-y-3">
-                            <label className={`flex items-center p-4 border rounded-2xl cursor-pointer transition-all ${state.systemChecksDone ? 'bg-emerald-50 border-emerald-300 ring-2 ring-emerald-400/30' : 'bg-white border-slate-200 hover:bg-slate-50'}`}>
-                              <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mr-4"
+                            <label className={`flex items-center p-4 border rounded-2xl cursor-pointer transition-all ${state.systemChecksDone ? 'bg-emerald-50 border-emerald-300 ring-2 ring-emerald-400/30' : 'bg-white dark:bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:bg-white dark:bg-slate-900'}`}>
+                              <input type="checkbox" className="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500 mr-4"
                                 checked={state.systemChecksDone} onChange={(e) => set('systemChecksDone', e.target.checked)} />
-                              <span className={`font-bold text-sm ${state.systemChecksDone ? 'text-emerald-900' : 'text-slate-800'}`}>
+                              <span className={`font-bold text-sm ${state.systemChecksDone ? 'text-emerald-900' : 'text-slate-800 dark:text-slate-800 dark:text-slate-200'}`}>
                                 Zorunlu sistem sorgularını (Araç Tescil, Tapu, SGK) tamamladım ve aşağıdaki sonuçları girdim.
                               </span>
                             </label>
@@ -900,7 +900,7 @@ function NewAssessmentContent() {
                          )}
 
                          <div className="pt-4 border-t border-red-100">
-                           <label className={`flex items-start p-4 border rounded-2xl cursor-pointer transition-all ${state.falseStatement ? 'bg-red-50 border-red-400 ring-2 ring-red-400/30' : 'bg-white border-slate-200 hover:bg-red-50/50'}`}>
+                           <label className={`flex items-start p-4 border rounded-2xl cursor-pointer transition-all ${state.falseStatement ? 'bg-red-50 border-red-400 ring-2 ring-red-400/30' : 'bg-white dark:bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-300 dark:border-slate-700 hover:bg-red-50/50'}`}>
                              <input type="checkbox" className="w-5 h-5 rounded border-red-300 text-red-600 focus:ring-red-500 mt-0.5"
                                checked={state.falseStatement} onChange={(e) => set('falseStatement', e.target.checked)} />
                              <div className="ml-3 flex flex-col">
@@ -919,7 +919,7 @@ function NewAssessmentContent() {
                     <motion.div 
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl text-center w-full max-w-lg space-y-6"
+                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-3xl shadow-2xl text-center w-full max-w-lg space-y-6"
                     >
                       <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-lg shadow-blue-500/20">
                         <Save size={36} />
@@ -927,17 +927,17 @@ function NewAssessmentContent() {
 
                       <div>
                         <h2 className="text-2xl sm:text-3xl font-black text-white">İncelemeyi Tamamla & Kaydet</h2>
-                        <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                        <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">
                           Tüm adımlar tamamlandı. Formu sisteme kaydederek Vakıf onay sürecine sunabilirsiniz.
                         </p>
                       </div>
                       
-                      <div className="bg-slate-950/80 rounded-2xl p-6 border border-slate-800 space-y-3 text-center">
+                      <div className="bg-slate-50 dark:bg-slate-950/80 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 space-y-3 text-center">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-bold">
                           <ShieldCheck size={16} /> Saha Güvenlik Protokolü Etkin
                         </div>
                         <h3 className="text-sm font-extrabold text-white">Gizli Değerlendirme Modu</h3>
-                        <p className="text-xs text-slate-400 leading-relaxed max-w-md mx-auto">
+                        <p className="text-xs text-slate-600 dark:text-slate-500 dark:text-slate-400 leading-relaxed max-w-md mx-auto">
                           Saha ziyareti sırasında hane halkı gizliliği gereği puan sonucu ekranda gösterilmemektedir. Form kaydedildikten sonra detay ve yönetim ekranlarından puan kümülasyonunu inceleyebilirsiniz.
                         </p>
                       </div>
@@ -961,7 +961,7 @@ function NewAssessmentContent() {
       </div>
 
       {/* Floating Sticky Ergonomic Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 p-3 sm:p-4 shadow-2xl z-40 flex items-center justify-between gap-3">
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 p-3 sm:p-4 shadow-2xl z-40 flex items-center justify-between gap-3">
         <motion.button
           whileTap={{ scale: 0.95 }}
           type="button"
@@ -969,16 +969,16 @@ function NewAssessmentContent() {
           disabled={step === 0}
           className={`flex items-center justify-center px-4 py-3 rounded-2xl font-bold text-sm min-h-[48px] transition-all touch-manipulation ${
             step === 0 
-              ? 'bg-slate-800/40 text-slate-600 cursor-not-allowed border border-slate-800' 
-              : 'bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700'
+              ? 'bg-slate-100/40 dark:bg-slate-100 dark:bg-slate-800/40 text-slate-600 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-800' 
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-700 border border-slate-300 dark:border-slate-700'
           }`}
         >
           <ChevronLeft size={20} className="mr-1" /> Geri
         </motion.button>
         
         <div className="text-center">
-          <span className="text-[9px] font-black text-slate-400 block uppercase tracking-widest">Saha Formu</span>
-          <span className="text-xs sm:text-sm font-black text-slate-300">Adım {step + 1} / {stepsCount}</span>
+          <span className="text-[9px] font-black text-slate-600 dark:text-slate-500 dark:text-slate-400 block uppercase tracking-widest">Saha Formu</span>
+          <span className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300">Adım {step + 1} / {stepsCount}</span>
         </div>
 
         {step < stepsCount - 1 ? (
@@ -989,7 +989,7 @@ function NewAssessmentContent() {
             disabled={!canProceed}
             className={`flex items-center justify-center px-5 py-3 rounded-2xl font-black text-sm min-h-[48px] transition-all shadow-lg touch-manipulation ${
               !canProceed
-                ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-800'
+                ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-500 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-800'
                 : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30'
             }`}
           >
@@ -1012,7 +1012,7 @@ function NewAssessmentContent() {
 
 export default function NewAssessmentWizard() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-300 flex items-center justify-center font-bold">Form yükleniyor...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold">Form yükleniyor...</div>}>
       <NewAssessmentContent />
     </Suspense>
   );

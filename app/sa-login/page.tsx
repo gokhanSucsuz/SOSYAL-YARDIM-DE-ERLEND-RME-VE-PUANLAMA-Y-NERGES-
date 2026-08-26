@@ -58,7 +58,7 @@ export default function SuperAdminLogin() {
         <div className="flex justify-center mb-6 mt-2">
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-amber-700 rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
-            <LogoImage className="relative w-20 h-20 rounded-2xl shadow-xl border-2 border-slate-700 object-cover bg-white" />
+            <LogoImage className="relative w-20 h-20 rounded-2xl shadow-xl border-2 border-slate-700 object-cover bg-white dark:bg-slate-800" />
           </div>
         </div>
 
@@ -73,7 +73,7 @@ export default function SuperAdminLogin() {
           <div>
             <label className="block text-sm font-bold text-slate-300 mb-1">Yönetici E-Posta</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" size={18} />
               <input
                 type="email"
                 value={email}
@@ -91,7 +91,7 @@ export default function SuperAdminLogin() {
               <Link href="/forgot-password" className="text-[11px] font-bold text-amber-500 hover:text-amber-400 underline">Şifremi Unuttum</Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" size={18} />
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
@@ -102,7 +102,7 @@ export default function SuperAdminLogin() {
               <button 
                 type="button" 
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-300"
               >
                 {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
               </button>

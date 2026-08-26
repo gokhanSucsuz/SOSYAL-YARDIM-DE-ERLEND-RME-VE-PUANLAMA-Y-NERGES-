@@ -356,17 +356,17 @@ export default function EditAssessmentWizard() {
     }
   };
 
-  if (loading || !user) return <div className="h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-600">Yükleniyor...</div>;
+  if (loading || !user) return <div className="h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center font-bold text-slate-600 dark:text-slate-400">Yükleniyor...</div>;
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans flex flex-col">
       <AppHeader
         subtitle={`✏️ İnceleme Düzenle • Adım ${step + 1} / ${stepsCount}: ${stepNames[step]}`}
       />
 
       {/* Progress Bar */}
-      <div className="h-1.5 bg-slate-200 shrink-0">
+      <div className="h-1.5 bg-slate-200 dark:bg-slate-700 shrink-0">
         <div className="h-full bg-blue-600 transition-all duration-300 ease-out" style={{ width: `${((step + 1) / stepsCount) * 100}%` }}></div>
       </div>
 
@@ -404,29 +404,29 @@ export default function EditAssessmentWizard() {
             {step === 0 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">Başvuru Sahibi Bilgileri</h2>
-                  <p className="text-slate-500 mt-1">İncelemesi yapılan kişinin kimlik bilgileri.</p>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Başvuru Sahibi Bilgileri</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">İncelemesi yapılan kişinin kimlik bilgileri.</p>
                 </div>
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Başvuru Sahibinin Adı Soyadı</label>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Başvuru Sahibinin Adı Soyadı</label>
                       <input 
                         type="text" 
                         value={state.applicantName}
                         onChange={e => set('applicantName', e.target.value)}
-                        className="w-full border border-slate-300 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
                         placeholder="Örn: Ayşe Yılmaz"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">T.C. Kimlik Numarası</label>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">T.C. Kimlik Numarası</label>
                       <input 
                         type="text" 
                         maxLength={11}
                         value={state.applicantTc}
                         onChange={e => set('applicantTc', e.target.value.replace(/[^0-9]/g, ''))}
-                        className="w-full border border-slate-300 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
                         placeholder="11 Haneli TC No"
                       />
                       {state.applicantTc.length > 0 && state.applicantTc.length < 11 && (
@@ -437,22 +437,22 @@ export default function EditAssessmentWizard() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Telefon Numarası</label>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Telefon Numarası</label>
                       <input 
                         type="tel" 
                         value={state.phoneNumber}
                         onChange={e => set('phoneNumber', e.target.value)}
-                        className="w-full border border-slate-300 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
                         placeholder="Örn: 0555 555 5555"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Hane Numarası (Sistem Ref)</label>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Hane Numarası (Sistem Ref)</label>
                       <input 
                         type="text" 
                         value={state.householdNo}
                         onChange={e => set('householdNo', e.target.value)}
-                        className="w-full border border-slate-300 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
                         placeholder="Örn: HN-12345"
                       />
                     </div>
@@ -460,12 +460,12 @@ export default function EditAssessmentWizard() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-1">
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Hanedeki Kişi Sayısı</label>
-                      <div className="flex items-center w-full border border-slate-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Hanedeki Kişi Sayısı</label>
+                      <div className="flex items-center w-full border border-slate-300 dark:border-slate-600 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
                         <button
                           type="button"
                           onClick={() => set('householdSize', Math.max(1, (state.householdSize || 1) - 1))}
-                          className="px-4 py-3 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors bg-slate-50 border-r border-slate-200"
+                          className="px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800/50 transition-colors bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700"
                         >
                           <Minus size={20} />
                         </button>
@@ -475,25 +475,25 @@ export default function EditAssessmentWizard() {
                           value={state.householdSize || ''}
                           onChange={e => set('householdSize', parseInt(e.target.value) || 1)}
                           onFocus={e => e.target.select()}
-                          className="flex-1 w-full bg-white py-3 px-2 text-center text-lg font-medium text-slate-900 outline-none appearance-none"
+                          className="flex-1 w-full bg-white dark:bg-slate-800 py-3 px-2 text-center text-lg font-medium text-slate-900 dark:text-slate-100 outline-none appearance-none"
                           style={{ MozAppearance: 'textfield' }}
                         />
                         <button
                           type="button"
                           onClick={() => set('householdSize', (state.householdSize || 1) + 1)}
-                          className="px-4 py-3 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors bg-slate-50 border-l border-slate-200"
+                          className="px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800/50 transition-colors bg-slate-50 dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700"
                         >
                           <Plus size={20} />
                         </button>
                       </div>
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Açık Adres</label>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Açık Adres</label>
                       <textarea 
                         value={state.applicantAddress}
                         onChange={e => set('applicantAddress', e.target.value)}
                         rows={2}
-                        className="w-full border border-slate-300 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
                         placeholder="Mahalle, Sokak, Kapı No vb."
                       />
                     </div>
@@ -505,8 +505,8 @@ export default function EditAssessmentWizard() {
             {step === 1 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">A. Ekonomik Durum</h2>
-                  <p className="text-slate-500 mt-1">Hane halkı gelir ve sigorta durumuna göre değerlendirme</p>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">A. Ekonomik Durum</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">Hane halkı gelir ve sigorta durumuna göre değerlendirme</p>
                 </div>
                 <SectionCard title="Gelir Seviyesi" maxScore={40} currentScore={calc.scoreA} hideScore={true}>
                   <div className="space-y-3">
@@ -516,7 +516,7 @@ export default function EditAssessmentWizard() {
                     <RadioItem label="Muhtaçlık sınırının %75 – 100 arasında" name="income" checked={state.income === 15} onChange={() => set('income', 15)} points={15} />
                     <RadioItem label="Muhtaçlık sınırı üzerinde" name="income" checked={state.income === 0} onChange={() => set('income', 0)} points={0} />
                   </div>
-                  <div className="mt-5 pt-4 border-t border-slate-100">
+                  <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
                     <h3 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">İlave / Düzeltme Kriterleri</h3>
                     <div className="grid grid-cols-1 gap-3">
                       <CheckboxItem label="Hanede çalışan yok" checked={state.noWorker} onChange={(v:any) => set('noWorker', v)} points={10} />
@@ -531,8 +531,8 @@ export default function EditAssessmentWizard() {
             {step === 2 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">B. Dezavantajlı Bireyler</h2>
-                  <p className="text-slate-500 mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">B. Dezavantajlı Bireyler</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
                 </div>
                 <SectionCard title="Hanehalkı Özel Durumları" maxScore={30} currentScore={calc.scoreB} hideScore={true}>
                   
@@ -555,17 +555,17 @@ export default function EditAssessmentWizard() {
                     <CheckboxItem label="Yabancı uyruklu / Sığınmacı" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={3} />
                   </div>
 
-                  <div className="mt-5 pt-4 border-t border-slate-100">
-                    <h3 className="text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                  <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
                       <Sparkles size={14} className="text-amber-500" />
                       Özel Sebep / Özel Durum Tanımlama
                     </h3>
-                    <p className="text-xs text-slate-500 mb-3">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
                       Standart kriterlerin dışındaki özel durumlara ilave değer ekleyebilirsiniz.
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
                       <div className="sm:col-span-2">
-                        <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
                           Özel Sebep Açıklaması
                         </label>
                         <input
@@ -573,17 +573,17 @@ export default function EditAssessmentWizard() {
                           value={state.b_ozelSebepMetin || ''}
                           onChange={(e) => set('b_ozelSebepMetin', e.target.value)}
                           placeholder="Örn: Organ nakli, nadir hastalık vb."
-                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-slate-800"
+                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
                           İlave Değer
                         </label>
                         <select
                           value={state.b_ozelSebepPuan || 0}
                           onChange={(e) => set('b_ozelSebepPuan', Number(e.target.value))}
-                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-bold text-slate-800"
+                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200"
                         >
                           <option value={0}>Ekleme Yok</option>
                           <option value={10}>+10 Kademe</option>
@@ -601,8 +601,8 @@ export default function EditAssessmentWizard() {
             {step === 3 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">C. Çocuk ve Eğitim</h2>
-                  <p className="text-slate-500 mt-1">Hanedeki eğitim gören tüm kademelerdeki çocuklar ve öğrenciler (Tüm Kademeler Eşit)</p>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">C. Çocuk ve Eğitim</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">Hanedeki eğitim gören tüm kademelerdeki çocuklar ve öğrenciler (Tüm Kademeler Eşit)</p>
                 </div>
                 <SectionCard title="Eğitim Durumu" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -621,8 +621,8 @@ export default function EditAssessmentWizard() {
             {step === 4 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">D. Barınma Durumu</h2>
-                  <p className="text-slate-500 mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">D. Barınma Durumu</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
                 </div>
                 <SectionCard title="Barınma Şartları" maxScore={10} currentScore={calc.scoreD} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -645,11 +645,11 @@ export default function EditAssessmentWizard() {
             {step === 5 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">E. Beyaz Eşya ve Ev Aletleri Durumu</h2>
-                  <p className="text-slate-500 mt-1">Hanedeki temel ev eşyalarının varlık ve yıpranma durumu</p>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">E. Beyaz Eşya ve Ev Aletleri Durumu</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">Hanedeki temel ev eşyalarının varlık ve yıpranma durumu</p>
                 </div>
                 <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE} hideScore={true}>
-                  <p className="text-xs text-slate-500 mb-4 font-medium">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 font-medium">
                     Her bir eşya için hanedeki mevcudiyet durumunu &quot;Yok&quot;, &quot;Var (Eski/Arızalı)&quot; veya &quot;Var (Yeni/İyi)&quot; olarak belirleyiniz.
                   </p>
                   <div className="space-y-3">
@@ -723,12 +723,12 @@ export default function EditAssessmentWizard() {
             {step === 6 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">F. Sosyal Kırılganlık</h2>
-                  <p className="text-slate-500 mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">F. Sosyal Kırılganlık</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
                 </div>
                 <SectionCard title="Sosyal Kırılganlık ve Nüfus" maxScore={30} currentScore={calc.scoreF} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 sm:col-span-2">
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
                       <span className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-blue-600"></span>
                         Hane Nüfusu Etkisi ({state.householdSize || 1} Kişi)
@@ -756,8 +756,8 @@ export default function EditAssessmentWizard() {
             {step === 7 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">G. Sosyal İnceleme Kanaati</h2>
-                  <p className="text-slate-500 mt-1">Sosyal inceleme görevlisinin saha gözlemine dayalı kanaat puanları (Maksimum 20 Puan)</p>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">G. Sosyal İnceleme Kanaati</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">Sosyal inceleme görevlisinin saha gözlemine dayalı kanaat puanları (Maksimum 20 Puan)</p>
                 </div>
 
                 {/* Detailed Guidance Scale Card */}
@@ -770,19 +770,19 @@ export default function EditAssessmentWizard() {
                     Bu bölümde verilen puanlar hanenin <strong>muhtaçlık ve yardım alma ihtiyacını doğrudan artırır</strong>. Bu nedenle:
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-medium">
-                    <div className="bg-white p-2.5 rounded-lg border border-blue-200">
-                      <span className="font-extrabold text-slate-800 block text-xs">0 PUAN: İYİ / YETERLİ (İHTİYAÇ YOK)</span>
-                      <p className="text-[11px] text-slate-600 mt-0.5">Hanenin durumu olumlu, yeterli ve stabildir. İlave yardım puanına ihtiyaç duyulmamaktadır.</p>
+                    <div className="bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-blue-200">
+                      <span className="font-extrabold text-slate-800 dark:text-slate-200 block text-xs">0 PUAN: İYİ / YETERLİ (İHTİYAÇ YOK)</span>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Hanenin durumu olumlu, yeterli ve stabildir. İlave yardım puanına ihtiyaç duyulmamaktadır.</p>
                     </div>
-                    <div className="bg-white p-2.5 rounded-lg border border-blue-200">
+                    <div className="bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-blue-200">
                       <span className="font-extrabold text-red-800 block text-xs">5 PUAN: ÇOK KÖTÜ / KRİTİK ACİL İHTİYAÇ</span>
-                      <p className="text-[11px] text-slate-600 mt-0.5">Hane şartları aşırı olumsuz, kritik, acil veya risksizdir. Maksimum +5 puan eklenerek yardım önceliği yükseltilir.</p>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Hane şartları aşırı olumsuz, kritik, acil veya risksizdir. Maksimum +5 puan eklenerek yardım önceliği yükseltilir.</p>
                     </div>
                   </div>
                 </div>
 
                 <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreG} hideScore={true}>
-                   <p className="text-xs text-slate-500 mb-4 font-semibold">Lütfen aşağıdaki 4 kriter için hanedeki saha gözleminize uygun olan 0 (İyi) ile 5 (Çok Kötü / Kritik) arası değeri seçiniz:</p>
+                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 font-semibold">Lütfen aşağıdaki 4 kriter için hanedeki saha gözleminize uygun olan 0 (İyi) ile 5 (Çok Kötü / Kritik) arası değeri seçiniz:</p>
                    <div className="space-y-3">
                      <ScoreButtons 
                        label="1. Yaşam Koşulları (Fiziki Şartlar, Hijyen, Eşya)" 
@@ -816,20 +816,20 @@ export default function EditAssessmentWizard() {
             {step === 8 && (
               <div className="flex-1">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">Sistem Kontrolleri</h2>
-                  <p className="text-slate-500 mt-1">Kayıt öncesi zorunlu inceleme başlıkları.</p>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Sistem Kontrolleri</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">Kayıt öncesi zorunlu inceleme başlıkları.</p>
                 </div>
                 <SectionCard title="Kontrol Listesi" maxScore={0} currentScore={0} className="border-orange-200" hideScore={true}>
-                   <p className="text-sm text-slate-500 mb-4">Yardım yapılmadan önce ilgili kurumlardan (Araç, Tapu, SGK vb.) zorunlu kontrollerin yapılması gerekmektedir.</p>
+                   <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Yardım yapılmadan önce ilgili kurumlardan (Araç, Tapu, SGK vb.) zorunlu kontrollerin yapılması gerekmektedir.</p>
                    <div className="mb-6">
-                      <label className={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${state.systemChecksDone ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-200 hover:bg-slate-50'}`}>
+                      <label className={`flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${state.systemChecksDone ? 'bg-emerald-50 border-emerald-200' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900'}`}>
                         <input 
                           type="checkbox" 
-                          className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mr-4"
+                          className="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500 mr-4"
                           checked={state.systemChecksDone}
                           onChange={(e) => set('systemChecksDone', e.target.checked)}
                         />
-                        <span className={`font-bold ${state.systemChecksDone ? 'text-emerald-800' : 'text-slate-700'}`}>Zorunlu sistem kontrollerini (Araç, Tapu, SGK vb.) yaptım.</span>
+                        <span className={`font-bold ${state.systemChecksDone ? 'text-emerald-800' : 'text-slate-700 dark:text-slate-300'}`}>Zorunlu sistem kontrollerini (Araç, Tapu, SGK vb.) yaptım.</span>
                       </label>
                       {!state.systemChecksDone && (
                         <p className="text-red-500 text-xs font-bold mt-2 ml-1">* Sonraki adıma geçmek için onaylamanız gereklidir.</p>
@@ -843,7 +843,7 @@ export default function EditAssessmentWizard() {
                    
                    <div className="pt-4 border-t border-red-100">
                      <div className="flex flex-col">
-                       <label className="flex items-start p-4 border border-red-200 rounded-xl cursor-pointer bg-white hover:bg-red-50/50 transition-colors">
+                       <label className="flex items-start p-4 border border-red-200 rounded-xl cursor-pointer bg-white dark:bg-slate-800 hover:bg-red-50/50 transition-colors">
                          <input
                            type="checkbox"
                            className="w-5 h-5 rounded border-red-300 text-red-600 focus:ring-red-500 mt-0.5"
@@ -865,21 +865,21 @@ export default function EditAssessmentWizard() {
 
             {step === 9 && (
               <div className="flex-1 flex flex-col justify-center items-center py-10">
-                <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center w-full max-w-lg">
+                <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 text-center w-full max-w-lg">
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-600 mb-6">
                     <Save size={32} />
                   </div>
-                  <h2 className="text-3xl font-bold text-slate-800 mb-2">Güncellemeleri Kaydet</h2>
-                  <p className="text-slate-500 mb-8">
+                  <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-2">Güncellemeleri Kaydet</h2>
+                  <p className="text-slate-500 dark:text-slate-400 mb-8">
                     Değişiklikleri kaydederek inceleme bilgilerini güncelleyebilirsiniz.
                   </p>
                   
-                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 mb-8 text-center space-y-2">
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-6 border border-slate-100 dark:border-slate-800 mb-8 text-center space-y-2">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
                       <ShieldCheck size={16} /> Saha Güvenlik Protokolü Etkin
                     </div>
-                    <h3 className="text-sm font-extrabold text-slate-800">Gizli Değerlendirme Modu</h3>
-                    <p className="text-xs text-slate-500 leading-relaxed max-w-md mx-auto">
+                    <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-200">Gizli Değerlendirme Modu</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-md mx-auto">
                       Saha ziyareti sırasında hane halkı gizliliği gereği puan sonucu ekranda gösterilmemektedir.
                     </p>
                   </div>
@@ -899,13 +899,13 @@ export default function EditAssessmentWizard() {
       </div>
 
       {/* Sticky Bottom Navigation Bar for Mobile Ergonomics */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 sm:p-4 shadow-xl z-30 flex items-center justify-between gap-3">
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 p-3 sm:p-4 shadow-xl z-30 flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={() => setStep(s => Math.max(0, s - 1))}
           disabled={step === 0}
           className={`flex items-center justify-center px-4 py-3 rounded-xl font-bold text-sm min-h-[48px] transition-all active:scale-95 touch-manipulation ${
-            step === 0 ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            step === 0 ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-300 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:bg-slate-700'
           }`}
         >
           <ChevronLeft size={20} className="mr-1" /> Geri
@@ -913,7 +913,7 @@ export default function EditAssessmentWizard() {
         
         <div className="text-center">
           <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">İnceleme Düzenleme</span>
-          <span className="text-xs sm:text-sm font-black text-slate-700">Adım {step + 1} / {stepsCount}</span>
+          <span className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300">Adım {step + 1} / {stepsCount}</span>
         </div>
 
         {step < stepsCount - 1 ? (
@@ -923,7 +923,7 @@ export default function EditAssessmentWizard() {
             disabled={!canProceed}
             className={`flex items-center justify-center px-5 py-3 rounded-xl font-extrabold text-sm min-h-[48px] transition-all shadow-md active:scale-95 touch-manipulation ${
               !canProceed
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
                 : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200'
             }`}
           >

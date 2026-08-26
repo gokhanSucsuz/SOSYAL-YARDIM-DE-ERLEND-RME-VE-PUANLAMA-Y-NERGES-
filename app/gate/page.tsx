@@ -37,12 +37,12 @@ export default function GatePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 p-4 selection:bg-red-600 selection:text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 p-4 selection:bg-teal-600 selection:text-white">
       <div className="bg-slate-800 p-8 rounded-3xl shadow-2xl shadow-black/50 border border-slate-700 w-full max-w-md relative overflow-hidden text-slate-100">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-red-600 to-red-700"></div>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700"></div>
         
         <div className="flex justify-center mb-6">
-          <ShieldAlert size={64} className="text-red-500" />
+          <ShieldAlert size={64} className="text-teal-500" />
         </div>
         
         <h1 className="text-2xl font-black mb-2 text-center tracking-tight">

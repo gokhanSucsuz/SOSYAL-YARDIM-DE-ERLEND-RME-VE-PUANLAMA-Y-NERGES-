@@ -3,8 +3,7 @@
 export const dynamic = "force-dynamic";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { AppHeader } from "@/components/app-header";
-import { ManagerNav } from "@/components/manager-nav";
+import { SidebarLayout } from "@/components/sidebar";
 import {
   ArrowLeft, ShieldAlert, Activity, Search, RefreshCw,
   CheckCircle2, XCircle, AlertTriangle, Edit3, LogIn, Layers,
@@ -33,6 +32,27 @@ function maskIp(ip: string | null | undefined): string {
   const parts = ip.split(".");
   if (parts.length === 4) return `${parts[0]}.${parts[1]}.*.*`;
   return ip.substring(0, 6) + "…";
+}
+
+function formatDetails(details: any): string {
+  if (!details) return "—";
+  if (typeof details === "string") return details;
+  try {
+    const parts = [];
+    if (details.applicantName) parts.push(`Aday: ${details.applicantName}`);
+    if (details.newStatus) parts.push(`Durum: ${details.newStatus}`);
+    if (details.finalScore !== undefined) parts.push(`Puan: ${details.finalScore}`);
+    if (details.updatedCount) parts.push(`${details.updatedCount} kayıt güncellendi`);
+    
+    if (parts.length > 0) return parts.join(" | ");
+    
+    return Object.entries(details)
+      .filter(([k]) => k !== "_id" && k !== "password")
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(", ");
+  } catch(e) {
+    return "Detay görüntülenemiyor";
+  }
 }
 
 export default function AuditLogsPage() {
@@ -81,8 +101,8 @@ export default function AuditLogsPage() {
 
   if (loading && logs.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="flex items-center gap-3 text-slate-500 font-medium">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 font-medium">
           <RefreshCw className="animate-spin text-red-600" size={20} />
           <span>Denetim Kayitlari yukleniyor...</span>
         </div>
@@ -92,13 +112,14 @@ export default function AuditLogsPage() {
 
   if (user?.role !== "superadmin") {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
-        <div className="bg-white rounded-2xl p-10 border border-red-200 shadow-xl max-w-md w-full space-y-5">
+      <SidebarLayout>
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center h-full min-h-[80vh]">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-10 border border-red-200 shadow-xl max-w-md w-full space-y-5">
           <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
             <ShieldAlert size={36} />
           </div>
-          <h2 className="text-xl font-black text-slate-900">Yetkisiz Erisim Engellendi</h2>
-          <p className="text-xs text-slate-600 font-medium leading-relaxed">
+          <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">Yetkisiz Erisim Engellendi</h2>
+          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
             Bu alana yalnizca <strong>Super Admin</strong> erisebilir.
           </p>
           <Link href="/" className="inline-flex items-center justify-center gap-2 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-md">
@@ -106,15 +127,14 @@ export default function AuditLogsPage() {
           </Link>
         </div>
       </div>
+      </SidebarLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
-      <AppHeader subtitle="Sistem Denetim Kayitlari (Audit Logs)" />
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-8 space-y-6">
-        <ManagerNav />
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <SidebarLayout>
+      <div className="max-w-7xl mx-auto w-full p-4 lg:p-8 space-y-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-6 py-5 flex flex-wrap justify-between items-center gap-4">
             <div className="flex items-center gap-3">
@@ -130,7 +150,7 @@ export default function AuditLogsPage() {
             </div>
             <button
               onClick={() => fetchLogs(pagination.page)}
-              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-2 rounded-lg transition-all border border-white/20"
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-2 rounded-lg transition-all border border-white/20 shadow-sm"
               aria-label="Kayitlari Yenile"
             >
               <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
@@ -138,7 +158,7 @@ export default function AuditLogsPage() {
             </button>
           </div>
           {/* Filters */}
-          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-wrap gap-3 items-center">
+          <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-wrap gap-3 items-center">
             <div className="relative flex-1 min-w-[200px]">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -146,7 +166,7 @@ export default function AuditLogsPage() {
                 placeholder="Kullanici, islem, IP veya kayit ID ara..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-400 bg-white"
+                className="w-full pl-8 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-400 bg-white dark:bg-slate-800"
                 aria-label="Denetim kayitlarinda ara"
               />
             </div>
@@ -155,7 +175,7 @@ export default function AuditLogsPage() {
               <select
                 value={filterAction}
                 onChange={e => setFilterAction(e.target.value)}
-                className="pl-8 pr-6 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-500/30 bg-white font-medium text-slate-700 appearance-none"
+                className="pl-8 pr-6 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-500/30 bg-white dark:bg-slate-800 font-medium text-slate-700 dark:text-slate-300 appearance-none"
                 aria-label="Islem turune gore filtrele"
               >
                 <option value="">Tum Islemler</option>
@@ -169,12 +189,12 @@ export default function AuditLogsPage() {
                 Temizle
               </button>
             )}
-            <span className="ml-auto text-xs text-slate-500 font-medium">{filtered.length} kayit</span>
+            <span className="ml-auto text-xs text-slate-500 dark:text-slate-400 font-medium">{filtered.length} kayit</span>
           </div>
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs" role="grid" aria-label="Sistem denetim kayitlari">
-              <thead className="bg-slate-100 text-slate-600 uppercase font-extrabold text-[10px] tracking-wider border-b border-slate-200">
+              <thead className="bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 uppercase font-extrabold text-[10px] tracking-wider border-b border-slate-200 dark:border-slate-700">
                 <tr>
                   <th scope="col" className="px-5 py-3">Tarih / Saat</th>
                   <th scope="col" className="px-5 py-3">Islem Turu</th>
@@ -195,33 +215,33 @@ export default function AuditLogsPage() {
                 ) : filtered.map((log, idx) => {
                   const style = ACTION_STYLES[log.action];
                   return (
-                    <tr key={log._id} className={`hover:bg-blue-50/20 transition-colors ${idx % 2 === 0 ? "bg-white" : "bg-slate-50/40"}`}>
-                      <td className="px-5 py-3.5 font-mono text-[11px] text-slate-600 whitespace-nowrap">
+                    <tr key={log._id} className={`hover:bg-blue-50/20 transition-colors ${idx % 2 === 0 ? "bg-white dark:bg-slate-800" : "bg-slate-50/40"}`}>
+                      <td className="px-5 py-3.5 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-nowrap">
                         <div className="font-semibold">{new Date(log.timestamp).toLocaleDateString("tr-TR")}</div>
                         <div className="text-slate-400">{new Date(log.timestamp).toLocaleTimeString("tr-TR")}</div>
                       </td>
                       <td className="px-5 py-3.5">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold border ${style ? style.color : "bg-slate-100 text-slate-700 border-slate-200"}`}>
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold border ${style ? style.color : "bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`}>
                           {style ? style.label : log.action}
                         </span>
                       </td>
                       <td className="px-5 py-3.5">
-                        <div className="font-bold text-slate-900 text-[11px]">{log.actorName || "—"}</div>
+                        <div className="font-bold text-slate-900 dark:text-slate-100 text-[11px]">{log.actorName || "—"}</div>
                         <div className="text-[10px] text-slate-400 mt-0.5">{ROLE_LABELS[log.actorRole] || log.actorRole}</div>
                       </td>
                       <td className="px-5 py-3.5">
-                        <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-bold">{log.targetResource}</span>
+                        <span className="bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold">{log.targetResource}</span>
                         {log.targetId && (
                           <div className="text-[10px] mt-1 text-slate-400 font-mono truncate max-w-[120px]" title={log.targetId}>
                             {log.targetId.substring(0, 16)}{log.targetId.length > 16 ? "…" : ""}
                           </div>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 font-mono text-[11px] text-slate-500">{maskIp(log.ipAddress)}</td>
+                      <td className="px-5 py-3.5 font-mono text-[11px] text-slate-500 dark:text-slate-400">{maskIp(log.ipAddress)}</td>
                       <td className="px-5 py-3.5 max-w-[180px]">
-                        {log.details ? (
-                          <span className="text-[10px] text-slate-500 bg-slate-100 px-2 py-1 rounded font-mono truncate block" title={JSON.stringify(log.details)}>
-                            {JSON.stringify(log.details).substring(0, 60)}{JSON.stringify(log.details).length > 60 ? "…" : ""}
+                        {log.details && Object.keys(log.details).length > 0 ? (
+                          <span className="text-[10px] text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded truncate block" title={JSON.stringify(log.details)}>
+                            {formatDetails(log.details).substring(0, 60)}{formatDetails(log.details).length > 60 ? "…" : ""}
                           </span>
                         ) : <span className="text-slate-300">—</span>}
                       </td>
@@ -233,21 +253,21 @@ export default function AuditLogsPage() {
           </div>
           {/* Pagination */}
           {pagination.totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50">
-              <p className="text-xs text-slate-500 font-medium">
+            <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 {((pagination.page - 1) * pagination.limit) + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} / {pagination.total} kayit
               </p>
               <div className="flex items-center gap-1">
                 <button onClick={() => fetchLogs(pagination.page - 1)} disabled={pagination.page <= 1}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold hover:bg-slate-100 dark:bg-slate-800/50 disabled:opacity-40 disabled:cursor-not-allowed"
                   aria-label="Onceki Sayfa">
                   <ChevronLeft size={13} /> Onceki
                 </button>
-                <span className="px-3 py-1.5 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-lg">
+                <span className="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
                   {pagination.page} / {pagination.totalPages}
                 </span>
                 <button onClick={() => fetchLogs(pagination.page + 1)} disabled={pagination.page >= pagination.totalPages}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold hover:bg-slate-100 dark:bg-slate-800/50 disabled:opacity-40 disabled:cursor-not-allowed"
                   aria-label="Sonraki Sayfa">
                   Sonraki <ChevronRight size={13} />
                 </button>
@@ -255,7 +275,7 @@ export default function AuditLogsPage() {
             </div>
           )}
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarLayout>
   );
 }

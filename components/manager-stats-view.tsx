@@ -491,7 +491,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       {/* Printable Official Header (Media Print Only) */}
       <div 
         id="pdf-report-content"
-        className={`${isGeneratingPDF ? 'absolute left-[-9999px] top-0 block w-[794px] p-8' : 'print-only w-full p-0'} bg-white text-black m-0 leading-tight`}
+        className={`${isGeneratingPDF ? 'absolute left-[-9999px] top-0 block w-[794px] p-8' : 'print-only w-full p-0'} bg-white dark:bg-slate-800 text-black m-0 leading-tight`}
       >
         <div className="border-b-2 border-black pb-3 mb-4 text-center">
           <div className="flex justify-between items-center mb-2">
@@ -720,14 +720,14 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
 
       {/* Screen Interactive Controls and Header */}
       <div className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white rounded-3xl p-6 sm:p-8 shadow-xl no-print relative overflow-hidden border border-red-600">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white dark:bg-slate-800/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             {onBack && (
               <button
                 onClick={onBack}
-                className="p-2.5 bg-white/15 hover:bg-white/25 active:scale-95 text-white rounded-2xl transition-all shrink-0 border border-white/20"
+                className="p-2.5 bg-white dark:bg-slate-800/15 hover:bg-white dark:bg-slate-800/25 active:scale-95 text-white rounded-2xl transition-all shrink-0 border border-white/20"
                 title="Ana Ekrana Dön"
               >
                 <ArrowLeft size={22} />
@@ -735,7 +735,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
             )}
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="bg-white/20 text-white border border-white/30 text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="bg-white dark:bg-slate-800/20 text-white border border-white/30 text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">
                   T.C. SYDV MÜDÜR PANELİ İSTATİSTİK VE ANALİZ MERKEZİ
                 </span>
               </div>
@@ -771,17 +771,17 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       </div>
 
       {/* Date Range & Quick Preset Filter Bar */}
-      <div className="no-print bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs space-y-3">
+      <div className="no-print bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xs space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-blue-50 text-blue-700 rounded-xl">
               <Calendar size={18} />
             </div>
             <div>
-              <h4 className="text-xs font-black uppercase text-slate-800 tracking-wider">
+              <h4 className="text-xs font-black uppercase text-slate-800 dark:text-slate-200 tracking-wider">
                 Raporlama Tarih Aralığı Filtresi
               </h4>
-              <p className="text-[11px] text-slate-500 font-medium">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                 Rapor ve istatistik verilerini seçilen tarihler arasına göre filtrelersiniz
               </p>
             </div>
@@ -794,7 +794,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 !startDate && !endDate
                   ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  : 'bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:bg-slate-700'
               }`}
             >
               Tüm Dönem
@@ -804,50 +804,50 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 startDate && startDate === endDate && startDate === new Date().toISOString().slice(0, 10)
                   ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  : 'bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:bg-slate-700'
               }`}
             >
               Bugün
             </button>
             <button
               onClick={() => applyDatePreset('thisMonth')}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all"
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:bg-slate-700 transition-all"
             >
               Bu Ay
             </button>
             <button
               onClick={() => applyDatePreset('last30')}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all"
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:bg-slate-700 transition-all"
             >
               Son 30 Gün
             </button>
             <button
               onClick={() => applyDatePreset('thisYear')}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all"
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:bg-slate-700 transition-all"
             >
               Bu Yıl
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
-          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2">
-            <span className="text-xs font-bold text-slate-500 shrink-0">Başlangıç Tarihi:</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-2">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0">Başlangıç Tarihi:</span>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-transparent text-xs font-extrabold text-slate-800 focus:outline-none w-full cursor-pointer"
+              className="bg-transparent text-xs font-extrabold text-slate-800 dark:text-slate-200 focus:outline-none w-full cursor-pointer"
             />
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2">
-            <span className="text-xs font-bold text-slate-500 shrink-0">Bitiş Tarihi:</span>
+          <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-2">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0">Bitiş Tarihi:</span>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-transparent text-xs font-extrabold text-slate-800 focus:outline-none w-full cursor-pointer"
+              className="bg-transparent text-xs font-extrabold text-slate-800 dark:text-slate-200 focus:outline-none w-full cursor-pointer"
             />
           </div>
 
@@ -867,8 +867,8 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         </div>
 
         {/* Report Export Action Buttons Based on Filter */}
-        <div className="flex flex-wrap items-center justify-end gap-3 pt-3 border-t border-slate-100 mt-2">
-          <div className="text-xs font-semibold text-slate-500 mr-auto flex items-center gap-2 hidden md:flex">
+        <div className="flex flex-wrap items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800 mt-2">
+          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-auto flex items-center gap-2 hidden md:flex">
             <TrendingUp size={16} /> <span>Filtrelenen {filteredAssessments.length} kayıt üzerinden rapor alınacaktır.</span>
           </div>
           
@@ -905,7 +905,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       {/* Exceeded Budget Alert Banner if Applicable */}
       {isManager && stats.isExceeded && (
         <div className="no-print bg-red-600 text-white p-4 sm:p-5 rounded-3xl shadow-lg border-2 border-red-400 flex items-center gap-4 animate-pulse">
-          <div className="p-3 bg-white/20 rounded-2xl shrink-0">
+          <div className="p-3 bg-white dark:bg-slate-800/20 rounded-2xl shrink-0">
             <AlertCircle size={28} />
           </div>
           <div>
@@ -922,21 +922,21 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         {isManager ? (
           <>
             {/* Vakıf Bütçesi */}
-            <div className="bg-white p-5 rounded-3xl border border-blue-200 shadow-xs space-y-2 bg-gradient-to-br from-blue-50/50 to-white relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-blue-200 shadow-xs space-y-2 bg-gradient-to-br from-blue-50/50 to-white relative overflow-hidden">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-600">Vakıf Bütçesi (Harcanabilir)</span>
                 <div className="p-2 bg-blue-100 text-blue-700 rounded-2xl"><Wallet size={20} /></div>
               </div>
-              <p className="text-2xl font-black text-slate-900 leading-none">
+              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 leading-none">
                 {stats.totalBudgetTL > 0 ? `${stats.totalBudgetTL.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
               </p>
-              <p className="text-xs text-slate-500 font-semibold pt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold pt-1">
                 {selectedMeetingId === 'ALL' ? 'Tüm toplantı bütçeleri toplamı' : `${selectedMeeting?.meetingNo} Toplantısı Bütçesi`}
               </p>
             </div>
 
             {/* Yapılacak Toplam Yardım */}
-            <div className="bg-white p-5 rounded-3xl border border-indigo-200 shadow-xs space-y-2 bg-gradient-to-br from-indigo-50/50 to-white">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-indigo-200 shadow-xs space-y-2 bg-gradient-to-br from-indigo-50/50 to-white">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">Planlanan Toplam Yardım</span>
                 <div className="p-2 bg-indigo-100 text-indigo-700 rounded-2xl"><Banknote size={20} /></div>
@@ -944,7 +944,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
               <p className="text-2xl font-black text-indigo-950 leading-none">
                 {stats.plannedAidTL.toLocaleString('tr-TR')} ₺
               </p>
-              <div className="flex items-center justify-between text-xs text-slate-500 font-semibold pt-1">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold pt-1">
                 <span>Onaylanan: <strong>{stats.approvedAidTL.toLocaleString('tr-TR')} ₺</strong></span>
               </div>
             </div>
@@ -968,18 +968,18 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
                   ? `+${stats.excessTL.toLocaleString('tr-TR')} ₺` 
                   : `${stats.remainingBudgetTL.toLocaleString('tr-TR')} ₺`}
               </p>
-              <p className="text-xs font-semibold text-slate-600 pt-1">
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 pt-1">
                 Ortalama Hane Başı: <strong>{stats.avgAidPerHousehold.toLocaleString('tr-TR')} ₺</strong>
               </p>
             </div>
 
             {/* İnceleme Hane Sayıları */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-2">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xs space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Değerlendirilen Hane Sayısı</span>
-                <div className="p-2 bg-slate-100 text-slate-700 rounded-2xl"><Users size={20} /></div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">Değerlendirilen Hane Sayısı</span>
+                <div className="p-2 bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 rounded-2xl"><Users size={20} /></div>
               </div>
-              <p className="text-2xl font-black text-slate-900 leading-none">
+              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 leading-none">
                 {stats.totalCount} Hane
               </p>
               <div className="flex items-center gap-3 text-xs font-bold pt-1">
@@ -992,19 +992,19 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         ) : (
           <>
             {/* Toplam Hane */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-2">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xs space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">Toplam İnceleme Dosyası</span>
-                <div className="p-2 bg-slate-100 text-slate-700 rounded-2xl"><Users size={20} /></div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">Toplam İnceleme Dosyası</span>
+                <div className="p-2 bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 rounded-2xl"><Users size={20} /></div>
               </div>
-              <p className="text-2xl font-black text-slate-900 leading-none">
+              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 leading-none">
                 {stats.totalCount} Hane
               </p>
-              <p className="text-xs text-slate-500 font-semibold pt-1">İnceleme Görevlisi Dosya Takibi</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold pt-1">İnceleme Görevlisi Dosya Takibi</p>
             </div>
 
             {/* Onaylanan Hane */}
-            <div className="bg-white p-5 rounded-3xl border border-emerald-200 shadow-xs space-y-2 bg-gradient-to-br from-emerald-50/50 to-white">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-emerald-200 shadow-xs space-y-2 bg-gradient-to-br from-emerald-50/50 to-white">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700">Müdür Onaylı Hane</span>
                 <div className="p-2 bg-emerald-100 text-emerald-700 rounded-2xl"><CheckCircle2 size={20} /></div>
@@ -1016,7 +1016,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
             </div>
 
             {/* Onay Bekleyen Hane */}
-            <div className="bg-white p-5 rounded-3xl border border-amber-200 shadow-xs space-y-2 bg-gradient-to-br from-amber-50/50 to-white">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-amber-200 shadow-xs space-y-2 bg-gradient-to-br from-amber-50/50 to-white">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-700">Onay Bekleyen Hane</span>
                 <div className="p-2 bg-amber-100 text-amber-700 rounded-2xl"><Clock size={20} /></div>
@@ -1028,7 +1028,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
             </div>
 
             {/* Reddedilen Hane */}
-            <div className="bg-white p-5 rounded-3xl border border-red-200 shadow-xs space-y-2 bg-gradient-to-br from-red-50/50 to-white">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-red-200 shadow-xs space-y-2 bg-gradient-to-br from-red-50/50 to-white">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-red-700">Reddedilen Hane</span>
                 <div className="p-2 bg-red-100 text-red-700 rounded-2xl"><XCircle size={20} /></div>
@@ -1045,9 +1045,9 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       {/* Main Charts Section */}
       <div className="no-print grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart 1: Bütçe vs Harcama Analizi veya Hane Sayısı Analizi */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <Wallet className="text-blue-600" size={20} />
               <span>
                 {isManager 
@@ -1115,9 +1115,9 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         </div>
 
         {/* Chart 2: Karar Dağılım Pastası */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <PieChartIcon className="text-indigo-600" size={20} />
               <span>İnceleme Karar Dağılımı</span>
             </h3>
@@ -1153,9 +1153,9 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         </div>
 
         {/* Chart 3: Yardım Türlerine Göre Tutar ve Hane Sayısı */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <Award className="text-purple-600" size={20} />
               <span>Yardım Kategorilerine Göre Bütçe Dağılımı</span>
             </h3>
@@ -1179,9 +1179,9 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         </div>
 
         {/* Chart 4: Muhtaçlık ve Risk Seviyeleri */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <ShieldAlert className="text-red-600" size={20} />
               <span>Hane Risk ve Muhtaçlık Puan Seviyeleri</span>
             </h3>
@@ -1203,24 +1203,24 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       </div>
 
       {/* Household Characteristics & Housing Breakdown Summary */}
-      <div className="no-print bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
-        <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+      <div className="no-print bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+        <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
           <Home className="text-blue-600" size={20} />
           <span>Hane Özellikleri ve Sosyo-Ekonomik Göstergeler</span>
         </h3>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-          <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <div className="bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700">
             <span className="text-[10px] font-bold text-slate-400 uppercase">Kiracı Haneler</span>
-            <p className="text-lg font-black text-slate-900 mt-0.5">{stats.tenantCount} Hane</p>
+            <p className="text-lg font-black text-slate-900 dark:text-slate-100 mt-0.5">{stats.tenantCount} Hane</p>
           </div>
-          <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <div className="bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700">
             <span className="text-[10px] font-bold text-slate-400 uppercase">Ev Sahibi Haneler</span>
-            <p className="text-lg font-black text-slate-900 mt-0.5">{stats.homeOwnerCount} Hane</p>
+            <p className="text-lg font-black text-slate-900 dark:text-slate-100 mt-0.5">{stats.homeOwnerCount} Hane</p>
           </div>
-          <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <div className="bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700">
             <span className="text-[10px] font-bold text-slate-400 uppercase">Akraba Yanı / Tahsis</span>
-            <p className="text-lg font-black text-slate-900 mt-0.5">{stats.relativeAllocatedCount} Hane</p>
+            <p className="text-lg font-black text-slate-900 dark:text-slate-100 mt-0.5">{stats.relativeAllocatedCount} Hane</p>
           </div>
           <div className="bg-amber-50/80 p-3.5 rounded-2xl border border-amber-200">
             <span className="text-[10px] font-bold text-amber-700 uppercase">Engelli Birey Bulunan</span>
@@ -1238,13 +1238,13 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       </div>
 
       {/* Detailed Household Table */}
-      <div className="no-print bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
-        <div className="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="no-print bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden space-y-4">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-base font-extrabold text-slate-900">
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">
               {selectedMeetingId === 'ALL' ? 'Tüm Toplantı Hane İnceleme Kayıtları' : `${selectedMeeting?.meetingNo} Toplantısı Hane Kayıtları`}
             </h3>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
               Toplam {tableAssessments.length} hane listeleniyor
             </p>
           </div>
@@ -1255,7 +1255,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Ad Soyad, T.C. veya Mahalle ara..."
-              className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-xs font-semibold w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <Filter size={14} className="absolute left-3 top-2.5 text-slate-400" />
           </div>
@@ -1263,7 +1263,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200">
+            <thead className="bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200 dark:border-slate-700">
               <tr>
                 <th className="px-5 py-3">Sıra / Toplantı</th>
                 <th className="px-5 py-3">Başvuran T.C. / Ad Soyad</th>
@@ -1286,14 +1286,14 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
                   const mNo = meetings.find(m => m.id === item.meetingId)?.meetingNo || '-';
                   return (
                     <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-5 py-3 font-bold text-slate-500">
+                      <td className="px-5 py-3 font-bold text-slate-500 dark:text-slate-400">
                         #{idx + 1} <span className="text-[10px] text-blue-600 font-black ml-1">({mNo})</span>
                       </td>
                       <td className="px-5 py-3">
-                        <p className="font-extrabold text-slate-900">{item.applicantName}</p>
+                        <p className="font-extrabold text-slate-900 dark:text-slate-100">{item.applicantName}</p>
                         <p className="text-[10px] text-slate-400 font-mono">{item.applicantTc}</p>
                       </td>
-                      <td className="px-5 py-3 text-slate-600 font-semibold">{item.applicantAddress || '-'}</td>
+                      <td className="px-5 py-3 text-slate-600 dark:text-slate-400 font-semibold">{item.applicantAddress || '-'}</td>
                       <td className="px-5 py-3 text-center font-black">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] ${
                           (item.result?.totalScore || 0) >= 80 ? 'bg-red-100 text-red-800' :
@@ -1317,8 +1317,8 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-3 text-slate-700 font-semibold">{item.result?.assistance?.text || '-'}</td>
-                      <td className="px-5 py-3 text-right font-black text-slate-900">
+                      <td className="px-5 py-3 text-slate-700 dark:text-slate-300 font-semibold">{item.result?.assistance?.text || '-'}</td>
+                      <td className="px-5 py-3 text-right font-black text-slate-900 dark:text-slate-100">
                         {item.result?.isRejected ? '0 ₺' : `${(item.result?.assistance?.amount || 0).toLocaleString('tr-TR')} ₺`}
                       </td>
                     </tr>

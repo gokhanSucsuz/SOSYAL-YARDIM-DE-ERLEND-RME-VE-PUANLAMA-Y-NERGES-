@@ -46,24 +46,24 @@ export default function TwoFactorVerify() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 p-4 selection:bg-red-600 selection:text-white">
-      <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-red-950/10 border border-slate-200 w-full max-w-md relative overflow-hidden text-slate-900">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/50 p-4 selection:bg-red-600 selection:text-white">
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl shadow-red-950/10 border border-slate-200 dark:border-slate-700 w-full max-w-md relative overflow-hidden text-slate-900 dark:text-slate-100">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-700 via-red-600 to-red-800"></div>
         
         <div className="flex justify-center mb-6 mt-2">
           <ShieldCheck size={64} className="text-red-700" />
         </div>
 
-        <h1 className="text-2xl font-black mb-2 text-center text-slate-900 tracking-tight">
+        <h1 className="text-2xl font-black mb-2 text-center text-slate-900 dark:text-slate-100 tracking-tight">
           İki Aşamalı Doğrulama
         </h1>
-        <p className="text-sm text-slate-500 text-center mb-6 font-semibold">
+        <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-6 font-semibold">
           Lütfen Google Authenticator uygulamanızdaki 6 haneli kodu girin.
         </p>
 
         <form onSubmit={handleVerify} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1 text-center">Doğrulama Kodu</label>
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 text-center">Doğrulama Kodu</label>
             <input
               type="text"
               inputMode="numeric"
@@ -71,7 +71,7 @@ export default function TwoFactorVerify() {
               maxLength={6}
               value={token}
               onChange={e => setToken(e.target.value.replace(/[^0-9]/g, ''))}
-              className="w-full text-center text-3xl tracking-[0.5em] font-mono py-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 outline-none bg-slate-50"
+              className="w-full text-center text-3xl tracking-[0.5em] font-mono py-4 rounded-xl border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-red-500 outline-none bg-slate-50 dark:bg-slate-900"
               placeholder="000000"
               required
             />
