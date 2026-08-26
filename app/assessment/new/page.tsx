@@ -327,6 +327,7 @@ function NewAssessmentContent() {
         }
       };
       await saveAssessment(assessmentData);
+      showAlert("İnceleme hane kaydı başarıyla oluşturuldu.");
       router.push('/');
     } catch (err) {
       console.error(err);

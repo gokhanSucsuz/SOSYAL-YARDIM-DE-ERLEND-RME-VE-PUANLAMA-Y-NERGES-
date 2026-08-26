@@ -349,7 +349,8 @@ export default function EditAssessmentWizard() {
         }
       };
       await saveAssessment(assessmentData);
-      router.push(`/assessment/${assessmentId}`);
+      await showAlert("İnceleme hane kaydı başarıyla güncellendi.");
+      router.push('/');
     } catch (err) {
       console.error(err);
       await showAlert("Kayıt sırasında hata oluştu! " + (err instanceof Error ? err.message : ''), 'warning');
