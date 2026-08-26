@@ -2195,13 +2195,12 @@ export default function Dashboard() {
             {/* Table - Strictly Single Row per record matching active screen order */}
             <table className="w-full border-collapse border border-black text-[9px] mb-6 print-table">
               <thead>
-                <tr className="bg-slate-200 dark:bg-slate-700 text-black font-extrabold uppercase border-b border-black">
+                <tr className="bg-slate-200 text-black font-extrabold uppercase border-b border-black">
                   <th className="p-1 text-center w-12">SIRA NO</th>
                   <th className="p-1 text-center w-24">T.C. KİMLİK NO</th>
                   <th className="p-1 text-left">BAŞVURU SAHİBİ ADI SOYADI</th>
                   <th className="p-1 text-center w-14">HANE KİŞİ</th>
                   <th className="p-1 text-left w-36">İNCELENEN ADRES / MAH.</th>
-                  <th className="p-1 text-left w-32">İNCELEYEN PERSONEL</th>
                   <th className="p-1 text-center w-20">ZİYARET TARİHİ</th>
                   <th className="p-1 text-center w-16">PUAN</th>
                   <th className="p-1 text-center w-24">ONAY DURUMU</th>
@@ -2211,7 +2210,7 @@ export default function Dashboard() {
               <tbody>
                 {printableRecords.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="p-4 text-center font-bold text-slate-500 dark:text-slate-400">
+                    <td colSpan={9} className="p-4 text-center font-bold text-slate-500">
                       {printOnlySelected ? 'Seçilen herhangi bir sosyal inceleme kaydı bulunmamaktadır.' : 'Arama ve filtreleme kriterlerine uygun kayıt bulunmamaktadır.'}
                     </td>
                   </tr>
@@ -2223,7 +2222,6 @@ export default function Dashboard() {
                       <td className="p-1 font-black uppercase">{item.applicantName}</td>
                       <td className="p-1 text-center font-bold">{item.householdSize} kişi</td>
                       <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
-                      <td className="p-1 font-medium">{item.personnelName}</td>
                       <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
                       <td className="p-1 text-center font-black">{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</td>
                       <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
@@ -2397,7 +2395,7 @@ export default function Dashboard() {
                     {/* System Check & Final Decision Box */}
                     <table className="w-full border-collapse border border-black text-[8.5px] mb-2 print-compact-table">
                       <tbody>
-                        <tr className="border-b border-black bg-slate-100 dark:bg-slate-800/50">
+                        <tr className="border-b border-black bg-slate-100">
                           <td className="border-r border-black font-bold p-1 w-1/3">ZORUNLU KONTROLLER (SGK/TAPU/ARAÇ):</td>
                           <td className="border-r border-black p-1 font-bold text-emerald-800">YAPILDI (EKSİKSİZ)</td>
                           <td className="border-r border-black font-bold p-1 w-1/4">GERÇEĞE AYKIRI BEYAN:</td>
@@ -2413,8 +2411,8 @@ export default function Dashboard() {
                     </table>
 
                     {/* Official Note */}
-                    <p className="text-[7.5px] italic text-slate-700 dark:text-slate-300 mb-3">
-                      * Bu rapor, 3294 Sayılı Sosyal Yardımlaşma ve Dayanışmayı Teşvik Kanunu kapsamında SYDV Sosyal İnceleme Görevlisi ({item.personnelName}) tarafından yerinde yapılan ev ziyareti neticesinde düzenlenmiş resmi inceleme belgesidir.
+                    <p className="text-[7.5px] italic text-slate-700 mb-3">
+                      * Bu rapor, 3294 Sayılı Sosyal Yardımlaşma ve Dayanışmayı Teşvik Kanunu kapsamında SYDV Sosyal İnceleme Görevlisi tarafından yerinde yapılan ev ziyareti neticesinde düzenlenmiş resmi inceleme belgesidir.
                     </p>
 
                     {/* OFFICIAL SIGNATURE BLOCK */}
@@ -2424,9 +2422,9 @@ export default function Dashboard() {
                         {/* Personnel Signature */}
                         <div className="text-center w-5/12">
                           <p className="font-bold uppercase tracking-wider">SOSYAL YARDIM VE İNCELEME GÖREVLİSİ</p>
-                          <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">Adı Soyadı: <span className="font-bold uppercase">{item.personnelName}</span></p>
-                          <p className="text-[7.5px] text-slate-600 dark:text-slate-400">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
-                          <p className="text-[7.5px] text-slate-600 dark:text-slate-400 mt-0.5">Tarih: {new Date(item.date).toLocaleDateString('tr-TR')}</p>
+                          <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
+                          <p className="text-[7.5px] text-slate-600">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
+                          <p className="text-[7.5px] text-slate-600 mt-0.5">Tarih: {new Date(item.date).toLocaleDateString('tr-TR')}</p>
                           <div className="mt-5 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[8px] font-bold">
                             İmza / Mühür
                           </div>
@@ -2435,9 +2433,9 @@ export default function Dashboard() {
                         {/* Manager Signature */}
                         <div className="text-center w-5/12">
                           <p className="font-bold uppercase tracking-wider">VAKIF MÜDÜRÜ</p>
-                          <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">Adı Soyadı: <span className="font-bold uppercase">{item.managerName || 'VAKIF MÜDÜRÜ'}</span></p>
-                          <p className="text-[7.5px] text-slate-600 dark:text-slate-400">Unvan: SYDV Vakıf Müdürü</p>
-                          <p className="text-[7.5px] text-slate-600 dark:text-slate-400 mt-0.5">Onay Durumu: {item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLİYOR'}</p>
+                          <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
+                          <p className="text-[7.5px] text-slate-600">Unvan: SYDV Vakıf Müdürü</p>
+                          <p className="text-[7.5px] text-slate-600 mt-0.5">Onay Durumu: {item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLİYOR'}</p>
                           <div className="mt-5 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[8px] font-bold">
                             İmza / Mühür
                           </div>

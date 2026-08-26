@@ -657,7 +657,7 @@ export default function AssessmentDetail() {
       {/* ========================================================================= */}
       {/* PRINT-ONLY OFFICIAL DOCUMENT TEMPLATE (EXACT SINGLE A4 PAGE FORMAT)        */}
       {/* ========================================================================= */}
-      <div className="print-only w-full bg-white dark:bg-slate-800 text-black p-0 m-0 leading-tight">
+      <div className="print-only w-full bg-white text-black p-0 m-0 leading-tight">
         
         {/* Official Letterhead */}
         <div className="text-center border-b-2 border-black pb-2 mb-3">
@@ -669,7 +669,7 @@ export default function AssessmentDetail() {
         {/* Top Info Table */}
         <table className="w-full border-collapse border border-black text-[10px] mb-3 print-compact-table">
           <tbody>
-            <tr className="border-b border-black bg-slate-100 dark:bg-slate-800/50">
+            <tr className="border-b border-black bg-slate-100">
               <td className="border-r border-black font-bold p-1 w-1/4">T.C. KİMLİK NO:</td>
               <td className="border-r border-black p-1 w-1/4">{assessment.applicantTc}</td>
               <td className="border-r border-black font-bold p-1 w-1/4">BAŞVURU SAHİBİ:</td>
@@ -696,13 +696,13 @@ export default function AssessmentDetail() {
 
         {/* Evaluation Criteria Matrix */}
         <div className="mb-3">
-          <div className="bg-slate-200 dark:bg-slate-700 border border-black font-bold p-1 text-[10px] text-center uppercase tracking-wide mb-1">
+          <div className="bg-slate-200 border border-black font-bold p-1 text-[10px] text-center uppercase tracking-wide mb-1">
             SOSYAL İNCELEME SEÇENEKLERİ VE PUANLAMA KRİTERLERİ DETAYI
           </div>
 
           <table className="w-full border-collapse border border-black text-[9px] print-compact-table">
             <thead>
-              <tr className="bg-slate-100 dark:bg-slate-800/50 border-b border-black">
+              <tr className="bg-slate-100 border-b border-black">
                 <th className="border-r border-black p-1 text-left w-1/5">KATEGORİ</th>
                 <th className="border-r border-black p-1 text-left">İŞARETLENEN / TESPİT EDİLEN SEÇENEKLER</th>
                 <th className="p-1 text-center w-16">PUAN</th>
@@ -775,7 +775,7 @@ export default function AssessmentDetail() {
         {/* System Check & Final Decision Box */}
         <table className="w-full border-collapse border border-black text-[10px] mb-4 print-compact-table">
           <tbody>
-            <tr className="border-b border-black bg-slate-100 dark:bg-slate-800/50">
+            <tr className="border-b border-black bg-slate-100">
               <td className="border-r border-black font-bold p-1 w-1/3">ZORUNLU KONTROLLER (SGK/TAPU/ARAÇ):</td>
               <td className="border-r border-black p-1 font-bold text-emerald-800">YAPILDI (EKSİKSİZ)</td>
               <td className="border-r border-black font-bold p-1 w-1/4">GERÇEĞE AYKIRI BEYAN:</td>
@@ -791,7 +791,7 @@ export default function AssessmentDetail() {
         </table>
 
         {/* Official Note */}
-        <p className="text-[9px] italic text-slate-700 dark:text-slate-300 mb-6">
+        <p className="text-[9px] italic text-slate-700 mb-6">
           * Bu rapor, 3294 Sayılı Sosyal Yardımlaşma ve Dayanışmayı Teşvik Kanunu kapsamında SYDV Sosyal İnceleme Görevlisi tarafından yerinde yapılan ev ziyareti neticesinde düzenlenmiş resmi inceleme belgesidir.
         </p>
 
@@ -802,9 +802,9 @@ export default function AssessmentDetail() {
             {/* Personnel Signature */}
             <div className="text-center w-5/12">
               <p className="font-bold uppercase tracking-wider">SOSYAL YARDIM VE İNCELEME GÖREVLİSİ</p>
-              <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
-              <p className="text-[9px] text-slate-600 dark:text-slate-400">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
-              <p className="text-[9px] text-slate-600 dark:text-slate-400 mt-0.5">Tarih: {new Date(assessment.date).toLocaleDateString('tr-TR')}</p>
+              <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
+              <p className="text-[9px] text-slate-600">Unvan: Sosyal Yardım ve İnceleme Görevlisi</p>
+              <p className="text-[9px] text-slate-600 mt-0.5">Tarih: {new Date(assessment.date).toLocaleDateString('tr-TR')}</p>
               <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
                 İmza / Mühür
               </div>
@@ -813,9 +813,9 @@ export default function AssessmentDetail() {
             {/* Manager Signature */}
             <div className="text-center w-5/12">
               <p className="font-bold uppercase tracking-wider">VAKIF MÜDÜRÜ</p>
-              <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
-              <p className="text-[9px] text-slate-600 dark:text-slate-400">Unvan: SYDV Vakıf Müdürü</p>
-              <p className="text-[9px] text-slate-600 dark:text-slate-400 mt-0.5">Onay Durumu: {assessment.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLİYOR'}</p>
+              <p className="font-semibold text-slate-800 mt-1">Adı Soyadı: <span className="inline-block border-b border-black w-36 text-left">&nbsp;</span></p>
+              <p className="text-[9px] text-slate-600">Unvan: SYDV Vakıf Müdürü</p>
+              <p className="text-[9px] text-slate-600 mt-0.5">Onay Durumu: {assessment.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLİYOR'}</p>
               <div className="mt-8 pt-1 border-t border-dashed border-black w-3/4 mx-auto text-[9px] font-bold">
                 İmza / Mühür
               </div>
