@@ -400,3 +400,32 @@ body {
   background-color: #14b8a6;
   color: white;
 }
+
+/* ============================================================
+   LIGHT MODE INPUT FIXES
+   ============================================================ */
+html:not(.dark) input,
+html:not(.dark) select,
+html:not(.dark) textarea {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+
+html:not(.dark) input:focus,
+html:not(.dark) select:focus,
+html:not(.dark) textarea:focus {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #14b8a6 !important;
+}
+
+html:not(.dark) select option {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+
+html:not(.dark) select option:checked,
+html:not(.dark) select option:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
