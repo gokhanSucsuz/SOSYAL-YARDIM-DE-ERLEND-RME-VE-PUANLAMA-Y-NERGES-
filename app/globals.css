@@ -73,8 +73,37 @@
     background-color: #1e293b !important;
     color: #f1f5f9 !important;
     border-color: #334155 !important;
+    color-scheme: dark;
   }
-  input::placeholder { color: #64748b !important; }
+  input:focus, select:focus, textarea:focus {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #3b82f6 !important;
+    caret-color: #f1f5f9;
+  }
+  input::placeholder, textarea::placeholder { color: #64748b !important; }
+  /* Select option elemanları dark modda */
+  select option {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  select option:checked,
+  select option:hover {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+  }
+  /* Tarayıcı otomatik doldurma (autocomplete) dark düzeltmesi */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  textarea:-webkit-autofill {
+    -webkit-text-fill-color: #f1f5f9 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important;
+    box-shadow: 0 0 0px 1000px #1e293b inset !important;
+    border-color: #334155 !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 @layer utilities {
