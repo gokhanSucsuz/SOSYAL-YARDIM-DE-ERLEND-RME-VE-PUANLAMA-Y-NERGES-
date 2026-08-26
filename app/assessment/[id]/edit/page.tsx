@@ -841,6 +841,37 @@ export default function EditAssessmentWizard() {
                       )}
                    </div>
                    
+                   {/* Varlık Testi Sonuçları */}
+                   <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-5 space-y-3">
+                     <h4 className="text-sm font-extrabold text-orange-900 flex items-center gap-2">
+                       <AlertTriangle size={16} className="text-orange-600" />
+                       Sorgu Sonuçları — Ceza Puanları Uygulanır
+                     </h4>
+                     <CheckboxItem label="Araç tescil kaydı tespit edildi (−15 Puan)" checked={state.a_aracSahibi} onChange={(v:any) => set('a_aracSahibi', v)} isAlert={true} points={null} />
+                     <CheckboxItem label="Birden fazla taşınmaz (gayrimenkul) kaydı var (−20 Puan)" checked={state.a_birdenFazlaTasinmaz} onChange={(v:any) => set('a_birdenFazlaTasinmaz', v)} isAlert={true} points={null} />
+                     <CheckboxItem label="Aktif SGK prim ödemesi tespit edildi → A bölümü puanı sıfırlanır" checked={state.a_aktifSgkPrim} onChange={(v:any) => set('a_aktifSgkPrim', v)} isAlert={true} points={null} />
+                     <div className="space-y-2 pt-2 border-t border-orange-200">
+                       <CheckboxItem label="Son 3 ayda bu vakıftan yardım aldığı tespit edildi" checked={state.a_son3AyYardimAldi} onChange={(v:any) => { set('a_son3AyYardimAldi', v); if (!v) set('a_son3AyYardimKisi', 0); }} isAlert={true} points={null} />
+                       {state.a_son3AyYardimAldi && (
+                         <div className="flex items-center gap-3 pl-9">
+                           <label className="text-xs font-bold text-orange-800">Kaç kişi yardım aldı? (Her kişi −5 puan)</label>
+                           <div className="flex items-center gap-2">
+                             <button type="button" onClick={() => set('a_son3AyYardimKisi', Math.max(0, (state.a_son3AyYardimKisi||0) - 1))} className="w-8 h-8 rounded-lg bg-orange-100 text-orange-800 font-black border border-orange-300 flex items-center justify-center">-</button>
+                             <span className="w-8 text-center font-black text-orange-900">{state.a_son3AyYardimKisi || 0}</span>
+                             <button type="button" onClick={() => set('a_son3AyYardimKisi', (state.a_son3AyYardimKisi||0) + 1)} className="w-8 h-8 rounded-lg bg-orange-100 text-orange-800 font-black border border-orange-300 flex items-center justify-center">+</button>
+                           </div>
+                         </div>
+                       )}
+                     </div>
+                   </div>
+
+                   {/* Ceza özeti */}
+                   {calc.scorePenalty > 0 && (
+                     <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-5 text-sm font-bold text-red-800 flex items-center gap-2">
+                       <AlertTriangle size={16} className="text-red-600 shrink-0" />
+                       Toplam Ceza Puanı: −{calc.scorePenalty} puan uygulanacaktır.
+                     </div>
+                   )}                   
                    <div className="pt-4 border-t border-red-100">
                      <div className="flex flex-col">
                        <label className="flex items-start p-4 border border-red-200 rounded-xl cursor-pointer bg-white dark:bg-slate-800 hover:bg-red-50/50 transition-colors">
