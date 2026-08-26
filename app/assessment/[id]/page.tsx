@@ -333,7 +333,7 @@ export default function AssessmentDetail() {
 
           <div className="bg-slate-900 text-white p-5 rounded-xl text-right shrink-0 min-w-[200px]">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Hesaplanan Puan</p>
-            <p className={`text-4xl font-black ${calc.isRejected ? 'text-red-400' : 'text-blue-400'}`}>{calc.totalScore} <span className="text-xs text-slate-400 font-normal">/ 130</span></p>
+            <p className={`text-4xl font-black ${calc.isRejected ? 'text-red-400' : 'text-blue-400'}`}>{calc.totalScore} <span className="text-xs text-slate-400 font-normal">/ 150</span></p>
             <p className="text-xs font-bold mt-2 uppercase text-slate-300">
               {calc.isRejected ? 'REDDEDİLDİ' : calc.assistance.text}
             </p>
@@ -783,7 +783,7 @@ export default function AssessmentDetail() {
             </tr>
             <tr className="border-b border-black">
               <td className="border-r border-black font-bold p-1">HESAPLANAN TOPLAM PUAN:</td>
-              <td className="border-r border-black p-1 text-base font-black">{calc.totalScore} / 130</td>
+              <td className="border-r border-black p-1 text-base font-black">{calc.totalScore} / 150</td>
               <td className="border-r border-black font-bold p-1">TAVSİYE EDİLEN KARAR:</td>
               <td className="p-1 font-extrabold text-sm">{calc.isRejected ? 'REDDEDİLDİ' : calc.assistance.text.toUpperCase()}</td>
             </tr>

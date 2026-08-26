@@ -2403,7 +2403,7 @@ export default function Dashboard() {
                         </tr>
                         <tr className="border-b border-black">
                           <td className="border-r border-black font-bold p-1">HESAPLANAN TOPLAM PUAN:</td>
-                          <td className="border-r border-black p-1 text-xs font-black">{calc.totalScore} / 130</td>
+                          <td className="border-r border-black p-1 text-xs font-black">{calc.totalScore} / 150</td>
                           <td className="border-r border-black font-bold p-1">TAVSİYE EDİLEN KARAR:</td>
                           <td className="p-1 font-extrabold text-[10px] uppercase">{calc.isRejected ? 'REDDEDİLDİ' : calc.assistance?.text}</td>
                         </tr>
