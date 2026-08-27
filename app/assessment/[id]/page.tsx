@@ -335,7 +335,7 @@ export default function AssessmentDetail() {
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Hesaplanan Puan</p>
             <p className={`text-4xl font-black ${calc.isRejected ? 'text-red-400' : 'text-blue-400'}`}>{calc.totalScore} <span className="text-xs text-slate-400 font-normal">/ 150</span></p>
             <p className="text-xs font-bold mt-2 uppercase text-slate-300">
-              {calc.isRejected ? 'REDDEDİLDİ' : calc.assistance.text}
+              {calc.isRejected ? 'YARDIMA UYGUN DEĞİLDİR' : calc.assistance.text}
             </p>
           </div>
         </div>
@@ -609,7 +609,7 @@ export default function AssessmentDetail() {
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Değerlendirme Sonucu</p>
                 <p className={`text-2xl font-black mt-1 ${calc.isRejected ? 'text-red-400' : 'text-emerald-400'}`}>
-                  {calc.isRejected ? 'BAŞVURU REDDEDİLDİ' : calc.assistance.text.toUpperCase()}
+                  {calc.isRejected ? 'YARDIMA UYGUN DEĞİLDİR' : calc.assistance.text.toUpperCase()}
                 </p>
               </div>
 
@@ -785,7 +785,7 @@ export default function AssessmentDetail() {
               <td className="border-r border-black font-bold p-1">HESAPLANAN TOPLAM PUAN:</td>
               <td className="border-r border-black p-1 text-base font-black">{calc.totalScore} / 150</td>
               <td className="border-r border-black font-bold p-1">TAVSİYE EDİLEN KARAR:</td>
-              <td className="p-1 font-extrabold text-sm">{calc.isRejected ? 'REDDEDİLDİ' : calc.assistance.text.toUpperCase()}</td>
+              <td className={`p-1 font-extrabold text-sm ${calc.isRejected ? 'text-red-600 print-exact' : ''}`}>{calc.isRejected ? 'YARDIMA UYGUN DEĞİLDİR' : calc.assistance.text.toUpperCase()}</td>
             </tr>
           </tbody>
         </table>

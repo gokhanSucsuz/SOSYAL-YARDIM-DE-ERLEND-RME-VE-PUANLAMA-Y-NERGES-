@@ -1019,7 +1019,7 @@ export default function Dashboard() {
           item.householdNo || '-',
           item.personnelName,
           item.result?.totalScore ?? 0,
-          isAccepted ? 'KAPSAM İÇİ (KABUL)' : 'KAPSAM DIŞI (RED)',
+          isAccepted ? 'KAPSAM İÇİ (KABUL)' : 'YARDIMA UYGUN DEĞİLDİR',
           isAccepted ? (item.result?.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL') : '-',
           isApproved ? 'ONAYLANDI' : 'ONAY BEKLİYOR',
           item.managerName || '-'
@@ -1391,7 +1391,7 @@ export default function Dashboard() {
 
                               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-1">
                                 <span className="font-bold text-slate-700 dark:text-slate-300">Puan: <strong className={item.result.isRejected ? 'text-red-600' : 'text-blue-700'}>{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</strong></span>
-                                <span className="font-bold text-slate-700 dark:text-slate-300">Karar: <strong className={item.result.isRejected ? "text-red-600" : "text-emerald-700"}>{user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "REDDEDİLDİ" : (item.result.assistance?.text || "-")}</strong></span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">Karar: <strong className={item.result.isRejected ? "text-red-600" : "text-emerald-700"}>{user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "YARDIMA UYGUN DEĞİLDİR" : (item.result.assistance?.text || "-")}</strong></span>
                                 <span className="text-slate-500 dark:text-slate-400">İnceleyen: {item.personnelName}</span>
                               </div>
                             </div>
@@ -2230,7 +2230,7 @@ export default function Dashboard() {
                       <td className="p-1 text-center font-black">{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</td>
                       <td className="p-1 text-center font-bold">{item.result.isRejected ? '-' : (item.result.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL')}</td>
                       <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
-                      <td className="p-1 font-bold uppercase">{user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "REDDEDİLDİ" : item.result.assistance?.text}</td>
+                      <td className={`p-1 font-bold uppercase ${item.result.isRejected ? 'text-red-600 print-exact' : ''}`}>{user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "YARDIMA UYGUN DEĞİLDİR" : item.result.assistance?.text}</td>
                     </tr>
                   ))
                 )}
@@ -2410,7 +2410,7 @@ export default function Dashboard() {
                           <td className="border-r border-black font-bold p-1">HESAPLANAN TOPLAM PUAN:</td>
                           <td className="border-r border-black p-1 text-xs font-black">{calc.totalScore} / 150</td>
                           <td className="border-r border-black font-bold p-1">TAVSİYE EDİLEN KARAR:</td>
-                          <td className="p-1 font-extrabold text-[10px] uppercase">{calc.isRejected ? 'REDDEDİLDİ' : calc.assistance?.text}</td>
+                          <td className={`p-1 font-extrabold text-[10px] uppercase ${calc.isRejected ? 'text-red-600 print-exact' : ''}`}>{calc.isRejected ? 'YARDIMA UYGUN DEĞİLDİR' : calc.assistance?.text}</td>
                         </tr>
                       </tbody>
                     </table>
