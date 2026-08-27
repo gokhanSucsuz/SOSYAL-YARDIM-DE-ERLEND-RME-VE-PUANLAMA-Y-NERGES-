@@ -974,6 +974,7 @@ export default function Dashboard() {
         'GÖREVLİ İNCELEYEN',
         'TOPLAM PUAN',
         'DEĞERLENDİRME KARARI',
+        'YARDIM MİKTARI (TL)',
         'ONAY DURUMU',
         'ONAYLAYAN MÜDÜR'
       ];
@@ -1019,6 +1020,7 @@ export default function Dashboard() {
           item.personnelName,
           item.result?.totalScore ?? 0,
           isAccepted ? 'KAPSAM İÇİ (KABUL)' : 'KAPSAM DIŞI (RED)',
+          isAccepted ? (item.result?.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL') : '-',
           isApproved ? 'ONAYLANDI' : 'ONAY BEKLİYOR',
           item.managerName || '-'
         ];
@@ -1077,13 +1079,14 @@ export default function Dashboard() {
         { width: 22 },
         { width: 13 },
         { width: 22 },
+        { width: 20 },
         { width: 16 },
         { width: 20 },
       ];
 
       worksheet.autoFilter = {
         from: { row: 4, column: 1 },
-        to: { row: targetRecords.length + 4, column: 13 },
+        to: { row: targetRecords.length + 4, column: 14 },
       };
 
       const buffer = await workbook.xlsx.writeBuffer();
@@ -2203,6 +2206,7 @@ export default function Dashboard() {
                   <th className="p-1 text-left w-36">İNCELENEN ADRES / MAH.</th>
                   <th className="p-1 text-center w-20">ZİYARET TARİHİ</th>
                   <th className="p-1 text-center w-16">PUAN</th>
+                  <th className="p-1 text-center w-20">YARDIM MİKTARI</th>
                   <th className="p-1 text-center w-24">ONAY DURUMU</th>
                   <th className="p-1 text-left w-36">KARAR / YARDIM TİPİ</th>
                 </tr>
@@ -2224,6 +2228,7 @@ export default function Dashboard() {
                       <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
                       <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
                       <td className="p-1 text-center font-black">{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</td>
+                      <td className="p-1 text-center font-bold">{item.result.isRejected ? '-' : (item.result.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL')}</td>
                       <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
                       <td className="p-1 font-bold uppercase">{user?.role === "personnel" && !showScores ? "***" : item.result.isRejected ? "REDDEDİLDİ" : item.result.assistance?.text}</td>
                     </tr>
