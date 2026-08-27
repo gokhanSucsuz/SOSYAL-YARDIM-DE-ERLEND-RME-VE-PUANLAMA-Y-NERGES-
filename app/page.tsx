@@ -1834,6 +1834,20 @@ export default function Dashboard() {
                 </select>
               </div>
 
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-400">
+                <Filter size={14} className="text-slate-500 dark:text-slate-400 shrink-0" />
+                <span>Onay Durumu:</span>
+                <select
+                  value={filterStatus}
+                  onChange={(e: any) => setFilterStatus(e.target.value)}
+                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                >
+                  <option value="all">Tümü</option>
+                  <option value="approved">Onaylılar</option>
+                  <option value="pending">Onaysızlar (Bekleyen)</option>
+                </select>
+              </div>
+
               {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
                 <button
                   onClick={resetAllFilters}
@@ -1918,15 +1932,35 @@ export default function Dashboard() {
                       className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     />
                   </th>
-                  <th className="px-2 py-2.5 font-extrabold text-center w-16">Sıra</th>
-                  <th className="px-3 py-2.5 font-extrabold">Tarih</th>
-                  <th className="px-3 py-2.5 font-extrabold">T.C. Kimlik</th>
-                  <th className="px-3 py-2.5 font-extrabold">Başvuru Sahibi Adı</th>
-                  <th className="px-3 py-2.5 font-extrabold text-center">Hane</th>
-                  {isManager && <th className="px-3 py-2.5 font-extrabold">Personel</th>}
-                  <th className="px-3 py-2.5 font-extrabold text-center">Puan</th>
-                  <th className="px-3 py-2.5 font-extrabold">Onay Durumu</th>
-                  <th className="px-3 py-2.5 font-extrabold">Karar / Yardım</th>
+                  <th className="px-2 py-2.5 font-extrabold text-center w-16 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('customOrder')}>
+                    <div className="flex items-center justify-center gap-1">Sıra {renderSortIcon('customOrder')}</div>
+                  </th>
+                  <th className="px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('date')}>
+                    <div className="flex items-center gap-1">Tarih {renderSortIcon('date')}</div>
+                  </th>
+                  <th className="px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('applicantTc')}>
+                    <div className="flex items-center gap-1">T.C. Kimlik {renderSortIcon('applicantTc')}</div>
+                  </th>
+                  <th className="px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('applicantName')}>
+                    <div className="flex items-center gap-1">Başvuru Sahibi Adı {renderSortIcon('applicantName')}</div>
+                  </th>
+                  <th className="px-3 py-2.5 font-extrabold text-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('householdSize')}>
+                    <div className="flex items-center justify-center gap-1">Hane {renderSortIcon('householdSize')}</div>
+                  </th>
+                  {isManager && (
+                    <th className="px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('personnelName')}>
+                      <div className="flex items-center gap-1">Personel {renderSortIcon('personnelName')}</div>
+                    </th>
+                  )}
+                  <th className="px-3 py-2.5 font-extrabold text-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('totalScore')}>
+                    <div className="flex items-center justify-center gap-1">Puan {renderSortIcon('totalScore')}</div>
+                  </th>
+                  <th className="px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('status')}>
+                    <div className="flex items-center gap-1">Onay Durumu {renderSortIcon('status')}</div>
+                  </th>
+                  <th className="px-3 py-2.5 font-extrabold cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('decision')}>
+                    <div className="flex items-center gap-1">Karar / Yardım {renderSortIcon('decision')}</div>
+                  </th>
                   <th className="px-3 py-2.5 font-extrabold text-right">İşlem</th>
                 </tr>
               </thead>
