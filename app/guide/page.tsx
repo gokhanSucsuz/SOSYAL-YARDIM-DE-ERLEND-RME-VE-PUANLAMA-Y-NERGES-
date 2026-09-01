@@ -374,7 +374,7 @@ export default function GuidePage() {
             <ul className="text-xs space-y-1 text-red-900 list-disc pl-5 font-semibold">
               <li>Araç Tescil Kaydı Tespiti: <strong>-15 Puan</strong></li>
               <li>Birden Fazla Taşınmaz Mülkiyet: <strong>-20 Puan</strong></li>
-              <li>Aktif SGK Prim Kaydı: A Kategorisi sıfırlanır</li>
+              <li>Aktif SGK Prim Kaydı Tespiti: <strong>-5 Puan</strong></li>
               <li>Son 3 Ayda Mükerrer Vakıf Nakdi Yardımı: Kişi başı <strong>-5 Puan</strong></li>
             </ul>
 

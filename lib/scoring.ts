@@ -16,7 +16,7 @@ export function calculateNewSystemScore(state: any) {
   if (state.noWorker) rawScoreA += 3;
   if (state.noRegularIncome) rawScoreA += 2;
   if (state.noSgk) rawScoreA += 2;
-  const scoreA = state.a_aktifSgkPrim ? 0 : Math.max(0, Math.min(rawScoreA, 25));
+  const scoreA = Math.max(0, Math.min(rawScoreA, 25));
 
   let scoreB = 0;
   if (state.b_agirEngelli) scoreB += 12;
@@ -101,6 +101,7 @@ export function calculateNewSystemScore(state: any) {
 
   let scorePenalty = 0;
   if (state.a_aracSahibi) scorePenalty += 15;
+  if (state.a_aktifSgkPrim) scorePenalty += 5;
   if (state.a_birdenFazlaTasinmaz) scorePenalty += 20;
   if (state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0) {
     scorePenalty += (state.a_son3AyYardimKisi || 0) * 5;

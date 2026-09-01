@@ -14,6 +14,7 @@ import { saveAssessment, getAssessmentById, calculateAssistanceFromScore, getAll
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
 import { AppHeader } from '@/components/app-header';
+import { calculateNewSystemScore } from '@/lib/scoring';
 
 export default function EditAssessmentWizard() {
   const { showAlert, showConfirm } = useDialog();
@@ -168,124 +169,7 @@ export default function EditAssessmentWizard() {
 
   const set = (key: string, value: any) => setState(s => ({ ...s, [key]: value }));
 
-  const calc = useMemo(() => {
-    // Section A
-    // Section A
-    let rawScoreA = state.income || 0;
-    if (state.noWorker) rawScoreA += 3;
-    if (state.noRegularIncome) rawScoreA += 2;
-    if (state.noSgk) rawScoreA += 2;
-    const scoreA = state.a_aktifSgkPrim ? 0 : Math.max(0, Math.min(rawScoreA, 25));
-
-    // Section B
-    let scoreB = 0;
-    let disadvantageCount = 0;
-    if (state.b_agirEngelli) { scoreB += 12; disadvantageCount++; }
-    if (state.b_engelli) { scoreB += 8; disadvantageCount++; }
-    if (state.b_dusukEngelli) { scoreB += 3; disadvantageCount++; }
-    if (state.b_evdeBakim) { scoreB += 8; disadvantageCount++; }
-    if (state.b_kanser) { scoreB += 8; disadvantageCount++; }
-    if (state.b_kronik) { scoreB += 5; disadvantageCount++; }
-    if (state.b_yasliYalniz) { scoreB += 6; disadvantageCount++; }
-    if (state.b_sehitYakini) { scoreB += 6; disadvantageCount++; }
-    if (state.b_gazi) { scoreB += 6; disadvantageCount++; }
-    if (state.b_yetim) { scoreB += 4; disadvantageCount++; }
-    if (state.b_koruyucuAile) { scoreB += 4; disadvantageCount++; }
-    if (state.b_yabanciUyruklu) { scoreB += 2; disadvantageCount++; }
-    if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
-      scoreB += Number(state.b_ozelSebepPuan);
-      disadvantageCount++;
-    }
-    if (state.b_cokluOzelDurumluBirey) { scoreB += 4; disadvantageCount++; }
-    scoreB = Math.min(scoreB, 25);
-
-    // Section C: Sosyal Kırılganlık ve Krizler (Maksimum 15 Puan)
-    let scoreC = 0;
-    if (state.e_siddetMagduru) scoreC += 5;
-    if (state.e_kadinReis) scoreC += 4;
-    if (state.e_esiCezaevinde) scoreC += 4;
-    if (state.e_afetGelirKaybi) scoreC += 4;
-    if (state.e_maddeBagimliligi) scoreC += 4;
-    if (state.e_sosyalGuvencesiz) scoreC += 4;
-    if (state.e_icraBorcBaskisi) scoreC += 3;
-    if (state.e_gebelikBebek) scoreC += 3;
-    if (state.e_bosanmis) scoreC += 2;
-    if (state.e_dul) scoreC += 2;
-    if (state.e_hukumluYakin) scoreC += 2;
-    const hhSize = state.householdSize || 1;
-    if (hhSize >= 7) scoreC += 4;
-    else if (hhSize >= 5) scoreC += 3;
-    else if (hhSize >= 3) scoreC += 2;
-    else scoreC += 1;
-    scoreC = Math.min(scoreC, 15);
-
-    // Section D: Eğitim ve Çocuk Yükü (Maksimum 15 Puan)
-    let scoreD = 0;
-    scoreD += (state.c_0_6yas || 0) * 2;
-    scoreD += (state.c_ilkokul || 0) * 2;
-    scoreD += (state.c_ortaokul || 0) * 2;
-    scoreD += (state.c_lise || 0) * 3;
-    scoreD += (state.c_meslekiEgitim || 0) * 3;
-    scoreD += (state.c_acikLise || 0) * 2;
-    scoreD += (state.c_uni || 0) * 4;
-    scoreD = Math.min(scoreD, 15);
-
-    // Section E: Barınma ve Fiziksel Şartlar (Maksimum 10 Puan)
-    let scoreE = 0;
-    if (state.d_evsiz) scoreE += 8;
-    if (state.d_afetzede) scoreE += 8;
-    if (state.d_agirHasarli) scoreE += 6;
-    if (state.d_sagliksiz) scoreE += 4;
-    if (state.d_dereYatagi) scoreE += 4;
-    if (state.d_kiraci) scoreE += 3;
-    if (state.d_tahliyeBaskisi) scoreE += 3;
-    if (state.d_isinmaProblem) scoreE += 2;
-    if (state.d_gecekondu) scoreE += 2;
-    if (state.d_asansorsuzYuksek) scoreE += 2;
-    if (state.d_tuvaletBanyoYetersiz) scoreE += 2;
-    
-    // Eşya (appliances) contribution
-    let rawAppliances = 0;
-    if (state.appliance_buzdolabi === 'yok') rawAppliances += 1.5;
-    if (state.appliance_camasir === 'yok') rawAppliances += 1.5;
-    if (state.appliance_firin === 'yok') rawAppliances += 1;
-    if (state.appliance_tv === 'yok') rawAppliances += 0.5;
-    scoreE += Math.min(3, rawAppliances);
-    scoreE = Math.min(scoreE, 10);
-
-    // Section F: Sosyal İnceleme Kanaati (Maksimum 10 Puan)
-    const scoreF = Math.min(
-      (state.f_yasamKosullari || 0) + (state.f_aciliyet || 0) + (state.f_sosyalDestek || 0) + (state.f_risk || 0),
-      10
-    );
-
-    // CEZA PUANLARI (Varlık Testi)
-    let scorePenalty = 0;
-    if (state.a_aracSahibi) scorePenalty += 15;
-    if (state.a_birdenFazlaTasinmaz) scorePenalty += 20;
-    if (state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0) {
-      scorePenalty += (state.a_son3AyYardimKisi || 0) * 5;
-    }
-
-    const rawTotal = scoreA + scoreB + scoreC + scoreD + scoreE + scoreF;
-    const totalScore = state.falseStatement ? 0 : Math.max(0, Math.round(rawTotal - scorePenalty));
-    
-    const hasIncomeVulnerability = !!(state.income && state.income > 0);
-    const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement, undefined, hasIncomeVulnerability);
-
-    const priorities: string[] = [];
-    if (state.b_agirEngelli) priorities.push('Ağır engelli bulunan hane');
-    if (state.b_yetim) priorities.push('Yetim çocuk bulunan hane');
-    if (state.b_sehitYakini || state.b_gazi) priorities.push('Şehit / Gazi Ailesi');
-    if (state.d_afetzede || state.e_afetGelirKaybi) priorities.push('Afet Mağduru');
-    if (state.b_yasliYalniz) priorities.push('Yaşlı ve Yalnız Yaşayan');
-    if (state.a_aracSahibi || state.a_birdenFazlaTasinmaz) priorities.push('Varlık Testi: Ceza Puanı Uygulandı');
-    if (state.appliance_buzdolabi === 'yok' || state.appliance_camasir === 'yok') {
-      priorities.push('Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)');
-    }
-
-    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scorePenalty, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
-  }, [state]);
+  const calc = useMemo(() => calculateNewSystemScore(state), [state]);
 
   const stepsCount = 10;
   const stepNames = [
@@ -835,7 +719,7 @@ export default function EditAssessmentWizard() {
                      </h4>
                      <CheckboxItem label="Araç tescil kaydı tespit edildi (−15 Puan)" checked={state.a_aracSahibi} onChange={(v:any) => set('a_aracSahibi', v)} isAlert={true} points={null} />
                      <CheckboxItem label="Birden fazla taşınmaz (gayrimenkul) kaydı var (−20 Puan)" checked={state.a_birdenFazlaTasinmaz} onChange={(v:any) => set('a_birdenFazlaTasinmaz', v)} isAlert={true} points={null} />
-                     <CheckboxItem label="Aktif SGK prim ödemesi tespit edildi → A bölümü puanı sıfırlanır" checked={state.a_aktifSgkPrim} onChange={(v:any) => set('a_aktifSgkPrim', v)} isAlert={true} points={null} />
+                     <CheckboxItem label="Aktif SGK prim ödemesi tespit edildi" checked={state.a_aktifSgkPrim} onChange={(v:any) => set('a_aktifSgkPrim', v)} isAlert={true} points={-5} />
                      <div className="space-y-2 pt-2 border-t border-orange-200">
                        <CheckboxItem label="Son 3 ayda bu vakıftan yardım aldığı tespit edildi" checked={state.a_son3AyYardimAldi} onChange={(v:any) => { set('a_son3AyYardimAldi', v); if (!v) set('a_son3AyYardimKisi', 0); }} isAlert={true} points={null} />
                        {state.a_son3AyYardimAldi && (
