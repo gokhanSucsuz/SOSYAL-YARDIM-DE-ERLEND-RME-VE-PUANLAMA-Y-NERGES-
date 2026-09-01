@@ -326,6 +326,18 @@ export default function Dashboard() {
     router.push('/gate');
   };
 
+  const isMeetingActiveStrict = (m: Meeting) => {
+    if (m.isClosed) return false;
+    if (m.date) {
+      const meetingDate = new Date(m.date);
+      meetingDate.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (meetingDate < today && !m.forceOpen) return false;
+    }
+    return true;
+  };
+
   const reloadAssessments = async () => {
     try {
       if (user.role === 'manager' || user.role === 'superadmin') {
@@ -1213,7 +1225,14 @@ export default function Dashboard() {
             {isManager && (
               <>
                 <button
-                  onClick={() => setNewMeetingModalOpen(true)}
+                  onClick={async () => {
+                          const active = meetings.find(m => isMeetingActiveStrict(m));
+                          if (active) {
+                            await showAlert('Sistemde halihazırda kapanmamış aktif bir toplantı bulunuyor. Yeni toplantı oluşturmak için mevcut toplantının tarihi geçmeli veya manuel olarak kapatılmalıdır.', 'warning');
+                          } else {
+                            setNewMeetingModalOpen(true);
+                          }
+                        }}
                   className="flex-1 sm:flex-initial flex items-center justify-center gap-2 btn-accent px-4 py-2.5 text-xs sm:text-sm touch-manipulation"
                   title="Yeni bir toplantı oluştur"
                 >
@@ -1234,7 +1253,15 @@ export default function Dashboard() {
 
             {user.role === 'personnel' && (
               <button 
-                onClick={() => setNewAssessmentModalOpen(true)}
+                onClick={() => {
+                  const activeMeeting = meetings.find(m => isMeetingActiveStrict(m));
+                  if (activeMeeting) {
+                    setSelectedMeetingId(activeMeeting.id);
+                  } else {
+                    setSelectedMeetingId('');
+                  }
+                  setNewAssessmentModalOpen(true);
+                }}
                 className="w-full sm:w-auto flex items-center justify-center gap-2 btn-primary px-5 py-3 text-sm touch-manipulation"
               >
                 <Plus size={18} />
@@ -1454,7 +1481,14 @@ export default function Dashboard() {
                 </p>
                 {isManager && (
                   <button
-                    onClick={() => setNewMeetingModalOpen(true)}
+                    onClick={async () => {
+                          const active = meetings.find(m => isMeetingActiveStrict(m));
+                          if (active) {
+                            await showAlert('Sistemde halihazırda kapanmamış aktif bir toplantı bulunuyor. Yeni toplantı oluşturmak için mevcut toplantının tarihi geçmeli veya manuel olarak kapatılmalıdır.', 'warning');
+                          } else {
+                            setNewMeetingModalOpen(true);
+                          }
+                        }}
                     className="mt-6 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md shadow-indigo-900/20"
                   >
                     <Plus size={20} />
@@ -1822,7 +1856,7 @@ export default function Dashboard() {
                   className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm max-w-[120px] truncate"
                 >
                   <option value="" disabled>Seçiniz</option>
-                  {meetings.map(m => (
+                  {meetings.filter(m => isMeetingActiveStrict(m)).map(m => (
                     <option key={m.id} value={m.id}>{m.meetingNo}</option>
                   ))}
                 </select>
@@ -2744,7 +2778,7 @@ export default function Dashboard() {
                     className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 focus:outline-none focus:border-primary-500 bg-slate-50 dark:bg-slate-900 font-semibold text-slate-800 dark:text-slate-200 shadow-sm transition-colors"
                   >
                     <option value="" disabled>Toplantı Seçiniz...</option>
-                    {meetings.map(m => (
+                    {meetings.filter(m => isMeetingActiveStrict(m)).map(m => (
                       <option key={m.id} value={m.id}>{m.meetingNo} - {new Date(m.date).toLocaleDateString('tr-TR')} ({m.managerName})</option>
                     ))}
                   </select>
