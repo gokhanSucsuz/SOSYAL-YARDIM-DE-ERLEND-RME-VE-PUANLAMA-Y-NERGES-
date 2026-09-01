@@ -211,7 +211,7 @@ function NewAssessmentContent() {
             className="w-10 h-10 rounded-2xl shadow-md border-2 border-slate-300 dark:border-slate-700 object-cover shrink-0" 
           />
           <div>
-            <h1 className="text-xs sm:text-base font-black tracking-tight uppercase bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+            <h1 className="text-xs sm:text-base font-black tracking-tight uppercase bg-gradient-to-r from-slate-800 via-slate-600 to-slate-500 dark:from-white dark:via-slate-100 dark:to-slate-400 bg-clip-text text-transparent">
               Saha İnceleme Sihirbazı
             </h1>
             <p className="text-[11px] text-slate-600 dark:text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5">
@@ -305,7 +305,7 @@ function NewAssessmentContent() {
                 {step === 0 && (
                   <div className="flex-1 space-y-5">
                     <div className="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-500/20 p-5 rounded-3xl backdrop-blur-md">
-                      <h2 className="text-lg sm:text-2xl font-black text-white flex items-center gap-2">
+                      <h2 className="text-lg sm:text-2xl font-black text-primary-950 dark:text-white flex items-center gap-2">
                         <User className="text-primary-400" size={24} />
                         Başvuru Sahibi & Hane Bilgileri
                       </h2>
@@ -322,7 +322,7 @@ function NewAssessmentContent() {
                             type="text" 
                             value={state.applicantName}
                             onChange={e => set('applicantName', e.target.value)}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none shadow-inner"
                             placeholder="Örn: Ayşe Yılmaz"
                           />
                         </div>
@@ -336,7 +336,7 @@ function NewAssessmentContent() {
                             inputMode="numeric"
                             value={state.applicantTc}
                             onChange={e => set('applicantTc', e.target.value.replace(/[^0-9]/g, ''))}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none shadow-inner"
                             placeholder="11 Haneli TC No"
                           />
                           {state.applicantTc.length > 0 && state.applicantTc.length < 11 && (
@@ -368,7 +368,7 @@ function NewAssessmentContent() {
                             type="tel" 
                             value={state.phoneNumber}
                             onChange={e => set('phoneNumber', e.target.value)}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
                             placeholder="Örn: 0555 555 5555"
                           />
                         </div>
@@ -380,7 +380,7 @@ function NewAssessmentContent() {
                             type="text" 
                             value={state.householdNo}
                             onChange={e => set('householdNo', e.target.value)}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
                             placeholder="Örn: HN-12345"
                           />
                         </div>
@@ -405,7 +405,7 @@ function NewAssessmentContent() {
                               value={state.householdSize || ''}
                               onChange={e => set('householdSize', parseInt(e.target.value) || 1)}
                               onFocus={e => e.target.select()}
-                              className="flex-1 w-full bg-transparent py-3.5 px-2 text-center text-base font-bold text-white outline-none appearance-none"
+                              className="flex-1 w-full bg-transparent py-3.5 px-2 text-center text-base font-bold text-slate-900 dark:text-white outline-none appearance-none"
                               style={{ MozAppearance: 'textfield' }}
                             />
                             <button
@@ -425,7 +425,7 @@ function NewAssessmentContent() {
                             value={state.applicantAddress}
                             onChange={e => set('applicantAddress', e.target.value)}
                             rows={2}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
                             placeholder="Mahalle, Cadde/Sokak, Kapı No, Daire..."
                           />
                         </div>
