@@ -25,6 +25,7 @@ import { LogoImage } from '@/components/logo-image';
 import { useDialog } from '@/components/DialogProvider';
 import { ManagerStatsView } from '@/components/manager-stats-view';
 import { SidebarLayout } from '@/components/sidebar';
+import { calculateNewSystemScore, isOldSystemRecord, isRejectedRecord } from '@/lib/scoring';
 
 interface BatchModalState {
   isOpen: boolean;
@@ -1005,7 +1006,7 @@ export default function Dashboard() {
         const row = worksheet.getRow(rowNum);
 
         const totalScore = item.result?.totalScore ?? 0;
-        const isEffectivelyRejected = item.result ? (item.result.isRejected || totalScore < 50) : false;
+        const isEffectivelyRejected = item.result ? isRejectedRecord(item.result) : false;
         const isAccepted = !isEffectivelyRejected;
         const isApproved = item.status === 'approved';
         const sequenceNo = item.customOrder !== undefined && item.customOrder !== null ? item.customOrder : idx + 1;
@@ -1392,8 +1393,13 @@ export default function Dashboard() {
                               </div>
 
                               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-1">
-                                <span className="font-bold text-slate-700 dark:text-slate-300">Puan: <strong className={(item.result.totalScore < 50 || item.result.isRejected) ? 'text-red-600' : 'text-blue-700'}>{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</strong></span>
-                                <span className="font-bold text-slate-700 dark:text-slate-300">Karar: <strong className={(item.result.totalScore < 50 || item.result.isRejected) ? "text-red-600" : "text-emerald-700"}>{user?.role === "personnel" && !showScores ? "***" : (item.result.totalScore < 50 || item.result.isRejected) ? "KAPSAM DIŞI (RED)" : (item.result.assistance?.text || "-")}</strong></span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">Puan: {isOldSystemRecord(item.result) && user?.role !== 'personnel' && (
+  <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded border border-amber-200 mr-2 whitespace-nowrap">
+    Eski Sistem: {item.result.totalScore}/155
+  </span>
+)}
+<strong className={isRejectedRecord(item.result) ? 'text-red-600' : 'text-blue-700'}>{user?.role === 'personnel' && !showScores ? '***' : (isOldSystemRecord(item.result) ? calculateNewSystemScore(item.data).totalScore : item.result.totalScore)} Puan</strong></span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">Karar: <strong className={isRejectedRecord(item.result) ? "text-red-600" : "text-emerald-700"}>{user?.role === "personnel" && !showScores ? "***" : isRejectedRecord(item.result) ? "KAPSAM DIŞI (RED)" : (item.result.assistance?.text || "-")}</strong></span>
                                 <span className="text-slate-500 dark:text-slate-400">İnceleyen: {item.personnelName}</span>
                               </div>
                             </div>
@@ -1979,9 +1985,20 @@ export default function Dashboard() {
                       <td className="px-3 py-3 font-extrabold">{item.applicantName}</td>
                       <td className="px-3 py-3 text-center">{item.householdSize}</td>
                       {isManager && <td className="px-3 py-3">{item.personnelName}</td>}
-                      <td className={`px-3 py-3 text-center font-bold ${(item.result.totalScore < 50 || item.result.isRejected) ? 'text-red-600' : ''}`}>{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore}</td>
+                      <td className={`px-3 py-3 text-center font-bold ${isRejectedRecord(item.result) ? 'text-red-600' : ''}`}>
+  {user?.role === 'personnel' && !showScores ? '***' : (
+    <div className="flex flex-col items-center gap-1">
+      {isOldSystemRecord(item.result) && (
+        <span className="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded border border-amber-200 leading-none">
+          Eski: {item.result.totalScore}
+        </span>
+      )}
+      <span>{isOldSystemRecord(item.result) ? calculateNewSystemScore(item.data).totalScore : item.result.totalScore}</span>
+    </div>
+  )}
+</td>
                       <td className="px-3 py-3 font-black uppercase text-[10px]">{isApproved ? 'ONAYLI' : 'BEKLİYOR'}</td>
-                      <td className={`px-3 py-3 font-bold ${(item.result.totalScore < 50 || item.result.isRejected) ? 'text-red-600' : ''}`}>{user?.role === "personnel" && !showScores ? "***" : (item.result.totalScore < 50 || item.result.isRejected) ? "KAPSAM DIŞI (RED)" : item.result.assistance?.text}</td>
+                      <td className={`px-3 py-3 font-bold ${isRejectedRecord(item.result) ? 'text-red-600' : ''}`}>{user?.role === "personnel" && !showScores ? "***" : isRejectedRecord(item.result) ? "KAPSAM DIŞI (RED)" : item.result.assistance?.text}</td>
                       <td className="px-3 py-3 text-right">
                         <div className="inline-flex gap-1">
                           {isManager && !isApproved && <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 text-white p-1 rounded">✓</button>}
@@ -2263,10 +2280,10 @@ export default function Dashboard() {
                       <td className="p-1 text-center font-bold">{item.householdSize} kişi</td>
                       <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
                       <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
-                      <td className={`p-1 text-center font-black ${(item.result.totalScore < 50 || item.result.isRejected) ? 'text-red-600 print-exact' : ''}`}>{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</td>
-                      <td className="p-1 text-center font-bold">{(item.result.totalScore < 50 || item.result.isRejected) ? '-' : (item.result.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL')}</td>
+                      <td className={`p-1 text-center font-black ${isRejectedRecord(item.result) ? 'text-red-600 print-exact' : ''}`}>{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</td>
+                      <td className="p-1 text-center font-bold">{isRejectedRecord(item.result) ? '-' : (item.result.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL')}</td>
                       <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
-                      <td className={`p-1 font-bold uppercase ${(item.result.totalScore < 50 || item.result.isRejected) ? 'text-red-600 print-exact' : ''}`}>{user?.role === "personnel" && !showScores ? "***" : (item.result.totalScore < 50 || item.result.isRejected) ? "KAPSAM DIŞI (RED)" : item.result.assistance?.text}</td>
+                      <td className={`p-1 font-bold uppercase ${isRejectedRecord(item.result) ? 'text-red-600 print-exact' : ''}`}>{user?.role === "personnel" && !showScores ? "***" : isRejectedRecord(item.result) ? "KAPSAM DIŞI (RED)" : item.result.assistance?.text}</td>
                     </tr>
                   ))
                 )}
@@ -2444,9 +2461,9 @@ export default function Dashboard() {
                         </tr>
                         <tr className="border-b border-black">
                           <td className="border-r border-black font-bold p-1">HESAPLANAN TOPLAM PUAN:</td>
-                          <td className={`border-r border-black p-1 text-xs font-black ${(calc.totalScore < 50 || calc.isRejected) ? 'text-red-600 print-exact' : ''}`}>{calc.totalScore} / 150</td>
+                          <td className={`border-r border-black p-1 text-xs font-black ${isRejectedRecord(calc) ? 'text-red-600 print-exact' : ''}`}>{calc.totalScore} / {isOldSystemRecord(calc) ? 155 : 100}</td>
                           <td className="border-r border-black font-bold p-1">TAVSİYE EDİLEN KARAR:</td>
-                          <td className={`p-1 font-extrabold text-[10px] uppercase ${(calc.totalScore < 50 || calc.isRejected) ? 'text-red-600 print-exact' : ''}`}>{(calc.totalScore < 50 || calc.isRejected) ? 'KAPSAM DIŞI (RED)' : calc.assistance?.text}</td>
+                          <td className={`p-1 font-extrabold text-[10px] uppercase ${isRejectedRecord(calc) ? 'text-red-600 print-exact' : ''}`}>{isRejectedRecord(calc) ? 'KAPSAM DIŞI (RED)' : calc.assistance?.text}</td>
                         </tr>
                       </tbody>
                     </table>

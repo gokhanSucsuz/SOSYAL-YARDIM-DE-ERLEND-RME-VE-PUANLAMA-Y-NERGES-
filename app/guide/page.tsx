@@ -458,19 +458,19 @@ export default function GuidePage() {
           <ul className="space-y-3 text-xs text-slate-400 font-medium">
             <li className="flex gap-2">
               <span className="text-slate-600 font-bold">[1]</span>
-              <span><strong>Alkire, S., & Foster, J. (2011).</strong> "Counting and multidimensional poverty measurement." <em>Journal of Public Economics</em>, 95(7-8), 476-487. (MPI - Çok Boyutlu Yoksulluk Endeksi hesaplama prensipleri)</span>
+              <span><strong>Alkire, S., & Foster, J. (2011).</strong> &quot;Counting and multidimensional poverty measurement.&quot; <em>Journal of Public Economics</em>, 95(7-8), 476-487. (MPI - Çok Boyutlu Yoksulluk Endeksi hesaplama prensipleri)</span>
             </li>
             <li className="flex gap-2">
               <span className="text-slate-600 font-bold">[2]</span>
-              <span><strong>Coady, D., Grosh, M., & Hoddinott, J. (2004).</strong> "Targeting of Transfers in Developing Countries: Review of Lessons and Experience." <em>World Bank Publications</em>. (PMT - Proxy Means Testing ağırlıklandırma modeli)</span>
+              <span><strong>Coady, D., Grosh, M., & Hoddinott, J. (2004).</strong> &quot;Targeting of Transfers in Developing Countries: Review of Lessons and Experience.&quot; <em>World Bank Publications</em>. (PMT - Proxy Means Testing ağırlıklandırma modeli)</span>
             </li>
             <li className="flex gap-2">
               <span className="text-slate-600 font-bold">[3]</span>
-              <span><strong>T.C. Aile ve Sosyal Hizmetler Bakanlığı (2023).</strong> Sosyal Yardım İstatistikleri ve Yoksulluk Ölçütleri Bülteni. (Türkiye'ye özgü muhtaçlık sınırı, eğitim ve engellilik yardım limitasyonları)</span>
+              <span><strong>T.C. Aile ve Sosyal Hizmetler Bakanlığı (2023).</strong> Sosyal Yardım İstatistikleri ve Yoksulluk Ölçütleri Bülteni. (Türkiye&apos;ye özgü muhtaçlık sınırı, eğitim ve engellilik yardım limitasyonları)</span>
             </li>
             <li className="flex gap-2">
               <span className="text-slate-600 font-bold">[4]</span>
-              <span><strong>UNDP & OPHI (2022).</strong> "Global Multidimensional Poverty Index: Unpacking deprivation bundles to reduce multidimensional poverty." (Kesişen dezavantajlar ve kırılganlık katsayıları)</span>
+              <span><strong>UNDP & OPHI (2022).</strong> &quot;Global Multidimensional Poverty Index: Unpacking deprivation bundles to reduce multidimensional poverty.&quot; (Kesişen dezavantajlar ve kırılganlık katsayıları)</span>
             </li>
           </ul>
         </div>

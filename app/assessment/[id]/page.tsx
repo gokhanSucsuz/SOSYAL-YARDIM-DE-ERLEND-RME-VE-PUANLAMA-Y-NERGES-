@@ -10,6 +10,7 @@ import { ShieldCheck, Printer, CheckCircle2, Info, AlertTriangle, Check, X, File
 import { useDialog } from '@/components/DialogProvider';
 import Link from 'next/link';
 import { AppHeader } from '@/components/app-header';
+import { calculateNewSystemScore, isOldSystemRecord, isRejectedRecord } from '@/lib/scoring';
 
 export default function AssessmentDetail() {
   const { showAlert, showConfirm } = useDialog();
@@ -332,12 +333,26 @@ export default function AssessmentDetail() {
           </div>
 
           <div className="bg-slate-900 text-white p-5 rounded-xl text-right shrink-0 min-w-[200px]">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Hesaplanan Puan</p>
-            <p className={`text-4xl font-black ${calc.isRejected ? 'text-red-400' : 'text-blue-400'}`}>{calc.totalScore} <span className="text-xs text-slate-400 font-normal">/ 150</span></p>
-            <p className="text-xs font-bold mt-2 uppercase text-slate-300">
-              {(calc.totalScore < 50 || calc.isRejected) ? 'KAPSAM DIŞI (RED)' : calc.assistance.text}
-            </p>
-          </div>
+  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Hesaplanan Puan</p>
+  <p className={`text-4xl font-black ${isRejectedRecord(calc) ? 'text-red-400' : 'text-blue-400'}`}>
+    {isOldSystemRecord(calc) ? calculateNewSystemScore(state).totalScore : calc.totalScore} <span className="text-xs text-slate-400 font-normal">/ 100</span>
+  </p>
+  <p className="text-xs font-bold mt-2 uppercase text-slate-300">
+    {isRejectedRecord(calc) ? 'KAPSAM DIŞI (RED)' : (isOldSystemRecord(calc) ? calculateNewSystemScore(state).assistance.text : calc.assistance.text)}
+  </p>
+  
+  {isOldSystemRecord(calc) && (
+    <div className="mt-4 pt-4 border-t border-slate-700">
+      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Eski Sistem Puanı (Rozet)</p>
+      <p className={`text-xl font-black ${calc.totalScore < 50 || calc.isRejected ? 'text-red-400' : 'text-amber-400'}`}>
+        {calc.totalScore} <span className="text-[10px] text-slate-500 font-normal">/ 155</span>
+      </p>
+      <p className="text-[10px] font-bold mt-1 text-slate-400">
+        {calc.totalScore < 50 || calc.isRejected ? 'RED' : calc.assistance.text}
+      </p>
+    </div>
+  )}
+</div>
         </div>
 
         {/* Manager Banner Alert if pending */}
@@ -370,7 +385,7 @@ export default function AssessmentDetail() {
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">A. EKONOMİK DURUM DETAYLARI</h3>
                 <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
-                  {calc.scoreA} / 40 Puan
+                  {calc.scoreA} / {isOldSystemRecord(calc) ? 40 : 25} Puan
                 </span>
               </div>
               <div className="p-5 space-y-4">
@@ -411,7 +426,7 @@ export default function AssessmentDetail() {
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">B. DEZAVANTAJLI BİREY SEÇENEKLERİ</h3>
                 <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
-                  {calc.scoreB} / 30 Puan
+                  {calc.scoreB} / {isOldSystemRecord(calc) ? 30 : 25} Puan
                 </span>
               </div>
               <div className="p-5">
@@ -434,7 +449,7 @@ export default function AssessmentDetail() {
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">C. ÇOCUK VE EĞİTİM DURUMU</h3>
                 <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
-                  {calc.scoreC} / 10 Puan
+                  {calc.scoreC} / {isOldSystemRecord(calc) ? 10 : 15} Puan
                 </span>
               </div>
               <div className="p-5">
@@ -457,7 +472,7 @@ export default function AssessmentDetail() {
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">D. BARINMA DURUMU SEÇENEKLERİ</h3>
                 <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
-                  {calc.scoreD} / 10 Puan
+                  {calc.scoreD} / {isOldSystemRecord(calc) ? 10 : 15} Puan
                 </span>
               </div>
               <div className="p-5">
@@ -503,7 +518,7 @@ export default function AssessmentDetail() {
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">F. SOSYAL KIRILGANLIK VE NÜFUS</h3>
                 <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
-                  {calc.scoreF} / 30 Puan
+                  {calc.scoreF} / {isOldSystemRecord(calc) ? 30 : 10} Puan
                 </span>
               </div>
               <div className="p-5">
@@ -608,8 +623,8 @@ export default function AssessmentDetail() {
             <div className="bg-slate-900 text-white rounded-xl p-6 shadow-sm space-y-4">
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Değerlendirme Sonucu</p>
-                <p className={`text-2xl font-black mt-1 ${(calc.totalScore < 50 || calc.isRejected) ? 'text-red-400' : 'text-emerald-400'}`}>
-                  {(calc.totalScore < 50 || calc.isRejected) ? 'KAPSAM DIŞI (RED)' : calc.assistance.text.toUpperCase()}
+                <p className={`text-2xl font-black mt-1 ${isRejectedRecord(calc) ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {isRejectedRecord(calc) ? 'KAPSAM DIŞI (RED)' : calc.assistance.text.toUpperCase()}
                 </p>
               </div>
 
@@ -718,7 +733,7 @@ export default function AssessmentDetail() {
                   {state.noSgk && " • SGK kaydı yok (+5)"}
                   {state.a_son3AyYardimKisi > 0 && ` • Son 3 ayda Vakıf yardımı alan: ${state.a_son3AyYardimKisi} kişi (-${state.a_son3AyYardimKisi * 5})`}
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreA} / 40</td>
+                <td className="p-1 text-center font-bold">{calc.scoreA} / {isOldSystemRecord(calc) ? 40 : 25}</td>
               </tr>
 
               <tr className="border-b border-black">
@@ -726,7 +741,7 @@ export default function AssessmentDetail() {
                 <td className="border-r border-black p-1">
                   {selectedDisadvantages.length > 0 ? selectedDisadvantages.join(" • ") : "Mevcut Değil"}
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreB} / 30</td>
+                <td className="p-1 text-center font-bold">{calc.scoreB} / {isOldSystemRecord(calc) ? 30 : 25}</td>
               </tr>
 
               <tr className="border-b border-black">
@@ -734,7 +749,7 @@ export default function AssessmentDetail() {
                 <td className="border-r border-black p-1">
                   {selectedEducation.length > 0 ? selectedEducation.join(" • ") : "Eğitim gören çocuk kaydı yok"}
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreC} / 10</td>
+                <td className="p-1 text-center font-bold">{calc.scoreC} / {isOldSystemRecord(calc) ? 10 : 15}</td>
               </tr>
 
               <tr className="border-b border-black">
@@ -742,7 +757,7 @@ export default function AssessmentDetail() {
                 <td className="border-r border-black p-1">
                   {selectedHousing.length > 0 ? selectedHousing.join(" • ") : "Standart konut"}
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreD} / 10</td>
+                <td className="p-1 text-center font-bold">{calc.scoreD} / {isOldSystemRecord(calc) ? 10 : 15}</td>
               </tr>
 
               <tr className="border-b border-black">
@@ -758,7 +773,7 @@ export default function AssessmentDetail() {
                 <td className="border-r border-black p-1">
                   {selectedFragility.length > 0 ? selectedFragility.join(" • ") : "Özel kırılganlık maddesi bulunmuyor"}
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreF} / 30</td>
+                <td className="p-1 text-center font-bold">{calc.scoreF} / {isOldSystemRecord(calc) ? 30 : 10}</td>
               </tr>
 
               <tr className="border-b border-black">
@@ -783,9 +798,9 @@ export default function AssessmentDetail() {
             </tr>
             <tr className="border-b border-black">
               <td className="border-r border-black font-bold p-1">HESAPLANAN TOPLAM PUAN:</td>
-              <td className={`border-r border-black p-1 text-base font-black ${(calc.totalScore < 50 || calc.isRejected) ? 'text-red-600 print-exact' : ''}`}>{calc.totalScore} / 150</td>
+              <td className={`border-r border-black p-1 text-base font-black ${isRejectedRecord(calc) ? 'text-red-600 print-exact' : ''}`}>{calc.totalScore} / {isOldSystemRecord(calc) ? 155 : 100}</td>
               <td className="border-r border-black font-bold p-1">TAVSİYE EDİLEN KARAR:</td>
-              <td className={`p-1 font-extrabold text-sm ${(calc.totalScore < 50 || calc.isRejected) ? 'text-red-600 print-exact' : ''}`}>{(calc.totalScore < 50 || calc.isRejected) ? 'KAPSAM DIŞI (RED)' : calc.assistance.text.toUpperCase()}</td>
+              <td className={`p-1 font-extrabold text-sm ${isRejectedRecord(calc) ? 'text-red-600 print-exact' : ''}`}>{isRejectedRecord(calc) ? 'KAPSAM DIŞI (RED)' : calc.assistance.text.toUpperCase()}</td>
             </tr>
           </tbody>
         </table>

@@ -548,16 +548,16 @@ export default function PresentationPage() {
           <h3 className="text-sm font-black text-slate-100 mb-3">Model Kaynakçası (Literature & References)</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[10px] sm:text-xs">
             <div>
-              <strong>[1] Alkire, S., & Foster, J. (2011).</strong> "Counting and multidimensional poverty measurement." <em>Journal of Public Economics</em>.
+              <strong>[1] Alkire, S., & Foster, J. (2011).</strong> &quot;Counting and multidimensional poverty measurement.&quot; <em>Journal of Public Economics</em>.
             </div>
             <div>
-              <strong>[2] Coady, D. et al. (2004).</strong> "Targeting of Transfers in Developing Countries." <em>World Bank Publications</em>.
+              <strong>[2] Coady, D. et al. (2004).</strong> &quot;Targeting of Transfers in Developing Countries.&quot; <em>World Bank Publications</em>.
             </div>
             <div>
               <strong>[3] T.C. Aile ve Sosyal Hizmetler Bakanlığı (2023).</strong> Sosyal Yardım İstatistikleri ve Yoksulluk Ölçütleri Bülteni.
             </div>
             <div>
-              <strong>[4] UNDP & OPHI (2022).</strong> "Global Multidimensional Poverty Index."
+              <strong>[4] UNDP & OPHI (2022).</strong> &quot;Global Multidimensional Poverty Index.&quot;
             </div>
           </div>
         </div>
