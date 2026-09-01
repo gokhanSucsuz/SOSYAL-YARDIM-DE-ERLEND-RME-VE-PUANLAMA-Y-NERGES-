@@ -765,14 +765,16 @@ export default function PersonnelPage() {
                               <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">{a.applicantTc}</div>
                             </td>
                             <td className="px-6 py-4 text-center">
-                              <span className={`inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-black relative ${a.result?.isRejected ? "bg-red-50 text-red-700" : "bg-primary-50 text-primary-700"}`}>
+                              <div className="flex flex-col items-center gap-1">
                                 {isOldSystemRecord(a.result) && (
-                                  <span className="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded border border-amber-200 leading-none absolute -top-2">
-                                    Eski: {a.result?.totalScore || 0}
+                                  <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded border border-amber-200 font-bold whitespace-nowrap">
+                                    Eski Sistem: {a.result?.totalScore || 0}
                                   </span>
                                 )}
-                                {isOldSystemRecord(a.result) ? calculateNewSystemScore(a.data).totalScore : (a.result?.totalScore || 0)}
-                              </span>
+                                <span className={`inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-black ${a.result?.isRejected ? "bg-red-50 text-red-700" : "bg-primary-50 text-primary-700"}`}>
+                                  {isOldSystemRecord(a.result) ? calculateNewSystemScore(a.data).totalScore : (a.result?.totalScore || 0)} Puan
+                                </span>
+                              </div>
                             </td>
                             <td className="px-6 py-4 text-center">
                               {isApproved ? (
