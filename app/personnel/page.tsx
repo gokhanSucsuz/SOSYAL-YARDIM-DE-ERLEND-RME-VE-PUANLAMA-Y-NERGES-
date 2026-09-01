@@ -143,7 +143,8 @@ export default function PersonnelPage() {
         { header: 'Hane Kişi', key: 'householdSize', width: 10 },
         { header: 'İkamet Adresi', key: 'address', width: 40 },
         { header: 'Durum', key: 'status', width: 15 },
-        { header: 'Puan', key: 'score', width: 10 },
+        { header: 'Yeni Puan', key: 'score', width: 10 },
+        { header: 'Eski Puan', key: 'oldScore', width: 10 },
       ];
       worksheet.getRow(1).font = { bold: true };
       filteredDetails.forEach(d => {
@@ -158,7 +159,8 @@ export default function PersonnelPage() {
           householdSize: d.householdSize || 1,
           address: d.applicantAddress || '-',
           status: statusText,
-          score: d.result?.totalScore || 0
+          score: isOldSystemRecord(d.result) ? calculateNewSystemScore(d.data).totalScore : (d.result?.totalScore || 0),
+          oldScore: isOldSystemRecord(d.result) ? d.result?.totalScore || 0 : '-'
         });
       });
       const buffer = await workbook.xlsx.writeBuffer();
@@ -221,7 +223,12 @@ export default function PersonnelPage() {
       
       const p = map.get(pKey)!;
       p.totalAssessments++;
-      p.totalScore += a.result?.totalScore || 0;
+      
+      const newSystemScore = isOldSystemRecord(a.result) 
+        ? calculateNewSystemScore(a.data).totalScore 
+        : (a.result?.totalScore || 0);
+      
+      p.totalScore += newSystemScore;
       p.assessments.push(a);
       if (a.meetingId) p.uniqueMeetingIds.add(a.meetingId);
 
