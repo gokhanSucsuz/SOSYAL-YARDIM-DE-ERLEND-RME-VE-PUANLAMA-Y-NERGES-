@@ -90,7 +90,7 @@ export const ScoreButtons = ({ value, onChange, label, description }: any) => {
   const currentLabel = scaleLabels[value] || scaleLabels[0];
 
   return (
-    <div className="p-3.5 bg-slate-50/70 border border-slate-200 dark:border-slate-700 rounded-xl mb-3 last:mb-0 print:border-slate-300 dark:border-slate-600">
+    <div className="p-3.5 bg-slate-50/70 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl mb-3 last:mb-0 print:border-slate-300 dark:border-slate-600 print:bg-white dark:bg-slate-800">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
         <div>
           <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200 block">{label}</span>
@@ -115,7 +115,7 @@ export const ScoreButtons = ({ value, onChange, label, description }: any) => {
               className={`flex flex-col items-center justify-center h-12 sm:h-14 rounded-xl text-xs font-bold transition-all border active:scale-95 touch-manipulation select-none ${
                 isSelected
                   ? 'bg-primary-600 text-white border-primary-600 shadow-md shadow-primary-200 font-extrabold ring-2 ring-primary-400 ring-offset-1'
-                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:bg-slate-800/50'
+                  : 'bg-white dark:bg-slate-900/50 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
               }`}
             >
               <span className="text-base sm:text-lg font-black">{num}</span>
