@@ -112,7 +112,7 @@ export function SidebarLayout({ children }: SidebarProps) {
             <h1 className="text-[11px] font-extrabold text-white leading-tight tracking-wide truncate">
               EDİRNE SYDV
             </h1>
-            <p className="text-[9px] text-teal-400 font-semibold tracking-widest uppercase truncate">
+            <p className="text-[9px] text-amber-400 font-semibold tracking-widest uppercase truncate">
               Sosyal Yardım Sistemi
             </p>
           </motion.div>
@@ -122,7 +122,7 @@ export function SidebarLayout({ children }: SidebarProps) {
       {/* User Profile Card */}
       <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl bg-white/5 border border-white/10 ${isCollapsed && !isMobile ? 'mx-2 p-2 flex justify-center' : ''}`}>
         <div className={`flex items-center gap-3 ${isCollapsed && !isMobile ? 'flex-col' : ''}`}>
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md">
             {(user.name || 'U').charAt(0).toUpperCase()}
           </div>
           {(!isCollapsed || isMobile) && (
@@ -161,21 +161,21 @@ export function SidebarLayout({ children }: SidebarProps) {
                     isCollapsed && !isMobile ? 'justify-center px-2' : ''
                   } ${
                     active
-                      ? 'bg-teal-500/15 text-teal-400 shadow-sm'
+                      ? 'bg-blue-500/15 text-blue-400 shadow-sm'
                       : 'text-slate-400 hover:text-white hover:bg-white/10 transition-colors'
                   }`}
                 >
                   {active && (
                     <motion.div
                       layoutId="sidebar-active-indicator"
-                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-teal-400 rounded-r-full"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-amber-400 rounded-r-full"
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   )}
                   <item.icon
                     size={19}
                     className={`shrink-0 transition-colors ${
-                      active ? 'text-teal-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-300'
+                      active ? 'text-blue-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-300'
                     }`}
                   />
                   {(!isCollapsed || isMobile) && (
@@ -217,7 +217,7 @@ export function SidebarLayout({ children }: SidebarProps) {
         {/* Theme Toggle */}
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-teal-400 hover:bg-teal-400/10 transition-all ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-amber-400 hover:bg-amber-400/10 transition-all ${
             isCollapsed && !isMobile ? 'justify-center px-2' : ''
           }`}
           title={theme === 'dark' ? 'Açık Temaya Geç' : 'Koyu Temaya Geç'}
@@ -292,7 +292,7 @@ export function SidebarLayout({ children }: SidebarProps) {
         {/* Floating Mobile Menu Button (replaces the top transparent header) */}
         <button
           onClick={() => setIsMobileOpen(true)}
-          className="md:hidden fixed bottom-6 right-6 z-30 p-3.5 bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-[0_4px_14px_rgba(13,148,136,0.4)] transition-transform active:scale-95 no-print"
+          className="md:hidden fixed bottom-6 right-6 z-30 p-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.4)] transition-transform active:scale-95 no-print"
           title="Menüyü Aç"
         >
           <Menu size={24} />

@@ -38,7 +38,7 @@ export function AppHeader({ showScores, onToggleScores, actions, subtitle }: App
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4 px-1">
           {subtitle && (
             <div>
-              <p className="text-xs font-bold text-teal-600 uppercase tracking-wider">{subtitle}</p>
+              <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">{subtitle}</p>
             </div>
           )}
 
@@ -49,7 +49,7 @@ export function AppHeader({ showScores, onToggleScores, actions, subtitle }: App
                 onClick={onToggleScores}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border focus:outline-none ${
                   showScores
-                    ? 'bg-teal-50 border-teal-300 text-teal-700 hover:bg-teal-100'
+                    ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400'
                 }`}
                 title={showScores ? 'Puan/Karar Gizle' : 'Puan/Karar Göster'}

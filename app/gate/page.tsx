@@ -37,12 +37,12 @@ export default function GatePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 p-4 selection:bg-teal-600 selection:text-white">
-      <div className="bg-slate-800 p-8 rounded-3xl shadow-2xl shadow-black/50 border border-slate-700 w-full max-w-md relative overflow-hidden text-slate-100">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700"></div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0c1e3a] p-4 selection:bg-blue-600 selection:text-white">
+      <div className="bg-[#132d54] p-8 rounded-3xl shadow-2xl shadow-black/50 border border-blue-900/50 w-full max-w-md relative overflow-hidden text-slate-100">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-amber-400 to-blue-600"></div>
         
         <div className="flex justify-center mb-6">
-          <ShieldAlert size={64} className="text-teal-500" />
+          <ShieldAlert size={64} className="text-blue-400" />
         </div>
         
         <h1 className="text-2xl font-black mb-2 text-center tracking-tight">
@@ -59,7 +59,7 @@ export default function GatePage() {
         )}
 
         <GoogleOAuthProvider clientId={clientId}>
-          <div className="flex flex-col items-center justify-center bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50 min-h-[120px]">
+          <div className="flex flex-col items-center justify-center bg-[#0c1e3a]/50 p-6 rounded-2xl border border-blue-800/40 min-h-[120px]">
             {loading ? (
               <div className="text-slate-400 font-bold animate-pulse flex flex-col items-center gap-2">
                 <ShieldCheck size={24} className="text-emerald-500" />

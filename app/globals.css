@@ -1,31 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Primary: Teal / Cyan ── */
-  --color-primary-50: #f0fdfa;
-  --color-primary-100: #ccfbf1;
-  --color-primary-200: #99f6e4;
-  --color-primary-300: #5eead4;
-  --color-primary-400: #2dd4bf;
-  --color-primary-500: #14b8a6;
-  --color-primary-600: #0d9488;
-  --color-primary-700: #0f766e;
-  --color-primary-800: #115e59;
-  --color-primary-900: #134e4a;
-  --color-primary-950: #042f2e;
+  /* ── Primary: Navy Blue ── */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e3a5f;
+  --color-primary-900: #1e3050;
+  --color-primary-950: #0c1e3a;
 
-  /* ── Accent: Indigo ── */
-  --color-accent-50: #eef2ff;
-  --color-accent-100: #e0e7ff;
-  --color-accent-200: #c7d2fe;
-  --color-accent-300: #a5b4fc;
-  --color-accent-400: #818cf8;
-  --color-accent-500: #6366f1;
-  --color-accent-600: #4f46e5;
-  --color-accent-700: #4338ca;
-  --color-accent-800: #3730a3;
-  --color-accent-900: #312e81;
-  --color-accent-950: #1e1b4b;
+  /* ── Accent: Gold / Amber ── */
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  --color-accent-800: #92400e;
+  --color-accent-900: #78350f;
+  --color-accent-950: #451a03;
 
   /* ── Secondary: Slate ── */
   --color-secondary-50: #f8fafc;
@@ -47,7 +47,7 @@
    LIGHT MODE DEFAULTS
    ============================================================ */
 :root {
-  --bg-page:        #f1f5f9;
+  --bg-page:        #f0f4f8;
   --bg-surface:     #ffffff;
   --bg-surface-2:   #f8fafc;
   --text-primary:   #0f172a;
@@ -58,9 +58,9 @@
   --scrollbar-hover: #94a3b8;
 
   /* Sidebar */
-  --sidebar-bg:        #0f172a;
-  --sidebar-hover:     #1e293b;
-  --sidebar-active:    #14b8a6;
+  --sidebar-bg:        #0c1e3a;
+  --sidebar-hover:     #132d54;
+  --sidebar-active:    #3b82f6;
   --sidebar-text:      #94a3b8;
   --sidebar-text-active:#ffffff;
   --sidebar-width:     280px;
@@ -74,13 +74,13 @@
    DARK MODE — next-themes (.dark class)
    ============================================================ */
 .dark {
-  --bg-page:       #0a0f1e;
-  --bg-surface:    #111827;
-  --bg-surface-2:  #1e293b;
+  --bg-page:       #070d1a;
+  --bg-surface:    #0f1729;
+  --bg-surface-2:  #162033;
   --text-primary:  #f1f5f9;
   --text-secondary:#94a3b8;
   --border-color:  #1e293b;
-  --scrollbar-track:  #111827;
+  --scrollbar-track:  #0f1729;
   --scrollbar-thumb:  #334155;
   --scrollbar-hover:  #475569;
 
@@ -95,18 +95,18 @@
   .border-slate-100 { border-color: #1e293b !important; }
   
   /* Tablo satırı alternasyonu dark'ta */
-  table tbody tr:nth-child(even) { background-color: #1a2a3a; }
-  table tbody tr:hover { background-color: #1e3a50 !important; }
+  table tbody tr:nth-child(even) { background-color: #131d30; }
+  table tbody tr:hover { background-color: #1a2a42 !important; }
 
   /* Input alanları dark modda */
   input, select, textarea {
-    background-color: #1e293b !important;
+    background-color: #162033 !important;
     color: #f1f5f9 !important;
-    border-color: #334155 !important;
+    border-color: #2a3a52 !important;
     color-scheme: dark;
   }
   input:focus, select:focus, textarea:focus {
-    background-color: #1e293b !important;
+    background-color: #162033 !important;
     color: #f1f5f9 !important;
     border-color: #3b82f6 !important;
     caret-color: #f1f5f9;
@@ -114,12 +114,12 @@
   input::placeholder, textarea::placeholder { color: #64748b !important; }
   /* Select option elemanları dark modda */
   select option {
-    background-color: #1e293b !important;
+    background-color: #162033 !important;
     color: #f1f5f9 !important;
   }
   select option:checked,
   select option:hover {
-    background-color: #334155 !important;
+    background-color: #1e3050 !important;
     color: #ffffff !important;
   }
   /* Tarayıcı otomatik doldurma (autocomplete) dark düzeltmesi */
@@ -129,9 +129,9 @@
   select:-webkit-autofill,
   textarea:-webkit-autofill {
     -webkit-text-fill-color: #f1f5f9 !important;
-    -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important;
-    box-shadow: 0 0 0px 1000px #1e293b inset !important;
-    border-color: #334155 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #162033 inset !important;
+    box-shadow: 0 0 0px 1000px #162033 inset !important;
+    border-color: #2a3a52 !important;
     transition: background-color 5000s ease-in-out 0s;
   }
 }
@@ -187,17 +187,17 @@ body {
    GLASSMORPHISM UTILITIES
    ============================================================ */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
 .glass-dark {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 30, 58, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* ============================================================
@@ -226,20 +226,28 @@ body {
 /* ============================================================
    GRADIENT UTILITIES
    ============================================================ */
+.gradient-primary {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%);
+}
+
 .gradient-teal {
-  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%);
 }
 
 .gradient-indigo {
-  background: linear-gradient(135deg, #4338ca 0%, #6366f1 50%, #818cf8 100%);
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
 }
 
 .gradient-surface {
-  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(180deg, #f8fafc 0%, #f0f4f8 100%);
 }
 
 .gradient-sidebar {
-  background: linear-gradient(180deg, #0f172a 0%, #111827 50%, #0f172a 100%);
+  background: linear-gradient(180deg, #0c1e3a 0%, #0f2444 50%, #0c1e3a 100%);
 }
 
 /* ============================================================
@@ -274,7 +282,7 @@ body {
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
@@ -290,20 +298,20 @@ body {
   background: var(--bg-surface);
   border-radius: 16px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04),
-              0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05),
+              0 1px 2px rgba(0, 0, 0, 0.03);
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
 .card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08),
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07),
               0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .card-interactive:hover {
   transform: translateY(-2px);
-  border-color: #14b8a6;
-  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.12),
+  border-color: #3b82f6;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1),
               0 4px 8px rgba(0, 0, 0, 0.06);
 }
 
@@ -311,17 +319,17 @@ body {
    BUTTON STYLES
    ============================================================ */
 .btn-primary {
-  background: linear-gradient(135deg, #0d9488, #14b8a6);
+  background: linear-gradient(135deg, #1e3a5f, #2563eb);
   color: white;
   font-weight: 700;
   border-radius: 12px;
   padding: 10px 20px;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+  box-shadow: 0 2px 8px rgba(30, 58, 95, 0.3);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.35);
+  box-shadow: 0 4px 16px rgba(30, 58, 95, 0.4);
   transform: translateY(-1px);
 }
 
@@ -330,17 +338,17 @@ body {
 }
 
 .btn-accent {
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  background: linear-gradient(135deg, #d97706, #f59e0b);
   color: white;
   font-weight: 700;
   border-radius: 12px;
   padding: 10px 20px;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
 }
 
 .btn-accent:hover {
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.4);
   transform: translateY(-1px);
 }
 
@@ -348,17 +356,55 @@ body {
   transform: scale(0.97);
 }
 
+.btn-success {
+  background: linear-gradient(135deg, #047857, #059669);
+  color: white;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 10px 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(4, 120, 87, 0.3);
+}
+
+.btn-success:hover {
+  box-shadow: 0 4px 16px rgba(4, 120, 87, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-success:active {
+  transform: scale(0.97);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #b91c1c, #dc2626);
+  color: white;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 10px 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(185, 28, 28, 0.3);
+}
+
+.btn-danger:hover {
+  box-shadow: 0 4px 16px rgba(185, 28, 28, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-danger:active {
+  transform: scale(0.97);
+}
+
 /* ============================================================
    STAT CARD GRADIENTS
    ============================================================ */
 .stat-teal {
-  background: linear-gradient(135deg, rgba(20,184,166,0.08), rgba(20,184,166,0.02));
-  border-color: rgba(20,184,166,0.2);
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.02));
+  border-color: rgba(59,130,246,0.2);
 }
 
 .stat-indigo {
-  background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(99,102,241,0.02));
-  border-color: rgba(99,102,241,0.2);
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02));
+  border-color: rgba(245,158,11,0.2);
 }
 
 .stat-amber {
@@ -367,13 +413,13 @@ body {
 }
 
 .stat-emerald {
-  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.02));
-  border-color: rgba(16,185,129,0.2);
+  background: linear-gradient(135deg, rgba(5,150,105,0.08), rgba(5,150,105,0.02));
+  border-color: rgba(5,150,105,0.2);
 }
 
 .stat-rose {
-  background: linear-gradient(135deg, rgba(244,63,94,0.08), rgba(244,63,94,0.02));
-  border-color: rgba(244,63,94,0.2);
+  background: linear-gradient(135deg, rgba(220,38,38,0.08), rgba(220,38,38,0.02));
+  border-color: rgba(220,38,38,0.2);
 }
 
 /* ============================================================
@@ -389,7 +435,7 @@ body {
    TOOLTIP & FOCUS STATES
    ============================================================ */
 :focus-visible {
-  outline: 2px solid #14b8a6;
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 
@@ -397,7 +443,7 @@ body {
    SELECTION COLOR
    ============================================================ */
 ::selection {
-  background-color: #14b8a6;
+  background-color: #2563eb;
   color: white;
 }
 
@@ -416,7 +462,7 @@ html:not(.dark) select:focus,
 html:not(.dark) textarea:focus {
   color: #0f172a !important;
   background-color: #ffffff !important;
-  border-color: #14b8a6 !important;
+  border-color: #3b82f6 !important;
 }
 
 html:not(.dark) select option {
@@ -426,6 +472,6 @@ html:not(.dark) select option {
 
 html:not(.dark) select option:checked,
 html:not(.dark) select option:hover {
-  background-color: #f1f5f9 !important;
+  background-color: #f0f4f8 !important;
   color: #0f172a !important;
 }

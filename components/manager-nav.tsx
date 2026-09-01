@@ -38,7 +38,7 @@ export function ManagerNav() {
               : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
           }`}
         >
-          <Home size={18} className="text-blue-600" />
+          <Home size={18} className="text-blue-700" />
           <span>İnceleme Listesi & Hane İşlemleri</span>
         </Link>
 
@@ -50,7 +50,7 @@ export function ManagerNav() {
               : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
           }`}
         >
-          <BarChart3 size={18} className="text-blue-600" />
+          <BarChart3 size={18} className="text-blue-700" />
           <span>Detaylı İstatistik ve Bütçe Raporları</span>
         </Link>
 
@@ -62,7 +62,7 @@ export function ManagerNav() {
               : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
           }`}
         >
-          <Users size={18} className="text-blue-600" />
+          <Users size={18} className="text-blue-700" />
           <span>Personel Yönetimi</span>
         </Link>
         
@@ -75,7 +75,7 @@ export function ManagerNav() {
                 : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
             }`}
           >
-            <Settings size={18} className="text-blue-600" />
+            <Settings size={18} className="text-blue-700" />
             <span>Sistem Ayarları</span>
           </Link>
         )}
@@ -89,7 +89,7 @@ export function ManagerNav() {
                 : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800/70 hover:bg-white dark:bg-slate-800'
             }`}
           >
-            <Settings size={18} className="text-emerald-600" />
+            <Settings size={18} className="text-amber-600" />
             <span>Denetim Kayıtları</span>
           </Link>
         )}

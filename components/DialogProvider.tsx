@@ -99,7 +99,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
                     dialog.alertType === 'error' ? 'bg-red-100 text-red-600' :
                     dialog.alertType === 'warning' ? 'bg-amber-100 text-amber-600' :
                     dialog.alertType === 'success' ? 'bg-emerald-100 text-emerald-600' :
-                    'bg-indigo-100 text-indigo-600'
+                    'bg-blue-100 text-blue-600'
                   }`}>
                     {dialog.alertType === 'error' ? <AlertCircle size={32} /> :
                      dialog.alertType === 'warning' ? <AlertTriangle size={32} /> :
@@ -133,11 +133,11 @@ export function DialogProvider({ children }: { children: ReactNode }) {
                 <button
                   onClick={() => close(true)}
                   className={`flex-1 py-3 px-4 rounded-xl font-bold text-white transition-colors ${
-                    dialog.type === 'confirm' ? 'bg-indigo-600 hover:bg-indigo-700' :
+                    dialog.type === 'confirm' ? 'bg-blue-700 hover:bg-blue-800' :
                     dialog.alertType === 'error' ? 'bg-red-600 hover:bg-red-700' :
                     dialog.alertType === 'warning' ? 'bg-amber-600 hover:bg-amber-700' :
                     dialog.alertType === 'success' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                    'bg-indigo-600 hover:bg-indigo-700'
+                    'bg-blue-700 hover:bg-blue-800'
                   }`}
                 >
                   {dialog.type === 'confirm' ? dialog.confirmText : 'Tamam'}

@@ -464,8 +464,8 @@ export default function AssessmentDetail() {
                 {selectedHousing.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {selectedHousing.map((item, idx) => (
-                      <span key={idx} className="bg-teal-50 text-teal-900 border border-teal-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                        <CheckCircle2 size={14} className="text-teal-600" /> {item}
+                      <span key={idx} className="bg-blue-50 text-blue-900 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-blue-600" /> {item}
                       </span>
                     ))}
                   </div>

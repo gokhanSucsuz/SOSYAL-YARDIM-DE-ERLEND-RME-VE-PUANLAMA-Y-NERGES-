@@ -307,7 +307,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
         <div className="text-slate-500 dark:text-slate-400 font-medium animate-pulse flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl gradient-teal flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
             <RefreshCw className="animate-spin text-white" size={20} />
           </div>
           <span className="text-sm font-bold">Yükleniyor...</span>
@@ -1182,7 +1182,7 @@ export default function Dashboard() {
               onClick={() => setShowScores(!showScores)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border focus:outline-none ${
                 showScores
-                  ? 'bg-teal-50 border-teal-300 text-teal-700 hover:bg-teal-100'
+                  ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                   : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400'
               }`}
               title={showScores ? 'Puan/Karar Gizle' : 'Puan/Karar Göster'}
@@ -1201,7 +1201,7 @@ export default function Dashboard() {
             <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium">
               Hane inceleme ziyaretleri, gelişmiş arama/sıralama ve onay süreçleri.
               {lastRefreshedAt && (
-                <span className="ml-2 text-teal-600 text-[10px] font-semibold">
+                <span className="ml-2 text-blue-600 text-[10px] font-semibold">
                   ↻ Son güncelleme: {lastRefreshedAt.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               )}
@@ -1304,7 +1304,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
               <h3 className="text-base font-extrabold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                <Search className="text-teal-600" size={20} />
+                <Search className="text-blue-600" size={20} />
                 Hane Arama & Değerlendirme Geçmişi Sorgulama
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -1477,12 +1477,12 @@ export default function Dashboard() {
                       onClick={() => setFilterMeetingId(m.id)}
                       className="group card card-interactive p-5 cursor-pointer relative overflow-hidden flex flex-col justify-between"
                     >
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-teal-50 rounded-bl-full -z-10 group-hover:bg-teal-100 transition-colors"></div>
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10 group-hover:bg-blue-100 transition-colors"></div>
                       
                       <div>
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex items-center gap-2">
-                            <div className="p-2 bg-teal-100 text-teal-700 rounded-lg">
+                            <div className="p-2 bg-blue-100 text-blue-700 rounded-lg">
                               <Calendar size={20} />
                             </div>
                             <span className="font-bold text-slate-800 dark:text-slate-200 text-lg">{m.meetingNo}</span>
@@ -1635,7 +1635,7 @@ export default function Dashboard() {
                           )}
                         </div>
                         
-                        <div className="mt-2 w-full bg-teal-50 text-teal-700 font-bold text-xs py-2 rounded-xl text-center group-hover:bg-teal-600 group-hover:text-white transition-colors flex items-center justify-center gap-2">
+                        <div className="mt-2 w-full bg-blue-50 text-blue-700 font-bold text-xs py-2 rounded-xl text-center group-hover:bg-blue-600 group-hover:text-white transition-colors flex items-center justify-center gap-2">
                           <span>Dosyayı Aç</span>
                           <ArrowRight size={14} />
                         </div>

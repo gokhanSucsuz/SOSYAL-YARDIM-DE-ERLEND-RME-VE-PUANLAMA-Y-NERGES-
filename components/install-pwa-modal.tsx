@@ -60,7 +60,7 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-900/60 to-indigo-900/60 border-b border-slate-800 p-5 sm:p-6 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-blue-900/60 to-blue-800/60 border-b border-slate-800 p-5 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <LogoImage
               className="w-12 h-12 rounded-2xl shadow-md border-2 border-blue-400/30 object-cover shrink-0"
@@ -126,7 +126,7 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
                   </div>
                   <button
                     onClick={handleNativeInstall}
-                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 shrink-0 transition-all active:scale-95"
+                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 shrink-0 transition-all active:scale-95"
                   >
                     <Download size={16} />
                     <span>Ana Ekrana Ekle</span>

@@ -947,7 +947,7 @@ function NewAssessmentContent() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={handleSave}
-                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-lg py-4 rounded-2xl shadow-xl shadow-emerald-950/50 flex justify-center items-center gap-2"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-500 hover:to-blue-500 text-white font-extrabold text-lg py-4 rounded-2xl shadow-xl shadow-emerald-950/50 flex justify-center items-center gap-2"
                       >
                         <Save size={20} /> Formu Kaydet ve Onaya Gönder
                       </motion.button>
@@ -1001,7 +1001,7 @@ function NewAssessmentContent() {
             whileTap={{ scale: 0.95 }}
             type="button"
             onClick={handleSave}
-            className="flex items-center justify-center px-5 py-3 rounded-2xl font-black text-sm min-h-[48px] bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-900/30 transition-all touch-manipulation"
+            className="flex items-center justify-center px-5 py-3 rounded-2xl font-black text-sm min-h-[48px] bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-500 hover:to-blue-500 text-white shadow-lg shadow-emerald-900/30 transition-all touch-manipulation"
           >
             <Save size={18} className="mr-1.5" /> Kaydet ve Bitir
           </motion.button>
