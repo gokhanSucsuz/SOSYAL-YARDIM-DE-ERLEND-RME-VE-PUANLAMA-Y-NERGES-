@@ -199,7 +199,7 @@ function NewAssessmentContent() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 font-sans flex flex-col text-slate-900 dark:text-slate-100 selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-white dark:bg-slate-900 font-sans flex flex-col text-slate-900 dark:text-slate-100 selection:bg-primary-600 selection:text-white">
       
       {/* Dynamic Animated Header */}
       <header className="bg-white dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-30 sticky top-0">
@@ -216,7 +216,7 @@ function NewAssessmentContent() {
             </h1>
             <p className="text-[11px] text-slate-600 dark:text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5">
               <span>Adım {step + 1} / {stepsCount}:</span>
-              <span className="text-blue-400 font-extrabold bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20">
+              <span className="text-primary-400 font-extrabold bg-primary-500/10 px-2 py-0.5 rounded-md border border-primary-500/20">
                 {stepNames[step]}
               </span>
             </p>
@@ -231,7 +231,7 @@ function NewAssessmentContent() {
           </div>
 
           <div className="bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300/80 dark:border-slate-300 dark:border-slate-700/80 px-3 py-1.5 rounded-2xl text-right shrink-0 flex items-center gap-2">
-            <div className="p-1 rounded-lg bg-blue-500/20 text-blue-400">
+            <div className="p-1 rounded-lg bg-primary-500/20 text-primary-400">
               <ShieldCheck size={16} />
             </div>
             <div>
@@ -245,7 +245,7 @@ function NewAssessmentContent() {
       {/* Animated Glowing Progress Bar */}
       <div className="h-1.5 bg-slate-100 dark:bg-slate-800 shrink-0 relative overflow-hidden">
         <motion.div 
-          className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 shadow-[0_0_12px_rgba(59,130,246,0.8)]"
+          className="h-full bg-gradient-to-r from-primary-500 via-indigo-500 to-emerald-400 shadow-[0_0_12px_rgba(59,130,246,0.8)]"
           initial={{ width: 0 }}
           animate={{ width: `${((step + 1) / stepsCount) * 100}%` }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -267,9 +267,9 @@ function NewAssessmentContent() {
               }}
               className={`px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all touch-manipulation shrink-0 flex items-center gap-1.5 ${
                 isActive
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/40 ring-2 ring-blue-400/50'
+                  ? 'bg-gradient-to-r from-primary-600 to-indigo-600 text-white shadow-lg shadow-primary-600/40 ring-2 ring-primary-400/50'
                   : isPassed
-                  ? 'bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 text-blue-300 hover:bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/50'
+                  ? 'bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 text-primary-300 hover:bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/50'
                   : 'bg-white dark:bg-slate-900/60 text-slate-600 dark:text-slate-500 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 hover:bg-slate-100/40 dark:bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800'
               }`}
             >
@@ -304,9 +304,9 @@ function NewAssessmentContent() {
               >
                 {step === 0 && (
                   <div className="flex-1 space-y-5">
-                    <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
+                    <div className="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-lg sm:text-2xl font-black text-white flex items-center gap-2">
-                        <User className="text-blue-400" size={24} />
+                        <User className="text-primary-400" size={24} />
                         Başvuru Sahibi & Hane Bilgileri
                       </h2>
                       <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-500 dark:text-slate-400 mt-1">Saha incelemesi yapılan hanenin kimlik, iletişim ve ikamet detayları.</p>
@@ -316,19 +316,19 @@ function NewAssessmentContent() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                         <div>
                           <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <User size={14} className="text-blue-400" /> Başvuru Sahibinin Adı Soyadı *
+                            <User size={14} className="text-primary-400" /> Başvuru Sahibinin Adı Soyadı *
                           </label>
                           <input 
                             type="text" 
                             value={state.applicantName}
                             onChange={e => set('applicantName', e.target.value)}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none shadow-inner"
                             placeholder="Örn: Ayşe Yılmaz"
                           />
                         </div>
                         <div>
                           <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <Hash size={14} className="text-blue-400" /> T.C. Kimlik Numarası (11 Hane) *
+                            <Hash size={14} className="text-primary-400" /> T.C. Kimlik Numarası (11 Hane) *
                           </label>
                           <input 
                             type="text" 
@@ -336,7 +336,7 @@ function NewAssessmentContent() {
                             inputMode="numeric"
                             value={state.applicantTc}
                             onChange={e => set('applicantTc', e.target.value.replace(/[^0-9]/g, ''))}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none shadow-inner"
                             placeholder="11 Haneli TC No"
                           />
                           {state.applicantTc.length > 0 && state.applicantTc.length < 11 && (
@@ -362,25 +362,25 @@ function NewAssessmentContent() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <Phone size={14} className="text-blue-400" /> Telefon Numarası
+                            <Phone size={14} className="text-primary-400" /> Telefon Numarası
                           </label>
                           <input 
                             type="tel" 
                             value={state.phoneNumber}
                             onChange={e => set('phoneNumber', e.target.value)}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
                             placeholder="Örn: 0555 555 5555"
                           />
                         </div>
                         <div>
                           <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <Hash size={14} className="text-blue-400" /> Hane Numarası (Sistem Ref)
+                            <Hash size={14} className="text-primary-400" /> Hane Numarası (Sistem Ref)
                           </label>
                           <input 
                             type="text" 
                             value={state.householdNo}
                             onChange={e => set('householdNo', e.target.value)}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
                             placeholder="Örn: HN-12345"
                           />
                         </div>
@@ -389,9 +389,9 @@ function NewAssessmentContent() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-1">
                           <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <Users size={14} className="text-blue-400" /> Hanedeki Toplam Kişi Sayısı
+                            <Users size={14} className="text-primary-400" /> Hanedeki Toplam Kişi Sayısı
                           </label>
-                          <div className="flex items-center w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl overflow-hidden shadow-inner focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                          <div className="flex items-center w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl overflow-hidden shadow-inner focus-within:ring-2 focus-within:ring-primary-500 transition-all">
                             <button
                               type="button"
                               onClick={() => set('householdSize', Math.max(1, (state.householdSize || 1) - 1))}
@@ -419,13 +419,13 @@ function NewAssessmentContent() {
                         </div>
                         <div className="md:col-span-2">
                           <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <MapPin size={14} className="text-blue-400" /> İkamet Adresi
+                            <MapPin size={14} className="text-primary-400" /> İkamet Adresi
                           </label>
                           <textarea 
                             value={state.applicantAddress}
                             onChange={e => set('applicantAddress', e.target.value)}
                             rows={2}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all outline-none shadow-inner"
+                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
                             placeholder="Mahalle, Cadde/Sokak, Kapı No, Daire..."
                           />
                         </div>
@@ -436,7 +436,7 @@ function NewAssessmentContent() {
 
                 {step === 1 && (
                   <div className="flex-1 space-y-4">
-                    <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
+                    <div className="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-xl font-black text-slate-900 dark:text-white">A. Ekonomik Durum</h2>
                       <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Hane halkı gelir ve sigorta durumuna göre değerlendirme</p>
                     </div>
@@ -465,7 +465,7 @@ function NewAssessmentContent() {
 
                 {step === 2 && (
                   <div className="flex-1 space-y-4">
-                    <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
+                    <div className="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-xl font-black text-slate-900 dark:text-white">B. Dezavantajlı Bireyler</h2>
                       <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
                     </div>
@@ -514,7 +514,7 @@ function NewAssessmentContent() {
                                   }
                                 }}
                                 placeholder="Örn: Organ nakli, nadir hastalık, son birkaç günde karşılaşılan acil durum vb."
-                                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-800 dark:text-slate-200 font-medium"
+                                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-800 dark:text-slate-200 font-medium"
                               />
                             </div>
                             {user?.role === 'personnel' ? (
@@ -528,7 +528,7 @@ function NewAssessmentContent() {
                                 <select
                                   value={state.b_ozelSebepPuan || 0}
                                   onChange={(e) => { set('b_ozelSebepPuan', Number(e.target.value)); set('b_ozelSebepPuanBekliyor', false); }}
-                                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-800 dark:text-slate-200"
+                                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-800 dark:text-slate-200"
                                 >
                                   <option value={0}>Ekleme Yok</option>
                                   <option value={5}>+5 Puan</option>
@@ -547,7 +547,7 @@ function NewAssessmentContent() {
 
                 {step === 3 && (
                   <div className="flex-1 space-y-4">
-                    <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
+                    <div className="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-xl font-black text-slate-900 dark:text-white">C. Çocuk ve Eğitim</h2>
                       <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Kademeli ağırlıklı puanlama (Şartlı Eğitim Yardımı ve Dünya Bankası metodolojisi)</p>
                     </div>
@@ -569,7 +569,7 @@ function NewAssessmentContent() {
 
                 {step === 4 && (
                   <div className="flex-1 space-y-4">
-                    <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
+                    <div className="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-xl font-black text-slate-900 dark:text-white">D. Barınma Durumu</h2>
                       <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
                     </div>
@@ -595,7 +595,7 @@ function NewAssessmentContent() {
 
                 {step === 5 && (
                   <div className="flex-1 space-y-4">
-                    <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
+                    <div className="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-xl font-black text-slate-900 dark:text-white">E. Beyaz Eşya ve Ev Aletleri</h2>
                       <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Temel eşyaların varlık/yıpranma durumu — Bulaşık makinesi lüks eşya sayıldığından puanlama dışıdır (TÜİK/OECD)</p>
                     </div>
@@ -618,7 +618,7 @@ function NewAssessmentContent() {
 
                 {step === 6 && (
                   <div className="flex-1 space-y-4">
-                    <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
+                    <div className="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-xl font-black text-slate-900 dark:text-white">F. Sosyal Kırılganlık</h2>
                       <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
                     </div>
@@ -627,10 +627,10 @@ function NewAssessmentContent() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className="bg-slate-50 dark:bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-300 dark:border-slate-700 p-3.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-700 dark:text-slate-300 sm:col-span-2">
                             <span className="flex items-center gap-2">
-                              <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                              <span className="w-2.5 h-2.5 rounded-full bg-primary-600"></span>
                               Hane Nüfusu Etkisi — {state.householdSize || 1} Kişi
                             </span>
-                            <span className="bg-blue-100 text-blue-900 font-extrabold px-3 py-1 rounded-md">
+                            <span className="bg-primary-100 text-primary-900 font-extrabold px-3 py-1 rounded-md">
                               {(state.householdSize || 1) >= 7 ? `Çok Kalabalık (+6)` :
                                (state.householdSize || 1) >= 5 ? `Kalabalık (+4)` :
                                (state.householdSize || 1) >= 3 ? `Orta Büyüklük (+2)` : `Küçük Hane (+1)`}
@@ -655,14 +655,14 @@ function NewAssessmentContent() {
 
                 {step === 7 && (
                   <div className="flex-1 space-y-4">
-                    <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-5 rounded-3xl backdrop-blur-md">
+                    <div className="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-500/20 p-5 rounded-3xl backdrop-blur-md">
                       <h2 className="text-xl font-black text-slate-900 dark:text-white">G. Sosyal İnceleme Kanaati</h2>
                       <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs mt-1">Görevlinin saha gözlemine dayalı kanaat değerlendirmesi</p>
                     </div>
 
-                    <div className="bg-blue-950/60 border border-blue-500/30 rounded-2xl p-4 text-xs text-blue-200 space-y-2">
-                      <div className="flex items-center gap-2 font-black text-blue-300">
-                        <Info size={18} className="text-blue-400 shrink-0" />
+                    <div className="bg-primary-950/60 border border-primary-500/30 rounded-2xl p-4 text-xs text-primary-200 space-y-2">
+                      <div className="flex items-center gap-2 font-black text-primary-300">
+                        <Info size={18} className="text-primary-400 shrink-0" />
                         <span>Kanaat Değerlendirme Rehberi</span>
                       </div>
                       <p className="leading-relaxed">
@@ -780,7 +780,7 @@ function NewAssessmentContent() {
                       animate={{ scale: 1, opacity: 1 }}
                       className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-3xl shadow-2xl text-center w-full max-w-lg space-y-6"
                     >
-                      <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-lg shadow-blue-500/20">
+                      <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary-600/20 text-primary-400 border border-primary-500/30 shadow-lg shadow-primary-500/20">
                         <Save size={36} />
                       </div>
 
@@ -792,7 +792,7 @@ function NewAssessmentContent() {
                       </div>
                       
                       <div className="bg-slate-50 dark:bg-slate-950/80 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 space-y-3 text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-bold">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/10 text-primary-400 border border-primary-500/20 text-xs font-bold">
                           <ShieldCheck size={16} /> Saha Güvenlik Protokolü Etkin
                         </div>
                         <h3 className="text-sm font-extrabold text-white">Gizli Değerlendirme Modu</h3>
@@ -805,7 +805,7 @@ function NewAssessmentContent() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={handleSave}
-                        className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-500 hover:to-blue-500 text-white font-extrabold text-lg py-4 rounded-2xl shadow-xl shadow-emerald-950/50 flex justify-center items-center gap-2"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-primary-600 hover:from-emerald-500 hover:to-primary-500 text-white font-extrabold text-lg py-4 rounded-2xl shadow-xl shadow-emerald-950/50 flex justify-center items-center gap-2"
                       >
                         <Save size={20} /> Formu Kaydet ve Onaya Gönder
                       </motion.button>
@@ -849,7 +849,7 @@ function NewAssessmentContent() {
             className={`flex items-center justify-center px-5 py-3 rounded-2xl font-black text-sm min-h-[48px] transition-all shadow-lg touch-manipulation ${
               !canProceed
                 ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-500 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-800'
-                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30'
+                : 'bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-500 hover:to-indigo-500 text-white shadow-primary-600/30'
             }`}
           >
             Sonraki Adım <ChevronRight size={20} className="ml-1" />
@@ -859,7 +859,7 @@ function NewAssessmentContent() {
             whileTap={{ scale: 0.95 }}
             type="button"
             onClick={handleSave}
-            className="flex items-center justify-center px-5 py-3 rounded-2xl font-black text-sm min-h-[48px] bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-500 hover:to-blue-500 text-white shadow-lg shadow-emerald-900/30 transition-all touch-manipulation"
+            className="flex items-center justify-center px-5 py-3 rounded-2xl font-black text-sm min-h-[48px] bg-gradient-to-r from-emerald-600 to-primary-600 hover:from-emerald-500 hover:to-primary-500 text-white shadow-lg shadow-emerald-900/30 transition-all touch-manipulation"
           >
             <Save size={18} className="mr-1.5" /> Kaydet ve Bitir
           </motion.button>

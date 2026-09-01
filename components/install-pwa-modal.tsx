@@ -56,21 +56,21 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
       <div
-        className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl shadow-blue-950/50 text-slate-100 relative"
+        className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl shadow-primary-950/50 text-slate-100 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-900/60 to-blue-800/60 border-b border-slate-800 p-5 sm:p-6 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-primary-900/60 to-primary-800/60 border-b border-slate-800 p-5 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <LogoImage
-              className="w-12 h-12 rounded-2xl shadow-md border-2 border-blue-400/30 object-cover shrink-0"
+              className="w-12 h-12 rounded-2xl shadow-md border-2 border-primary-400/30 object-cover shrink-0"
             />
             <div>
               <h3 className="font-extrabold text-base sm:text-lg text-white flex items-center gap-1.5">
                 <span>Uygulamayı Ana Ekrana Ekle</span>
                 <Sparkles size={16} className="text-amber-400 animate-pulse" />
               </h3>
-              <p className="text-xs text-blue-300 font-medium">Sosyal Yardım &amp; İnceleme Sistemi — PWA</p>
+              <p className="text-xs text-primary-300 font-medium">Sosyal Yardım &amp; İnceleme Sistemi — PWA</p>
             </div>
           </div>
           <button
@@ -116,17 +116,17 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
 
               {/* Otomatik kurulum butonu (deferredPrompt geldiğinde) */}
               {deferredPrompt && (
-                <div className="bg-blue-950/60 border border-blue-500/30 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="bg-primary-950/60 border border-primary-500/30 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-left space-y-1">
-                    <p className="font-bold text-sm text-blue-200 flex items-center gap-2">
+                    <p className="font-bold text-sm text-primary-200 flex items-center gap-2">
                       <CheckCircle2 size={16} className="text-emerald-400" />
                       Otomatik Kurulum Hazır!
                     </p>
-                    <p className="text-xs text-blue-300/80">Chrome, cihazınıza kurmaya hazır. Aşağıdaki butona tıklayın.</p>
+                    <p className="text-xs text-primary-300/80">Chrome, cihazınıza kurmaya hazır. Aşağıdaki butona tıklayın.</p>
                   </div>
                   <button
                     onClick={handleNativeInstall}
-                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 shrink-0 transition-all active:scale-95"
+                    className="w-full sm:w-auto bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary-600/30 shrink-0 transition-all active:scale-95"
                   >
                     <Download size={16} />
                     <span>Ana Ekrana Ekle</span>
@@ -165,7 +165,7 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
               {/* Manuel kurulum adımları */}
               <div className="space-y-3 pt-1">
                 <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
-                  <Smartphone size={16} className="text-blue-400" />
+                  <Smartphone size={16} className="text-primary-400" />
                   <span>
                     {isIOS
                       ? 'iOS (Safari) — Manuel Kurulum Adımları'
@@ -176,35 +176,35 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
                 {isIOS ? (
                   <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-3 text-xs text-slate-300">
                     <div className="flex items-start gap-3">
-                      <div className="bg-blue-600/20 text-blue-400 p-2 rounded-xl shrink-0 font-bold border border-blue-500/20 min-w-[32px] text-center">1</div>
+                      <div className="bg-primary-600/20 text-primary-400 p-2 rounded-xl shrink-0 font-bold border border-primary-500/20 min-w-[32px] text-center">1</div>
                       <p className="pt-1">
                         Safari tarayıcısında bu sayfayı açın. Alt veya üst barda bulunan{' '}
-                        <strong>Paylaş (<Share size={13} className="inline mx-1 text-blue-400" />)</strong> simgesine dokunun.
+                        <strong>Paylaş (<Share size={13} className="inline mx-1 text-primary-400" />)</strong> simgesine dokunun.
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="bg-blue-600/20 text-blue-400 p-2 rounded-xl shrink-0 font-bold border border-blue-500/20 min-w-[32px] text-center">2</div>
+                      <div className="bg-primary-600/20 text-primary-400 p-2 rounded-xl shrink-0 font-bold border border-primary-500/20 min-w-[32px] text-center">2</div>
                       <p className="pt-1">
                         Açılan menüde aşağı kaydırarak{' '}
-                        <strong>&quot;Ana Ekrana Ekle&quot; (<PlusSquare size={13} className="inline mx-1 text-blue-400" />)</strong> seçeneğine dokunun.
+                        <strong>&quot;Ana Ekrana Ekle&quot; (<PlusSquare size={13} className="inline mx-1 text-primary-400" />)</strong> seçeneğine dokunun.
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="bg-blue-600/20 text-blue-400 p-2 rounded-xl shrink-0 font-bold border border-blue-500/20 min-w-[32px] text-center">3</div>
+                      <div className="bg-primary-600/20 text-primary-400 p-2 rounded-xl shrink-0 font-bold border border-primary-500/20 min-w-[32px] text-center">3</div>
                       <p className="pt-1">Sağ üstteki <strong>&quot;Ekle&quot;</strong> butonuna basın. Uygulama ana ekranınıza eklenir.</p>
                     </div>
                   </div>
                 ) : (
                   <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-3 text-xs text-slate-300">
                     <div className="flex items-start gap-3">
-                      <div className="bg-blue-600/20 text-blue-400 p-2 rounded-xl shrink-0 font-bold border border-blue-500/20 min-w-[32px] text-center">1</div>
+                      <div className="bg-primary-600/20 text-primary-400 p-2 rounded-xl shrink-0 font-bold border border-primary-500/20 min-w-[32px] text-center">1</div>
                       <p className="pt-1">
                         Android Chrome&apos;un sağ üst köşesindeki{' '}
-                        <strong>Üç Nokta (<MoreVertical size={13} className="inline mx-1 text-blue-400" />)</strong> menüsüne dokunun.
+                        <strong>Üç Nokta (<MoreVertical size={13} className="inline mx-1 text-primary-400" />)</strong> menüsüne dokunun.
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="bg-blue-600/20 text-blue-400 p-2 rounded-xl shrink-0 font-bold border border-blue-500/20 min-w-[32px] text-center">2</div>
+                      <div className="bg-primary-600/20 text-primary-400 p-2 rounded-xl shrink-0 font-bold border border-primary-500/20 min-w-[32px] text-center">2</div>
                       <p className="pt-1">
                         <strong>&quot;Uygulamayı yükle&quot;</strong> veya{' '}
                         <strong>&quot;Ana ekrana ekle&quot;</strong> seçeneğine dokunun.{' '}
@@ -212,7 +212,7 @@ export function InstallPwaModal({ isOpen, onClose, deferredPrompt }: InstallPwaM
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="bg-blue-600/20 text-blue-400 p-2 rounded-xl shrink-0 font-bold border border-blue-500/20 min-w-[32px] text-center">3</div>
+                      <div className="bg-primary-600/20 text-primary-400 p-2 rounded-xl shrink-0 font-bold border border-primary-500/20 min-w-[32px] text-center">3</div>
                       <p className="pt-1">
                         Açılan onay penceresinde <strong>&quot;Yükle&quot;</strong> butonuna basın.
                         Uygulama telefon ana ekranınıza bağımsız uygulama olarak kurulur.

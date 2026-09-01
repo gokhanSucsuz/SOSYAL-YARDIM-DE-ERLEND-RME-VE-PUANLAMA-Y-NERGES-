@@ -80,7 +80,7 @@ export default function GuidePage() {
 
             <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
               <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-extrabold text-sm">
-                <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">2</span>
+                <span className="w-6 h-6 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-bold">2</span>
                 <span>iOS / iPhone Cihazlarda Kurulum (Safari)</span>
               </div>
               <ol className="text-xs text-slate-700 dark:text-slate-300 space-y-2 list-decimal pl-5 font-medium leading-relaxed">
@@ -202,12 +202,12 @@ export default function GuidePage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 flex flex-col justify-between">
+            <div className="p-4 rounded-xl bg-primary-50 border border-primary-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-blue-800 uppercase block mb-1">3. Kademe</span>
-                <span className="text-2xl font-black text-blue-900">56 - 70</span>
+                <span className="text-xs font-bold text-primary-800 uppercase block mb-1">3. Kademe</span>
+                <span className="text-2xl font-black text-primary-900">56 - 70</span>
               </div>
-              <div className="mt-4 pt-3 border-t border-blue-200 text-sm font-extrabold text-blue-800">
+              <div className="mt-4 pt-3 border-t border-primary-200 text-sm font-extrabold text-primary-800">
                 5.000 TL Nakdi Yardım
               </div>
             </div>
@@ -387,7 +387,7 @@ export default function GuidePage() {
         {/* KVKK & Data Security Section */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
           <h3 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-            <ShieldCheck className="text-blue-700" size={22} />
+            <ShieldCheck className="text-primary-700" size={22} />
             7. KVKK Uyumluluğu ve İleri Düzey Siber Güvenlik Altyapısı
           </h3>
 

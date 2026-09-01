@@ -232,7 +232,7 @@ export default function PresentationPage() {
         {/* ==================== SECTION 3: INSTITUTION BENEFITS ==================== */}
         <section className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm space-y-6 print-shadow-none print-break-before print:p-8">
           <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-            <div className="bg-blue-600/10 p-2.5 rounded-xl text-blue-600">
+            <div className="bg-primary-600/10 p-2.5 rounded-xl text-primary-600">
               <Building2 size={24} />
             </div>
             <div>
@@ -243,7 +243,7 @@ export default function PresentationPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
-              <div className="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold">
+              <div className="bg-primary-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold">
                 <Target size={20} />
               </div>
               <h3 className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">Kaynakların Doğru İhtiyaç Sahibine Yönlendirilmesi</h3>
@@ -274,7 +274,7 @@ export default function PresentationPage() {
           </div>
 
           <div className="bg-slate-900 text-white p-6 rounded-2xl space-y-3">
-            <h4 className="text-sm font-extrabold text-blue-400 uppercase tracking-wider flex items-center gap-2">
+            <h4 className="text-sm font-extrabold text-primary-400 uppercase tracking-wider flex items-center gap-2">
               <ShieldCheck size={18} /> İdari Süreç Standartlaşması:
             </h4>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -307,9 +307,9 @@ export default function PresentationPage() {
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-blue-50/60 border border-blue-200 space-y-3">
-              <div className="flex items-center gap-2 text-blue-900 font-extrabold text-sm">
-                <Zap size={18} className="text-blue-700" />
+            <div className="p-5 rounded-2xl bg-primary-50/60 border border-primary-200 space-y-3">
+              <div className="flex items-center gap-2 text-primary-900 font-extrabold text-sm">
+                <Zap size={18} className="text-primary-700" />
                 <span>Hızlı Yardım ve Mağduriyetin Giderilmesi</span>
               </div>
               <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -352,8 +352,8 @@ export default function PresentationPage() {
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl text-xs text-blue-950 space-y-2">
-            <strong className="text-blue-900 font-extrabold text-sm block">Uluslararası MPI Uyumlu Dağılım:</strong>
+          <div className="bg-primary-50 border border-primary-200 p-4 rounded-xl text-xs text-primary-950 space-y-2">
+            <strong className="text-primary-900 font-extrabold text-sm block">Uluslararası MPI Uyumlu Dağılım:</strong>
             <p className="leading-relaxed">
               Dünya literatürüne uygun şekilde 100 puan üzerinden hesaplanan modelde, sosyal yardım bütçesinin en muhtaçlara odaklanması sağlanmıştır. Yardım alma barajı 10 puana çekilmiş, gelir güvencesiz olan her hane bu barajı otomatik geçecek şekilde kurgulanmıştır.
             </p>
@@ -381,12 +381,12 @@ export default function PresentationPage() {
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 flex flex-col justify-between text-center space-y-2">
+            <div className="p-3 rounded-xl bg-primary-50 border border-primary-200 flex flex-col justify-between text-center space-y-2">
               <div>
-                <span className="text-[9px] font-extrabold text-blue-800 uppercase block">3. KADEME</span>
-                <span className="text-lg font-black text-blue-900 block mt-0.5">56 - 70</span>
+                <span className="text-[9px] font-extrabold text-primary-800 uppercase block">3. KADEME</span>
+                <span className="text-lg font-black text-primary-900 block mt-0.5">56 - 70</span>
               </div>
-              <div className="pt-2 border-t border-blue-200 text-[11px] font-black text-blue-900">
+              <div className="pt-2 border-t border-primary-200 text-[11px] font-black text-primary-900">
                 5.000 TL
               </div>
             </div>
@@ -473,7 +473,7 @@ export default function PresentationPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
               <h3 className="font-extrabold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-1.5">
-                <Smartphone size={16} className="text-blue-600" /> 
+                <Smartphone size={16} className="text-primary-600" /> 
                 <span>2FA Çift Aşamalı Doğrulama</span>
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -512,7 +512,7 @@ export default function PresentationPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1.5">
-                <h4 className="font-extrabold text-slate-900 dark:text-slate-100 text-xs uppercase text-blue-700">Sosyal Devlet İlkesine Katkı</h4>
+                <h4 className="font-extrabold text-slate-900 dark:text-slate-100 text-xs uppercase text-primary-700">Sosyal Devlet İlkesine Katkı</h4>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
                   Kimsesizlerin kimsesi olan sosyal devlet anlayışını, kayırmacılıktan uzak tam şeffaf matematiksel güvenceye bağlar.
                 </p>

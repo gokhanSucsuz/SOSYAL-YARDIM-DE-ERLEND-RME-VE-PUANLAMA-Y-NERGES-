@@ -194,7 +194,7 @@ export default function SettingsPage() {
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs font-extrabold transition-all shadow-md active:scale-95"
+              className="flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded-xl text-xs font-extrabold transition-all shadow-md active:scale-95"
             >
               <Save size={14} />
               <span>Kaydet</span>
@@ -237,9 +237,9 @@ export default function SettingsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 2FA SETUP CARD */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-4 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -z-10"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-bl-full -z-10"></div>
             <div className="flex items-center gap-3 text-slate-900 dark:text-slate-100 font-black text-lg">
-              <div className="p-2 bg-blue-100 text-blue-600 rounded-xl"><Key size={22} /></div>
+              <div className="p-2 bg-primary-100 text-primary-600 rounded-xl"><Key size={22} /></div>
               <h2>İki Aşamalı Doğrulama (2FA)</h2>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed flex-1">
@@ -292,7 +292,7 @@ export default function SettingsPage() {
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-black text-lg">
-              <Sliders className="text-blue-600" size={22} />
+              <Sliders className="text-primary-600" size={22} />
               <h2>Sosyal İnceleme Puanı & Yardım Miktarı Kademeleri</h2>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed max-w-2xl">
@@ -302,7 +302,7 @@ export default function SettingsPage() {
 
           <button
             onClick={handleAddTier}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-black shadow-md transition-all active:scale-95 shrink-0"
+            className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-xs font-black shadow-md transition-all active:scale-95 shrink-0"
           >
             <Plus size={18} />
             <span>Yeni Kriter Aralığı Ekle</span>
@@ -324,7 +324,7 @@ export default function SettingsPage() {
               <div key={tier.id} className="p-5 hover:bg-slate-50/80 transition-colors space-y-4 sm:space-y-0 sm:flex sm:items-center sm:gap-4">
                 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-900 font-black text-xs flex items-center justify-center border border-blue-200">
+                  <span className="w-8 h-8 rounded-lg bg-primary-100 text-primary-900 font-black text-xs flex items-center justify-center border border-primary-200">
                     #{index + 1}
                   </span>
                 </div>
@@ -340,7 +340,7 @@ export default function SettingsPage() {
                       max={200}
                       value={tier.minScore}
                       onChange={(e) => handleUpdateTier(tier.id, 'minScore', e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-black bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-xs font-black bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
 
@@ -353,7 +353,7 @@ export default function SettingsPage() {
                       max={200}
                       value={tier.maxScore}
                       onChange={(e) => handleUpdateTier(tier.id, 'maxScore', e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-black bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-xs font-black bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
 
@@ -365,7 +365,7 @@ export default function SettingsPage() {
                       value={tier.text}
                       onChange={(e) => handleUpdateTier(tier.id, 'text', e.target.value)}
                       placeholder="Örn: 10.000 TL Nakdi Yardım"
-                      className="w-full px-3 py-2 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
 
@@ -378,7 +378,7 @@ export default function SettingsPage() {
                       step={500}
                       value={tier.amount}
                       onChange={(e) => handleUpdateTier(tier.id, 'amount', e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-black bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-emerald-700"
+                      className="w-full px-3 py-2 text-xs font-black bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-emerald-700"
                     />
                   </div>
 
@@ -390,7 +390,7 @@ export default function SettingsPage() {
                       value={tier.description || ''}
                       onChange={(e) => handleUpdateTier(tier.id, 'description', e.target.value)}
                       placeholder="Örn: 1. Derece"
-                      className="w-full px-3 py-2 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
 
@@ -430,7 +430,7 @@ export default function SettingsPage() {
               value={settings.rejectionText || ''}
               onChange={(e) => setSettings(prev => ({ ...prev, rejectionText: e.target.value }))}
               placeholder="Örn: Yardım uygun görülmez (veya Ayni)"
-              className="w-full px-4 py-2.5 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2.5 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
         </div>

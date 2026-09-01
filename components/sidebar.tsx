@@ -12,6 +12,7 @@ import {
 import { LogoImage } from '@/components/logo-image';
 import { googleLogout } from '@react-oauth/google';
 import { useTheme } from 'next-themes';
+import { useColorTheme } from '@/components/theme-context';
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -40,6 +41,7 @@ export function SidebarLayout({ children }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+  const { colorTheme, setColorTheme } = useColorTheme();
   const [user, setUser] = useState<any>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -122,7 +124,7 @@ export function SidebarLayout({ children }: SidebarProps) {
       {/* User Profile Card */}
       <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl bg-white/5 border border-white/10 ${isCollapsed && !isMobile ? 'mx-2 p-2 flex justify-center' : ''}`}>
         <div className={`flex items-center gap-3 ${isCollapsed && !isMobile ? 'flex-col' : ''}`}>
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md">
             {(user.name || 'U').charAt(0).toUpperCase()}
           </div>
           {(!isCollapsed || isMobile) && (
@@ -161,7 +163,7 @@ export function SidebarLayout({ children }: SidebarProps) {
                     isCollapsed && !isMobile ? 'justify-center px-2' : ''
                   } ${
                     active
-                      ? 'bg-blue-500/15 text-blue-400 shadow-sm'
+                      ? 'bg-primary-500/15 text-primary-400 shadow-sm'
                       : 'text-slate-400 hover:text-white hover:bg-white/10 transition-colors'
                   }`}
                 >
@@ -175,7 +177,7 @@ export function SidebarLayout({ children }: SidebarProps) {
                   <item.icon
                     size={19}
                     className={`shrink-0 transition-colors ${
-                      active ? 'text-blue-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-300'
+                      active ? 'text-primary-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-300'
                     }`}
                   />
                   {(!isCollapsed || isMobile) && (
@@ -213,6 +215,26 @@ export function SidebarLayout({ children }: SidebarProps) {
             )}
           </button>
         )}
+
+        {/* Color Theme Selector */}
+        <div className={`flex items-center gap-2 px-3 py-2 ${isCollapsed && !isMobile ? 'justify-center flex-col' : ''}`}>
+          {(!isCollapsed || isMobile) && <span className="text-xs font-semibold text-slate-500 flex-1">Renk</span>}
+          <div className={`flex gap-1.5 ${isCollapsed && !isMobile ? 'flex-col' : ''}`}>
+            {[
+              { id: 'blue', bg: 'bg-[#2563eb]', name: 'Lacivert' },
+              { id: 'emerald', bg: 'bg-[#059669]', name: 'Zümrüt' },
+              { id: 'crimson', bg: 'bg-[#dc2626]', name: 'Yakut' },
+              { id: 'purple', bg: 'bg-[#9333ea]', name: 'Mor' }
+            ].map(c => (
+              <button
+                key={c.id}
+                onClick={() => setColorTheme(c.id as any)}
+                title={c.name}
+                className={`w-5 h-5 rounded-full ${c.bg} transition-all ${colorTheme === c.id ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-900 scale-110' : 'opacity-60 hover:opacity-100'}`}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* Theme Toggle */}
         <button
@@ -292,7 +314,7 @@ export function SidebarLayout({ children }: SidebarProps) {
         {/* Floating Mobile Menu Button (replaces the top transparent header) */}
         <button
           onClick={() => setIsMobileOpen(true)}
-          className="md:hidden fixed bottom-6 right-6 z-30 p-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.4)] transition-transform active:scale-95 no-print"
+          className="md:hidden fixed bottom-6 right-6 z-30 p-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.4)] transition-transform active:scale-95 no-print"
           title="Menüyü Aç"
         >
           <Menu size={24} />

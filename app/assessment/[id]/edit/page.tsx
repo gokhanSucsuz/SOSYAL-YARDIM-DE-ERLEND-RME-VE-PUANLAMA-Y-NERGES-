@@ -237,7 +237,7 @@ export default function EditAssessmentWizard() {
 
       {/* Progress Bar */}
       <div className="h-1.5 bg-slate-200 dark:bg-slate-700 shrink-0">
-        <div className="h-full bg-blue-600 transition-all duration-300 ease-out" style={{ width: `${((step + 1) / stepsCount) * 100}%` }}></div>
+        <div className="h-full bg-primary-600 transition-all duration-300 ease-out" style={{ width: `${((step + 1) / stepsCount) * 100}%` }}></div>
       </div>
 
       {/* Touch-Friendly Step Pill Navigation */}
@@ -254,9 +254,9 @@ export default function EditAssessmentWizard() {
               }}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all touch-manipulation shrink-0 ${
                 isActive
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-900/50'
+                  ? 'bg-primary-600 text-white shadow-md shadow-primary-900/50'
                   : isPassed
-                  ? 'bg-slate-800 text-blue-300 hover:bg-slate-700'
+                  ? 'bg-slate-800 text-primary-300 hover:bg-slate-700'
                   : 'bg-slate-850 text-slate-400 hover:bg-slate-800'
               }`}
             >
@@ -285,7 +285,7 @@ export default function EditAssessmentWizard() {
                         type="text" 
                         value={state.applicantName}
                         onChange={e => set('applicantName', e.target.value)}
-                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none"
                         placeholder="Örn: Ayşe Yılmaz"
                       />
                     </div>
@@ -296,7 +296,7 @@ export default function EditAssessmentWizard() {
                         maxLength={11}
                         value={state.applicantTc}
                         onChange={e => set('applicantTc', e.target.value.replace(/[^0-9]/g, ''))}
-                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none"
                         placeholder="11 Haneli TC No"
                       />
                       {state.applicantTc.length > 0 && state.applicantTc.length < 11 && (
@@ -312,7 +312,7 @@ export default function EditAssessmentWizard() {
                         type="tel" 
                         value={state.phoneNumber}
                         onChange={e => set('phoneNumber', e.target.value)}
-                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none"
                         placeholder="Örn: 0555 555 5555"
                       />
                     </div>
@@ -322,7 +322,7 @@ export default function EditAssessmentWizard() {
                         type="text" 
                         value={state.householdNo}
                         onChange={e => set('householdNo', e.target.value)}
-                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none"
                         placeholder="Örn: HN-12345"
                       />
                     </div>
@@ -331,7 +331,7 @@ export default function EditAssessmentWizard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-1">
                       <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Hanedeki Kişi Sayısı</label>
-                      <div className="flex items-center w-full border border-slate-300 dark:border-slate-600 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
+                      <div className="flex items-center w-full border border-slate-300 dark:border-slate-600 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500 transition-all">
                         <button
                           type="button"
                           onClick={() => set('householdSize', Math.max(1, (state.householdSize || 1) - 1))}
@@ -363,7 +363,7 @@ export default function EditAssessmentWizard() {
                         value={state.applicantAddress}
                         onChange={e => set('applicantAddress', e.target.value)}
                         rows={2}
-                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none"
                         placeholder="Mahalle, Sokak, Kapı No vb."
                       />
                     </div>
@@ -441,7 +441,7 @@ export default function EditAssessmentWizard() {
                           value={state.b_ozelSebepMetin || ''}
                           onChange={(e) => set('b_ozelSebepMetin', e.target.value)}
                           placeholder="Örn: Organ nakli, nadir hastalık vb."
-                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200"
                         />
                       </div>
                       <div>
@@ -451,7 +451,7 @@ export default function EditAssessmentWizard() {
                         <select
                           value={state.b_ozelSebepPuan || 0}
                           onChange={(e) => set('b_ozelSebepPuan', Number(e.target.value))}
-                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200"
+                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200"
                         >
                           <option value={0}>Ekleme Yok</option>
                           <option value={5}>+5 Puan</option>
@@ -598,10 +598,10 @@ export default function EditAssessmentWizard() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
                       <span className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                        <span className="w-2.5 h-2.5 rounded-full bg-primary-600"></span>
                         Hane Nüfusu Etkisi — {state.householdSize || 1} Kişi
                       </span>
-                      <span className="bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-extrabold px-3 py-1 rounded-md">
+                      <span className="bg-primary-100 dark:bg-primary-900 text-primary-900 dark:text-primary-100 font-extrabold px-3 py-1 rounded-md">
                         {(state.householdSize || 1) >= 7 ? `Çok Kalabalık (+4)` :
                          (state.householdSize || 1) >= 5 ? `Kalabalık (+3)` :
                          (state.householdSize || 1) >= 3 ? `Orta Büyüklük (+2)` : `Küçük Hane (+1)`}
@@ -631,20 +631,20 @@ export default function EditAssessmentWizard() {
                 </div>
 
                 {/* Detailed Guidance Scale Card */}
-                <div className="bg-blue-50/80 border border-blue-200 rounded-xl p-4 mb-6 text-xs text-blue-950 space-y-2">
-                  <div className="flex items-center gap-2 font-black text-blue-900 text-sm">
-                    <Info size={18} className="text-blue-700 shrink-0" />
+                <div className="bg-primary-50/80 border border-primary-200 rounded-xl p-4 mb-6 text-xs text-primary-950 space-y-2">
+                  <div className="flex items-center gap-2 font-black text-primary-900 text-sm">
+                    <Info size={18} className="text-primary-700 shrink-0" />
                     <span>0 - 5 Puanlama Mantığı ve Anlam Rehberi</span>
                   </div>
                   <p className="leading-relaxed">
                     Bu bölümde verilen puanlar hanenin <strong>muhtaçlık ve yardım alma ihtiyacını doğrudan artırır</strong>. Bu nedenle:
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-medium">
-                    <div className="bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-blue-200">
+                    <div className="bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-primary-200">
                       <span className="font-extrabold text-slate-800 dark:text-slate-200 block text-xs">0 PUAN: İYİ / YETERLİ (İHTİYAÇ YOK)</span>
                       <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Hanenin durumu olumlu, yeterli ve stabildir. İlave yardım puanına ihtiyaç duyulmamaktadır.</p>
                     </div>
-                    <div className="bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-blue-200">
+                    <div className="bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-primary-200">
                       <span className="font-extrabold text-red-800 block text-xs">5 PUAN: ÇOK KÖTÜ / KRİTİK ACİL İHTİYAÇ</span>
                       <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">Hane şartları aşırı olumsuz, kritik, acil veya risksizdir. Maksimum +5 puan eklenerek yardım önceliği yükseltilir.</p>
                     </div>
@@ -767,7 +767,7 @@ export default function EditAssessmentWizard() {
             {step === 9 && (
               <div className="flex-1 flex flex-col justify-center items-center py-10">
                 <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 text-center w-full max-w-lg">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 text-blue-600 mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-50 text-primary-600 mb-6">
                     <Save size={32} />
                   </div>
                   <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-2">Güncellemeleri Kaydet</h2>
@@ -776,7 +776,7 @@ export default function EditAssessmentWizard() {
                   </p>
                   
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-6 border border-slate-100 dark:border-slate-800 mb-8 text-center space-y-2">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-100 text-primary-800 text-xs font-bold">
                       <ShieldCheck size={16} /> Saha Güvenlik Protokolü Etkin
                     </div>
                     <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-200">Gizli Değerlendirme Modu</h3>
@@ -787,7 +787,7 @@ export default function EditAssessmentWizard() {
 
                   <button 
                     onClick={handleSave}
-                    className="w-full bg-blue-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition-colors flex justify-center items-center"
+                    className="w-full bg-primary-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-primary-200 hover:bg-primary-700 transition-colors flex justify-center items-center"
                   >
                     Değişiklikleri Kaydet
                   </button>
@@ -825,7 +825,7 @@ export default function EditAssessmentWizard() {
             className={`flex items-center justify-center px-5 py-3 rounded-xl font-extrabold text-sm min-h-[48px] transition-all shadow-md active:scale-95 touch-manipulation ${
               !canProceed
                 ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200'
+                : 'bg-primary-600 text-white hover:bg-primary-700 shadow-primary-200'
             }`}
           >
             Sonraki Adım <ChevronRight size={20} className="ml-1" />

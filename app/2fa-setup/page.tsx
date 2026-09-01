@@ -65,12 +65,12 @@ export default function TwoFactorSetup() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/50 p-4 selection:bg-blue-600 selection:text-white">
-      <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl shadow-blue-950/10 border border-slate-200 dark:border-slate-700 w-full max-w-md relative overflow-hidden text-slate-900 dark:text-slate-100">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-800"></div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/50 p-4 selection:bg-primary-600 selection:text-white">
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl shadow-primary-950/10 border border-slate-200 dark:border-slate-700 w-full max-w-md relative overflow-hidden text-slate-900 dark:text-slate-100">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary-700 via-blue-600 to-primary-800"></div>
         
         <div className="flex justify-center mb-4 mt-2">
-          <QrCode size={48} className="text-blue-700" />
+          <QrCode size={48} className="text-primary-700" />
         </div>
 
         <h1 className="text-2xl font-black mb-2 text-center text-slate-900 dark:text-slate-100 tracking-tight">
@@ -82,7 +82,7 @@ export default function TwoFactorSetup() {
 
         {isGenerating ? (
           <div className="flex justify-center items-center h-48">
-            <Loader2 className="animate-spin text-blue-600" size={32} />
+            <Loader2 className="animate-spin text-primary-600" size={32} />
           </div>
         ) : (
           <div className="flex flex-col items-center mb-6">
@@ -112,7 +112,7 @@ export default function TwoFactorSetup() {
               maxLength={6}
               value={token}
               onChange={e => setToken(e.target.value.replace(/[^0-9]/g, ''))}
-              className="w-full text-center text-3xl tracking-[0.5em] font-mono py-4 rounded-xl border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 dark:bg-slate-900"
+              className="w-full text-center text-3xl tracking-[0.5em] font-mono py-4 rounded-xl border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-slate-50 dark:bg-slate-900"
               placeholder="000000"
               required
               disabled={isGenerating || !qrCode}
@@ -124,7 +124,7 @@ export default function TwoFactorSetup() {
           <button
             type="submit"
             disabled={loading || token.length !== 6 || isGenerating || !qrCode}
-            className="w-full flex justify-center items-center gap-2 bg-blue-700 hover:bg-blue-800 disabled:bg-slate-400 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-blue-900/20"
+            className="w-full flex justify-center items-center gap-2 bg-primary-700 hover:bg-primary-800 disabled:bg-slate-400 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-primary-900/20"
           >
             {loading ? 'Doğrulanıyor...' : 'Aktifleştir'}
             {!loading && <ArrowRight size={18} />}

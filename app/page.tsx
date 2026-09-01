@@ -582,9 +582,9 @@ export default function Dashboard() {
       return <ArrowUpDown size={12} className="text-slate-400 group-hover:text-slate-600 dark:text-slate-400 transition-colors shrink-0" />;
     }
     return sortOrder === 'asc' ? (
-      <ArrowUp size={12} className="text-blue-600 font-black shrink-0" />
+      <ArrowUp size={12} className="text-primary-600 font-black shrink-0" />
     ) : (
-      <ArrowDown size={12} className="text-blue-600 font-black shrink-0" />
+      <ArrowDown size={12} className="text-primary-600 font-black shrink-0" />
     );
   };
 
@@ -1183,7 +1183,7 @@ export default function Dashboard() {
               onClick={() => setShowScores(!showScores)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border focus:outline-none ${
                 showScores
-                  ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
+                  ? 'bg-primary-50 border-primary-300 text-primary-700 hover:bg-primary-100'
                   : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400'
               }`}
               title={showScores ? 'Puan/Karar Gizle' : 'Puan/Karar Göster'}
@@ -1202,7 +1202,7 @@ export default function Dashboard() {
             <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium">
               Hane inceleme ziyaretleri, gelişmiş arama/sıralama ve onay süreçleri.
               {lastRefreshedAt && (
-                <span className="ml-2 text-blue-600 text-[10px] font-semibold">
+                <span className="ml-2 text-primary-600 text-[10px] font-semibold">
                   ↻ Son güncelleme: {lastRefreshedAt.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               )}
@@ -1247,7 +1247,7 @@ export default function Dashboard() {
         {selectedIds.length > 0 && (
           <div className="bg-slate-900 text-white p-3.5 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 animate-fadeIn border border-slate-700/50">
             <div className="flex items-center gap-2.5 font-bold text-xs sm:text-sm">
-              <span className="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">
+              <span className="bg-primary-600 text-white px-2.5 py-1 rounded-lg text-xs font-black">
                 {selectedIds.length} Kayıt Seçildi
               </span>
               <span className="text-slate-300 text-xs font-normal hidden sm:inline">
@@ -1257,7 +1257,7 @@ export default function Dashboard() {
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
               <button
                 onClick={handlePrintSelectedDetailed}
-                className="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+                className="bg-primary-600 hover:bg-primary-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
                 title="Seçilen her bir kaydın tek sayfalık resmi A4 detaylı raporunu yazdır"
               >
                 <FileText size={15} />
@@ -1305,7 +1305,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
               <h3 className="text-base font-extrabold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                <Search className="text-blue-600" size={20} />
+                <Search className="text-primary-600" size={20} />
                 Hane Arama & Değerlendirme Geçmişi Sorgulama
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -1329,7 +1329,7 @@ export default function Dashboard() {
               value={householdSearchQuery}
               onChange={(e) => setHouseholdSearchQuery(e.target.value)}
               placeholder="Hane No (Örn: HN-123), T.C. Kimlik No (11 hane) veya Başvuru Sahibi Ad Soyad..."
-              className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-900 dark:text-slate-100 bg-slate-50/50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 transition-all shadow-inner"
+              className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm font-semibold text-slate-900 dark:text-slate-100 bg-slate-50/50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 transition-all shadow-inner"
             />
           </div>
 
@@ -1344,7 +1344,7 @@ export default function Dashboard() {
                   <div key={hh.key} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 sm:p-5 shadow-sm space-y-4">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-800 p-3.5 rounded-lg border border-slate-200 dark:border-slate-700">
                       <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-blue-100 text-blue-700 rounded-xl font-bold">
+                        <div className="p-2.5 bg-primary-100 text-primary-700 rounded-xl font-bold">
                           <Building2 size={22} />
                         </div>
                         <div>
@@ -1362,17 +1362,17 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </div>
-                      <div className="bg-blue-50 text-blue-800 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-blue-100 self-start md:self-center shrink-0">
+                      <div className="bg-primary-50 text-primary-800 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-primary-100 self-start md:self-center shrink-0">
                         Toplam {hh.assessments.length} Değerlendirme
                       </div>
                     </div>
 
-                    <div className="space-y-2.5 pl-2 border-l-2 border-blue-300">
+                    <div className="space-y-2.5 pl-2 border-l-2 border-primary-300">
                       {hh.assessments.map((item) => {
                         const meeting = meetings.find(m => m.id === item.meetingId);
                         const isApproved = item.status === 'approved';
                         return (
-                          <div key={item.id} className="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs hover:border-blue-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div key={item.id} className="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs hover:border-primary-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="space-y-1">
                               <div className="flex flex-wrap items-center gap-2">
                                 <span className="bg-indigo-100 text-indigo-800 text-[11px] font-black px-2.5 py-0.5 rounded-md border border-indigo-200">
@@ -1398,7 +1398,7 @@ export default function Dashboard() {
     Eski Sistem: {item.result.totalScore}/155
   </span>
 )}
-<strong className={isRejectedRecord(item.result) ? 'text-red-600' : 'text-blue-700'}>{user?.role === 'personnel' && !showScores ? '***' : (isOldSystemRecord(item.result) ? calculateNewSystemScore(item.data).totalScore : item.result.totalScore)} Puan</strong></span>
+<strong className={isRejectedRecord(item.result) ? 'text-red-600' : 'text-primary-700'}>{user?.role === 'personnel' && !showScores ? '***' : (isOldSystemRecord(item.result) ? calculateNewSystemScore(item.data).totalScore : item.result.totalScore)} Puan</strong></span>
                                 <span className="font-bold text-slate-700 dark:text-slate-300">Karar: <strong className={isRejectedRecord(item.result) ? "text-red-600" : "text-emerald-700"}>{user?.role === "personnel" && !showScores ? "***" : isRejectedRecord(item.result) ? "KAPSAM DIŞI (RED)" : (item.result.assistance?.text || "-")}</strong></span>
                                 <span className="text-slate-500 dark:text-slate-400">İnceleyen: {item.personnelName}</span>
                               </div>
@@ -1407,7 +1407,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
                               <button
                                 onClick={() => handlePrintSingleDetailed(item)}
-                                className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
+                                className="bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
                               >
                                 <Printer size={13} /> Rapor (A4)
                               </button>
@@ -1483,12 +1483,12 @@ export default function Dashboard() {
                       onClick={() => setFilterMeetingId(m.id)}
                       className="group card card-interactive p-5 cursor-pointer relative overflow-hidden flex flex-col justify-between"
                     >
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10 group-hover:bg-blue-100 transition-colors"></div>
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 rounded-bl-full -z-10 group-hover:bg-primary-100 transition-colors"></div>
                       
                       <div>
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex items-center gap-2">
-                            <div className="p-2 bg-blue-100 text-blue-700 rounded-lg">
+                            <div className="p-2 bg-primary-100 text-primary-700 rounded-lg">
                               <Calendar size={20} />
                             </div>
                             <span className="font-bold text-slate-800 dark:text-slate-200 text-lg">{m.meetingNo}</span>
@@ -1518,7 +1518,7 @@ export default function Dashboard() {
                             <button
                               type="button"
                               onClick={(e) => handleOpenEditMeeting(m, e)}
-                              className="text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 transition-colors border border-blue-200"
+                              className="text-xs text-primary-600 hover:text-primary-800 hover:bg-primary-50 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 transition-colors border border-primary-200"
                               title="Toplantı Bütçesini ve Bilgilerini Düzenle"
                             >
                               <Pencil size={12} /> Bütçe / Düzenle
@@ -1542,7 +1542,7 @@ export default function Dashboard() {
                             <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 border border-slate-200 dark:border-slate-700 mb-3 space-y-2">
                               <div className="flex items-center justify-between text-xs font-bold">
                                 <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                                  <Wallet size={13} className="text-blue-600" /> Vakıf Bütçesi:
+                                  <Wallet size={13} className="text-primary-600" /> Vakıf Bütçesi:
                                 </span>
                                 <span className="text-slate-900 dark:text-slate-100 font-extrabold">
                                   {mBudget > 0 ? `${mBudget.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
@@ -1641,7 +1641,7 @@ export default function Dashboard() {
                           )}
                         </div>
                         
-                        <div className="mt-2 w-full bg-blue-50 text-blue-700 font-bold text-xs py-2 rounded-xl text-center group-hover:bg-blue-600 group-hover:text-white transition-colors flex items-center justify-center gap-2">
+                        <div className="mt-2 w-full bg-primary-50 text-primary-700 font-bold text-xs py-2 rounded-xl text-center group-hover:bg-primary-600 group-hover:text-white transition-colors flex items-center justify-center gap-2">
                           <span>Dosyayı Aç</span>
                           <ArrowRight size={14} />
                         </div>
@@ -1721,7 +1721,7 @@ export default function Dashboard() {
                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                      <div className="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
                        <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
-                         <Wallet size={12} className="text-blue-600" /> Vakıf Bütçesi
+                         <Wallet size={12} className="text-primary-600" /> Vakıf Bütçesi
                        </span>
                        <p className="text-base font-black text-slate-900 dark:text-slate-100 mt-0.5">
                          {mBudget > 0 ? `${mBudget.toLocaleString('tr-TR')} ₺` : 'Bütçe Girilmemiş'}
@@ -1781,7 +1781,7 @@ export default function Dashboard() {
           <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                <FileText size={16} className="text-blue-600" />
+                <FileText size={16} className="text-primary-600" />
                 Sosyal İnceleme Kayıtları
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Arama, filtreleme ve sütun bazlı sıralama ile tüm kayıtları inceleyip yönetebilirsiniz.</p>
@@ -1796,7 +1796,7 @@ export default function Dashboard() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Ad soyad, TC kimlik, personel, karar..."
-                className="w-full pl-9 pr-8 py-2 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm"
+                className="w-full pl-9 pr-8 py-2 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm"
               />
               {searchQuery && (
                 <button
@@ -1819,7 +1819,7 @@ export default function Dashboard() {
                     if (e.target.value === '') setFilterMeetingId(null);
                     else setFilterMeetingId(e.target.value);
                   }}
-                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm max-w-[120px] truncate"
+                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm max-w-[120px] truncate"
                 >
                   <option value="" disabled>Seçiniz</option>
                   {meetings.map(m => (
@@ -1834,7 +1834,7 @@ export default function Dashboard() {
                 <select
                   value={filterDecision}
                   onChange={(e: any) => setFilterDecision(e.target.value)}
-                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm"
                 >
                   <option value="all">Tümü</option>
                   <option value="accepted">Kapsam İçi (Kabul)</option>
@@ -1848,7 +1848,7 @@ export default function Dashboard() {
                 <select
                   value={filterStatus}
                   onChange={(e: any) => setFilterStatus(e.target.value)}
-                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm"
                 >
                   <option value="all">Tümü</option>
                   <option value="approved">Onaylılar</option>
@@ -1859,7 +1859,7 @@ export default function Dashboard() {
               {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
                 <button
                   onClick={resetAllFilters}
-                  className="text-xs text-blue-700 hover:text-blue-900 font-bold underline flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                  className="text-xs text-primary-700 hover:text-primary-900 font-bold underline flex items-center gap-1 px-2 py-1 rounded hover:bg-primary-50 transition-colors"
                 >
                   <X size={12} /> Filtreleri Sıfırla
                 </button>
@@ -1867,7 +1867,7 @@ export default function Dashboard() {
 
               <button
                 onClick={handlePrintSelectedDetailed}
-                className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
+                className="flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
                 title="Seçilen kayıtların (veya seçilen tek kaydın) 1 sayfalık resmi A4 ayrıntılı raporunu yazdır/PDF yap"
               >
                 <FileText size={14} />
@@ -1937,7 +1937,7 @@ export default function Dashboard() {
                       type="checkbox"
                       checked={filteredAndSortedAssessments.length > 0 && selectedIds.length === filteredAndSortedAssessments.length}
                       onChange={toggleSelectAll}
-                      className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      className="rounded border-slate-300 dark:border-slate-600 text-primary-600 focus:ring-primary-500 cursor-pointer"
                     />
                   </th>
                   <th className="px-2 py-2.5 font-extrabold text-center w-16 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 group transition-colors select-none" onClick={() => handleSort('customOrder')}>
@@ -1977,8 +1977,8 @@ export default function Dashboard() {
                   const isSelected = selectedIds.includes(item.id);
                   const isApproved = item.status === 'approved';
                   return (
-                    <tr key={item.id} className={`${isSelected ? 'bg-blue-50/80' : 'hover:bg-slate-50/80'}`}>
-                      <td className="px-3 py-3 text-center"><input type="checkbox" checked={isSelected} onChange={() => toggleSelectId(item.id)} className="rounded border-slate-300 dark:border-slate-600 text-blue-600" /></td>
+                    <tr key={item.id} className={`${isSelected ? 'bg-primary-50/80' : 'hover:bg-slate-50/80'}`}>
+                      <td className="px-3 py-3 text-center"><input type="checkbox" checked={isSelected} onChange={() => toggleSelectId(item.id)} className="rounded border-slate-300 dark:border-slate-600 text-primary-600" /></td>
                       <td className="px-2 py-2 text-center"><input type="number" value={item.customOrder ?? ''} onChange={(e) => handleUpdateCustomOrder(item, e.target.value ? parseInt(e.target.value) : undefined)} className="w-12 text-center border border-slate-300 dark:border-slate-600 rounded" /></td>
                       <td className="px-3 py-3">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
                       <td className="px-3 py-3">{item.applicantTc}</td>
@@ -2002,7 +2002,7 @@ export default function Dashboard() {
                       <td className="px-3 py-3 text-right">
                         <div className="inline-flex gap-1">
                           {isManager && !isApproved && <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 text-white p-1 rounded">✓</button>}
-                          <button onClick={() => handlePrintSingleDetailed(item)} className="bg-blue-600 text-white p-1 rounded">📄</button>
+                          <button onClick={() => handlePrintSingleDetailed(item)} className="bg-primary-600 text-white p-1 rounded">📄</button>
                           <Link href={`/assessment/${item.id}`} className="bg-slate-900 text-white p-1 rounded">👁️</Link>
                           {!isApproved && <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 text-white p-1 rounded">🗑️</button>}
                         </div>
@@ -2019,10 +2019,10 @@ export default function Dashboard() {
                 const isSelected = selectedIds.includes(item.id);
                 const isApproved = item.status === 'approved';
                 return (
-                  <div key={`mobile-${item.id}`} className={`p-4 rounded-xl border ${isSelected ? 'border-blue-400 bg-blue-50/50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'} shadow-sm relative transition-colors`}>
+                  <div key={`mobile-${item.id}`} className={`p-4 rounded-xl border ${isSelected ? 'border-primary-400 bg-primary-50/50 dark:bg-primary-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'} shadow-sm relative transition-colors`}>
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-2">
-                        <input type="checkbox" checked={isSelected} onChange={() => toggleSelectId(item.id)} className="rounded border-slate-300 dark:border-slate-600 text-blue-600 w-4 h-4" />
+                        <input type="checkbox" checked={isSelected} onChange={() => toggleSelectId(item.id)} className="rounded border-slate-300 dark:border-slate-600 text-primary-600 w-4 h-4" />
                         <span className="font-black text-slate-800 dark:text-slate-200">{item.applicantName}</span>
                       </div>
                       <span className={`text-[10px] font-black px-2 py-1 rounded-md uppercase shrink-0 ${isApproved ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-amber-100 text-amber-700 border border-amber-200'}`}>
@@ -2056,7 +2056,7 @@ export default function Dashboard() {
                           <CheckCircle2 size={14}/> Onayla
                         </button>
                       )}
-                      <button onClick={() => handlePrintSingleDetailed(item)} className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-bold transition-colors">
+                      <button onClick={() => handlePrintSingleDetailed(item)} className="bg-primary-600 hover:bg-primary-700 text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-bold transition-colors">
                         <Printer size={14}/> Rapor
                       </button>
                       <Link href={`/assessment/${item.id}`} className="bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-bold transition-colors">
@@ -2086,7 +2086,7 @@ export default function Dashboard() {
               <div className="space-y-4 text-center">
                 <div className="w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto">
                   {batchModal.type.startsWith('approve') ? (
-                    <ShieldCheck size={32} className="text-blue-600" />
+                    <ShieldCheck size={32} className="text-primary-600" />
                   ) : (
                     <RotateCcw size={32} className="text-amber-600" />
                   )}
@@ -2101,7 +2101,7 @@ export default function Dashboard() {
 
                 <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3 rounded-xl flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
                   <span>İşlenecek Kayıt Sayısı:</span>
-                  <span className="bg-blue-100 text-blue-900 px-2.5 py-1 rounded-md font-black text-sm">
+                  <span className="bg-primary-100 text-primary-900 px-2.5 py-1 rounded-md font-black text-sm">
                     {batchModal.totalCount} Adet Kayıt
                   </span>
                 </div>
@@ -2117,7 +2117,7 @@ export default function Dashboard() {
                     onClick={executeBatchAction}
                     className={`flex-1 text-white py-2.5 rounded-xl text-xs font-black shadow-md transition-all active:scale-95 ${
                       batchModal.type.startsWith('approve')
-                        ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/20'
+                        ? 'bg-primary-600 hover:bg-primary-700 shadow-primary-900/20'
                         : 'bg-amber-600 hover:bg-amber-700 shadow-amber-900/20'
                     }`}
                   >
@@ -2131,8 +2131,8 @@ export default function Dashboard() {
             {batchModal.step === 'processing' && (
               <div className="space-y-5 text-center py-2">
                 <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-                  <RefreshCw size={40} className="animate-spin text-blue-600" />
-                  <span className="absolute text-xs font-black text-blue-900">
+                  <RefreshCw size={40} className="animate-spin text-primary-600" />
+                  <span className="absolute text-xs font-black text-primary-900">
                     %{batchModal.progress}
                   </span>
                 </div>
@@ -2148,12 +2148,12 @@ export default function Dashboard() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs font-bold">
                     <span className="text-slate-600 dark:text-slate-400">İlerleme Durumu</span>
-                    <span className="text-blue-700 font-black text-sm">%{batchModal.progress}</span>
+                    <span className="text-primary-700 font-black text-sm">%{batchModal.progress}</span>
                   </div>
 
                   <div className="w-full bg-slate-100 dark:bg-slate-800/50 rounded-full h-4 p-0.5 border border-slate-200 dark:border-slate-700 overflow-hidden shadow-inner">
                     <div 
-                      className="bg-gradient-to-r from-blue-600 to-emerald-500 h-3 rounded-full transition-all duration-200 ease-out shadow-sm"
+                      className="bg-gradient-to-r from-primary-600 to-emerald-500 h-3 rounded-full transition-all duration-200 ease-out shadow-sm"
                       style={{ width: `${batchModal.progress}%` }}
                     />
                   </div>
@@ -2555,7 +2555,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1">
-                    <Wallet size={15} className="text-blue-600" />
+                    <Wallet size={15} className="text-primary-600" />
                     <span>Harcanabilir Vakıf Bütçesi Tutarı (TL)</span>
                   </label>
                   <input
@@ -2635,7 +2635,7 @@ export default function Dashboard() {
               exit={{ scale: 0.95, y: 20 }}
               className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
             >
-              <div className="bg-gradient-to-r from-blue-700 to-indigo-700 px-6 py-4 flex items-center justify-between text-white">
+              <div className="bg-gradient-to-r from-primary-700 to-indigo-700 px-6 py-4 flex items-center justify-between text-white">
                 <h3 className="text-lg font-bold flex items-center gap-2">
                   <Pencil size={18} />
                   Toplantı Bütçesi ve Bilgilerini Düzenle
@@ -2666,7 +2666,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1">
-                    <Wallet size={15} className="text-blue-600" />
+                    <Wallet size={15} className="text-primary-600" />
                     <span>Harcanabilir Vakıf Bütçesi Tutarı (TL)</span>
                   </label>
                   <input
@@ -2720,9 +2720,9 @@ export default function Dashboard() {
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-blue-100"
+              className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-primary-100"
             >
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-5 flex items-center justify-between relative overflow-hidden">
+              <div className="bg-gradient-to-r from-primary-600 to-indigo-600 px-6 py-5 flex items-center justify-between relative overflow-hidden">
                 <div className="absolute -right-4 -top-12 opacity-10">
                   <ShieldCheck size={120} />
                 </div>
@@ -2741,7 +2741,7 @@ export default function Dashboard() {
                   <select
                     value={selectedMeetingId}
                     onChange={(e) => setSelectedMeetingId(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 focus:outline-none focus:border-blue-500 bg-slate-50 dark:bg-slate-900 font-semibold text-slate-800 dark:text-slate-200 shadow-sm transition-colors"
+                    className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 focus:outline-none focus:border-primary-500 bg-slate-50 dark:bg-slate-900 font-semibold text-slate-800 dark:text-slate-200 shadow-sm transition-colors"
                   >
                     <option value="" disabled>Toplantı Seçiniz...</option>
                     {meetings.map(m => (
@@ -2760,7 +2760,7 @@ export default function Dashboard() {
                     router.push(`/assessment/new?meetingId=${selectedMeetingId}`);
                   }}
                   disabled={!selectedMeetingId}
-                  className="w-full px-5 py-3.5 rounded-xl font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
+                  className="w-full px-5 py-3.5 rounded-xl font-extrabold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-900/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
                 >
                   <Plus size={20} />
                   İnceleme Formunu Aç

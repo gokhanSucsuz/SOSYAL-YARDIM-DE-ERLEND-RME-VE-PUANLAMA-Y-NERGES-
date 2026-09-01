@@ -401,7 +401,7 @@ export default function StatisticsPage() {
                       <span className="font-bold text-slate-900 dark:text-slate-100">{grandTotal.budget.toLocaleString('tr-TR')} ₺</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-800/50 rounded-full h-3">
-                      <div className="bg-blue-600 h-3 rounded-full" style={{width: '100%'}}></div>
+                      <div className="bg-primary-600 h-3 rounded-full" style={{width: '100%'}}></div>
                     </div>
                   </div>
                   <div>
@@ -498,7 +498,7 @@ export default function StatisticsPage() {
               <div key={idx} className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mt-6 page-break-inside-avoid print:mt-6">
                 <h3 className="font-bold text-slate-700 dark:text-slate-300 mb-6 flex justify-between">
                   <span>{s.meeting.meetingNo} Toplantısı - Kategorik İstatistikler</span>
-                  <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs">{s.meeting.date}</span>
+                  <span className="bg-primary-50 text-primary-600 px-2 py-1 rounded text-xs">{s.meeting.date}</span>
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {s.categoryCharts.map((catChart: any, index: number) => (

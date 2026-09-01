@@ -457,7 +457,7 @@ export default function PersonnelPage() {
                   <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Şifre</label>
                   <input type="password" value={newUserPassword} onChange={e => setNewUserPassword(e.target.value)} className="w-full px-3 py-2 border rounded-xl" placeholder="En az 6 karakter" required />
                 </div>
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl transition-colors">Ekle</button>
+                <button type="submit" className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-xl transition-colors">Ekle</button>
               </form>
               {manageError && <p className="text-red-600 text-sm mt-3">{manageError}</p>}
               {manageSuccess && <p className="text-emerald-600 text-sm mt-3">{manageSuccess}</p>}
@@ -491,7 +491,7 @@ export default function PersonnelPage() {
                         </td>
                       )}
                       <td className="px-6 py-4 text-right flex justify-end gap-2">
-                        <button onClick={() => handleOpenEditModal(u)} className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg" title="Düzenle">
+                        <button onClick={() => handleOpenEditModal(u)} className="text-primary-500 hover:bg-primary-50 p-2 rounded-lg" title="Düzenle">
                           <Edit2 size={18} />
                         </button>
                         <button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg" title="Sil">
@@ -531,7 +531,7 @@ export default function PersonnelPage() {
                   placeholder="Personel ara..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800"
+                  className="w-full pl-10 pr-4 py-2.5 text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800"
                 />
               </div>
             </div>
@@ -552,7 +552,7 @@ export default function PersonnelPage() {
                     <div className="p-6 border-b border-slate-100 dark:border-slate-800">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-black text-lg">
+                          <div className="w-12 h-12 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-black text-lg">
                             {p.name.charAt(0)}
                           </div>
                           <div>
@@ -567,9 +567,9 @@ export default function PersonnelPage() {
                           <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tight">İnceleme</p>
                           <p className="text-lg font-black text-slate-800 dark:text-slate-200">{p.totalAssessments}</p>
                         </div>
-                        <div className="bg-blue-50 rounded-xl p-3 text-center border border-blue-100">
-                          <p className="text-[10px] font-bold text-blue-600 uppercase tracking-tight">Ort. Puan</p>
-                          <p className="text-lg font-black text-blue-700">{p.totalAssessments > 0 ? (p.totalScore / p.totalAssessments).toFixed(1) : '-'}</p>
+                        <div className="bg-primary-50 rounded-xl p-3 text-center border border-primary-100">
+                          <p className="text-[10px] font-bold text-primary-600 uppercase tracking-tight">Ort. Puan</p>
+                          <p className="text-lg font-black text-primary-700">{p.totalAssessments > 0 ? (p.totalScore / p.totalAssessments).toFixed(1) : '-'}</p>
                         </div>
                         <div className="bg-red-50 rounded-xl p-3 text-center border border-red-100">
                           <p className="text-[10px] font-bold text-red-600 uppercase tracking-tight">Red Oranı</p>
@@ -587,7 +587,7 @@ export default function PersonnelPage() {
                       </div>
                       <button
                         onClick={() => { setSelectedPersonnel(p); setViewState('detail'); }}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-bold flex items-center gap-1 group-hover:underline"
+                        className="text-primary-600 hover:text-primary-800 text-sm font-bold flex items-center gap-1 group-hover:underline"
                       >
                         Detayları Gör <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                       </button>
@@ -621,7 +621,7 @@ export default function PersonnelPage() {
 
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-50 text-blue-600 rounded-xl"><FileText size={24} /></div>
+                <div className="p-3 bg-primary-50 text-primary-600 rounded-xl"><FileText size={24} /></div>
                 <div>
                   <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Toplam Kayıt</p>
                   <p className="text-2xl font-black text-slate-800 dark:text-slate-200">{selectedPersonnel.totalAssessments}</p>
@@ -664,13 +664,13 @@ export default function PersonnelPage() {
                       <div 
                         key={m.id} 
                         onClick={() => setFilterMeetingId(m.id)}
-                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:border-blue-300 hover:shadow-lg cursor-pointer transition-all group"
+                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:border-primary-300 hover:shadow-lg cursor-pointer transition-all group"
                       >
                         <div className="flex items-start justify-between mb-3">
-                          <div className="p-2 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors"><Calendar size={20} /></div>
+                          <div className="p-2 bg-primary-50 text-primary-600 rounded-xl group-hover:bg-primary-600 group-hover:text-white transition-colors"><Calendar size={20} /></div>
                           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/50 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">{new Date(m.date).toLocaleDateString('tr-TR')}</span>
                         </div>
-                        <h4 className="font-extrabold text-slate-800 dark:text-slate-200 text-lg mb-4 group-hover:text-blue-700 transition-colors">
+                        <h4 className="font-extrabold text-slate-800 dark:text-slate-200 text-lg mb-4 group-hover:text-primary-700 transition-colors">
                           Toplantı No: {m.meetingNo}
                         </h4>
                         <div className="grid grid-cols-2 gap-3">
@@ -698,7 +698,7 @@ export default function PersonnelPage() {
                       placeholder="Başvuru sahibi, TC no..."
                       value={detailSearchQuery}
                       onChange={(e) => setDetailSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800"
+                      className="w-full pl-9 pr-4 py-2 text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800"
                     />
                   </div>
                   <div className="flex flex-col md:flex-row items-center gap-4">
@@ -754,7 +754,7 @@ export default function PersonnelPage() {
                               <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">{a.applicantTc}</div>
                             </td>
                             <td className="px-6 py-4 text-center">
-                              <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-black bg-blue-50 text-blue-700">
+                              <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-black bg-primary-50 text-primary-700">
                                 {a.result?.totalScore || 0}
                               </span>
                             </td>
@@ -781,7 +781,7 @@ export default function PersonnelPage() {
                                 href={`/assessment/${a.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-colors"
+                                className="inline-flex items-center justify-center p-2 text-primary-600 hover:text-primary-800 hover:bg-primary-50 rounded-xl transition-colors"
                                 title="İnceleme Detayını Yeni Sekmede Aç"
                               >
                                 <Eye size={18} />
@@ -816,7 +816,7 @@ export default function PersonnelPage() {
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Ad Soyad</label>
                 <input 
                   type="text" 
-                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" 
                   value={editName} onChange={e => setEditName(e.target.value)} required 
                 />
               </div>
@@ -824,7 +824,7 @@ export default function PersonnelPage() {
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">E-posta</label>
                 <input 
                   type="email" 
-                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" 
                   value={editEmail} onChange={e => setEditEmail(e.target.value)} required 
                 />
               </div>
@@ -832,7 +832,7 @@ export default function PersonnelPage() {
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Yeni Şifre (Boş bırakırsanız değişmez)</label>
                 <input 
                   type="password" 
-                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" 
                   value={editPassword} onChange={e => setEditPassword(e.target.value)} placeholder="••••••••" 
                 />
               </div>
@@ -840,7 +840,7 @@ export default function PersonnelPage() {
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Yetki Rolü</label>
                   <select 
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     value={editRole} onChange={e => setEditRole(e.target.value)}
                   >
                     <option value="personnel">Personel</option>
@@ -859,7 +859,7 @@ export default function PersonnelPage() {
                   <button type="button" onClick={() => setEditingUser(null)} className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-slate-800/50 font-bold rounded-lg transition-colors">
                     İptal
                   </button>
-                  <button type="submit" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">
+                  <button type="submit" className="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors">
                     Kaydet
                   </button>
                 </div>

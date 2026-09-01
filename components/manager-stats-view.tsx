@@ -598,7 +598,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
                     <span>{stats.totalBudgetTL.toLocaleString('tr-TR')} ₺</span>
                   </div>
                   <div className="w-full bg-gray-200 h-3 border border-black rounded-xs overflow-hidden">
-                    <div className="bg-blue-700 h-full w-full print-exact"></div>
+                    <div className="bg-primary-700 h-full w-full print-exact"></div>
                   </div>
                 </div>
 
@@ -686,9 +686,9 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
                 <span>{stats.score60To79} Hane</span>
               </div>
               <div>
-                <span className="block text-blue-700">Orta (40-59 Pn)</span>
+                <span className="block text-primary-700">Orta (40-59 Pn)</span>
                 <div className="w-full bg-gray-200 h-2.5 border border-black rounded-xs overflow-hidden my-0.5">
-                  <div className="bg-blue-600 h-full print-exact" style={{ width: `${Math.min(100, stats.totalCount > 0 ? (stats.score40To59 / stats.totalCount) * 100 : 0)}%` }}></div>
+                  <div className="bg-primary-600 h-full print-exact" style={{ width: `${Math.min(100, stats.totalCount > 0 ? (stats.score40To59 / stats.totalCount) * 100 : 0)}%` }}></div>
                 </div>
                 <span>{stats.score40To59} Hane</span>
               </div>
@@ -752,7 +752,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
           {/* Scope Selector only */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="bg-slate-800/90 border border-slate-700 rounded-2xl p-1.5 flex items-center gap-2 shadow-inner">
-              <Filter size={16} className="text-blue-400 ml-2 shrink-0" />
+              <Filter size={16} className="text-primary-400 ml-2 shrink-0" />
               <select
                 value={selectedMeetingId}
                 onChange={(e) => setSelectedMeetingId(e.target.value)}
@@ -774,7 +774,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       <div className="no-print bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xs space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 text-blue-700 rounded-xl">
+            <div className="p-2 bg-primary-50 text-primary-700 rounded-xl">
               <Calendar size={18} />
             </div>
             <div>
@@ -793,7 +793,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
               onClick={() => applyDatePreset('all')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 !startDate && !endDate
-                  ? 'bg-blue-600 text-white shadow-sm'
+                  ? 'bg-primary-600 text-white shadow-sm'
                   : 'bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:bg-slate-700'
               }`}
             >
@@ -803,7 +803,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
               onClick={() => applyDatePreset('today')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 startDate && startDate === endDate && startDate === new Date().toISOString().slice(0, 10)
-                  ? 'bg-blue-600 text-white shadow-sm'
+                  ? 'bg-primary-600 text-white shadow-sm'
                   : 'bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:bg-slate-700'
               }`}
             >
@@ -851,9 +851,9 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
             />
           </div>
 
-          <div className="flex items-center justify-between bg-blue-50/70 border border-blue-200 rounded-2xl px-3.5 py-2">
-            <div className="text-xs font-bold text-blue-900">
-              Bulunan Kayıt: <span className="font-extrabold text-blue-700">{filteredAssessments.length} Hane Dosyası</span>
+          <div className="flex items-center justify-between bg-primary-50/70 border border-primary-200 rounded-2xl px-3.5 py-2">
+            <div className="text-xs font-bold text-primary-900">
+              Bulunan Kayıt: <span className="font-extrabold text-primary-700">{filteredAssessments.length} Hane Dosyası</span>
             </div>
             {(startDate || endDate) && (
               <button
@@ -922,10 +922,10 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         {isManager ? (
           <>
             {/* Vakıf Bütçesi */}
-            <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-blue-200 shadow-xs space-y-2 bg-gradient-to-br from-blue-50/50 to-white relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-primary-200 shadow-xs space-y-2 bg-gradient-to-br from-primary-50/50 to-white relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-600">Vakıf Bütçesi (Harcanabilir)</span>
-                <div className="p-2 bg-blue-100 text-blue-700 rounded-2xl"><Wallet size={20} /></div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-primary-600">Vakıf Bütçesi (Harcanabilir)</span>
+                <div className="p-2 bg-primary-100 text-primary-700 rounded-2xl"><Wallet size={20} /></div>
               </div>
               <p className="text-2xl font-black text-slate-900 dark:text-slate-100 leading-none">
                 {stats.totalBudgetTL > 0 ? `${stats.totalBudgetTL.toLocaleString('tr-TR')} ₺` : 'Belirtilmedi'}
@@ -1048,7 +1048,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
         <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <Wallet className="text-blue-600" size={20} />
+              <Wallet className="text-primary-600" size={20} />
               <span>
                 {isManager 
                   ? (selectedMeetingId === 'ALL' ? 'Toplantı Bazında Bütçe ve Yardım Karşılaştırması' : 'Bütçe ve Karar Bağlanan Yardım Oranı')
@@ -1205,7 +1205,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
       {/* Household Characteristics & Housing Breakdown Summary */}
       <div className="no-print bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
         <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <Home className="text-blue-600" size={20} />
+          <Home className="text-primary-600" size={20} />
           <span>Hane Özellikleri ve Sosyo-Ekonomik Göstergeler</span>
         </h3>
 
@@ -1226,9 +1226,9 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
             <span className="text-[10px] font-bold text-amber-700 uppercase">Engelli Birey Bulunan</span>
             <p className="text-lg font-black text-amber-950 mt-0.5">{stats.disabledCount} Hane</p>
           </div>
-          <div className="bg-blue-50/80 p-3.5 rounded-2xl border border-blue-200">
-            <span className="text-[10px] font-bold text-blue-700 uppercase">Kronik Hasta Bulunan</span>
-            <p className="text-lg font-black text-blue-950 mt-0.5">{stats.chronicCount} Hane</p>
+          <div className="bg-primary-50/80 p-3.5 rounded-2xl border border-primary-200">
+            <span className="text-[10px] font-bold text-primary-700 uppercase">Kronik Hasta Bulunan</span>
+            <p className="text-lg font-black text-primary-950 mt-0.5">{stats.chronicCount} Hane</p>
           </div>
           <div className="bg-purple-50/80 p-3.5 rounded-2xl border border-purple-200">
             <span className="text-[10px] font-bold text-purple-700 uppercase">3+ Çocuklu Aileler</span>
@@ -1255,7 +1255,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Ad Soyad, T.C. veya Mahalle ara..."
-              className="pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-xs font-semibold w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-xs font-semibold w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
             <Filter size={14} className="absolute left-3 top-2.5 text-slate-400" />
           </div>
@@ -1287,7 +1287,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
                   return (
                     <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-5 py-3 font-bold text-slate-500 dark:text-slate-400">
-                        #{idx + 1} <span className="text-[10px] text-blue-600 font-black ml-1">({mNo})</span>
+                        #{idx + 1} <span className="text-[10px] text-primary-600 font-black ml-1">({mNo})</span>
                       </td>
                       <td className="px-5 py-3">
                         <p className="font-extrabold text-slate-900 dark:text-slate-100">{item.applicantName}</p>

@@ -15,7 +15,7 @@ const ACTION_STYLES: Record<string, { label: string; color: string }> = {
   LOGIN_SUCCESS:         { label: "Basarili Giris",      color: "bg-emerald-100 text-emerald-800 border-emerald-200" },
   LOGIN_FAILED_PASSWORD: { label: "Hatali Giris",        color: "bg-red-100 text-red-800 border-red-200" },
   LOGIN_RATE_LIMITED:    { label: "Hesap Kilitlendi",    color: "bg-red-200 text-red-900 border-red-300" },
-  CREATE_ASSESSMENT:     { label: "Kayit Olusturuldu",   color: "bg-blue-100 text-blue-800 border-blue-200" },
+  CREATE_ASSESSMENT:     { label: "Kayit Olusturuldu",   color: "bg-primary-100 text-primary-800 border-primary-200" },
   UPDATE_ASSESSMENT:     { label: "Kayit Guncellendi",   color: "bg-amber-100 text-amber-800 border-amber-200" },
   BATCH_UPDATE_STATUS:   { label: "Toplu Guncelleme",    color: "bg-purple-100 text-purple-800 border-purple-200" },
   DELETE_ASSESSMENT:     { label: "Kayit Silindi",       color: "bg-rose-100 text-rose-800 border-rose-200" },
@@ -215,7 +215,7 @@ export default function AuditLogsPage() {
                 ) : filtered.map((log, idx) => {
                   const style = ACTION_STYLES[log.action];
                   return (
-                    <tr key={log._id} className={`hover:bg-blue-50/20 transition-colors ${idx % 2 === 0 ? "bg-white dark:bg-slate-800" : "bg-slate-50/40"}`}>
+                    <tr key={log._id} className={`hover:bg-primary-50/20 transition-colors ${idx % 2 === 0 ? "bg-white dark:bg-slate-800" : "bg-slate-50/40"}`}>
                       <td className="px-5 py-3.5 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-nowrap">
                         <div className="font-semibold">{new Date(log.timestamp).toLocaleDateString("tr-TR")}</div>
                         <div className="text-slate-400">{new Date(log.timestamp).toLocaleTimeString("tr-TR")}</div>

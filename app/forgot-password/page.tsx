@@ -44,8 +44,8 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/50 p-4">
-      <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl shadow-blue-900/10 border border-slate-200 dark:border-slate-700 w-full max-w-md relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl shadow-primary-900/10 border border-slate-200 dark:border-slate-700 w-full max-w-md relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary-500 to-indigo-600"></div>
         
         <div className="flex justify-center mb-6">
           <LogoImage className="w-16 h-16 rounded-xl shadow-md border border-slate-100 dark:border-slate-800 object-cover" />
@@ -75,7 +75,7 @@ export default function ForgotPassword() {
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 outline-none font-medium"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none font-medium"
                   placeholder="isim@sydv.gov.tr"
                   required
                 />
@@ -92,7 +92,7 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? 'Gönderiliyor...' : (
                 <>

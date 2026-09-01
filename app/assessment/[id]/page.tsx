@@ -334,7 +334,7 @@ export default function AssessmentDetail() {
 
           <div className="bg-slate-900 text-white p-5 rounded-xl text-right shrink-0 min-w-[200px]">
   <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Hesaplanan Puan</p>
-  <p className={`text-4xl font-black ${isRejectedRecord(calc) ? 'text-red-400' : 'text-blue-400'}`}>
+  <p className={`text-4xl font-black ${isRejectedRecord(calc) ? 'text-red-400' : 'text-primary-400'}`}>
     {isOldSystemRecord(calc) ? calculateNewSystemScore(state).totalScore : calc.totalScore} <span className="text-xs text-slate-400 font-normal">/ 100</span>
   </p>
   <p className="text-xs font-bold mt-2 uppercase text-slate-300">
@@ -384,7 +384,7 @@ export default function AssessmentDetail() {
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">A. EKONOMİK DURUM DETAYLARI</h3>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
                   {calc.scoreA} / {isOldSystemRecord(calc) ? 40 : 25} Puan
                 </span>
               </div>
@@ -392,7 +392,7 @@ export default function AssessmentDetail() {
                 <div>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Gelir Seviyesi Beyanı</p>
                   <div className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
+                    <CheckCircle2 size={16} className="text-primary-600 shrink-0" />
                     {getIncomeText(state.income)}
                   </div>
                 </div>
@@ -425,7 +425,7 @@ export default function AssessmentDetail() {
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">B. DEZAVANTAJLI BİREY SEÇENEKLERİ</h3>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
                   {calc.scoreB} / {isOldSystemRecord(calc) ? 30 : 25} Puan
                 </span>
               </div>
@@ -433,8 +433,8 @@ export default function AssessmentDetail() {
                 {selectedDisadvantages.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {selectedDisadvantages.map((item, idx) => (
-                      <span key={idx} className="bg-blue-50 text-blue-900 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                        <CheckCircle2 size={14} className="text-blue-600" /> {item}
+                      <span key={idx} className="bg-primary-50 text-primary-900 border border-primary-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-primary-600" /> {item}
                       </span>
                     ))}
                   </div>
@@ -448,7 +448,7 @@ export default function AssessmentDetail() {
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">C. ÇOCUK VE EĞİTİM DURUMU</h3>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
                   {calc.scoreC} / {isOldSystemRecord(calc) ? 10 : 15} Puan
                 </span>
               </div>
@@ -471,7 +471,7 @@ export default function AssessmentDetail() {
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">D. BARINMA DURUMU SEÇENEKLERİ</h3>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
                   {calc.scoreD} / {isOldSystemRecord(calc) ? 10 : 15} Puan
                 </span>
               </div>
@@ -479,8 +479,8 @@ export default function AssessmentDetail() {
                 {selectedHousing.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {selectedHousing.map((item, idx) => (
-                      <span key={idx} className="bg-blue-50 text-blue-900 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                        <CheckCircle2 size={14} className="text-blue-600" /> {item}
+                      <span key={idx} className="bg-primary-50 text-primary-900 border border-primary-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-primary-600" /> {item}
                       </span>
                     ))}
                   </div>
@@ -494,7 +494,7 @@ export default function AssessmentDetail() {
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">E. BEYAZ EŞYA VE EV ALETLERİ KONTROLÜ</h3>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
                   {calc.scoreE} / 10 Puan
                 </span>
               </div>
@@ -517,7 +517,7 @@ export default function AssessmentDetail() {
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">F. SOSYAL KIRILGANLIK VE NÜFUS</h3>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
                   {calc.scoreF} / {isOldSystemRecord(calc) ? 30 : 10} Puan
                 </span>
               </div>
@@ -540,7 +540,7 @@ export default function AssessmentDetail() {
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">G. PERSONEL İNCELEME KANAAT PUANLARI</h3>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
                   {calc.scoreF ?? 0} / 10 Puan
                 </span>
               </div>
@@ -552,7 +552,7 @@ export default function AssessmentDetail() {
                       {state.f_yasamKosullari === 0 ? 'İyi / Yeterli Ev Koşulları' : state.f_yasamKosullari === 5 ? 'Aşırı Kötü / Harabe / Bakımsız' : `${state.f_yasamKosullari} Puan Kırılganlık`}
                     </p>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_yasamKosullari >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_yasamKosullari >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-primary-50 text-primary-700 border-primary-200'}`}>
                     {state.f_yasamKosullari || 0} / 5 Puan
                   </span>
                 </div>
@@ -564,7 +564,7 @@ export default function AssessmentDetail() {
                       {state.f_aciliyet === 0 ? 'Aciliyet Yok / Rutin' : state.f_aciliyet === 5 ? 'Çok Acil / Kritik Kriz Hali' : `${state.f_aciliyet} Puan Aciliyet`}
                     </p>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_aciliyet >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_aciliyet >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-primary-50 text-primary-700 border-primary-200'}`}>
                     {state.f_aciliyet || 0} / 5 Puan
                   </span>
                 </div>
@@ -576,7 +576,7 @@ export default function AssessmentDetail() {
                       {state.f_sosyalDestek === 0 ? 'Akraba/Çevre Desteği Var' : state.f_sosyalDestek === 5 ? 'Tamamen Kimsesiz / Desteksiz' : `${state.f_sosyalDestek} Puan Yetersizlik`}
                     </p>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_sosyalDestek >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_sosyalDestek >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-primary-50 text-primary-700 border-primary-200'}`}>
                     {state.f_sosyalDestek || 0} / 5 Puan
                   </span>
                 </div>
@@ -588,7 +588,7 @@ export default function AssessmentDetail() {
                       {state.f_risk === 0 ? 'Güvenli / Risk Tespit Edilmedi' : state.f_risk === 5 ? 'Hayati Risk / Yüksek Tehlike' : `${state.f_risk} Puan Risk`}
                     </p>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_risk >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                  <span className={`px-2.5 py-1 rounded-md text-sm font-extrabold border ${state.f_risk >= 4 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-primary-50 text-primary-700 border-primary-200'}`}>
                     {state.f_risk || 0} / 5 Puan
                   </span>
                 </div>
@@ -634,7 +634,7 @@ export default function AssessmentDetail() {
                   <ul className="space-y-1.5 text-xs text-slate-200">
                     {calc.priorities.map((p, i) => (
                       <li key={i} className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary-400 shrink-0"></span>
                         {p}
                       </li>
                     ))}
