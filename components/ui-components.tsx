@@ -27,7 +27,7 @@ export const SectionCard = ({ title, icon: Icon, maxScore, currentScore, childre
 export const CheckboxItem = ({ label, checked, onChange, isAlert = false, points = null }: any) => (
   <label className={`flex items-center min-h-[50px] p-3.5 border rounded-xl cursor-pointer transition-all active:scale-[0.99] touch-manipulation select-none ${
     checked
-      ? (isAlert ? 'bg-rose-50 border-rose-300 ring-1 ring-rose-400' : 'bg-primary-50/60 border-primary-400 ring-1 ring-primary-400')
+      ? (isAlert ? 'bg-rose-50 dark:bg-rose-900/30 border-rose-300 dark:border-rose-700 ring-1 ring-rose-400 dark:ring-rose-500' : 'bg-primary-50/60 dark:bg-primary-900/30 border-primary-400 dark:border-primary-500 ring-1 ring-primary-400 dark:ring-primary-500')
       : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900'
   } print:border-slate-300 dark:border-slate-600 print:bg-white dark:bg-slate-800 print:p-2`}>
     <div className="flex-shrink-0 mr-3 flex items-center justify-center">
@@ -39,11 +39,11 @@ export const CheckboxItem = ({ label, checked, onChange, isAlert = false, points
       />
     </div>
     <div className="flex-1 flex justify-between items-center gap-2">
-      <span className={`text-sm font-semibold leading-snug ${checked && isAlert ? 'text-rose-900 font-bold' : checked ? 'text-primary-950 font-bold' : 'text-slate-700 dark:text-slate-300'}`}>
+      <span className={`text-sm font-semibold leading-snug ${checked && isAlert ? 'text-rose-900 dark:text-rose-100 font-bold' : checked ? 'text-primary-950 dark:text-primary-100 font-bold' : 'text-slate-700 dark:text-slate-300'}`}>
         {label}
       </span>
       {points && (
-        <span className={`text-xs font-black shrink-0 px-2 py-0.5 rounded-md ${checked ? (isAlert ? 'bg-rose-200 text-rose-900' : 'bg-primary-200 text-primary-900') : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400'}`}>
+        <span className={`text-xs font-black shrink-0 px-2 py-0.5 rounded-md ${checked ? (isAlert ? 'bg-rose-200 dark:bg-rose-900/50 text-rose-900 dark:text-rose-100' : 'bg-primary-200 dark:bg-primary-900/50 text-primary-900 dark:text-primary-100') : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400'}`}>
           +{points} P.
         </span>
       )}
@@ -53,7 +53,7 @@ export const CheckboxItem = ({ label, checked, onChange, isAlert = false, points
 
 export const RadioItem = ({ label, name, checked, onChange, points }: any) => (
   <label className={`flex items-center min-h-[50px] p-3.5 border rounded-xl cursor-pointer transition-all active:scale-[0.99] touch-manipulation select-none ${
-    checked ? 'bg-primary-50/60 border-primary-400 ring-1 ring-primary-400' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900'
+    checked ? 'bg-primary-50/60 dark:bg-primary-900/30 border-primary-400 dark:border-primary-500 ring-1 ring-primary-400 dark:ring-primary-500' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900'
   } print:border-slate-300 dark:border-slate-600 print:bg-white dark:bg-slate-800 print:p-2`}>
     <div className="flex-shrink-0 mr-3 flex items-center justify-center">
       <input
@@ -65,11 +65,11 @@ export const RadioItem = ({ label, name, checked, onChange, points }: any) => (
       />
     </div>
     <div className="flex-1 flex justify-between items-center gap-2">
-      <span className={`text-sm font-semibold leading-snug ${checked ? 'text-primary-950 font-bold' : 'text-slate-700 dark:text-slate-300'}`}>
+      <span className={`text-sm font-semibold leading-snug ${checked ? 'text-primary-950 dark:text-primary-100 font-bold' : 'text-slate-700 dark:text-slate-300'}`}>
         {label}
       </span>
       {points !== undefined && (
-        <span className={`text-xs font-black shrink-0 px-2 py-0.5 rounded-md ${checked ? 'bg-primary-200 text-primary-900' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400'}`}>
+        <span className={`text-xs font-black shrink-0 px-2 py-0.5 rounded-md ${checked ? 'bg-primary-200 dark:bg-primary-900/50 text-primary-900 dark:text-primary-100' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400'}`}>
           +{points} P.
         </span>
       )}
