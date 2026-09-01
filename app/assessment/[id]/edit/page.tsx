@@ -170,107 +170,93 @@ export default function EditAssessmentWizard() {
 
   const calc = useMemo(() => {
     // Section A
-    let scoreA = state.income;
-    if (state.noWorker) scoreA += 10;
-    if (state.noRegularIncome) scoreA += 5;
-    if (state.noSgk) scoreA += 5;
-    scoreA = Math.max(0, Math.min(scoreA, 40));
+    // Section A
+    let rawScoreA = state.income || 0;
+    if (state.noWorker) rawScoreA += 3;
+    if (state.noRegularIncome) rawScoreA += 2;
+    if (state.noSgk) rawScoreA += 2;
+    const scoreA = state.a_aktifSgkPrim ? 0 : Math.max(0, Math.min(rawScoreA, 25));
 
     // Section B
     let scoreB = 0;
     let disadvantageCount = 0;
-    if (state.b_agirEngelli) { scoreB += 15; disadvantageCount++; }
-    if (state.b_engelli) { scoreB += 10; disadvantageCount++; }
-    if (state.b_evdeBakim) { scoreB += 10; disadvantageCount++; }
-    if (state.b_kanser) { scoreB += 10; disadvantageCount++; }
-    if (state.b_kronik) { scoreB += 6; disadvantageCount++; }
-    if (state.b_yasliYalniz) { scoreB += 8; disadvantageCount++; }
-    if (state.b_sehitYakini) { scoreB += 8; disadvantageCount++; }
-    if (state.b_gazi) { scoreB += 8; disadvantageCount++; }
-    if (state.b_yetim) { scoreB += 5; disadvantageCount++; }
-    if (state.b_koruyucuAile) { scoreB += 5; disadvantageCount++; }
-    if (state.b_yabanciUyruklu) { scoreB += 3; disadvantageCount++; }
-    if (state.b_dusukEngelli) { scoreB += 3; disadvantageCount++; }  // YENİ: %20-39
+    if (state.b_agirEngelli) { scoreB += 12; disadvantageCount++; }
+    if (state.b_engelli) { scoreB += 8; disadvantageCount++; }
+    if (state.b_dusukEngelli) { scoreB += 3; disadvantageCount++; }
+    if (state.b_evdeBakim) { scoreB += 8; disadvantageCount++; }
+    if (state.b_kanser) { scoreB += 8; disadvantageCount++; }
+    if (state.b_kronik) { scoreB += 5; disadvantageCount++; }
+    if (state.b_yasliYalniz) { scoreB += 6; disadvantageCount++; }
+    if (state.b_sehitYakini) { scoreB += 6; disadvantageCount++; }
+    if (state.b_gazi) { scoreB += 6; disadvantageCount++; }
+    if (state.b_yetim) { scoreB += 4; disadvantageCount++; }
+    if (state.b_koruyucuAile) { scoreB += 4; disadvantageCount++; }
+    if (state.b_yabanciUyruklu) { scoreB += 2; disadvantageCount++; }
     if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
       scoreB += Number(state.b_ozelSebepPuan);
       disadvantageCount++;
     }
-    if (state.b_cokluOzelDurumluBirey) scoreB += 5;
-    scoreB = Math.min(scoreB, 30);
+    if (state.b_cokluOzelDurumluBirey) { scoreB += 4; disadvantageCount++; }
+    scoreB = Math.min(scoreB, 25);
 
-    // Section C: Kademeli Ağırlıklı Eğitim Puanı (Maks 15 Puan)
+    // Section C: Sosyal Kırılganlık ve Krizler (Maksimum 15 Puan)
     let scoreC = 0;
-    scoreC += (state.c_0_6yas || 0) * 2;       // Bakım yükü
-    scoreC += (state.c_ilkokul || 0) * 2;       // Temel eğitim
-    scoreC += (state.c_ortaokul || 0) * 2;      // Temel eğitim
-    scoreC += (state.c_lise || 0) * 3;          // Orta eğitim
-    scoreC += (state.c_meslekiEgitim || 0) * 3; // Mesleki eğitim
-    scoreC += (state.c_acikLise || 0) * 3;      // Açık lise
-    scoreC += (state.c_uni || 0) * 4;           // Yükseköğretim
+    if (state.e_siddetMagduru) scoreC += 5;
+    if (state.e_kadinReis) scoreC += 4;
+    if (state.e_esiCezaevinde) scoreC += 4;
+    if (state.e_afetGelirKaybi) scoreC += 4;
+    if (state.e_maddeBagimliligi) scoreC += 4;
+    if (state.e_sosyalGuvencesiz) scoreC += 4;
+    if (state.e_icraBorcBaskisi) scoreC += 3;
+    if (state.e_gebelikBebek) scoreC += 3;
+    if (state.e_bosanmis) scoreC += 2;
+    if (state.e_dul) scoreC += 2;
+    if (state.e_hukumluYakin) scoreC += 2;
+    const hhSize = state.householdSize || 1;
+    if (hhSize >= 7) scoreC += 4;
+    else if (hhSize >= 5) scoreC += 3;
+    else if (hhSize >= 3) scoreC += 2;
+    else scoreC += 1;
     scoreC = Math.min(scoreC, 15);
 
-    // Section D (Genişletilmiş Barınma Durumu)
+    // Section D: Eğitim ve Çocuk Yükü (Maksimum 15 Puan)
     let scoreD = 0;
-    if (state.d_evsiz) scoreD += 10;
-    if (state.d_afetzede) scoreD += 10;
-    if (state.d_agirHasarli) scoreD += 8;
-    if (state.d_sagliksiz) scoreD += 6;
-    if (state.d_dereYatagi) scoreD += 6;
-    if (state.d_kiraci) scoreD += 5;
-    if (state.d_tahliyeBaskisi) scoreD += 5;
-    if (state.d_isinmaProblem) scoreD += 4;
-    if (state.d_gecekondu) scoreD += 4;
-    if (state.d_asansorsuzYuksek) scoreD += 4;
-    if (state.d_tuvaletBanyoYetersiz) scoreD += 4;
-    scoreD = Math.min(scoreD, 10);
+    scoreD += (state.c_0_6yas || 0) * 2;
+    scoreD += (state.c_ilkokul || 0) * 2;
+    scoreD += (state.c_ortaokul || 0) * 2;
+    scoreD += (state.c_lise || 0) * 3;
+    scoreD += (state.c_meslekiEgitim || 0) * 3;
+    scoreD += (state.c_acikLise || 0) * 2;
+    scoreD += (state.c_uni || 0) * 4;
+    scoreD = Math.min(scoreD, 15);
 
-    // Section E: Beyaz Eşya Durumu (Maks 10 Puan)
-    let rawScoreE = 0;
-    if (state.appliance_buzdolabi === 'yok') rawScoreE += 3;
-    else if (state.appliance_buzdolabi === 'eski') rawScoreE += 1.5;
+    // Section E: Barınma ve Fiziksel Şartlar (Maksimum 10 Puan)
+    let scoreE = 0;
+    if (state.d_evsiz) scoreE += 8;
+    if (state.d_afetzede) scoreE += 8;
+    if (state.d_agirHasarli) scoreE += 6;
+    if (state.d_sagliksiz) scoreE += 4;
+    if (state.d_dereYatagi) scoreE += 4;
+    if (state.d_kiraci) scoreE += 3;
+    if (state.d_tahliyeBaskisi) scoreE += 3;
+    if (state.d_isinmaProblem) scoreE += 2;
+    if (state.d_gecekondu) scoreE += 2;
+    if (state.d_asansorsuzYuksek) scoreE += 2;
+    if (state.d_tuvaletBanyoYetersiz) scoreE += 2;
+    
+    // Eşya (appliances) contribution
+    let rawAppliances = 0;
+    if (state.appliance_buzdolabi === 'yok') rawAppliances += 1.5;
+    if (state.appliance_camasir === 'yok') rawAppliances += 1.5;
+    if (state.appliance_firin === 'yok') rawAppliances += 1;
+    if (state.appliance_tv === 'yok') rawAppliances += 0.5;
+    scoreE += Math.min(3, rawAppliances);
+    scoreE = Math.min(scoreE, 10);
 
-    if (state.appliance_camasir === 'yok') rawScoreE += 3;
-    else if (state.appliance_camasir === 'eski') rawScoreE += 1.5;
-
-    if (state.appliance_firin === 'yok') rawScoreE += 2;
-    else if (state.appliance_firin === 'eski') rawScoreE += 1;
-    // Bulaşık makinesi: 0 puan (lüks eşya - çıkarıldı - TÜİK/OECD)
-    if (state.appliance_tv === 'yok') rawScoreE += 1;
-    else if (state.appliance_tv === 'eski') rawScoreE += 0.5;
-    if (state.appliance_telefon === 'yok') rawScoreE += 1;
-    else if (state.appliance_telefon === 'eski') rawScoreE += 0.5;
-    if (state.appliance_klima === 'yok') rawScoreE += 1;
-    else if (state.appliance_klima === 'eski') rawScoreE += 0.5;
-    if (state.appliance_diger === 'yok') rawScoreE += 1;
-    else if (state.appliance_diger === 'eski') rawScoreE += 0.5;
-    const scoreE = Math.min(10, Math.round(rawScoreE));
-
-    // Section F: Sosyal Kırılganlık ve Nüfus (Maksimum 30 Puan)
-    let scoreF = 0;
-    if (state.e_siddetMagduru) scoreF += 6;
-    if (state.e_kadinReis) scoreF += 5;
-    if (state.e_esiCezaevinde) scoreF += 5;
-    if (state.e_afetGelirKaybi) scoreF += 5;
-    if (state.e_maddeBagimliligi) scoreF += 5;
-    if (state.e_sosyalGuvencesiz) scoreF += 5;
-    if (state.e_icraBorcBaskisi) scoreF += 4;
-    if (state.e_gebelikBebek) scoreF += 4;
-    if (state.e_bosanmis) scoreF += 3;
-    if (state.e_dul) scoreF += 3;
-    if (state.e_hukumluYakin) scoreF += 3;
-
-    // OECD 4 kademeli hane büyüklüğü skalası
-    const hhSize = state.householdSize || 1;
-    if (hhSize >= 7) scoreF += 6;
-    else if (hhSize >= 5) scoreF += 4;
-    else if (hhSize >= 3) scoreF += 2;
-    else scoreF += 1;
-    scoreF = Math.min(scoreF, 30);
-
-    // Section G: Sosyal İnceleme Kanaati (Maks 20 Puan)
-    const scoreG = Math.min(
+    // Section F: Sosyal İnceleme Kanaati (Maksimum 10 Puan)
+    const scoreF = Math.min(
       (state.f_yasamKosullari || 0) + (state.f_aciliyet || 0) + (state.f_sosyalDestek || 0) + (state.f_risk || 0),
-      20
+      10
     );
 
     // CEZA PUANLARI (Varlık Testi)
@@ -280,12 +266,12 @@ export default function EditAssessmentWizard() {
     if (state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0) {
       scorePenalty += (state.a_son3AyYardimKisi || 0) * 5;
     }
-    // SGK zorlaması
-    const effectiveScoreA = state.a_aktifSgkPrim ? 0 : scoreA;
 
-    const rawTotal = effectiveScoreA + scoreB + scoreC + scoreD + scoreE + scoreF + scoreG;
-    const totalScore = state.falseStatement ? 0 : Math.max(0, rawTotal - scorePenalty);
-    const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement);
+    const rawTotal = scoreA + scoreB + scoreC + scoreD + scoreE + scoreF;
+    const totalScore = state.falseStatement ? 0 : Math.max(0, Math.round(rawTotal - scorePenalty));
+    
+    const hasIncomeVulnerability = !!(state.income && state.income > 0);
+    const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement, undefined, hasIncomeVulnerability);
 
     const priorities: string[] = [];
     if (state.b_agirEngelli) priorities.push('Ağır engelli bulunan hane');
@@ -298,7 +284,7 @@ export default function EditAssessmentWizard() {
       priorities.push('Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)');
     }
 
-    return { scoreA: effectiveScoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scoreG, scorePenalty, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
+    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scorePenalty, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
   }, [state]);
 
   const stepsCount = 10;
@@ -341,7 +327,6 @@ export default function EditAssessmentWizard() {
           scoreD: calc.scoreD,
           scoreE: calc.scoreE,
           scoreF: calc.scoreF,
-          scoreG: calc.scoreG,
           totalScore: calc.totalScore,
           assistance: calc.assistance,
           priorities: calc.priorities,
@@ -509,20 +494,20 @@ export default function EditAssessmentWizard() {
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">A. Ekonomik Durum</h2>
                   <p className="text-slate-500 dark:text-slate-400 mt-1">Hane halkı gelir ve sigorta durumuna göre değerlendirme</p>
                 </div>
-                <SectionCard title="Gelir Seviyesi" maxScore={40} currentScore={calc.scoreA} hideScore={true}>
+                <SectionCard title="Gelir Seviyesi" maxScore={25} currentScore={calc.scoreA} hideScore={true}>
                   <div className="space-y-3">
-                    <RadioItem label="Kişi başına gelir muhtaçlık sınırının %25 altında" name="income" checked={state.income === 40} onChange={() => set('income', 40)} points={40} />
-                    <RadioItem label="Muhtaçlık sınırının %25 – 50 arasında" name="income" checked={state.income === 35} onChange={() => set('income', 35)} points={35} />
-                    <RadioItem label="Muhtaçlık sınırının %50 – 75 arasında" name="income" checked={state.income === 25} onChange={() => set('income', 25)} points={25} />
-                    <RadioItem label="Muhtaçlık sınırının %75 – 100 arasında" name="income" checked={state.income === 15} onChange={() => set('income', 15)} points={15} />
+                    <RadioItem label="Kişi başına gelir muhtaçlık sınırının %25 altında" name="income" checked={state.income === 20} onChange={() => set('income', 20)} points={20} />
+                    <RadioItem label="Muhtaçlık sınırının %25 – 50 arasında" name="income" checked={state.income === 15} onChange={() => set('income', 15)} points={15} />
+                    <RadioItem label="Muhtaçlık sınırının %50 – 75 arasında" name="income" checked={state.income === 10} onChange={() => set('income', 10)} points={10} />
+                    <RadioItem label="Muhtaçlık sınırının %75 – 100 arasında" name="income" checked={state.income === 5} onChange={() => set('income', 5)} points={5} />
                     <RadioItem label="Muhtaçlık sınırı üzerinde" name="income" checked={state.income === 0} onChange={() => set('income', 0)} points={0} />
                   </div>
                   <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
                     <h3 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">İlave / Düzeltme Kriterleri</h3>
                     <div className="grid grid-cols-1 gap-3">
-                      <CheckboxItem label="Hanede çalışan yok" checked={state.noWorker} onChange={(v:any) => set('noWorker', v)} points={10} />
-                      <CheckboxItem label="Düzenli gelir bulunmuyor" checked={state.noRegularIncome} onChange={(v:any) => set('noRegularIncome', v)} points={5} />
-                      <CheckboxItem label="SGK kaydı yok" checked={state.noSgk} onChange={(v:any) => set('noSgk', v)} points={5} />
+                      <CheckboxItem label="Hanede çalışan yok" checked={state.noWorker} onChange={(v:any) => set('noWorker', v)} points={3} />
+                      <CheckboxItem label="Düzenli gelir bulunmuyor" checked={state.noRegularIncome} onChange={(v:any) => set('noRegularIncome', v)} points={2} />
+                      <CheckboxItem label="SGK kaydı yok" checked={state.noSgk} onChange={(v:any) => set('noSgk', v)} points={2} />
                     </div>
                   </div>
                 </SectionCard>
@@ -535,25 +520,23 @@ export default function EditAssessmentWizard() {
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">B. Dezavantajlı Bireyler</h2>
                   <p className="text-slate-500 dark:text-slate-400 mt-1">Hanedeki sağlık ve özel sosyal kırılganlık durumları</p>
                 </div>
-                <SectionCard title="Hanehalkı Özel Durumları" maxScore={30} currentScore={calc.scoreB} hideScore={true}>
-                  
-
-                  
-                        <div className="mb-4">
-                          <CheckboxItem label="Aynı hanede birden fazla özel durumu (dezavantajlı) olan farklı KİŞİ var" checked={state.b_cokluOzelDurumluBirey} onChange={(v:any) => set('b_cokluOzelDurumluBirey', v)} points={5} />
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <CheckboxItem label="Ağır engelli (%70+)" checked={state.b_agirEngelli} onChange={(v:any) => set('b_agirEngelli', v)} points={15} />
-                    <CheckboxItem label="Engelli (%40-69)" checked={state.b_engelli} onChange={(v:any) => set('b_engelli', v)} points={10} />
-                    <CheckboxItem label="Evde bakım hastası" checked={state.b_evdeBakim} onChange={(v:any) => set('b_evdeBakim', v)} points={10} />
-                    <CheckboxItem label="Kanser tedavisi" checked={state.b_kanser} onChange={(v:any) => set('b_kanser', v)} points={10} />
-                    <CheckboxItem label="Kronik hastalık" checked={state.b_kronik} onChange={(v:any) => set('b_kronik', v)} points={6} />
-                    <CheckboxItem label="65 yaş üstü yalnız yaşayan" checked={state.b_yasliYalniz} onChange={(v:any) => set('b_yasliYalniz', v)} points={8} />
-                    <CheckboxItem label="Şehit yakını" checked={state.b_sehitYakini} onChange={(v:any) => set('b_sehitYakini', v)} points={8} />
-                    <CheckboxItem label="Gazi" checked={state.b_gazi} onChange={(v:any) => set('b_gazi', v)} points={8} />
-                    <CheckboxItem label="Yetim/öksüz çocuk" checked={state.b_yetim} onChange={(v:any) => set('b_yetim', v)} points={5} />
-                    <CheckboxItem label="Koruyucu aile" checked={state.b_koruyucuAile} onChange={(v:any) => set('b_koruyucuAile', v)} points={5} />
-                    <CheckboxItem label="Yabancı uyruklu / Sığınmacı" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={3} />
+                <SectionCard title="Hastalık ve Engellilik Durumu" maxScore={25} currentScore={calc.scoreB} hideScore={true}>
+                  <div className="mb-4">
+                    <CheckboxItem label="Aynı hanede birden fazla özel durumu (dezavantajlı) olan farklı KİŞİ var" checked={state.b_cokluOzelDurumluBirey} onChange={(v:any) => set('b_cokluOzelDurumluBirey', v)} points={4} />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <CheckboxItem label="Ağır Engelli (Tam Bağımlı)" checked={state.b_agirEngelli} onChange={(v:any) => set('b_agirEngelli', v)} points={12} />
+                    <CheckboxItem label="Engelli (Kısmi Bağımlı %40+)" checked={state.b_engelli} onChange={(v:any) => set('b_engelli', v)} points={8} />
+                    <CheckboxItem label="Düşük Oranlı Engelli (%20-39)" checked={state.b_dusukEngelli} onChange={(v:any) => set('b_dusukEngelli', v)} points={3} />
+                    <CheckboxItem label="Evde Bakım Hastası" checked={state.b_evdeBakim} onChange={(v:any) => set('b_evdeBakim', v)} points={8} />
+                    <CheckboxItem label="Kanser Hastası" checked={state.b_kanser} onChange={(v:any) => set('b_kanser', v)} points={8} />
+                    <CheckboxItem label="Kronik Hastalık (Sürekli İlaç)" checked={state.b_kronik} onChange={(v:any) => set('b_kronik', v)} points={5} />
+                    <CheckboxItem label="Yaşlı ve Yalnız Yaşayan" checked={state.b_yasliYalniz} onChange={(v:any) => set('b_yasliYalniz', v)} points={6} />
+                    <CheckboxItem label="Şehit Yakını" checked={state.b_sehitYakini} onChange={(v:any) => set('b_sehitYakini', v)} points={6} />
+                    <CheckboxItem label="Gazi" checked={state.b_gazi} onChange={(v:any) => set('b_gazi', v)} points={6} />
+                    <CheckboxItem label="Yetim (Anne/Baba vefat)" checked={state.b_yetim} onChange={(v:any) => set('b_yetim', v)} points={4} />
+                    <CheckboxItem label="Koruyucu Aile / Evlatlık" checked={state.b_koruyucuAile} onChange={(v:any) => set('b_koruyucuAile', v)} points={4} />
+                    <CheckboxItem label="Yabancı Uyruklu / Göçmen" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={2} />
                   </div>
 
                   <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -587,10 +570,10 @@ export default function EditAssessmentWizard() {
                           className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200"
                         >
                           <option value={0}>Ekleme Yok</option>
-                          <option value={10}>+10 Kademe</option>
-                          <option value={15}>+15 Kademe</option>
-                          <option value={20}>+20 Kademe</option>
-                          <option value={25}>+25 Kademe</option>
+                          <option value={5}>+5 Puan</option>
+                          <option value={10}>+10 Puan</option>
+                          <option value={15}>+15 Puan</option>
+                          <option value={20}>+20 Puan</option>
                         </select>
                       </div>
                     </div>
@@ -605,15 +588,15 @@ export default function EditAssessmentWizard() {
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">C. Çocuk ve Eğitim</h2>
                   <p className="text-slate-500 dark:text-slate-400 mt-1">Hanedeki eğitim gören tüm kademelerdeki çocuklar ve öğrenciler (Tüm Kademeler Eşit)</p>
                 </div>
-                <SectionCard title="Eğitim Durumu" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
+                <SectionCard title="Eğitim Durumu" maxScore={15} currentScore={calc.scoreD} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <CounterItem label="0-6 yaş çocuk" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={3} />
-                    <CounterItem label="İlkokul öğrencisi" value={state.c_ilkokul} onChange={(v:any) => set('c_ilkokul', v)} pointsPerItem={3} />
-                    <CounterItem label="Ortaokul öğrencisi" value={state.c_ortaokul} onChange={(v:any) => set('c_ortaokul', v)} pointsPerItem={3} />
+                    <CounterItem label="0-6 yaş çocuk" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={2} />
+                    <CounterItem label="İlkokul öğrencisi" value={state.c_ilkokul} onChange={(v:any) => set('c_ilkokul', v)} pointsPerItem={2} />
+                    <CounterItem label="Ortaokul öğrencisi" value={state.c_ortaokul} onChange={(v:any) => set('c_ortaokul', v)} pointsPerItem={2} />
                     <CounterItem label="Lise öğrencisi" value={state.c_lise} onChange={(v:any) => set('c_lise', v)} pointsPerItem={3} />
                     <CounterItem label="Mesleki Eğitim Merkezi" value={state.c_meslekiEgitim || 0} onChange={(v:any) => set('c_meslekiEgitim', v)} pointsPerItem={3} />
-                    <CounterItem label="Açık Lise öğrencisi" value={state.c_acikLise || 0} onChange={(v:any) => set('c_acikLise', v)} pointsPerItem={3} />
-                    <CounterItem label="Üniversite öğrencisi" value={state.c_uni} onChange={(v:any) => set('c_uni', v)} pointsPerItem={3} />
+                    <CounterItem label="Açık Lise öğrencisi" value={state.c_acikLise || 0} onChange={(v:any) => set('c_acikLise', v)} pointsPerItem={2} />
+                    <CounterItem label="Üniversite öğrencisi" value={state.c_uni} onChange={(v:any) => set('c_uni', v)} pointsPerItem={4} />
                   </div>
                 </SectionCard>
               </div>
@@ -625,19 +608,19 @@ export default function EditAssessmentWizard() {
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">D. Barınma Durumu</h2>
                   <p className="text-slate-500 dark:text-slate-400 mt-1">Fiziki yaşam alanları ve konut şartları (Genişletilmiş Kriterler)</p>
                 </div>
-                <SectionCard title="Barınma Şartları" maxScore={10} currentScore={calc.scoreD} hideScore={true}>
+                <SectionCard title="Barınma Şartları" maxScore={10} currentScore={calc.scoreE} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <CheckboxItem label="Evsiz / Barınaksız / Geçici Sığınma" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={10} />
-                    <CheckboxItem label="Afetzede (Yangın / Deprem / Su Baskını)" checked={state.d_afetzede} onChange={(v:any) => set('d_afetzede', v)} points={10} />
-                    <CheckboxItem label="Konut ağır hasarlı / Yıkılma riski var" checked={state.d_agirHasarli} onChange={(v:any) => set('d_agirHasarli', v)} points={8} />
-                    <CheckboxItem label="Sağlıksız konut (Rutubetli / Havalandırmasız)" checked={state.d_sagliksiz} onChange={(v:any) => set('d_sagliksiz', v)} points={6} />
-                    <CheckboxItem label="Bodrum kat / Sığınak / Dere yatağı" checked={state.d_dereYatagi} onChange={(v:any) => set('d_dereYatagi', v)} points={6} />
-                    <CheckboxItem label="Kiracı (Kira ödemekte zorlanan)" checked={state.d_kiraci} onChange={(v:any) => set('d_kiraci', v)} points={5} />
-                    <CheckboxItem label="Ev sahibinin tahliye / icra baskısı altında" checked={state.d_tahliyeBaskisi} onChange={(v:any) => set('d_tahliyeBaskisi', v)} points={5} />
-                    <CheckboxItem label="Sobalı / Isınma ve yakacak sıkıntısı var" checked={state.d_isinmaProblem} onChange={(v:any) => set('d_isinmaProblem', v)} points={4} />
-                    <CheckboxItem label="Gecekondu / İmar sıkıntılı / Hisseli tapu" checked={state.d_gecekondu} onChange={(v:any) => set('d_gecekondu', v)} points={4} />
-                    <CheckboxItem label="Asansörsüz yüksek kat (Engelli/Yaşlı/Bakıma muhtaç)" checked={state.d_asansorsuzYuksek} onChange={(v:any) => set('d_asansorsuzYuksek', v)} points={4} />
-                    <CheckboxItem label="Hijyen / Islak hacim (Banyo/Tuvalet) ortak veya yetersiz" checked={state.d_tuvaletBanyoYetersiz} onChange={(v:any) => set('d_tuvaletBanyoYetersiz', v)} points={4} />
+                    <CheckboxItem label="Evsiz / Barınaksız / Geçici Sığınma" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={8} />
+                    <CheckboxItem label="Afetzede (Yangın / Deprem / Su Baskını)" checked={state.d_afetzede} onChange={(v:any) => set('d_afetzede', v)} points={8} />
+                    <CheckboxItem label="Konut ağır hasarlı / Yıkılma riski var" checked={state.d_agirHasarli} onChange={(v:any) => set('d_agirHasarli', v)} points={6} />
+                    <CheckboxItem label="Sağlıksız konut (Rutubetli / Havalandırmasız)" checked={state.d_sagliksiz} onChange={(v:any) => set('d_sagliksiz', v)} points={4} />
+                    <CheckboxItem label="Bodrum kat / Sığınak / Dere yatağı" checked={state.d_dereYatagi} onChange={(v:any) => set('d_dereYatagi', v)} points={4} />
+                    <CheckboxItem label="Kiracı (Kira ödemekte zorlanan)" checked={state.d_kiraci} onChange={(v:any) => set('d_kiraci', v)} points={3} />
+                    <CheckboxItem label="Ev sahibinin tahliye / icra baskısı altında" checked={state.d_tahliyeBaskisi} onChange={(v:any) => set('d_tahliyeBaskisi', v)} points={3} />
+                    <CheckboxItem label="Sobalı / Isınma ve yakacak sıkıntısı var" checked={state.d_isinmaProblem} onChange={(v:any) => set('d_isinmaProblem', v)} points={2} />
+                    <CheckboxItem label="Gecekondu / İmar sıkıntılı / Hisseli tapu" checked={state.d_gecekondu} onChange={(v:any) => set('d_gecekondu', v)} points={2} />
+                    <CheckboxItem label="Asansörsüz yüksek kat (Engelli/Yaşlı/Bakıma muhtaç)" checked={state.d_asansorsuzYuksek} onChange={(v:any) => set('d_asansorsuzYuksek', v)} points={2} />
+                    <CheckboxItem label="Hijyen / Islak hacim (Banyo/Tuvalet) ortak veya yetersiz" checked={state.d_tuvaletBanyoYetersiz} onChange={(v:any) => set('d_tuvaletBanyoYetersiz', v)} points={2} />
                   </div>
                 </SectionCard>
               </div>
@@ -727,28 +710,30 @@ export default function EditAssessmentWizard() {
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">F. Sosyal Kırılganlık</h2>
                   <p className="text-slate-500 dark:text-slate-400 mt-1">Sosyal kırılganlık durumları (Literatürce Genişletilmiş Seçenekler)</p>
                 </div>
-                <SectionCard title="Sosyal Kırılganlık ve Nüfus" maxScore={30} currentScore={calc.scoreF} hideScore={true}>
+                <SectionCard title="Sosyal Kırılganlık ve Nüfus" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
                       <span className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-blue-600"></span>
-                        Hane Nüfusu Etkisi ({state.householdSize || 1} Kişi)
+                        <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                        Hane Nüfusu Etkisi — {state.householdSize || 1} Kişi
                       </span>
-                      <span className="bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-md">
-                        {(state.householdSize || 1) >= 5 ? 'Kalabalık Hane' : 'Standart Hane'}
+                      <span className="bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-extrabold px-3 py-1 rounded-md">
+                        {(state.householdSize || 1) >= 7 ? `Çok Kalabalık (+4)` :
+                         (state.householdSize || 1) >= 5 ? `Kalabalık (+3)` :
+                         (state.householdSize || 1) >= 3 ? `Orta Büyüklük (+2)` : `Küçük Hane (+1)`}
                       </span>
                     </div>
-                    <CheckboxItem label="Aile içi şiddet mağduru" checked={state.e_siddetMagduru} onChange={(v:any) => set('e_siddetMagduru', v)} points={6} />
-                    <CheckboxItem label="Kadın hane reisi" checked={state.e_kadinReis} onChange={(v:any) => set('e_kadinReis', v)} points={5} />
-                    <CheckboxItem label="Eşi / Bakmakla yükümlü kişi cezaevinde" checked={state.e_esiCezaevinde} onChange={(v:any) => set('e_esiCezaevinde', v)} points={5} />
-                    <CheckboxItem label="Afet / Kaza nedeniyle gelir kaybı" checked={state.e_afetGelirKaybi} onChange={(v:any) => set('e_afetGelirKaybi', v)} points={5} />
-                    <CheckboxItem label="Hane içinde madde / alkol bağımlısı birey" checked={state.e_maddeBagimliligi} onChange={(v:any) => set('e_maddeBagimliligi', v)} points={5} />
-                    <CheckboxItem label="Sosyal güvencesiz ve aile desteğinden yoksun" checked={state.e_sosyalGuvencesiz} onChange={(v:any) => set('e_sosyalGuvencesiz', v)} points={5} />
-                    <CheckboxItem label="Yüksek borç / icra / haciz baskısı altında" checked={state.e_icraBorcBaskisi} onChange={(v:any) => set('e_icraBorcBaskisi', v)} points={4} />
-                    <CheckboxItem label="Bakıma muhtaç bebek (0-1 Yaş) veya riskli gebelik" checked={state.e_gebelikBebek} onChange={(v:any) => set('e_gebelikBebek', v)} points={4} />
-                    <CheckboxItem label="Boşanmış / Terk edilmiş eş" checked={state.e_bosanmis} onChange={(v:any) => set('e_bosanmis', v)} points={3} />
-                    <CheckboxItem label="Dul (Eşi vefat etmiş)" checked={state.e_dul} onChange={(v:any) => set('e_dul', v)} points={3} />
-                    <CheckboxItem label="Denetimli serbestlik / Eski hükümlü ikameti" checked={state.e_hukumluYakin} onChange={(v:any) => set('e_hukumluYakin', v)} points={3} />
+                    <CheckboxItem label="Aile içi şiddet mağduru" checked={state.e_siddetMagduru} onChange={(v:any) => set('e_siddetMagduru', v)} points={5} />
+                    <CheckboxItem label="Kadın hane reisi" checked={state.e_kadinReis} onChange={(v:any) => set('e_kadinReis', v)} points={4} />
+                    <CheckboxItem label="Eşi / Bakmakla yükümlü kişi cezaevinde" checked={state.e_esiCezaevinde} onChange={(v:any) => set('e_esiCezaevinde', v)} points={4} />
+                    <CheckboxItem label="Afet / Kaza nedeniyle gelir kaybı" checked={state.e_afetGelirKaybi} onChange={(v:any) => set('e_afetGelirKaybi', v)} points={4} />
+                    <CheckboxItem label="Hane içinde madde / alkol bağımlısı birey" checked={state.e_maddeBagimliligi} onChange={(v:any) => set('e_maddeBagimliligi', v)} points={4} />
+                    <CheckboxItem label="Sosyal güvencesiz ve aile desteğinden yoksun" checked={state.e_sosyalGuvencesiz} onChange={(v:any) => set('e_sosyalGuvencesiz', v)} points={4} />
+                    <CheckboxItem label="Yüksek borç / icra / haciz baskısı altında" checked={state.e_icraBorcBaskisi} onChange={(v:any) => set('e_icraBorcBaskisi', v)} points={3} />
+                    <CheckboxItem label="Bakıma muhtaç bebek (0-1 Yaş) veya riskli gebelik" checked={state.e_gebelikBebek} onChange={(v:any) => set('e_gebelikBebek', v)} points={3} />
+                    <CheckboxItem label="Boşanmış / Terk edilmiş eş" checked={state.e_bosanmis} onChange={(v:any) => set('e_bosanmis', v)} points={2} />
+                    <CheckboxItem label="Dul (Eşi vefat etmiş)" checked={state.e_dul} onChange={(v:any) => set('e_dul', v)} points={2} />
+                    <CheckboxItem label="Denetimli serbestlik / Eski hükümlü ikameti" checked={state.e_hukumluYakin} onChange={(v:any) => set('e_hukumluYakin', v)} points={2} />
                   </div>
                 </SectionCard>
               </div>
@@ -782,7 +767,7 @@ export default function EditAssessmentWizard() {
                   </div>
                 </div>
 
-                <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreG} hideScore={true}>
+                <SectionCard title="Kanaat Notları" maxScore={10} currentScore={calc.scoreF} hideScore={true}>
                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 font-semibold">Lütfen aşağıdaki 4 kriter için hanedeki saha gözleminize uygun olan 0 (İyi) ile 5 (Çok Kötü / Kritik) arası değeri seçiniz:</p>
                    <div className="space-y-3">
                      <ScoreButtons 

@@ -5,7 +5,6 @@ export interface AssessmentResult {
   scoreD: number;
   scoreE: number;
   scoreF: number;
-  scoreG?: number;
   scorePenalty?: number;
   totalScore: number;
   assistance: { text: string; amount: number };
@@ -28,10 +27,12 @@ export interface SystemSettings {
 }
 
 export const DEFAULT_ASSISTANCE_TIERS: AssistanceTier[] = [
-  { id: 'tier-1', minScore: 136, maxScore: 150, text: '10.000 TL Nakdi Yardım', amount: 10000, description: 'Yüksek Derecede Muhtaçlık Kademesi' },
-  { id: 'tier-2', minScore: 116, maxScore: 135, text: '7.500 TL Nakdi Yardım', amount: 7500, description: '2. Derece Muhtaçlık Kademesi' },
-  { id: 'tier-3', minScore: 91, maxScore: 115, text: '5.000 TL Nakdi Yardım', amount: 5000, description: '3. Derece Muhtaçlık Kademesi' },
-  { id: 'tier-4', minScore: 51, maxScore: 90, text: '2.500 TL Nakdi Yardım', amount: 2500, description: '4. Derece Muhtaçlık Kademesi' },
+  { id: 'tier-1', minScore: 86, maxScore: 100, text: '10.000 TL Nakdi Yardım', amount: 10000, description: 'Kritik / Çok Yüksek İhtiyaç (1. Kademe)' },
+  { id: 'tier-2', minScore: 71, maxScore: 85, text: '7.500 TL Nakdi Yardım', amount: 7500, description: 'Yüksek İhtiyaç (2. Kademe)' },
+  { id: 'tier-3', minScore: 56, maxScore: 70, text: '5.000 TL Nakdi Yardım', amount: 5000, description: 'Orta Düzey İhtiyaç (3. Kademe)' },
+  { id: 'tier-4', minScore: 41, maxScore: 55, text: '4.000 TL Nakdi Yardım', amount: 4000, description: 'Düşük-Orta İhtiyaç (4. Kademe)' },
+  { id: 'tier-5', minScore: 26, maxScore: 40, text: '3.000 TL Nakdi Yardım', amount: 3000, description: 'Temel İhtiyaç (5. Kademe)' },
+  { id: 'tier-6', minScore: 10, maxScore: 25, text: '2.000 TL Nakdi Yardım', amount: 2000, description: 'Dönemsel/Sınır İhtiyaç (6. Kademe)' },
 ];
 
 export const DEFAULT_SETTINGS: SystemSettings = {
@@ -67,17 +68,25 @@ export const saveSystemSettings = (settings: SystemSettings): void => {
 export const calculateAssistanceFromScore = (
   totalScore: number,
   isRejected: boolean,
-  settings?: SystemSettings
+  settings?: SystemSettings,
+  hasIncomeVulnerability?: boolean
 ): { text: string; amount: number } => {
   if (isRejected) {
     return { text: 'REDDEDİLDİ', amount: 0 };
+  }
+
+  // Muhtaçlık Sınırı Garantisi: Geliri muhtaçlık sınırı altındaysa (gelir puanı > 0)
+  // ve toplam puanı çok düşükse (10'un altındaysa bile), otomatik olarak en alt kademeye alınır.
+  let effectiveScore = totalScore;
+  if (hasIncomeVulnerability && effectiveScore < 10) {
+    effectiveScore = 10;
   }
 
   const activeSettings = settings || getSystemSettings();
   const sortedTiers = [...activeSettings.assistanceTiers].sort((a, b) => b.minScore - a.minScore);
 
   for (const tier of sortedTiers) {
-    if (totalScore >= tier.minScore && totalScore <= tier.maxScore) {
+    if (effectiveScore >= tier.minScore && effectiveScore <= tier.maxScore) {
       return { text: tier.text, amount: tier.amount };
     }
   }

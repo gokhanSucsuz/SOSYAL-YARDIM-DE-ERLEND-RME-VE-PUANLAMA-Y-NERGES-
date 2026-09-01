@@ -2427,7 +2427,7 @@ export default function Dashboard() {
                             <td className="border-r border-black p-1">
                               Yaşam Koşulları: {state.f_yasamKosullari || 0}/5 • Aciliyet: {state.f_aciliyet || 0}/5 • Sosyal Destek: {state.f_sosyalDestek || 0}/5 • Risk: {state.f_risk || 0}/5
                             </td>
-                            <td className="p-1 text-center font-bold">{calc.scoreG ?? 0} / 20</td>
+                            <td className="p-1 text-center font-bold">{calc.scoreF ?? 0} / 10</td>
                           </tr>
                         </tbody>
                       </table>

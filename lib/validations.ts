@@ -30,7 +30,6 @@ export const AssessmentSchema = z.object({
     scoreD: z.number(),
     scoreE: z.number(),
     scoreF: z.number(),
-    scoreG: z.number().optional(),
     scorePenalty: z.number().optional(),
     totalScore: z.number(),
     assistance: z.object({

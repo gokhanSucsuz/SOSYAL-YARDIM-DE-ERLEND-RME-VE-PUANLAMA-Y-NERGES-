@@ -137,34 +137,33 @@ function NewAssessmentContent() {
   }, [state.applicantTc, allAssessments]);
 
   const calc = useMemo(() => {
-    // Section A: Ekonomik Durum (Maksimum 40 Puan)
+    // Section A: Ekonomik Durum (Maksimum 25 Puan)
     // Aktif SGK prim ödemesi varsa gelir skoru zorla 0 (muhtaçlık sınırı üzeri sayılır)
-    let rawScoreA = state.income;
-    if (state.noWorker) rawScoreA += 10;
-    if (state.noRegularIncome) rawScoreA += 5;
-    if (state.noSgk) rawScoreA += 5;
-    const scoreA = state.a_aktifSgkPrim ? 0 : Math.max(0, Math.min(rawScoreA, 40));
+    let rawScoreA = state.income || 0;
+    if (state.noWorker) rawScoreA += 3;
+    if (state.noRegularIncome) rawScoreA += 2;
+    if (state.noSgk) rawScoreA += 2;
+    const scoreA = state.a_aktifSgkPrim ? 0 : Math.max(0, Math.min(rawScoreA, 25));
 
-    // Section B: Dezavantajlı Bireyler (Maksimum 30 Puan)
+    // Section B: Sağlık ve Dezavantajlılık (Maksimum 25 Puan)
     let scoreB = 0;
-    if (state.b_agirEngelli) scoreB += 15;
-    if (state.b_engelli) scoreB += 10;
-    if (state.b_dusukEngelli) scoreB += 3;    // YENİ: %20-39 engel oranı
-    if (state.b_evdeBakim) scoreB += 10;
-    if (state.b_kanser) scoreB += 10;
-    if (state.b_kronik) scoreB += 6;
-    if (state.b_yasliYalniz) scoreB += 8;
-    if (state.b_sehitYakini) scoreB += 8;
-    if (state.b_gazi) scoreB += 8;
-    if (state.b_yetim) scoreB += 5;
-    if (state.b_koruyucuAile) scoreB += 5;
-    if (state.b_yabanciUyruklu) scoreB += 3;
-    // Özel sebep: Yalnızca müdür onayladıysa (b_ozelSebepPuanBekliyor=false) puana eklenir
+    if (state.b_agirEngelli) scoreB += 12;
+    if (state.b_engelli) scoreB += 8;
+    if (state.b_dusukEngelli) scoreB += 3;
+    if (state.b_evdeBakim) scoreB += 8;
+    if (state.b_kanser) scoreB += 8;
+    if (state.b_kronik) scoreB += 5;
+    if (state.b_yasliYalniz) scoreB += 6;
+    if (state.b_sehitYakini) scoreB += 6;
+    if (state.b_gazi) scoreB += 6;
+    if (state.b_yetim) scoreB += 4;
+    if (state.b_koruyucuAile) scoreB += 4;
+    if (state.b_yabanciUyruklu) scoreB += 2;
     if (!state.b_ozelSebepPuanBekliyor && state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
       scoreB += Number(state.b_ozelSebepPuan);
     }
-    if (state.b_cokluOzelDurumluBirey) scoreB += 5;
-    scoreB = Math.min(scoreB, 30);
+    if (state.b_cokluOzelDurumluBirey) scoreB += 4;
+    scoreB = Math.min(scoreB, 25);
 
     const disadvantageCount = [
       state.b_agirEngelli, state.b_engelli, state.b_dusukEngelli,
@@ -173,80 +172,64 @@ function NewAssessmentContent() {
       state.b_yetim, state.b_koruyucuAile, state.b_yabanciUyruklu
     ].filter(Boolean).length;
 
-    // Section C: Çocuk ve Eğitim — Kademeli Ağırlıklı (Maksimum 15 Puan)
-    // Literatür: Şartlı Eğitim Yardımı ve Dünya Bankası raporlarına göre
-    // yükseköğretim daha yüksek maliyet taşır.
+    // Section C: Sosyal Kırılganlık ve Krizler (Maksimum 15 Puan)
     let scoreC = 0;
-    scoreC += (state.c_0_6yas || 0) * 2;        // Bakım yükü
-    scoreC += (state.c_ilkokul || 0) * 2;        // Temel eğitim
-    scoreC += (state.c_ortaokul || 0) * 2;       // Temel eğitim
-    scoreC += (state.c_lise || 0) * 3;           // Orta eğitim (artan maliyet)
-    scoreC += (state.c_meslekiEgitim || 0) * 3;  // Mesleki eğitim
-    scoreC += (state.c_acikLise || 0) * 3;       // Açık lise
-    scoreC += (state.c_uni || 0) * 4;            // Yükseköğretim (en yüksek maliyet)
+    if (state.e_siddetMagduru) scoreC += 5;
+    if (state.e_kadinReis) scoreC += 4;
+    if (state.e_esiCezaevinde) scoreC += 4;
+    if (state.e_afetGelirKaybi) scoreC += 4;
+    if (state.e_maddeBagimliligi) scoreC += 4;
+    if (state.e_sosyalGuvencesiz) scoreC += 4;
+    if (state.e_icraBorcBaskisi) scoreC += 3;
+    if (state.e_gebelikBebek) scoreC += 3;
+    if (state.e_bosanmis) scoreC += 2;
+    if (state.e_dul) scoreC += 2;
+    if (state.e_hukumluYakin) scoreC += 2;
+    const hhSize = state.householdSize || 1;
+    if (hhSize >= 7) scoreC += 4;
+    else if (hhSize >= 5) scoreC += 3;
+    else if (hhSize >= 3) scoreC += 2;
+    else scoreC += 1;
     scoreC = Math.min(scoreC, 15);
 
-    // Section D: Barınma Durumu (Maksimum 10 Puan)
+    // Section D: Eğitim ve Çocuk Yükü (Maksimum 15 Puan)
     let scoreD = 0;
-    if (state.d_evsiz) scoreD += 10;
-    if (state.d_afetzede) scoreD += 10;
-    if (state.d_agirHasarli) scoreD += 8;
-    if (state.d_sagliksiz) scoreD += 6;
-    if (state.d_dereYatagi) scoreD += 6;
-    if (state.d_kiraci) scoreD += 5;
-    if (state.d_tahliyeBaskisi) scoreD += 5;
-    if (state.d_isinmaProblem) scoreD += 4;
-    if (state.d_gecekondu) scoreD += 4;
-    if (state.d_asansorsuzYuksek) scoreD += 4;
-    if (state.d_tuvaletBanyoYetersiz) scoreD += 4;
-    scoreD = Math.min(scoreD, 10);
+    scoreD += (state.c_0_6yas || 0) * 2;
+    scoreD += (state.c_ilkokul || 0) * 2;
+    scoreD += (state.c_ortaokul || 0) * 2;
+    scoreD += (state.c_lise || 0) * 3;
+    scoreD += (state.c_meslekiEgitim || 0) * 3;
+    scoreD += (state.c_acikLise || 0) * 2;
+    scoreD += (state.c_uni || 0) * 4;
+    scoreD = Math.min(scoreD, 15);
 
-    // Section E: Beyaz Eşya (Maksimum 10 Puan)
-    // NOT: Bulaşık makinesi lüks eşya sayıldığından puanlamadan çıkarıldı (TÜİK/OECD)
-    let rawScoreE = 0;
-    if (state.appliance_buzdolabi === 'yok') rawScoreE += 3;
-    else if (state.appliance_buzdolabi === 'eski') rawScoreE += 1.5;
-    if (state.appliance_camasir === 'yok') rawScoreE += 3;
-    else if (state.appliance_camasir === 'eski') rawScoreE += 1.5;
-    if (state.appliance_firin === 'yok') rawScoreE += 2;
-    else if (state.appliance_firin === 'eski') rawScoreE += 1;
-    // Bulaşık makinesi: 0 puan (lüks eşya - çıkarıldı)
-    if (state.appliance_tv === 'yok') rawScoreE += 1;
-    else if (state.appliance_tv === 'eski') rawScoreE += 0.5;
-    if (state.appliance_telefon === 'yok') rawScoreE += 1;
-    else if (state.appliance_telefon === 'eski') rawScoreE += 0.5;
-    if (state.appliance_klima === 'yok') rawScoreE += 1;
-    else if (state.appliance_klima === 'eski') rawScoreE += 0.5;
-    if (state.appliance_diger === 'yok') rawScoreE += 1;
-    else if (state.appliance_diger === 'eski') rawScoreE += 0.5;
-    const scoreE = Math.min(10, Math.round(rawScoreE));
+    // Section E: Barınma ve Fiziksel Şartlar (Maksimum 10 Puan)
+    let scoreE = 0;
+    if (state.d_evsiz) scoreE += 8;
+    if (state.d_afetzede) scoreE += 8;
+    if (state.d_agirHasarli) scoreE += 6;
+    if (state.d_sagliksiz) scoreE += 4;
+    if (state.d_dereYatagi) scoreE += 4;
+    if (state.d_kiraci) scoreE += 3;
+    if (state.d_tahliyeBaskisi) scoreE += 3;
+    if (state.d_isinmaProblem) scoreE += 2;
+    if (state.d_gecekondu) scoreE += 2;
+    if (state.d_asansorsuzYuksek) scoreE += 2;
+    if (state.d_tuvaletBanyoYetersiz) scoreE += 2;
+    
+    // Eşya (appliances) contribution to Section E
+    let rawAppliances = 0;
+    if (state.appliance_buzdolabi === 'yok') rawAppliances += 1.5;
+    if (state.appliance_camasir === 'yok') rawAppliances += 1.5;
+    if (state.appliance_firin === 'yok') rawAppliances += 1;
+    if (state.appliance_tv === 'yok') rawAppliances += 0.5;
+    scoreE += Math.min(3, rawAppliances); // Max 3 pts from appliances
+    scoreE = Math.min(scoreE, 10);
 
-    // Section F: Sosyal Kırılganlık ve Nüfus (Maksimum 30 Puan)
-    // Hane büyüklüğü: OECD Modified Equivalence Scale'e göre 4 kademeli
-    let scoreF = 0;
-    if (state.e_siddetMagduru) scoreF += 6;
-    if (state.e_kadinReis) scoreF += 5;
-    if (state.e_esiCezaevinde) scoreF += 5;
-    if (state.e_afetGelirKaybi) scoreF += 5;
-    if (state.e_maddeBagimliligi) scoreF += 5;
-    if (state.e_sosyalGuvencesiz) scoreF += 5;
-    if (state.e_icraBorcBaskisi) scoreF += 4;
-    if (state.e_gebelikBebek) scoreF += 4;
-    if (state.e_bosanmis) scoreF += 3;
-    if (state.e_dul) scoreF += 3;
-    if (state.e_hukumluYakin) scoreF += 3;
-    // Kademeli hane büyüklüğü etkisi (OECD skalası)
-    const hhSize = state.householdSize || 1;
-    if (hhSize >= 7) scoreF += 6;
-    else if (hhSize >= 5) scoreF += 4;
-    else if (hhSize >= 3) scoreF += 2;
-    else scoreF += 1;
-    scoreF = Math.min(scoreF, 30);
-
-    // Section G: Sosyal İnceleme Kanaati (Maksimum 20 Puan)
-    const scoreG = Math.min(
+    // Section F: Sosyal İnceleme Kanaati (Maksimum 10 Puan)
+    const scoreF = Math.min(
       (state.f_yasamKosullari || 0) + (state.f_aciliyet || 0) + (state.f_sosyalDestek || 0) + (state.f_risk || 0),
-      20
+      10
     );
 
     // CEZA PUANLARI (Means Testing / Varlık Testi)
@@ -257,9 +240,11 @@ function NewAssessmentContent() {
       scorePenalty += (state.a_son3AyYardimKisi || 0) * 5;
     }
 
-    const rawTotal = scoreA + scoreB + scoreC + scoreD + scoreE + scoreF + scoreG;
-    const totalScore = state.falseStatement ? 0 : Math.max(0, rawTotal - scorePenalty);
-    const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement);
+    const rawTotal = scoreA + scoreB + scoreC + scoreD + scoreE + scoreF;
+    const totalScore = state.falseStatement ? 0 : Math.max(0, Math.round(rawTotal - scorePenalty));
+    
+    const hasIncomeVulnerability = !!(state.income && state.income > 0);
+    const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement, undefined, hasIncomeVulnerability);
 
     const priorities: string[] = [];
     if (state.b_agirEngelli) priorities.push('Ağır engelli bulunan hane');
@@ -274,8 +259,8 @@ function NewAssessmentContent() {
       priorities.push('Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)');
     }
 
-    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scoreG, scorePenalty, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
-  }, [state]);
+    return { scoreA, scoreB, scoreC, scoreD, scoreE, scoreF, scorePenalty, totalScore, assistance, priorities, isRejected: state.falseStatement, disadvantageCount };
+  }, [state, allAssessments]);
 
   const stepsCount = 10;
   const stepNames = [
@@ -318,7 +303,6 @@ function NewAssessmentContent() {
           scoreD: calc.scoreD,
           scoreE: calc.scoreE,
           scoreF: calc.scoreF,
-          scoreG: calc.scoreG,
           scorePenalty: calc.scorePenalty,
           totalScore: calc.totalScore,
           assistance: calc.assistance,
@@ -581,20 +565,20 @@ function NewAssessmentContent() {
                     </div>
                     
                     <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
-                      <SectionCard title="Gelir Seviyesi" maxScore={40} currentScore={calc.scoreA} hideScore={true}>
+                      <SectionCard title="Gelir Seviyesi" maxScore={25} currentScore={calc.scoreA} hideScore={true}>
                         <div className="space-y-3">
-                          <RadioItem label="Kişi başına gelir muhtaçlık sınırının %25 altında" name="income" checked={state.income === 40} onChange={() => set('income', 40)} points={40} />
-                          <RadioItem label="Muhtaçlık sınırının %25 – 50 arasında" name="income" checked={state.income === 35} onChange={() => set('income', 35)} points={35} />
-                          <RadioItem label="Muhtaçlık sınırının %50 – 75 arasında" name="income" checked={state.income === 25} onChange={() => set('income', 25)} points={25} />
-                          <RadioItem label="Muhtaçlık sınırının %75 – 100 arasında" name="income" checked={state.income === 15} onChange={() => set('income', 15)} points={15} />
+                          <RadioItem label="Kişi başına gelir muhtaçlık sınırının %25 altında" name="income" checked={state.income === 20} onChange={() => set('income', 20)} points={20} />
+                          <RadioItem label="Muhtaçlık sınırının %25 – 50 arasında" name="income" checked={state.income === 15} onChange={() => set('income', 15)} points={15} />
+                          <RadioItem label="Muhtaçlık sınırının %50 – 75 arasında" name="income" checked={state.income === 10} onChange={() => set('income', 10)} points={10} />
+                          <RadioItem label="Muhtaçlık sınırının %75 – 100 arasında" name="income" checked={state.income === 5} onChange={() => set('income', 5)} points={5} />
                           <RadioItem label="Muhtaçlık sınırı üzerinde" name="income" checked={state.income === 0} onChange={() => set('income', 0)} points={0} />
                         </div>
                         <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-200 dark:border-slate-800">
                           <h3 className="text-[10px] font-bold text-slate-600 dark:text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">İlave / Düzeltme Kriterleri</h3>
                           <div className="grid grid-cols-1 gap-3">
-                            <CheckboxItem label="Hanede çalışan yok" checked={state.noWorker} onChange={(v:any) => set('noWorker', v)} points={10} />
-                            <CheckboxItem label="Düzenli gelir bulunmuyor" checked={state.noRegularIncome} onChange={(v:any) => set('noRegularIncome', v)} points={5} />
-                            <CheckboxItem label="SGK kaydı yok" checked={state.noSgk} onChange={(v:any) => set('noSgk', v)} points={5} />
+                            <CheckboxItem label="Hanede çalışan yok" checked={state.noWorker} onChange={(v:any) => set('noWorker', v)} points={3} />
+                            <CheckboxItem label="Düzenli gelir bulunmuyor" checked={state.noRegularIncome} onChange={(v:any) => set('noRegularIncome', v)} points={2} />
+                            <CheckboxItem label="SGK kaydı yok" checked={state.noSgk} onChange={(v:any) => set('noSgk', v)} points={2} />
                           </div>
                         </div>
                       </SectionCard>
@@ -610,26 +594,23 @@ function NewAssessmentContent() {
                     </div>
 
                     <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
-                      <SectionCard title="Hanehalkı Özel Durumları" maxScore={30} currentScore={calc.scoreB} hideScore={true}>
-                        
-
-                        
+                      <SectionCard title="Hastalık ve Engellilik Durumu" maxScore={25} currentScore={calc.scoreB} hideScore={true}>
                         <div className="mb-4">
-                          <CheckboxItem label="Aynı hanede birden fazla özel durumu (dezavantajlı) olan farklı KİŞİ var" checked={state.b_cokluOzelDurumluBirey} onChange={(v:any) => set('b_cokluOzelDurumluBirey', v)} points={5} />
+                          <CheckboxItem label="Aynı hanede birden fazla özel durumu (dezavantajlı) olan farklı KİŞİ var" checked={state.b_cokluOzelDurumluBirey} onChange={(v:any) => set('b_cokluOzelDurumluBirey', v)} points={4} />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <CheckboxItem label="Ağır engelli (%70+) — Ağır Engellilik" checked={state.b_agirEngelli} onChange={(v:any) => set('b_agirEngelli', v)} points={15} />
-                          <CheckboxItem label="Engelli (%40-69) — Orta/Yüksek Engellilik" checked={state.b_engelli} onChange={(v:any) => set('b_engelli', v)} points={10} />
-                          <CheckboxItem label="Hafif Engelli (%20-39) — Düşük Engel Oranı" checked={state.b_dusukEngelli} onChange={(v:any) => set('b_dusukEngelli', v)} points={3} />
-                          <CheckboxItem label="Evde bakım hastası" checked={state.b_evdeBakim} onChange={(v:any) => set('b_evdeBakim', v)} points={10} />
-                          <CheckboxItem label="Kanser tedavisi" checked={state.b_kanser} onChange={(v:any) => set('b_kanser', v)} points={10} />
-                          <CheckboxItem label="Kronik hastalık" checked={state.b_kronik} onChange={(v:any) => set('b_kronik', v)} points={6} />
-                          <CheckboxItem label="65 yaş üstü yalnız yaşayan" checked={state.b_yasliYalniz} onChange={(v:any) => set('b_yasliYalniz', v)} points={8} />
-                          <CheckboxItem label="Şehit yakını" checked={state.b_sehitYakini} onChange={(v:any) => set('b_sehitYakini', v)} points={8} />
-                          <CheckboxItem label="Gazi" checked={state.b_gazi} onChange={(v:any) => set('b_gazi', v)} points={8} />
-                          <CheckboxItem label="Yetim/öksüz çocuk" checked={state.b_yetim} onChange={(v:any) => set('b_yetim', v)} points={5} />
-                          <CheckboxItem label="Koruyucu aile" checked={state.b_koruyucuAile} onChange={(v:any) => set('b_koruyucuAile', v)} points={5} />
-                          <CheckboxItem label="Yabancı uyruklu / Sığınmacı" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={3} />
+                          <CheckboxItem label="Ağır Engelli (Tam Bağımlı)" checked={state.b_agirEngelli} onChange={(v:any) => set('b_agirEngelli', v)} points={12} />
+                          <CheckboxItem label="Engelli (Kısmi Bağımlı %40+)" checked={state.b_engelli} onChange={(v:any) => set('b_engelli', v)} points={8} />
+                          <CheckboxItem label="Düşük Oranlı Engelli (%20-39)" checked={state.b_dusukEngelli} onChange={(v:any) => set('b_dusukEngelli', v)} points={3} />
+                          <CheckboxItem label="Evde Bakım Hastası" checked={state.b_evdeBakim} onChange={(v:any) => set('b_evdeBakim', v)} points={8} />
+                          <CheckboxItem label="Kanser Hastası" checked={state.b_kanser} onChange={(v:any) => set('b_kanser', v)} points={8} />
+                          <CheckboxItem label="Kronik Hastalık (Sürekli İlaç)" checked={state.b_kronik} onChange={(v:any) => set('b_kronik', v)} points={5} />
+                          <CheckboxItem label="Yaşlı ve Yalnız Yaşayan" checked={state.b_yasliYalniz} onChange={(v:any) => set('b_yasliYalniz', v)} points={6} />
+                          <CheckboxItem label="Şehit Yakını" checked={state.b_sehitYakini} onChange={(v:any) => set('b_sehitYakini', v)} points={6} />
+                          <CheckboxItem label="Gazi" checked={state.b_gazi} onChange={(v:any) => set('b_gazi', v)} points={6} />
+                          <CheckboxItem label="Yetim (Anne/Baba vefat)" checked={state.b_yetim} onChange={(v:any) => set('b_yetim', v)} points={4} />
+                          <CheckboxItem label="Koruyucu Aile / Evlatlık" checked={state.b_koruyucuAile} onChange={(v:any) => set('b_koruyucuAile', v)} points={4} />
+                          <CheckboxItem label="Yabancı Uyruklu / Göçmen" checked={state.b_yabanciUyruklu} onChange={(v:any) => set('b_yabanciUyruklu', v)} points={2} />
                         </div>
 
                         <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-200 dark:border-slate-800">
@@ -813,7 +794,7 @@ function NewAssessmentContent() {
                     </div>
 
                     <div className="text-slate-900 dark:text-slate-900 dark:text-slate-100">
-                      <SectionCard title="Kanaat Notları" maxScore={20} currentScore={calc.scoreG} hideScore={true}>
+                      <SectionCard title="Kanaat Notları" maxScore={10} currentScore={calc.scoreF} hideScore={true}>
                          <div className="space-y-3">
                            <ScoreButtons 
                              label="1. Yaşam Koşulları (Fiziki Şartlar, Hijyen, Eşya)" 

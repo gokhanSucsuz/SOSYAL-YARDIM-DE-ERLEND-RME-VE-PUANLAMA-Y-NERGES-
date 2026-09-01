@@ -133,8 +133,8 @@ export default function PresentationPage() {
                 <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Nesnel & Şeffaf Değerlendirme</span>
               </div>
               <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-center">
-                <span className="text-2xl font-black text-red-900 block">150 Puan</span>
-                <span className="text-xs font-semibold text-red-700">7 Kategori Algoritmik Tavan</span>
+                <span className="text-2xl font-black text-red-900 block">100 Puan</span>
+                <span className="text-xs font-semibold text-red-700">6 Kategori Algoritmik Tavan</span>
               </div>
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
                 <span className="text-2xl font-black text-emerald-900 block">%60</span>
@@ -214,7 +214,7 @@ export default function PresentationPage() {
                 <li className="flex items-start gap-2.5 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
                   <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong>Daraltılmış Tavan &amp; Kademeli Aralık:</strong> En ağır kırılganlığa sahip haneleri (136-150 Puan) seçip 10.000 TL tavan yardıma ulaştıran sistem.
+                    <strong>MPI Uyumlu Daraltılmış Tavan:</strong> En ağır kırılganlığa sahip haneleri (86-100 Puan) seçip 10.000 TL tavan yardıma ulaştıran sistem.
                   </div>
                 </li>
                 <li className="flex items-start gap-2.5 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
@@ -268,7 +268,7 @@ export default function PresentationPage() {
               </div>
               <h3 className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">Tam Denetlenebilirlik ve Hukuki Güvence</h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Mülkiye Müfettişliği ve Sayıştay denetimlerinde, her yardım kararının arkasındaki 150 puanlık parametre dökümünü eksiksiz sunar.
+                Mülkiye Müfettişliği ve Sayıştay denetimlerinde, her yardım kararının arkasındaki 100 puanlık parametre dökümünü eksiksiz sunar.
               </p>
             </div>
           </div>
@@ -348,88 +348,102 @@ export default function PresentationPage() {
             </div>
             <div>
               <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100">4. PUANLAMA VE YARDIM DERECELERİ METODOLOJİSİ</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">150 Puan Tavanı, Daraltılmış Tavan ve Artan Aralık Yaklaşımı</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">100 Puan Tavanı, Muhtaçlık Barajı ve Kademeli Yaklaşım</p>
             </div>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl text-xs text-blue-950 space-y-2">
-            <strong className="text-blue-900 font-extrabold text-sm block">Kademeli Aralık (Progressive Scoring) Mantığı:</strong>
+            <strong className="text-blue-900 font-extrabold text-sm block">Uluslararası MPI Uyumlu Dağılım:</strong>
             <p className="leading-relaxed">
-              En yüksek derece olan 1. Derece (10.000 TL) için puan aralığı <strong>15 Puan (136 - 150 Puan)</strong> olarak dar tutulmuştur. Alt derecelere doğru inildikçe puan aralıkları kademeli olarak genişler (15 Pn → 20 Pn → 25 Pn → 40 Pn). Böylece sınırlı nakdi kaynaklar en yüksek kırılganlıktaki gruplara odaklanır.
+              Dünya literatürüne uygun şekilde 100 puan üzerinden hesaplanan modelde, sosyal yardım bütçesinin en muhtaçlara odaklanması sağlanmıştır. Yardım alma barajı 10 puana çekilmiş, gelir güvencesiz olan her hane bu barajı otomatik geçecek şekilde kurgulanmıştır.
             </p>
           </div>
 
           {/* Table / Cards of Degrees */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col justify-between text-center space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col justify-between text-center space-y-2">
               <div>
-                <span className="text-[10px] font-extrabold text-emerald-800 uppercase block">1. DERECE</span>
-                <span className="text-xl font-black text-emerald-900 block mt-1">136 - 150</span>
-                <p className="text-[10px] font-bold text-emerald-700">15 Puanlık Dar Tavan</p>
+                <span className="text-[9px] font-extrabold text-emerald-800 uppercase block">1. KADEME</span>
+                <span className="text-lg font-black text-emerald-900 block mt-0.5">86 - 100</span>
               </div>
-              <div className="pt-2 border-t border-emerald-200 text-xs font-black text-emerald-900">
-                10.000 TL Nakdi
+              <div className="pt-2 border-t border-emerald-200 text-[11px] font-black text-emerald-900">
+                10.000 TL
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 flex flex-col justify-between text-center space-y-3">
+            <div className="p-3 rounded-xl bg-teal-50 border border-teal-200 flex flex-col justify-between text-center space-y-2">
               <div>
-                <span className="text-[10px] font-extrabold text-blue-800 uppercase block">2. DERECE</span>
-                <span className="text-xl font-black text-blue-900 block mt-1">116 - 135</span>
-                <p className="text-[10px] font-bold text-blue-700">20 Puanlık Aralık</p>
+                <span className="text-[9px] font-extrabold text-teal-800 uppercase block">2. KADEME</span>
+                <span className="text-lg font-black text-teal-900 block mt-0.5">71 - 85</span>
               </div>
-              <div className="pt-2 border-t border-blue-200 text-xs font-black text-blue-900">
-                7.500 TL Nakdi
+              <div className="pt-2 border-t border-teal-200 text-[11px] font-black text-teal-900">
+                7.500 TL
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex flex-col justify-between text-center space-y-3">
+            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 flex flex-col justify-between text-center space-y-2">
               <div>
-                <span className="text-[10px] font-extrabold text-indigo-800 uppercase block">3. DERECE</span>
-                <span className="text-xl font-black text-indigo-900 block mt-1">91 - 115</span>
-                <p className="text-[10px] font-bold text-indigo-700">25 Puanlık Aralık</p>
+                <span className="text-[9px] font-extrabold text-blue-800 uppercase block">3. KADEME</span>
+                <span className="text-lg font-black text-blue-900 block mt-0.5">56 - 70</span>
               </div>
-              <div className="pt-2 border-t border-indigo-200 text-xs font-black text-indigo-900">
-                5.000 TL Nakdi
+              <div className="pt-2 border-t border-blue-200 text-[11px] font-black text-blue-900">
+                5.000 TL
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col justify-between text-center space-y-3">
+            <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-200 flex flex-col justify-between text-center space-y-2">
               <div>
-                <span className="text-[10px] font-extrabold text-amber-800 uppercase block">4. DERECE</span>
-                <span className="text-xl font-black text-amber-900 block mt-1">51 - 90</span>
-                <p className="text-[10px] font-bold text-amber-700">40 Puanlık Aralık</p>
+                <span className="text-[9px] font-extrabold text-indigo-800 uppercase block">4. KADEME</span>
+                <span className="text-lg font-black text-indigo-900 block mt-0.5">41 - 55</span>
               </div>
-              <div className="pt-2 border-t border-amber-200 text-xs font-black text-amber-900">
-                2.500 TL Nakdi
+              <div className="pt-2 border-t border-indigo-200 text-[11px] font-black text-indigo-900">
+                4.000 TL
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-600 flex flex-col justify-between text-center space-y-3">
+            <div className="p-3 rounded-xl bg-violet-50 border border-violet-200 flex flex-col justify-between text-center space-y-2">
               <div>
-                <span className="text-[10px] font-extrabold text-slate-700 dark:text-slate-300 uppercase block">UYGUN DEĞİL</span>
-                <span className="text-xl font-black text-slate-800 dark:text-slate-200 block mt-1">0 - 50</span>
-                <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400">51 Puanlık Taban Bandı</p>
+                <span className="text-[9px] font-extrabold text-violet-800 uppercase block">5. KADEME</span>
+                <span className="text-lg font-black text-violet-900 block mt-0.5">26 - 40</span>
               </div>
-              <div className="pt-2 border-t border-slate-300 dark:border-slate-600 text-xs font-black text-slate-800 dark:text-slate-200">
-                0 TL / Ayni Yardım
+              <div className="pt-2 border-t border-violet-200 text-[11px] font-black text-violet-900">
+                3.000 TL
+              </div>
+            </div>
+            
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 flex flex-col justify-between text-center space-y-2">
+              <div>
+                <span className="text-[9px] font-extrabold text-amber-800 uppercase block">6. KADEME</span>
+                <span className="text-lg font-black text-amber-900 block mt-0.5">10 - 25</span>
+              </div>
+              <div className="pt-2 border-t border-amber-200 text-[11px] font-black text-amber-900">
+                2.000 TL
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-600 flex flex-col justify-between text-center space-y-2 col-span-2 sm:col-span-1 lg:col-span-1 xl:col-span-1">
+              <div>
+                <span className="text-[9px] font-extrabold text-slate-700 dark:text-slate-300 uppercase block">UYGUN DEĞİL</span>
+                <span className="text-lg font-black text-slate-800 dark:text-slate-200 block mt-0.5">0 - 9</span>
+              </div>
+              <div className="pt-2 border-t border-slate-300 dark:border-slate-600 text-[11px] font-black text-slate-800 dark:text-slate-200">
+                RED
               </div>
             </div>
           </div>
 
-          {/* 7 Categories Grid */}
+          {/* 6 Categories Grid */}
           <div className="pt-2 space-y-3">
             <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
-              Puanlamayı Oluşturan 7 Ana İnceleme Kategorisi:
+              Puanlamayı Oluşturan 6 Ana İnceleme Kategorisi:
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">A. Ekonomik Durum (40 Pn Tavan, Gelir, SGK & Son 3 Ay Vakıf Yardım Düşümü)</div>
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">B. Dezavantajlı Bireyler (30 Pn Tavan, Engelli, Yaşlı, Yabancı Uyruklu / Sığınmacı & Özel Sebep: +10 / +15 / +20 / +25 Pn)</div>
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">C. Çocuk ve Eğitim (10 Pn Tavan, Örgün, Mesleki Eğitim & Açık Lise)</div>
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">D. Barınma ve Konut Şartları (10 Pn Tavan)</div>
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">E. Temel Ev Eşyaları Durumu (10 Pn Tavan)</div>
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">F. Sosyal Kırılganlık ve Nüfus (30 Pn Tavan, Dul, Boşanmış, Şiddet, Cezaevinde, Nüfus 1-4 K: +1 Pn / 5+ K: +3 Pn)</div>
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium col-span-2">G. Sosyal İnceleme Görevlisi Kanaati (20 Pn Tavan)</div>
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">A. Ekonomik Durum (25 Pn Tavan, Gelir, SGK & Son 3 Ay Vakıf Yardım Düşümü)</div>
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">B. Hastalık ve Engellilik Durumu (25 Pn Tavan, Ağır Engelli, Yalnız Yaşlı, Evde Bakım)</div>
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">C. Sosyal Kırılganlık ve Nüfus (15 Pn Tavan, Şiddet, Kadın Hane Reisi, Mahkum Yakını)</div>
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">D. Çocuk ve Eğitim Yükü (15 Pn Tavan, Örgün ve Mesleki Kademeler)</div>
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">E. Barınma ve Eşya Şartları (10 Pn Tavan, Afetzede, Ağır Hasar, Eşya Eksikliği)</div>
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 font-medium">F. Sosyal İnceleme Görevlisi Kanaati (10 Pn Tavan, 4 İnisiyatif Kriteri)</div>
             </div>
           </div>
         </section>
@@ -527,6 +541,27 @@ export default function PresentationPage() {
         </section>
 
       </main>
+
+      {/* Presentation References Section */}
+      <footer className="bg-slate-900 dark:bg-slate-950 py-8 border-t border-slate-800 text-slate-400 no-print">
+        <div className="max-w-5xl mx-auto w-full px-6 lg:px-10">
+          <h3 className="text-sm font-black text-slate-100 mb-3">Model Kaynakçası (Literature & References)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[10px] sm:text-xs">
+            <div>
+              <strong>[1] Alkire, S., & Foster, J. (2011).</strong> "Counting and multidimensional poverty measurement." <em>Journal of Public Economics</em>.
+            </div>
+            <div>
+              <strong>[2] Coady, D. et al. (2004).</strong> "Targeting of Transfers in Developing Countries." <em>World Bank Publications</em>.
+            </div>
+            <div>
+              <strong>[3] T.C. Aile ve Sosyal Hizmetler Bakanlığı (2023).</strong> Sosyal Yardım İstatistikleri ve Yoksulluk Ölçütleri Bülteni.
+            </div>
+            <div>
+              <strong>[4] UNDP & OPHI (2022).</strong> "Global Multidimensional Poverty Index."
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
     </SidebarLayout>
   );

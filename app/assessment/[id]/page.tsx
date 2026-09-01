@@ -526,7 +526,7 @@ export default function AssessmentDetail() {
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">G. PERSONEL İNCELEME KANAAT PUANLARI</h3>
                 <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
-                  {calc.scoreG ?? 0} / 20 Puan
+                  {calc.scoreF ?? 0} / 10 Puan
                 </span>
               </div>
               <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -766,7 +766,7 @@ export default function AssessmentDetail() {
                 <td className="border-r border-black p-1">
                   Yaşam Koşulları: {state.f_yasamKosullari || 0}/5 • Aciliyet: {state.f_aciliyet || 0}/5 • Sosyal Destek: {state.f_sosyalDestek || 0}/5 • Risk: {state.f_risk || 0}/5
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreG ?? 0} / 20</td>
+                <td className="p-1 text-center font-bold">{calc.scoreF ?? 0} / 10</td>
               </tr>
             </tbody>
           </table>

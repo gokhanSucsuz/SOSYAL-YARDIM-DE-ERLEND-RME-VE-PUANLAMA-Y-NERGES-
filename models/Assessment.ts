@@ -24,7 +24,6 @@ export interface IAssessment extends Document {
     scoreD: number;
     scoreE: number;
     scoreF: number;
-    scoreG?: number;
     scorePenalty?: number;
     totalScore: number;
     assistance: { text: string; amount: number };
@@ -56,8 +55,7 @@ const AssessmentSchema: Schema = new Schema({
     scoreD: { type: Number, required: true },
     scoreE: { type: Number, required: true },
     scoreF: { type: Number, required: true },
-    scoreG: { type: Number },
-    scorePenalty: { type: Number },
+    scorePenalty: { type: Number, default: 0 },
     totalScore: { type: Number, required: true },
     assistance: {
       text: { type: String, required: true },

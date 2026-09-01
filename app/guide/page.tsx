@@ -162,79 +162,93 @@ export default function GuidePage() {
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
           <h3 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
             <Award className="text-emerald-600" size={22} />
-            4. Toplam Puan Tavanı ve Yardım Seviyeleri Skalası (Daraltılmış Tavan & Artan Aralık Mantığı)
+            4. Toplam Puan Tavanı ve Yardım Seviyeleri Skalası (MPI Uyumlu 100 Puan Sistemi)
           </h3>
 
           <div className="bg-red-50/80 border border-red-200 p-4 rounded-xl text-xs text-red-950 space-y-2">
-            <strong className="text-red-900 font-extrabold text-sm block">Kademeli Değerlendirme ve Seçicilik Esası:</strong>
+            <strong className="text-red-900 font-extrabold text-sm block">Uluslararası MPI Uyumlu Dağılım:</strong>
             <p>
-              Sosyal yardım bütçesinin ve nakdi kaynakların en ağır durumdaki gerçek ihtiyaç sahiplerine adil dağıtılması amacıyla 
-              <strong> Progressive / Artan Aralık Metodolojisi</strong> uygulanmaktadır:
+              Sosyal yardım bütçesinin en ağır durumdaki ihtiyaç sahiplerine adil dağıtılması amacıyla geliştirilmiş 100 puanlık yoksulluk endeksi modelidir:
             </p>
             <ul className="list-disc pl-5 space-y-1 font-medium">
-              <li><strong>1. Derece (Daraltılmış Tavan - 15 Puan):</strong> En yüksek tavan aralığı 15 puan olarak dar tutulmuştur (136 - 150 Puan). Böylece sadece aşırı yüksek kırılganlığa sahip en mağdur ve sınırlı sayıda hane 10.000 TL yardım bandına ulaşır.</li>
-              <li><strong>Kademeli Genişleyen Aralıklar (20, 25, 40 Puan):</strong> Alt derecelere doğru inildikçe puan aralıkları genişler (15 Puan → 20 Puan → 25 Puan → 40 Puan).</li>
+              <li><strong>Baraj İndirimi:</strong> Dünya literatürüne uyumlu olarak yardıma ulaşım barajı <strong>10 Puan</strong> seviyesine indirilmiş, 0-9 puan arası ise yardım alamaz (Red) kabul edilmiştir.</li>
+              <li><strong>Gelir Güvencesi İstisnası:</strong> Kişi başı geliri muhtaçlık sınırının altında olan her hane <strong>otomatik olarak en az 10 puana ulaşmış sayılarak</strong> asgari düzeyde yardım ağına dahil edilir.</li>
             </ul>
           </div>
 
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-            Form 7 ana kategoride toplam <strong>Maksimum 150 Puan</strong> üzerinden hesaplanır. Tavsiye edilen yardım seviyeleri aşağıdadır:
+            Form ana kategorilerde toplam <strong>Maksimum 100 Puan</strong> üzerinden hesaplanır. Yardım seviyeleri aşağıdadır:
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
             
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-emerald-800 uppercase block mb-1">1. Derece Aşırı Muhtaç</span>
-                <span className="text-2xl font-black text-emerald-900">136 - 150</span>
-                <p className="text-[11px] font-semibold text-emerald-700 mt-1">15 Puanlık Dar Tavan</p>
+                <span className="text-xs font-bold text-emerald-800 uppercase block mb-1">1. Kademe</span>
+                <span className="text-2xl font-black text-emerald-900">86 - 100</span>
               </div>
               <div className="mt-4 pt-3 border-t border-emerald-200 text-sm font-extrabold text-emerald-800">
                 10.000 TL Nakdi Yardım
               </div>
             </div>
 
+            <div className="p-4 rounded-xl bg-teal-50 border border-teal-200 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-teal-800 uppercase block mb-1">2. Kademe</span>
+                <span className="text-2xl font-black text-teal-900">71 - 85</span>
+              </div>
+              <div className="mt-4 pt-3 border-t border-teal-200 text-sm font-extrabold text-teal-800">
+                7.500 TL Nakdi Yardım
+              </div>
+            </div>
+
             <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-blue-800 uppercase block mb-1">2. Derece Ağır Muhtaç</span>
-                <span className="text-2xl font-black text-blue-900">116 - 135</span>
-                <p className="text-[11px] font-semibold text-blue-700 mt-1">20 Puanlık Aralık</p>
+                <span className="text-xs font-bold text-blue-800 uppercase block mb-1">3. Kademe</span>
+                <span className="text-2xl font-black text-blue-900">56 - 70</span>
               </div>
               <div className="mt-4 pt-3 border-t border-blue-200 text-sm font-extrabold text-blue-800">
-                7.500 TL Nakdi Yardım
+                5.000 TL Nakdi Yardım
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-indigo-800 uppercase block mb-1">3. Derece Orta Muhtaç</span>
-                <span className="text-2xl font-black text-indigo-900">91 - 115</span>
-                <p className="text-[11px] font-semibold text-indigo-700 mt-1">25 Puanlık Aralık</p>
+                <span className="text-xs font-bold text-indigo-800 uppercase block mb-1">4. Kademe</span>
+                <span className="text-2xl font-black text-indigo-900">41 - 55</span>
               </div>
               <div className="mt-4 pt-3 border-t border-indigo-200 text-sm font-extrabold text-indigo-800">
-                5.000 TL Nakdi Yardım
+                4.000 TL Nakdi Yardım
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-violet-50 border border-violet-200 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-violet-800 uppercase block mb-1">5. Kademe</span>
+                <span className="text-2xl font-black text-violet-900">26 - 40</span>
+              </div>
+              <div className="mt-4 pt-3 border-t border-violet-200 text-sm font-extrabold text-violet-800">
+                3.000 TL Nakdi Yardım
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-amber-800 uppercase block mb-1">4. Derece Temel Destek</span>
-                <span className="text-2xl font-black text-amber-900">51 - 90</span>
-                <p className="text-[11px] font-semibold text-amber-700 mt-1">40 Puanlık Kalan Aralık</p>
+                <span className="text-xs font-bold text-amber-800 uppercase block mb-1">6. Kademe</span>
+                <span className="text-2xl font-black text-amber-900">10 - 25</span>
               </div>
               <div className="mt-4 pt-3 border-t border-amber-200 text-sm font-extrabold text-amber-800">
-                2.500 TL Nakdi Yardım
+                2.000 TL Nakdi Yardım
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+            <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col justify-between sm:col-span-2 lg:col-span-3">
               <div>
-                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase block mb-1">Uygun Değil / Ayni</span>
-                <span className="text-2xl font-black text-slate-800 dark:text-slate-200">0 - 50</span>
-                <p className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mt-1">51 Puanlık Taban Bandı</p>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase block mb-1">Uygun Değil / Red</span>
+                <span className="text-2xl font-black text-slate-800 dark:text-slate-200">0 - 9</span>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300">
-                0 TL / Ayni Yardım
+                Nakdi Yardıma Uygun Görülmedi
               </div>
             </div>
 
@@ -245,7 +259,7 @@ export default function GuidePage() {
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
           <h3 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
             <Layers className="text-indigo-600" size={22} />
-            5. Değerlendirme Kriterleri ve Hesaplama Detayları
+            5. Değerlendirme Kriterleri ve Hesaplama Detayları (100 Puan)
           </h3>
 
           <div className="space-y-6">
@@ -253,175 +267,89 @@ export default function GuidePage() {
             {/* Category A */}
             <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
-                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">A. EKONOMİK DURUM (Maksimum 40 Puan)</h4>
-                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 40 Puan</span>
+                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">A. EKONOMİK DURUM (Maksimum 25 Puan)</h4>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 25 Puan</span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">Hanedeki kişi başına düşen aylık net gelirin resmi Muhtaçlık Sınırı oranlarına göre puanlanması:</p>
               <ul className="text-xs space-y-1.5 text-slate-700 dark:text-slate-300 list-disc pl-5 font-medium">
-                <li><strong>Muhtaçlık Sınırının %25 Altı:</strong> +40 Puan</li>
-                <li><strong>Muhtaçlık Sınırının %25 – %50 Arası:</strong> +35 Puan</li>
-                <li><strong>Muhtaçlık Sınırının %50 – %75 Arası:</strong> +25 Puan</li>
-                <li><strong>Muhtaçlık Sınırının %75 – %100 Arası:</strong> +15 Puan</li>
-                <li><strong>İlave / Düzeltme Puanları:</strong> Hanede Çalışan Yok (+10 Puan) • Düzenli Gelir Yok (+5 Puan) • SGK Kaydı Yok (+5 Puan)</li>
-                <li><strong>Son 3 Ayda Vakıf Nakdi Yardım Alınması:</strong> Kişi başı <strong>-5 Puan Düşüm</strong> uygulanır (Mükerrer ve sık yardımları engelleme dengesi).</li>
+                <li><strong>Muhtaçlık Sınırının %25 Altı:</strong> +20 Puan</li>
+                <li><strong>Muhtaçlık Sınırının %25 – %50 Arası:</strong> +15 Puan</li>
+                <li><strong>Muhtaçlık Sınırının %50 – %75 Arası:</strong> +10 Puan</li>
+                <li><strong>Muhtaçlık Sınırının %75 – %100 Arası:</strong> +5 Puan</li>
+                <li><strong>İlave / Düzeltme Puanları:</strong> Hanede Çalışan Yok (+3 Puan) • Düzenli Gelir Yok (+2 Puan) • SGK Kaydı Yok (+2 Puan)</li>
+                <li><strong>Son 3 Ayda Vakıf Nakdi Yardım Alınması:</strong> Kişi başı <strong>-5 Ceza Puanı</strong> düşülür.</li>
               </ul>
             </div>
 
             {/* Category B */}
             <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
-                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">B. DEZAVANTAJLI BİREYLER (Maksimum 30 Puan)</h4>
-                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 30 Puan</span>
+                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">B. HASTALIK VE ENGELLİLİK DURUMU (Maksimum 25 Puan)</h4>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 25 Puan</span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">Hanede bakıma muhtaç, engelli veya özel hassasiyeti bulunan bireylerin mevcudiyeti:</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Ağır Engelli (%70+): <strong>+15 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Engelli (%40-69): <strong>+10 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Evde Bakım Hastası: <strong>+10 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Kanser Tedavisi Gören: <strong>+10 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Kronik Hastalık: <strong>+6 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">65 Yaş Üstü Yalnız Yaşayan: <strong>+8 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Şehit Yakını / Gazi: <strong>+8 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Yetim/Öksüz veya Koruyucu Aile: <strong>+5 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Yabancı Uyruklu / Sığınmacı: <strong>+3 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700 sm:col-span-2">Özel Sebep / Özel Durum Tanımlama: <strong>+10 / +15 / +20 / +25 Puan</strong></div>
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Ağır Engelli (Tam Bağımlı): <strong>+12 Puan</strong></div>
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Engelli (Kısmi Bağımlı %40+): <strong>+8 Puan</strong></div>
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Evde Bakım veya Kanser Hastası: <strong>+8 Puan</strong></div>
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Kronik Hastalık: <strong>+5 Puan</strong></div>
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Yaşlı Yalnız veya Şehit Yakını/Gazi: <strong>+6 Puan</strong></div>
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Yetim veya Koruyucu Aile: <strong>+4 Puan</strong></div>
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700 sm:col-span-2">Özel Sebep İlavesi (Müdür Yetkisi): <strong>+5 / +10 / +15 / +20 Puan</strong></div>
               </div>
             </div>
 
             {/* Category C */}
             <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
-                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">C. ÇOCUK VE EĞİTİM DURUMU (Maksimum 10 Puan)</h4>
-                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
+                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">C. SOSYAL KIRILGANLIK VE NÜFUS (Maksimum 15 Puan)</h4>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 15 Puan</span>
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400">Hanedeki öğrenim gören çocuk ve genç sayısı üzerinden kişi başı hesaplanır (Tavan: 10 Puan):</p>
               <ul className="text-xs space-y-1 text-slate-700 dark:text-slate-300 list-disc pl-5 font-medium">
-                <li><strong>0-6 Yaş Çocuk (Bakım):</strong> Kişi başı +2 Puan</li>
-                <li><strong>İlkokul Öğrencisi:</strong> Kişi başı +2 Puan</li>
-                <li><strong>Ortaokul Öğrencisi:</strong> Kişi başı +2 Puan</li>
-                <li><strong>Lise Öğrencisi:</strong> Kişi başı +3 Puan</li>
-                <li><strong>Mesleki Eğitim Merkezi Öğrencisi:</strong> Kişi başı +3 Puan</li>
-                <li><strong>Açık Lise Öğrencisi:</strong> Kişi başı +3 Puan</li>
-                <li><strong>Üniversite Öğrencisi:</strong> Kişi başı +4 Puan</li>
+                <li><strong>Şiddet Mağduru:</strong> +5 Puan</li>
+                <li><strong>Kadın Hane Reisi / Afet / Madde Bağımlılığı / Eşi Cezaevinde:</strong> +4 Puan</li>
+                <li><strong>Borç İcra / Bakıma Muhtaç Bebek:</strong> +3 Puan</li>
+                <li><strong>Hane Nüfusu Etkisi:</strong> 1-2 kişi <strong>+1 Pn</strong> | 3-4 kişi <strong>+2 Pn</strong> | 5-6 kişi <strong>+3 Pn</strong> | 7+ kişi <strong>+4 Pn</strong></li>
               </ul>
             </div>
 
             {/* Category D */}
             <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
-                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">D. BARINMA DURUMU (Maksimum 10 Puan)</h4>
-                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
+                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">D. ÇOCUK VE EĞİTİM YÜKÜ (Maksimum 15 Puan)</h4>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 15 Puan</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Evsiz / Afetzede: <strong>+10 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Konut Ağır Hasarlı: <strong>+8 Puan</strong></div>
-                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Sağlıksız Konut / Kiracı: <strong>+6 / +5 Puan</strong></div>
-              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400">Hanedeki öğrenim gören çocuk ve genç sayısı üzerinden kişi başı hesaplanır:</p>
+              <ul className="text-xs space-y-1 text-slate-700 dark:text-slate-300 list-disc pl-5 font-medium">
+                <li><strong>0-6 Yaş / İlkokul / Ortaokul / Açık Lise:</strong> Kişi başı +2 Puan</li>
+                <li><strong>Lise / Mesleki Eğitim:</strong> Kişi başı +3 Puan</li>
+                <li><strong>Üniversite Öğrencisi:</strong> Kişi başı +4 Puan</li>
+              </ul>
             </div>
 
             {/* Category E */}
             <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
-                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">E. BEYAZ EŞYA VE EV ALETLERİ KONTROLÜ (Maksimum 10 Puan)</h4>
+                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">E. BARINMA VE EŞYA ŞARTLARI (Maksimum 10 Puan)</h4>
                 <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 10 Puan</span>
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400">Eşyanın hanedeki varlık ve arıza/eskime durumuna göre puan verilir:</p>
-              <div className="text-xs text-slate-700 dark:text-slate-300 space-y-1 font-medium">
-                <p>• <strong>Buzdolabı / Çamaşır Makinesi:</strong> Yok ise <strong>+3 Puan</strong>, Eski/Arızalı ise <strong>+1.5 Puan</strong></p>
-                <p>• <strong>Fırın / Ocak:</strong> Yok ise <strong>+2 Puan</strong>, Eski/Arızalı ise <strong>+1 Puan</strong></p>
-                <p>• <strong>Bulaşık M. / TV / Telefon / Klima / Süpürge:</strong> Yok ise <strong>+1 Puan</strong>, Eski/Arızalı ise <strong>+0.5 Puan</strong></p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Evsiz / Afetzede: <strong>+8 Puan</strong></div>
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">Konut Ağır Hasarlı: <strong>+6 Puan</strong></div>
+                <div className="bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700 sm:col-span-2">Temel Beyaz Eşya Eksikliği (Buzdolabı, Çamaşır Mak. vs) de bu bölüme maksimum <strong>+3 Puan</strong> değerinde dahil edilir.</div>
               </div>
             </div>
 
             {/* Category F */}
-            <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-3">
-              <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
-                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">F. SOSYAL KIRILGANLIK VE NÜFUS ŞARTLARI (Maksimum 30 Puan)</h4>
-                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-2.5 py-1 rounded">Tavan: 30 Puan</span>
-              </div>
-              <ul className="text-xs space-y-1 text-slate-700 dark:text-slate-300 list-disc pl-5 font-medium">
-                <li><strong>Aile İçi Şiddet Mağduru:</strong> +6 Puan</li>
-                <li><strong>Kadın Hane Reisi:</strong> +5 Puan</li>
-                <li><strong>Eşi Cezaevinde:</strong> +5 Puan</li>
-                <li><strong>Afet Nedeniyle Gelir Kaybı:</strong> +5 Puan</li>
-                <li><strong>Madde Bağımlılığı / Sosyal Güvencesiz:</strong> +5 Puan</li>
-                <li><strong>Borç / İcra Baskısı:</strong> +4 Puan</li>
-                <li><strong>Bakıma Muhtaç Bebek / Gebelik:</strong> +4 Puan</li>
-                <li><strong>Boşanmış Ebeveyn:</strong> +3 Puan</li>
-                <li><strong>Dul (Eşi Vefat Etmiş):</strong> +3 Puan</li>
-                <li><strong>Eski Hükümlü:</strong> +3 Puan</li>
-                <li><strong>Hane Nüfusu Puanı (OECD Ölçeği):</strong> 1-2 kişi <strong>+1 Pn</strong> | 3-4 kişi <strong>+2 Pn</strong> | 5-6 kişi <strong>+4 Pn</strong> | 7+ kişi <strong>+6 Pn</strong></li>
-              </ul>
-            </div>
-
-            {/* Category G */}
             <div className="p-6 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-4">
               <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-3">
-                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">G. PERSONEL İNCELEME KANAATİ PUANLAMA METODOLOJİSİ (Maksimum 20 Puan)</h4>
-                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-3 py-1 rounded">Tavan: 20 Puan</span>
+                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">F. PERSONEL İNCELEME KANAATİ (Maksimum 10 Puan)</h4>
+                <span className="text-xs font-extrabold bg-red-100 text-red-900 px-3 py-1 rounded">Tavan: 10 Puan</span>
               </div>
               
               <div className="bg-red-50/80 border border-red-200 p-3.5 rounded-lg text-xs text-red-950 font-medium leading-relaxed">
-                <strong className="text-red-900 font-extrabold block mb-1">0 - 5 Puanlama Ölçeği Temel Mantığı:</strong>
-                Sosyal yardım puanlama sisteminde amaç hanenin <strong>muhtaçlık derecesini tespit etmektir</strong>. Dolayısıyla;
-                <ul className="list-disc pl-5 mt-1 space-y-1">
-                  <li><strong>0 PUAN:</strong> Hanenin durumu olumludur, fiziki/sosyal şartları yeterlidir, aciliyeti veya riski yoktur. İlave puana ihtiyaç duyulmadığını ifade eder.</li>
-                  <li><strong>5 PUAN:</strong> Hane şartları aşırı olumsuzdur, fiziki durumu yaşanamaz haldedir, aciliyeti veya riski kriz seviyesindedir. Haneye ilave <strong>+5 Puan</strong> verilerek yardım alma önceliği en üst seviyeye çıkartılır.</li>
-                </ul>
-              </div>
-
-              {/* Detailed Breakdown for each 4 subfields */}
-              <div className="space-y-3 pt-2">
-                <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">Kanaat Alanları ve Puan Karşılıkları:</h5>
-
-                <div className="bg-white dark:bg-slate-800 p-3.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs space-y-2">
-                  <div className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">1. Yaşam Koşulları (Fiziki Ev Yapısı, Hijyen, Isınma, Eşya Durumu)</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700 dark:text-slate-300">
-                    <div className="p-2 rounded bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                      <strong className="text-slate-900 dark:text-slate-100">0 Puan (İyi / Yeterli):</strong> Temiz, hijyenik, bakımlı, ısınması ve eşyaları tam, sağlıklı yaşam ortamı.
-                    </div>
-                    <div className="p-2 rounded bg-red-50 border border-red-200 text-red-950">
-                      <strong className="text-red-900">5 Puan (Çok Kötü / Harabe):</strong> Rutubetli, soğuk, bakımsız, eşyasız, insan onuruna aykırı, yaşanamaz ev koşulları.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 p-3.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs space-y-2">
-                  <div className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">2. Aciliyet Durumu (Yardım İvediliği ve Kriz Boyutu)</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700 dark:text-slate-300">
-                    <div className="p-2 rounded bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                      <strong className="text-slate-900 dark:text-slate-100">0 Puan (Acil Değil / Rutin):</strong> Hanenin anlık bir kriz hali yoktur, rutin başvuru kategorisindedir.
-                    </div>
-                    <div className="p-2 rounded bg-red-50 border border-red-200 text-red-950">
-                      <strong className="text-red-900">5 Puan (Çok Acil / Kritik Kriz):</strong> Açlık, yakacaksız kalma, barınamama veya anlık sağlık krizi riski. Derhal yardım gerektirir.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 p-3.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs space-y-2">
-                  <div className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">3. Sosyal Destek Yetersizliği (Akraba ve Çevre Dayanışması)</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700 dark:text-slate-300">
-                    <div className="p-2 rounded bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                      <strong className="text-slate-900 dark:text-slate-100">0 Puan (Desteği Var):</strong> Haneye bakacak, destek çıkacak yakın akraba veya çevre dayanışması mevcuttur.
-                    </div>
-                    <div className="p-2 rounded bg-red-50 border border-red-200 text-red-950">
-                      <strong className="text-red-900">5 Puan (Kimsesiz / Sıfır Destek):</strong> Hanenin sığınabileceği hiçbir yakını, akrabası veya komşu desteği bulunmamaktadır.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 p-3.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs space-y-2">
-                  <div className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">4. Risk Değerlendirmesi (Güvenlik, İhmal, İstismar, Yaşlı/Çocuk Riski)</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700 dark:text-slate-300">
-                    <div className="p-2 rounded bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                      <strong className="text-slate-900 dark:text-slate-100">0 Puan (Güvenli / Risk Yok):</strong> Ortam güvenlidir, kriz veya istismar/ihmal riski tespit edilmemiştir.
-                    </div>
-                    <div className="p-2 rounded bg-red-50 border border-red-200 text-red-950">
-                      <strong className="text-red-900">5 Puan (Hayati Risk / Tehlike):</strong> Çocuk ihmali, şiddet tehlikesi, ağır bakımsızlık veya güvenlik tehdidi mevcuttur.
-                    </div>
-                  </div>
-                </div>
-
+                <strong className="text-red-900 font-extrabold block mb-1">4 Alt Kriter Üzerinden İnisiyatif Puanı:</strong>
+                Sosyal incelemeyi yapan uzmanın kanaati hanenin puanını 10 puana kadar artırabilir. Yaşam koşulları, aciliyet, sosyal destek eksikliği ve risk durumu parametreleri baz alınır.
               </div>
             </div>
 
@@ -519,6 +447,34 @@ export default function GuidePage() {
         </div>
 
       </main>
+
+      {/* References Section */}
+      <div className="bg-slate-900 dark:bg-slate-950 py-10 mt-10 border-t border-slate-800">
+        <div className="max-w-5xl mx-auto w-full px-6 lg:px-10">
+          <h3 className="text-lg font-black text-slate-100 flex items-center gap-2 mb-4">
+            <BookOpen size={18} className="text-slate-400" />
+            Metodoloji Kaynakçası (References & Literature)
+          </h3>
+          <ul className="space-y-3 text-xs text-slate-400 font-medium">
+            <li className="flex gap-2">
+              <span className="text-slate-600 font-bold">[1]</span>
+              <span><strong>Alkire, S., & Foster, J. (2011).</strong> "Counting and multidimensional poverty measurement." <em>Journal of Public Economics</em>, 95(7-8), 476-487. (MPI - Çok Boyutlu Yoksulluk Endeksi hesaplama prensipleri)</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-slate-600 font-bold">[2]</span>
+              <span><strong>Coady, D., Grosh, M., & Hoddinott, J. (2004).</strong> "Targeting of Transfers in Developing Countries: Review of Lessons and Experience." <em>World Bank Publications</em>. (PMT - Proxy Means Testing ağırlıklandırma modeli)</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-slate-600 font-bold">[3]</span>
+              <span><strong>T.C. Aile ve Sosyal Hizmetler Bakanlığı (2023).</strong> Sosyal Yardım İstatistikleri ve Yoksulluk Ölçütleri Bülteni. (Türkiye'ye özgü muhtaçlık sınırı, eğitim ve engellilik yardım limitasyonları)</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-slate-600 font-bold">[4]</span>
+              <span><strong>UNDP & OPHI (2022).</strong> "Global Multidimensional Poverty Index: Unpacking deprivation bundles to reduce multidimensional poverty." (Kesişen dezavantajlar ve kırılganlık katsayıları)</span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
     </SidebarLayout>
   );
