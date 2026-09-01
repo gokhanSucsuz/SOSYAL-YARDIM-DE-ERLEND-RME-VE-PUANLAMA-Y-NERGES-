@@ -3,12 +3,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye, UserPlus, Trash2, KeyRound, Download, Edit2, X 
+  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye, UserPlus, Trash2, KeyRound, Download, Edit2, X, Loader2
 } from 'lucide-react';
 import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db';
 import Link from 'next/link';
 import { SidebarLayout } from '@/components/sidebar';
 import { useDialog } from '@/components/DialogProvider';
+import { calculateNewSystemScore, isOldSystemRecord, isRejectedRecord } from '@/lib/scoring';
 
 interface PersonnelStats {
   id: string;
@@ -411,7 +412,10 @@ export default function PersonnelPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-        <div className="text-slate-500 dark:text-slate-400 font-medium animate-pulse">Yükleniyor...</div>
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 size={32} className="text-primary-500 animate-spin" />
+          <div className="text-slate-500 dark:text-slate-400 font-bold animate-pulse">Yükleniyor...</div>
+        </div>
       </div>
     );
   }
@@ -754,8 +758,13 @@ export default function PersonnelPage() {
                               <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">{a.applicantTc}</div>
                             </td>
                             <td className="px-6 py-4 text-center">
-                              <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-black bg-primary-50 text-primary-700">
-                                {a.result?.totalScore || 0}
+                              <span className={`inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-black relative ${a.result?.isRejected ? "bg-red-50 text-red-700" : "bg-primary-50 text-primary-700"}`}>
+                                {isOldSystemRecord(a.result) && (
+                                  <span className="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded border border-amber-200 leading-none absolute -top-2">
+                                    Eski: {a.result?.totalScore || 0}
+                                  </span>
+                                )}
+                                {isOldSystemRecord(a.result) ? calculateNewSystemScore(a.data).totalScore : (a.result?.totalScore || 0)}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-center">
@@ -773,7 +782,9 @@ export default function PersonnelPage() {
                               {a.result?.isRejected ? (
                                 <span className="text-red-600">REDDEDİLDİ</span>
                               ) : (
-                                <span className="text-slate-700 dark:text-slate-300">{a.result?.assistance?.text || '-'}</span>
+                                <span className="text-slate-700 dark:text-slate-300">
+                                  {isOldSystemRecord(a.result) ? calculateNewSystemScore(a.data).assistance.text : (a.result?.assistance?.text || '-')}
+                                </span>
                               )}
                             </td>
                             <td className="px-6 py-4 text-right">
