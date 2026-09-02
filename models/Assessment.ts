@@ -16,6 +16,7 @@ export interface IAssessment extends Document {
   householdNo?: string;
   status?: 'pending' | 'approved';
   customOrder?: number;
+  managerGroup?: string;
   data: any;
   result: {
     scoreA: number;
@@ -47,6 +48,7 @@ const AssessmentSchema: Schema = new Schema({
   householdNo: { type: String },
   status: { type: String, enum: ['pending', 'approved'], default: 'pending' },
   customOrder: { type: Number },
+  managerGroup: { type: String },
   data: { type: Schema.Types.Mixed, required: true },
   result: {
     scoreA: { type: Number, required: true },

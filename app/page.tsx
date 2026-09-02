@@ -9,7 +9,7 @@ import {
   getAllAssessments, getAssessmentsByPersonnel, Assessment, 
   saveAssessment, deleteAssessment, Meeting, getAllMeetings, 
   saveMeeting, deleteMeeting, isMeetingLocked, batchUpdateAssessments,
-  fetchAllAssessments
+  fetchAllAssessments, batchAssignGroup
 } from '@/lib/db';
 import { 
   FileText, Plus, LogOut, Users, CheckCircle2, ShieldCheck, 
@@ -29,7 +29,7 @@ import { calculateNewSystemScore, isOldSystemRecord, isRejectedRecord } from '@/
 
 interface BatchModalState {
   isOpen: boolean;
-  type: 'approve_all' | 'approve_selected' | 'revoke_all' | 'revoke_selected';
+  type: 'approve_all' | 'approve_selected' | 'revoke_all' | 'revoke_selected' | 'approve_group';
   title: string;
   description: string;
   targetItems: Assessment[];
@@ -52,8 +52,9 @@ export default function Dashboard() {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
 
-
-
+  // Grouping Modal State
+  const [groupModalOpen, setGroupModalOpen] = useState(false);
+  const [groupNameInput, setGroupNameInput] = useState('');
 
   // New & Edit Meeting Modal State
   const [newAssessmentModalOpen, setNewAssessmentModalOpen] = useState(false);
@@ -565,6 +566,13 @@ export default function Dashboard() {
       return;
     }
 
+    const meeting = meetings.find(m => m.id === item.meetingId);
+    const isSuperAdmin = user?.role === 'superadmin' || user?.role === 'super_admin';
+    if (meeting && !isMeetingActiveStrict(meeting) && !isSuperAdmin) {
+      await showAlert('Bu toplantı geçmişte kaldığı veya kapatıldığı için silme işlemi sadece Süper Admin tarafından yapılabilir.', 'warning');
+      return;
+    }
+
     if (!(await showConfirm(`"${item.applicantName}" isimli başvuru sahibine ait sosyal inceleme kaydını SILMEK istediğinizden emin misiniz?\n\nBu işlem kalıcıdır ve geri alınamaz!`))) {
       return;
     }
@@ -702,7 +710,7 @@ export default function Dashboard() {
       processedCount: 0,
     }));
 
-    const isApprove = batchModal.type === 'approve_all' || batchModal.type === 'approve_selected';
+    const isApprove = batchModal.type.startsWith('approve');
     const status = isApprove ? 'approved' : 'pending';
     const targetIds = batchModal.targetItems.map(i => i.id);
 
@@ -729,6 +737,24 @@ export default function Dashboard() {
       console.error(err);
       await showAlert('Toplu işlem sırasında hata oluştu. İşlem geri alındı.', 'warning');
       setBatchModal(prev => ({ ...prev, step: 'confirm' }));
+    }
+  };
+
+  const handleAssignGroup = async () => {
+    if (selectedIds.length === 0) {
+      await showAlert('Lütfen gruba atamak istediğiniz kayıtları seçiniz.', 'warning');
+      return;
+    }
+    
+    try {
+      await batchAssignGroup(selectedIds, groupNameInput.trim());
+      await reloadAssessments();
+      setGroupModalOpen(false);
+      setGroupNameInput('');
+      setSelectedIds([]);
+    } catch (err) {
+      console.error(err);
+      await showAlert('Kayıtlar gruba atanırken bir hata oluştu.', 'warning');
     }
   };
 
@@ -930,8 +956,10 @@ export default function Dashboard() {
     }, 150);
   };
 
-  const handleExportExcel = async (exportOnlySelected: boolean = false) => {
-    const targetRecords = exportOnlySelected
+  const handleExportExcel = async (exportOnlySelected: boolean | Assessment[] = false) => {
+    const targetRecords = Array.isArray(exportOnlySelected)
+      ? exportOnlySelected
+      : exportOnlySelected
       ? filteredAndSortedAssessments.filter(a => selectedIds.includes(a.id))
       : filteredAndSortedAssessments;
 
@@ -1012,97 +1040,105 @@ export default function Dashboard() {
         };
       });
 
-      // Rows
-      targetRecords.forEach((item, idx) => {
-        const rowNum = idx + 5;
-        const row = worksheet.getRow(rowNum);
-
-        const totalScore = item.result?.totalScore ?? 0;
-        const isEffectivelyRejected = item.result ? isRejectedRecord(item.result) : false;
-        const isAccepted = !isEffectivelyRejected;
-        const isApproved = item.status === 'approved';
-        const sequenceNo = item.customOrder !== undefined && item.customOrder !== null ? item.customOrder : idx + 1;
-
-        row.values = [
-          sequenceNo,
-          new Date(item.date).toLocaleDateString('tr-TR'),
-          item.applicantTc || '-',
-          item.applicantName,
-          item.phoneNumber || '-',
-          `${item.householdSize} kişi`,
-          item.applicantAddress || '-',
-          item.householdNo || '-',
-          item.personnelName,
-          item.result?.totalScore ?? 0,
-          isAccepted ? 'KAPSAM İÇİ (KABUL)' : 'KAPSAM DIŞI (RED)',
-          isAccepted ? (item.result?.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL') : '-',
-          isApproved ? 'ONAYLANDI' : 'ONAY BEKLİYOR',
-          item.managerName || '-'
-        ];
-
-        row.height = 22;
-
-        row.eachCell((cell, colNum) => {
-          cell.font = { name: 'Calibri', size: 10 };
-          cell.alignment = {
-            vertical: 'middle',
-            horizontal: (colNum === 4 || colNum === 7) ? 'left' : 'center',
-            wrapText: colNum === 7,
-          };
-
-          const bgColor = idx % 2 === 0 ? 'FFFFFFFF' : 'FFF8FAFC';
-          cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: bgColor },
-          };
-
-          cell.border = {
-            top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-            left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-            bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-            right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          };
-
-          if (colNum === 1) {
-            cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF4338CA' } };
-          }
-          if (colNum === 4) {
-            cell.font = { name: 'Calibri', size: 10, bold: true };
-          }
-          if (colNum === 10) {
-            cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: isEffectivelyRejected ? 'FFB91C1C' : 'FF000000' } };
-          }
-          if (colNum === 11) {
-            cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: isAccepted ? 'FF15803D' : 'FFB91C1C' } };
-          }
-          if (colNum === 12) {
-            cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: isApproved ? 'FF047857' : 'FFD97706' } };
-          }
-        });
+      // Group Records
+      const groupedRecords = new Map<string, Assessment[]>();
+      targetRecords.forEach(item => {
+        const g = item.managerGroup || 'Gruplandırılmamış';
+        if (!groupedRecords.has(g)) groupedRecords.set(g, []);
+        groupedRecords.get(g)!.push(item);
+      });
+      const sortedGroups = Array.from(groupedRecords.keys()).sort((a, b) => {
+        if (a === 'Gruplandırılmamış') return 1;
+        if (b === 'Gruplandırılmamış') return -1;
+        return String(a).localeCompare(String(b));
       });
 
-      worksheet.columns = [
-        { width: 10 },
-        { width: 14 },
-        { width: 16 },
-        { width: 28 },
-        { width: 16 },
-        { width: 13 },
-        { width: 36 },
-        { width: 15 },
-        { width: 22 },
-        { width: 13 },
-        { width: 22 },
-        { width: 20 },
-        { width: 16 },
-        { width: 20 },
-      ];
+      let currentRowNum = 5;
 
-      worksheet.autoFilter = {
-        from: { row: 4, column: 1 },
-        to: { row: targetRecords.length + 4, column: 14 },
-      };
+      sortedGroups.forEach(groupName => {
+        const items = groupedRecords.get(groupName)!;
+        
+        // Add Group Header Row
+        worksheet.mergeCells(`A${currentRowNum}:N${currentRowNum}`);
+        const groupHeaderCell = worksheet.getCell(`A${currentRowNum}`);
+        groupHeaderCell.value = `${groupName.toUpperCase()} (${items.length} Kayıt)`;
+        groupHeaderCell.font = { name: 'Calibri', size: 12, bold: true, color: { argb: 'FF1E293B' } };
+        groupHeaderCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } };
+        groupHeaderCell.alignment = { horizontal: 'left', vertical: 'middle', indent: 1 };
+        worksheet.getRow(currentRowNum).height = 24;
+        currentRowNum++;
+
+        // Add Items
+        items.forEach((item, idx) => {
+          const row = worksheet.getRow(currentRowNum);
+
+          const totalScore = item.result?.totalScore ?? 0;
+          const isEffectivelyRejected = item.result ? isRejectedRecord(item.result) : false;
+          const isAccepted = !isEffectivelyRejected;
+          const isApproved = item.status === 'approved';
+          const sequenceNo = item.customOrder !== undefined && item.customOrder !== null ? item.customOrder : idx + 1;
+
+          row.values = [
+            sequenceNo,
+            new Date(item.date).toLocaleDateString('tr-TR'),
+            item.applicantTc || '-',
+            item.applicantName,
+            item.phoneNumber || '-',
+            `${item.householdSize} kişi`,
+            item.applicantAddress || '-',
+            item.householdNo || '-',
+            item.personnelName,
+            item.result?.totalScore ?? 0,
+            isAccepted ? 'KAPSAM İÇİ (KABUL)' : 'KAPSAM DIŞI (RED)',
+            isAccepted ? (item.result?.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL') : '-',
+            isApproved ? 'ONAYLANDI' : 'ONAY BEKLİYOR',
+            item.managerName || '-'
+          ];
+
+          row.height = 22;
+
+          row.eachCell((cell, colNum) => {
+            cell.font = { name: 'Calibri', size: 10 };
+            cell.alignment = {
+              vertical: 'middle',
+              horizontal: (colNum === 4 || colNum === 7) ? 'left' : 'center',
+              wrapText: colNum === 7,
+            };
+
+            const bgColor = idx % 2 === 0 ? 'FFFFFFFF' : 'FFF8FAFC';
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: bgColor },
+            };
+
+            cell.border = {
+              top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            };
+
+            if (colNum === 1) {
+              cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF4338CA' } };
+            }
+            if (colNum === 4) {
+              cell.font = { name: 'Calibri', size: 10, bold: true };
+            }
+            if (colNum === 10) {
+              cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: isEffectivelyRejected ? 'FFB91C1C' : 'FF000000' } };
+            }
+            if (colNum === 11) {
+              cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: isAccepted ? 'FF15803D' : 'FFB91C1C' } };
+            }
+            if (colNum === 12) {
+              cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: isApproved ? 'FF047857' : 'FFD97706' } };
+            }
+          });
+
+          currentRowNum++;
+        });
+      });
 
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -1239,15 +1275,6 @@ export default function Dashboard() {
                   <Calendar size={18} />
                   <span>Yeni Toplantı Oluştur</span>
                 </button>
-                <button
-                  onClick={openApproveAllModal}
-                  disabled={pendingCount === 0}
-                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 btn-primary px-4 py-2.5 text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
-                  title="Onay bekleyen tüm hane kayıtlarını toplu onayla"
-                >
-                  <CheckCircle2 size={18} />
-                  <span>Tümünü Onayla ({pendingCount})</span>
-                </button>
               </>
             )}
 
@@ -1299,6 +1326,29 @@ export default function Dashboard() {
                 <Printer size={15} />
                 <span>Özet Liste</span>
               </button>
+
+              {isManager && (
+                <button
+                  onClick={() => {
+                    let meetingToCheck = filterMeetingId ? meetings.find(m => m.id === filterMeetingId) : null;
+                    if (!meetingToCheck && selectedIds.length > 0) {
+                      const firstItem = assessments.find(a => a.id === selectedIds[0]);
+                      if (firstItem) {
+                        meetingToCheck = meetings.find(m => m.id === firstItem.meetingId);
+                      }
+                    }
+                    if (meetingToCheck && !isMeetingActiveStrict(meetingToCheck)) {
+                      showAlert('Bu toplantı geçmişte kaldığı veya sonlandırıldığı için grup ataması yapılamaz.', 'warning');
+                      return;
+                    }
+                    setGroupModalOpen(true);
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors"
+                >
+                  <Users size={15} />
+                  <span>Gruba Ata</span>
+                </button>
+              )}
 
               {isManager && selectedPendingCount > 0 && (
                 <button
@@ -1962,15 +2012,101 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="w-full overflow-x-auto">
-            <table className="hidden md:table w-full text-left border-collapse table-auto whitespace-nowrap md:whitespace-normal">
+                    {(() => {
+            const groupedAssessments = (() => {
+              if (!filterMeetingId || !isManager) return [{ groupName: 'Tüm Kayıtlar', items: filteredAndSortedAssessments }];
+              const map = new Map<string, Assessment[]>();
+              filteredAndSortedAssessments.forEach(item => {
+                const g = item.managerGroup || 'Gruplandırılmamış';
+                if (!map.has(g)) map.set(g, []);
+                map.get(g)!.push(item);
+              });
+              const sortedKeys = Array.from(map.keys()).sort((a, b) => {
+                if (a === 'Gruplandırılmamış') return 1;
+                if (b === 'Gruplandırılmamış') return -1;
+                return String(a).localeCompare(String(b));
+              });
+              return sortedKeys.map(k => ({ groupName: k, items: map.get(k)! }));
+            })();
+
+            return (
+              <div className="w-full space-y-6">
+                {groupedAssessments.map(group => (
+                  <div key={group.groupName} className="w-full bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    {filterMeetingId && isManager && (
+                      <div className="bg-slate-100 dark:bg-slate-800/80 px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <h4 className="font-black text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                          <Users size={16} className="text-primary-600"/>
+                          {group.groupName} <span className="text-xs font-normal text-slate-500">({group.items.length} Kayıt)</span>
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedIds(group.items.map(i => i.id));
+                              setPrintMode('summary');
+                              setPrintOnlySelected(true);
+                              setTimeout(() => window.print(), 150);
+                            }}
+                            className="bg-slate-700 hover:bg-slate-600 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm"
+                            title="Bu Grubu Yazdır"
+                          >
+                            <Printer size={14} /> Yazdır
+                          </button>
+                          
+                          <button
+                            onClick={async () => {
+                              setSelectedIds(group.items.map(i => i.id));
+                              await handleExportExcel(group.items);
+                            }}
+                            className="bg-emerald-800 hover:bg-emerald-700 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm"
+                            title="Bu Grubu Excel'e Aktar"
+                          >
+                            <FileText size={14} /> Excel
+                          </button>
+
+                          {group.items.some(i => i.status !== 'approved') && (
+                            <button
+                              onClick={() => {
+                                const pendingItems = group.items.filter(i => i.status !== 'approved');
+                                setBatchModal({
+                                  isOpen: true,
+                                  type: 'approve_group',
+                                  title: `Grubu Onayla: ${group.groupName}`,
+                                  description: `Bu gruptaki ${pendingItems.length} adet onay bekleyen kayıt toplu olarak onaylanacaktır. Emin misiniz?`,
+                                  targetItems: pendingItems,
+                                  step: 'confirm',
+                                  progress: 0,
+                                  processedCount: 0,
+                                  totalCount: pendingItems.length,
+                                });
+                              }}
+                              className="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm"
+                            >
+                              <CheckCircle2 size={14} /> Bu Grubu Onayla
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="w-full overflow-x-auto">
+                      <table className="hidden md:table w-full text-left border-collapse table-auto whitespace-nowrap md:whitespace-normal">
               <thead>
                 <tr className="bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 text-[10px] uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
                   <th className="px-2 py-2.5 font-black text-center w-8">
                     <input
                       type="checkbox"
-                      checked={filteredAndSortedAssessments.length > 0 && selectedIds.length === filteredAndSortedAssessments.length}
-                      onChange={toggleSelectAll}
+                      checked={group.items.length > 0 && group.items.every(item => selectedIds.includes(item.id))}
+                      onChange={() => {
+                        const allSelected = group.items.every(item => selectedIds.includes(item.id));
+                        if (allSelected) {
+                          setSelectedIds(prev => prev.filter(id => !group.items.find(i => i.id === id)));
+                        } else {
+                          const newIds = [...selectedIds];
+                          group.items.forEach(i => { if (!newIds.includes(i.id)) newIds.push(i.id); });
+                          setSelectedIds(newIds);
+                        }
+                      }}
                       className="rounded border-slate-300 dark:border-slate-600 text-primary-600 focus:ring-primary-500 cursor-pointer"
                     />
                   </th>
@@ -2007,7 +2143,7 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
-                {filteredAndSortedAssessments.map((item) => {
+                {group.items.map((item) => {
                   const isSelected = selectedIds.includes(item.id);
                   const isApproved = item.status === 'approved';
                   return (
@@ -2045,11 +2181,10 @@ export default function Dashboard() {
                   );
                 })}
               </tbody>
-            </table>
-
+                      </table>
             {/* MOBILE CARD VIEW */}
-            <div className="md:hidden flex flex-col gap-3 mt-2">
-              {filteredAndSortedAssessments.map((item) => {
+            <div className="md:hidden flex flex-col gap-3 mt-2 p-2">
+              {group.items.map((item) => {
                 const isSelected = selectedIds.includes(item.id);
                 const isApproved = item.status === 'approved';
                 return (
@@ -2106,9 +2241,15 @@ export default function Dashboard() {
                 );
               })}
             </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
           </div>
-        </div>
         )}
+
       </main>
 
       {batchModal.isOpen && (
@@ -2229,6 +2370,46 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* GROUP ASSIGNMENT MODAL */}
+      {groupModalOpen && (
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200 no-print">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100 dark:border-slate-800">
+            <h3 className="text-lg font-black text-slate-900 dark:text-slate-100 mb-2">Seçilenleri Gruba Ata</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+              Seçili {selectedIds.length} adet kaydı bir gruba atayarak toplantı içerisinde kategorize edebilirsiniz.
+            </p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Grup Adı</label>
+                <input
+                  type="text"
+                  value={groupNameInput}
+                  onChange={e => setGroupNameInput(e.target.value)}
+                  placeholder="Örn: Riskli Haneler, Ekstra Yardım vb. (Boş bırakarak gruptan çıkarabilirsiniz)"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={() => setGroupModalOpen(false)}
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl font-bold text-sm transition-colors"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={handleAssignGroup}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-colors shadow-md shadow-indigo-900/20"
+                >
+                  Gruba Ata
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ========================================================================= */}
       {/* PRINT-ONLY SECTIONS (SUMMARY LIST OR DETAILED SINGLE A4 REPORTS)          */}
       {/* ========================================================================= */}
@@ -2282,47 +2463,76 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Table - Strictly Single Row per record matching active screen order */}
-            <table className="w-full border-collapse border border-black text-[9px] mb-6 print-table">
-              <thead>
-                <tr className="bg-slate-200 text-black font-extrabold uppercase border-b border-black">
-                  <th className="p-1 text-center w-12">SIRA NO</th>
-                  <th className="p-1 text-center w-24">T.C. KİMLİK NO</th>
-                  <th className="p-1 text-left">BAŞVURU SAHİBİ ADI SOYADI</th>
-                  <th className="p-1 text-center w-14">HANE KİŞİ</th>
-                  <th className="p-1 text-left w-36">İNCELENEN ADRES / MAH.</th>
-                  <th className="p-1 text-center w-20">ZİYARET TARİHİ</th>
-                  <th className="p-1 text-center w-16">PUAN</th>
-                  <th className="p-1 text-center w-20">YARDIM MİKTARI</th>
-                  <th className="p-1 text-center w-24">ONAY DURUMU</th>
-                  <th className="p-1 text-left w-36">KARAR / YARDIM TİPİ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {printableRecords.length === 0 ? (
-                  <tr>
-                    <td colSpan={9} className="p-4 text-center font-bold text-slate-500">
-                      {printOnlySelected ? 'Seçilen herhangi bir sosyal inceleme kaydı bulunmamaktadır.' : 'Arama ve filtreleme kriterlerine uygun kayıt bulunmamaktadır.'}
-                    </td>
-                  </tr>
-                ) : (
-                  printableRecords.map((item, idx) => (
-                    <tr key={item.id} className="border-b border-black">
-                      <td className="p-1 text-center font-bold">{item.customOrder !== undefined && item.customOrder !== null ? item.customOrder : idx + 1}</td>
-                      <td className="p-1 text-center font-bold">{item.applicantTc || '-'}</td>
-                      <td className="p-1 font-black uppercase">{item.applicantName}</td>
-                      <td className="p-1 text-center font-bold">{item.householdSize} kişi</td>
-                      <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
-                      <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
-                      <td className={`p-1 text-center font-black ${isRejectedRecord(item.result) ? 'text-red-600 print-exact' : ''}`}>{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</td>
-                      <td className="p-1 text-center font-bold">{isRejectedRecord(item.result) ? '-' : (item.result.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL')}</td>
-                      <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
-                      <td className={`p-1 font-bold uppercase ${isRejectedRecord(item.result) ? 'text-red-600 print-exact' : ''}`}>{user?.role === "personnel" && !showScores ? "***" : isRejectedRecord(item.result) ? "KAPSAM DIŞI (RED)" : item.result.assistance?.text}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+            {(() => {
+              const printGroups = new Map<string, Assessment[]>();
+              printableRecords.forEach(item => {
+                const g = item.managerGroup || 'Gruplandırılmamış';
+                if (!printGroups.has(g)) printGroups.set(g, []);
+                printGroups.get(g)!.push(item);
+              });
+              const sortedPrintGroups = Array.from(printGroups.keys()).sort((a, b) => {
+                if (a === 'Gruplandırılmamış') return 1;
+                if (b === 'Gruplandırılmamış') return -1;
+                return String(a).localeCompare(String(b));
+              });
+
+              if (printableRecords.length === 0) {
+                return (
+                  <table className="w-full border-collapse border border-black text-[9px] mb-6 print-table">
+                    <tbody>
+                      <tr>
+                        <td colSpan={9} className="p-4 text-center font-bold text-slate-500">
+                          {printOnlySelected ? 'Seçilen herhangi bir sosyal inceleme kaydı bulunmamaktadır.' : 'Arama ve filtreleme kriterlerine uygun kayıt bulunmamaktadır.'}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                );
+              }
+
+              return sortedPrintGroups.map(groupName => {
+                const groupItems = printGroups.get(groupName)!;
+                return (
+                  <div key={groupName} className="mb-6 break-inside-avoid">
+                    <h4 className="text-[11px] font-black uppercase tracking-wider mb-2 border-l-4 border-black pl-2">
+                      {groupName} ({groupItems.length} KAYIT)
+                    </h4>
+                    <table className="w-full border-collapse border border-black text-[9px] print-table">
+                      <thead>
+                        <tr className="bg-slate-200 text-black font-extrabold uppercase border-b border-black">
+                          <th className="p-1 text-center w-12">SIRA NO</th>
+                          <th className="p-1 text-center w-24">T.C. KİMLİK NO</th>
+                          <th className="p-1 text-left">BAŞVURU SAHİBİ ADI SOYADI</th>
+                          <th className="p-1 text-center w-14">HANE KİŞİ</th>
+                          <th className="p-1 text-left w-36">İNCELENEN ADRES / MAH.</th>
+                          <th className="p-1 text-center w-20">ZİYARET TARİHİ</th>
+                          <th className="p-1 text-center w-16">PUAN</th>
+                          <th className="p-1 text-center w-20">YARDIM MİKTARI</th>
+                          <th className="p-1 text-center w-24">ONAY DURUMU</th>
+                          <th className="p-1 text-left w-36">KARAR / YARDIM TİPİ</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {groupItems.map((item, idx) => (
+                          <tr key={item.id} className="border-b border-black">
+                            <td className="p-1 text-center font-bold">{item.customOrder !== undefined && item.customOrder !== null ? item.customOrder : idx + 1}</td>
+                            <td className="p-1 text-center font-bold">{item.applicantTc || '-'}</td>
+                            <td className="p-1 font-black uppercase">{item.applicantName}</td>
+                            <td className="p-1 text-center font-bold">{item.householdSize} kişi</td>
+                            <td className="p-1 truncate max-w-[140px]">{item.applicantAddress || '-'}</td>
+                            <td className="p-1 text-center">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
+                            <td className={`p-1 text-center font-black ${isRejectedRecord(item.result) ? 'text-red-600 print-exact' : ''}`}>{user?.role === 'personnel' && !showScores ? '***' : item.result.totalScore} Puan</td>
+                            <td className="p-1 text-center font-bold">{isRejectedRecord(item.result) ? '-' : (item.result.assistance?.amount ? `${item.result.assistance.amount} TL` : '0 TL')}</td>
+                            <td className="p-1 text-center font-bold uppercase">{item.status === 'approved' ? 'ONAYLANDI' : 'ONAY BEKLEYEN'}</td>
+                            <td className={`p-1 font-bold uppercase ${isRejectedRecord(item.result) ? 'text-red-600 print-exact' : ''}`}>{user?.role === "personnel" && !showScores ? "***" : isRejectedRecord(item.result) ? "KAPSAM DIŞI (RED)" : item.result.assistance?.text}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              });
+            })()}
 
             {/* Signature Block at Bottom */}
             <div className="border border-black p-3 mt-8">

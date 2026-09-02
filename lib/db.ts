@@ -144,6 +144,7 @@ export interface Assessment {
   householdNo?: string;
   status?: 'pending' | 'approved';
   customOrder?: number;
+  managerGroup?: string;
   data: any; 
   result: AssessmentResult;
 }
@@ -204,6 +205,15 @@ export const batchUpdateAssessments = async (ids: string[], status: 'approved' |
     body: JSON.stringify({ ids, status })
   });
   if (!res.ok) throw new Error('Failed to batch update assessments');
+};
+
+export const batchAssignGroup = async (ids: string[], groupName: string): Promise<void> => {
+  const res = await fetch('/api/assessments/set-group', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids, groupName })
+  });
+  if (!res.ok) throw new Error('Failed to batch assign group');
 };
 
 export const getAssessmentsByPersonnel = async (personnelId: string, page = 1, limit = 1000): Promise<PaginatedAssessments> => {
