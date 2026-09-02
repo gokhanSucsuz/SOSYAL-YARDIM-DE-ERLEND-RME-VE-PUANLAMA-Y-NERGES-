@@ -2146,6 +2146,9 @@ export default function Dashboard() {
                 {group.items.map((item) => {
                   const isSelected = selectedIds.includes(item.id);
                   const isApproved = item.status === 'approved';
+                  const itemMeeting = meetings.find(m => m.id === item.meetingId);
+                  const isSuperAdmin = user?.role === 'superadmin' || user?.role === 'super_admin';
+                  const canDelete = !isApproved && (isSuperAdmin || (itemMeeting && isMeetingActiveStrict(itemMeeting)));
                   return (
                     <tr key={item.id} className={`${isSelected ? 'bg-primary-50/80' : 'hover:bg-slate-50/80'}`}>
                       <td className="px-3 py-3 text-center"><input type="checkbox" checked={isSelected} onChange={() => toggleSelectId(item.id)} className="rounded border-slate-300 dark:border-slate-600 text-primary-600" /></td>
@@ -2174,7 +2177,7 @@ export default function Dashboard() {
                           {isManager && !isApproved && <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 text-white p-1 rounded">✓</button>}
                           <button onClick={() => handlePrintSingleDetailed(item)} className="bg-primary-600 text-white p-1 rounded">📄</button>
                           <Link href={`/assessment/${item.id}`} className="bg-slate-900 text-white p-1 rounded">👁️</Link>
-                          {!isApproved && <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 text-white p-1 rounded">🗑️</button>}
+                          {canDelete && <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 text-white p-1 rounded">🗑️</button>}
                         </div>
                       </td>
                     </tr>
@@ -2187,6 +2190,9 @@ export default function Dashboard() {
               {group.items.map((item) => {
                 const isSelected = selectedIds.includes(item.id);
                 const isApproved = item.status === 'approved';
+                const itemMeeting = meetings.find(m => m.id === item.meetingId);
+                const isSuperAdmin = user?.role === 'superadmin' || user?.role === 'super_admin';
+                const canDelete = !isApproved && (isSuperAdmin || (itemMeeting && isMeetingActiveStrict(itemMeeting)));
                 return (
                   <div key={`mobile-${item.id}`} className={`p-4 rounded-xl border ${isSelected ? 'border-primary-400 bg-primary-50/50 dark:bg-primary-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'} shadow-sm relative transition-colors`}>
                     <div className="flex justify-between items-start mb-2">
@@ -2231,7 +2237,7 @@ export default function Dashboard() {
                       <Link href={`/assessment/${item.id}`} className="bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-bold transition-colors">
                         <FileText size={14}/> Detay
                       </Link>
-                      {!isApproved && (
+                      {canDelete && (
                         <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg font-bold transition-colors">
                           <Trash2 size={14}/>
                         </button>
