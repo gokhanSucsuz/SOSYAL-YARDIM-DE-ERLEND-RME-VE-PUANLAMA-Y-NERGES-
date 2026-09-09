@@ -1,4 +1,4 @@
-import { calculateAssistanceFromScore } from './db';
+import { calculateAssistanceFromScore, getSystemSettings, DEFAULT_SETTINGS } from './db';
 
 export function isOldSystemRecord(result: any) {
   return result && result.scoreG !== undefined;
@@ -109,9 +109,19 @@ export function calculateNewSystemScore(state: any) {
   }
 
   const rawTotal = scoreA + scoreB + scoreC + scoreD + scoreE + scoreF;
-  const totalScore = state.falseStatement ? 0 : Math.max(0, Math.round(rawTotal - scorePenalty));
+  let totalScore = state.falseStatement ? 0 : Math.max(0, Math.round(rawTotal - scorePenalty));
   
   const hasIncomeVulnerability = !!(state.income && state.income > 0);
+
+  if (hasIncomeVulnerability && !state.falseStatement) {
+    const settings = typeof window !== 'undefined' ? getSystemSettings() : DEFAULT_SETTINGS;
+    const sortedTiers = [...settings.assistanceTiers].sort((a, b) => a.minScore - b.minScore);
+    const lowestMinScore = sortedTiers.length > 0 ? sortedTiers[0].minScore : 10;
+    if (totalScore < lowestMinScore) {
+      totalScore = lowestMinScore;
+    }
+  }
+
   const assistance = calculateAssistanceFromScore(totalScore, !!state.falseStatement, undefined, hasIncomeVulnerability);
 
   const priorities: string[] = [];
