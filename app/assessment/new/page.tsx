@@ -106,6 +106,7 @@ function NewAssessmentContent() {
     e_afetGelirKaybi: false,
     e_maddeBagimliligi: false,
     e_sosyalGuvencesiz: false,
+    e_acilHastalik: false,
     e_icraBorcBaskisi: false,
     e_gebelikBebek: false,
     e_hukumluYakin: false,
@@ -645,6 +646,7 @@ function NewAssessmentContent() {
                           <CheckboxItem label="Afet / Kaza nedeniyle gelir kaybı" checked={state.e_afetGelirKaybi} onChange={(v:any) => set('e_afetGelirKaybi', v)} points={5} />
                           <CheckboxItem label="Hane içinde madde / alkol bağımlısı birey" checked={state.e_maddeBagimliligi} onChange={(v:any) => set('e_maddeBagimliligi', v)} points={5} />
                           <CheckboxItem label="Sosyal güvencesiz ve aile desteğinden yoksun" checked={state.e_sosyalGuvencesiz} onChange={(v:any) => set('e_sosyalGuvencesiz', v)} points={5} />
+                          <CheckboxItem label="Acil hastalık durumu" checked={state.e_acilHastalik} onChange={(v:any) => set('e_acilHastalik', v)} points={4} />
                           <CheckboxItem label="Yüksek borç / icra / haciz baskısı altında" checked={state.e_icraBorcBaskisi} onChange={(v:any) => set('e_icraBorcBaskisi', v)} points={4} />
                           <CheckboxItem label="Bakıma muhtaç bebek (0-1 Yaş) veya riskli gebelik" checked={state.e_gebelikBebek} onChange={(v:any) => set('e_gebelikBebek', v)} points={4} />
                           <CheckboxItem label="Boşanmış / Terk edilmiş eş" checked={state.e_bosanmis} onChange={(v:any) => set('e_bosanmis', v)} points={3} />

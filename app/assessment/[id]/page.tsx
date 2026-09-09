@@ -173,6 +173,7 @@ export default function AssessmentDetail() {
   if (state.e_afetGelirKaybi) selectedFragility.push('Afet nedeniyle gelir kaybı (+5 Puan)');
   if (state.e_maddeBagimliligi) selectedFragility.push('Madde / alkol bağımlılığı (+5 Puan)');
   if (state.e_sosyalGuvencesiz) selectedFragility.push('Sosyal güvencesiz / kimsesiz (+5 Puan)');
+  if (state.e_acilHastalik) selectedFragility.push('Acil hastalık durumu (+4 Puan)');
   if (state.e_icraBorcBaskisi) selectedFragility.push('Borç / icra / haciz baskısı (+4 Puan)');
   if (state.e_gebelikBebek) selectedFragility.push('Bakıma muhtaç bebek / riskli gebelik (+4 Puan)');
   if (state.e_bosanmis) selectedFragility.push('Boşanmış (+3 Puan)');

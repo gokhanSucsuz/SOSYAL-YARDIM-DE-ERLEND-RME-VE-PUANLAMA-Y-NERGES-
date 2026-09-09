@@ -909,6 +909,7 @@ export default function Dashboard() {
     if (state.e_afetGelirKaybi) list.push('Afet gelir kaybı (+5 Pn)');
     if (state.e_maddeBagimliligi) list.push('Madde bağımlılığı (+5 Pn)');
     if (state.e_sosyalGuvencesiz) list.push('Sosyal güvencesiz (+5 Pn)');
+    if (state.e_acilHastalik) list.push('Acil hastalık durumu (+4 Pn)');
     if (state.e_icraBorcBaskisi) list.push('Borç/icra baskısı (+4 Pn)');
     if (state.e_gebelikBebek) list.push('Bakıma muhtaç bebek/gebelik (+4 Pn)');
     if (state.e_bosanmis) list.push('Boşanmış (+3 Pn)');

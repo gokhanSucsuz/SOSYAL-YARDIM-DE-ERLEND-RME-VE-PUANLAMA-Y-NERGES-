@@ -51,6 +51,7 @@ export function calculateNewSystemScore(state: any) {
   if (state.e_afetGelirKaybi) scoreC += 4;
   if (state.e_maddeBagimliligi) scoreC += 4;
   if (state.e_sosyalGuvencesiz) scoreC += 4;
+  if (state.e_acilHastalik) scoreC += 4;
   if (state.e_icraBorcBaskisi) scoreC += 3;
   if (state.e_gebelikBebek) scoreC += 3;
   if (state.e_bosanmis) scoreC += 2;
@@ -121,6 +122,7 @@ export function calculateNewSystemScore(state: any) {
   if (state.d_afetzede || state.e_afetGelirKaybi) priorities.push('Afet Mağduru');
   if (state.b_yasliYalniz) priorities.push('Yaşlı ve Yalnız Yaşayan');
   if (state.e_siddetMagduru) priorities.push('Aile İçi Şiddet Mağduru');
+  if (state.e_acilHastalik) priorities.push('Acil Hastalık Durumu');
   if (state.a_aracSahibi || state.a_birdenFazlaTasinmaz) priorities.push('Varlık Testi: Ceza Puanı Uygulandı');
   if (state.appliance_buzdolabi === 'yok' || state.appliance_camasir === 'yok') {
     priorities.push('Temel Ev Eşyası Eksikliği (Buzdolabı / Çamaşır M.)');

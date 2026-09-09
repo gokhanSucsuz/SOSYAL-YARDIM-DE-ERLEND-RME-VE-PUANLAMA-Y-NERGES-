@@ -96,6 +96,7 @@ const CATEGORIES_MAP = [
       { key: 'e_afetGelirKaybi', label: 'Kaza/Afet Kaynaklı Gelir Kaybı' },
       { key: 'e_maddeBagimliligi', label: 'Madde Bağımlısı Birey' },
       { key: 'e_sosyalGuvencesiz', label: 'Sosyal Güvencesiz' },
+      { key: 'e_acilHastalik', label: 'Acil Hastalık Durumu' },
       { key: 'e_icraBorcBaskisi', label: 'Yüksek Borç / İcra' },
       { key: 'e_gebelikBebek', label: 'Bebek / Riskli Gebelik' },
       { key: 'e_bosanmis', label: 'Boşanmış / Terk Edilmiş' },
