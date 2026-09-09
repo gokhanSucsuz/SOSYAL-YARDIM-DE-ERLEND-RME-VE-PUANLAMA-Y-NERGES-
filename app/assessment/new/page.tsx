@@ -26,6 +26,7 @@ function NewAssessmentContent() {
   const [step, setStep] = useState(0);
   const [allAssessments, setAllAssessments] = useState<any[]>([]);
   const [tcHistory, setTcHistory] = useState<any[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
@@ -157,7 +158,8 @@ function NewAssessmentContent() {
   const canProceed = step === 0 ? isIdentityValid : (step === 8 ? state.systemChecksDone : true);
 
   const handleSave = async () => {
-    if (!user) return;
+    if (!user || isSaving) return;
+    setIsSaving(true);
     try {
       const assessmentData = {
         id: crypto.randomUUID(),
@@ -193,6 +195,7 @@ function NewAssessmentContent() {
     } catch (err) {
       console.error(err);
       showAlert("Kayıt sırasında hata oluştu! " + (err instanceof Error ? err.message : ''), "error");
+      setIsSaving(false);
     }
   };
 
@@ -802,12 +805,17 @@ function NewAssessmentContent() {
                       </div>
 
                       <motion.button 
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={{ scale: isSaving ? 1 : 1.02 }}
+                        whileTap={{ scale: isSaving ? 1 : 0.98 }}
                         onClick={handleSave}
-                        className="w-full bg-gradient-to-r from-emerald-600 to-primary-600 hover:from-emerald-500 hover:to-primary-500 text-white font-extrabold text-lg py-4 rounded-2xl shadow-xl shadow-emerald-950/50 flex justify-center items-center gap-2"
+                        disabled={isSaving}
+                        className={`w-full bg-gradient-to-r from-emerald-600 to-primary-600 hover:from-emerald-500 hover:to-primary-500 text-white font-extrabold text-lg py-4 rounded-2xl shadow-xl shadow-emerald-950/50 flex justify-center items-center gap-2 ${isSaving ? 'opacity-60 cursor-not-allowed' : ''}`}
                       >
-                        <Save size={20} /> Formu Kaydet ve Onaya Gönder
+                        {isSaving ? (
+                          <><span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" /> Kaydediliyor...</>
+                        ) : (
+                          <><Save size={20} /> Formu Kaydet ve Onaya Gönder</>
+                        )}
                       </motion.button>
                     </motion.div>
                   </div>
@@ -856,12 +864,17 @@ function NewAssessmentContent() {
           </motion.button>
         ) : (
           <motion.button
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: isSaving ? 1 : 0.95 }}
             type="button"
             onClick={handleSave}
-            className="flex items-center justify-center px-5 py-3 rounded-2xl font-black text-sm min-h-[48px] bg-gradient-to-r from-emerald-600 to-primary-600 hover:from-emerald-500 hover:to-primary-500 text-white shadow-lg shadow-emerald-900/30 transition-all touch-manipulation"
+            disabled={isSaving}
+            className={`flex items-center justify-center px-5 py-3 rounded-2xl font-black text-sm min-h-[48px] bg-gradient-to-r from-emerald-600 to-primary-600 hover:from-emerald-500 hover:to-primary-500 text-white shadow-lg shadow-emerald-900/30 transition-all touch-manipulation ${isSaving ? 'opacity-60 cursor-not-allowed' : ''}`}
           >
-            <Save size={18} className="mr-1.5" /> Kaydet ve Bitir
+            {isSaving ? (
+              <><span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-1.5" /> Kaydediliyor...</>
+            ) : (
+              <><Save size={18} className="mr-1.5" /> Kaydet ve Bitir</>
+            )}
           </motion.button>
         )}
       </div>

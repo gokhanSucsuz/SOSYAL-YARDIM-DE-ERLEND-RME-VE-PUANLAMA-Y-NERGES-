@@ -24,6 +24,7 @@ export default function EditAssessmentWizard() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [state, setState] = useState({
     applicantName: "",
@@ -189,7 +190,8 @@ export default function EditAssessmentWizard() {
   const canProceed = step === 0 ? isIdentityValid : (step === 8 ? state.systemChecksDone : true);
 
   const handleSave = async () => {
-    if (!user || !assessmentId) return;
+    if (!user || !assessmentId || isSaving) return;
+    setIsSaving(true);
     try {
       const assessmentData = {
         id: assessmentId,
@@ -223,6 +225,7 @@ export default function EditAssessmentWizard() {
     } catch (err) {
       console.error(err);
       await showAlert("Kayıt sırasında hata oluştu! " + (err instanceof Error ? err.message : ''), 'warning');
+      setIsSaving(false);
     }
   };
 
@@ -787,9 +790,14 @@ export default function EditAssessmentWizard() {
 
                   <button 
                     onClick={handleSave}
-                    className="w-full bg-primary-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-primary-200 hover:bg-primary-700 transition-colors flex justify-center items-center"
+                    disabled={isSaving}
+                    className={`w-full bg-primary-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-primary-200 hover:bg-primary-700 transition-colors flex justify-center items-center gap-2 ${isSaving ? 'opacity-60 cursor-not-allowed' : ''}`}
                   >
-                    Değişiklikleri Kaydet
+                    {isSaving ? (
+                      <><span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" /> Kaydediliyor...</>
+                    ) : (
+                      'Değişiklikleri Kaydet'
+                    )}
                   </button>
                 </div>
               </div>
@@ -834,9 +842,14 @@ export default function EditAssessmentWizard() {
           <button
             type="button"
             onClick={handleSave}
-            className="flex items-center justify-center px-5 py-3 rounded-xl font-extrabold text-sm min-h-[48px] bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-md active:scale-95 touch-manipulation"
+            disabled={isSaving}
+            className={`flex items-center justify-center px-5 py-3 rounded-xl font-extrabold text-sm min-h-[48px] bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-md active:scale-95 touch-manipulation ${isSaving ? 'opacity-60 cursor-not-allowed' : ''}`}
           >
-            <Save size={18} className="mr-1.5" /> Değişiklikleri Kaydet
+            {isSaving ? (
+              <><span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-1.5" /> Kaydediliyor...</>
+            ) : (
+              <><Save size={18} className="mr-1.5" /> Değişiklikleri Kaydet</>
+            )}
           </button>
         )}
       </div>
