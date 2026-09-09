@@ -31,7 +31,7 @@ export function calculateNewSystemScore(state: any) {
   if (state.b_yetim) scoreB += 4;
   if (state.b_koruyucuAile) scoreB += 4;
   if (state.b_yabanciUyruklu) scoreB += 2;
-  if (!state.b_ozelSebepPuanBekliyor && state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
+  if (!state.b_ozelSebepPuanBekliyor && state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) !== 0) {
     scoreB += Number(state.b_ozelSebepPuan);
   }
   if (state.b_cokluOzelDurumluBirey) scoreB += 4;

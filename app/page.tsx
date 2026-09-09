@@ -663,6 +663,11 @@ export default function Dashboard() {
 
   // Open Modals
   const openApproveAllModal = async () => {
+    const pendingWithWaitingScore = pendingList.filter(a => a.data?.b_ozelSebepPuanBekliyor);
+    if (pendingWithWaitingScore.length > 0) {
+      await showAlert(`Onay bekleyen ${pendingWithWaitingScore.length} adet kayıtta "Özel Sebep" puanı girilmesi bekleniyor. Lütfen önce bu kayıtların detaylarına giderek eksi veya artı puan değerlendirmesini yapınız.`, 'warning');
+      return;
+    }
     if (pendingCount === 0) {
       await showAlert('Onay bekleyen herhangi bir hane inceleme kaydı bulunmuyor.', 'warning');
       return;
@@ -700,6 +705,11 @@ export default function Dashboard() {
 
   const openApproveSelectedModal = async () => {
     const selectedPending = assessments.filter(a => selectedIds.includes(a.id) && a.status !== 'approved');
+    const pendingWithWaitingScore = selectedPending.filter(a => a.data?.b_ozelSebepPuanBekliyor);
+    if (pendingWithWaitingScore.length > 0) {
+      await showAlert(`Seçilen kayıtlardan ${pendingWithWaitingScore.length} adedinde "Özel Sebep" puanı girilmesi bekleniyor. Lütfen önce bu kayıtların detaylarına giderek eksi veya artı puan değerlendirmesini yapınız.`, 'warning');
+      return;
+    }
     if (selectedPending.length === 0) {
       await showAlert('Seçilenler arasında onay bekleyen kayıt bulunmuyor.', 'warning');
       return;
@@ -798,6 +808,10 @@ export default function Dashboard() {
 
   // Quick Single Item Action
   const handleSingleApprove = async (item: Assessment) => {
+    if (item.data?.b_ozelSebepPuanBekliyor) {
+      await showAlert(`"${item.applicantName}" için Özel Sebep puanı girilmesi bekleniyor! Lütfen inceleme detayına giderek eksi veya artı puan değerlendirmesini yapınız.`, 'warning');
+      return;
+    }
     const meeting = meetings.find(m => m.id === item.meetingId);
     if (meeting && meeting.budgetTL && meeting.budgetTL > 0) {
       const stats = meetingStatsMap.get(meeting.id);
@@ -869,9 +883,10 @@ export default function Dashboard() {
     if (state.b_ozelSebepPuanBekliyor) {
       const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
       list.push(`Özel Sebep${reasonText} (Ümüdür Onayı Bekleniyor)`);
-    } else if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
+    } else if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) !== 0) {
       const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
-      list.push(`Özel Sebep${reasonText} (+${state.b_ozelSebepPuan} Pn)`);
+      const sign = Number(state.b_ozelSebepPuan) > 0 ? '+' : '';
+      list.push(`Özel Sebep${reasonText} (${sign}${state.b_ozelSebepPuan} Pn)`);
     }
     return list;
   };

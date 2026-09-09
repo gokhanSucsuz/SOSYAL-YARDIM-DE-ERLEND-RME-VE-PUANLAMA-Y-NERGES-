@@ -443,7 +443,10 @@ export default function EditAssessmentWizard() {
                         <input
                           type="text"
                           value={state.b_ozelSebepMetin || ''}
-                          onChange={(e) => set('b_ozelSebepMetin', e.target.value)}
+                          onChange={(e) => {
+                            set('b_ozelSebepMetin', e.target.value);
+                            set('b_ozelSebepPuanBekliyor', e.target.value.trim().length > 0);
+                          }}
                           placeholder="Örn: Organ nakli, nadir hastalık vb."
                           className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200"
                         />
@@ -454,10 +457,22 @@ export default function EditAssessmentWizard() {
                         </label>
                         <select
                           value={state.b_ozelSebepPuan || 0}
-                          onChange={(e) => set('b_ozelSebepPuan', Number(e.target.value))}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            set('b_ozelSebepPuan', val);
+                            if (val !== 0) {
+                              set('b_ozelSebepPuanBekliyor', false);
+                            } else if (state.b_ozelSebepMetin && state.b_ozelSebepMetin.trim().length > 0) {
+                              set('b_ozelSebepPuanBekliyor', true);
+                            }
+                          }}
                           className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200"
                         >
-                          <option value={0}>Ekleme Yok</option>
+                          <option value={0}>Puan Girilmedi (Müdür Seçimi Bekleniyor)</option>
+                          <option value={-20}>-20 Puan</option>
+                          <option value={-15}>-15 Puan</option>
+                          <option value={-10}>-10 Puan</option>
+                          <option value={-5}>-5 Puan</option>
                           <option value={5}>+5 Puan</option>
                           <option value={10}>+10 Puan</option>
                           <option value={15}>+15 Puan</option>

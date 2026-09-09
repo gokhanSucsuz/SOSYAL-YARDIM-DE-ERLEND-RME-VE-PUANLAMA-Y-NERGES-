@@ -531,10 +531,22 @@ function NewAssessmentContent() {
                                 <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 mb-1">İlave Puan Değeri (Müdür Yetkisi)</label>
                                 <select
                                   value={state.b_ozelSebepPuan || 0}
-                                  onChange={(e) => { set('b_ozelSebepPuan', Number(e.target.value)); set('b_ozelSebepPuanBekliyor', false); }}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    set('b_ozelSebepPuan', val);
+                                    if (val !== 0) {
+                                      set('b_ozelSebepPuanBekliyor', false);
+                                    } else if (state.b_ozelSebepMetin && state.b_ozelSebepMetin.trim().length > 0) {
+                                      set('b_ozelSebepPuanBekliyor', true);
+                                    }
+                                  }}
                                   className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-800 dark:text-slate-200"
                                 >
-                                  <option value={0}>Ekleme Yok</option>
+                                  <option value={0}>Puan Girilmedi (Müdür Seçimi Bekleniyor)</option>
+                                  <option value={-20}>-20 Puan</option>
+                                  <option value={-15}>-15 Puan</option>
+                                  <option value={-10}>-10 Puan</option>
+                                  <option value={-5}>-5 Puan</option>
                                   <option value={5}>+5 Puan</option>
                                   <option value={10}>+10 Puan</option>
                                   <option value={15}>+15 Puan</option>

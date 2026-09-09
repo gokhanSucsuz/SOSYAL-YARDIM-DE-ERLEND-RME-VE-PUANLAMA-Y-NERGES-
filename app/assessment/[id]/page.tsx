@@ -49,6 +49,10 @@ export default function AssessmentDetail() {
 
   const handleApprove = async () => {
     if (!assessment) return;
+    if (assessment.data?.b_ozelSebepPuanBekliyor) {
+      await showAlert(`Özel Sebep puanı girilmesi bekleniyor! Lütfen "Düzenle" butonuna tıklayarak inceleme detayına gidiniz ve eksi veya artı puan değerlendirmesini yapınız.`, 'warning');
+      return;
+    }
     setApproving(true);
     try {
       const updated = { 
@@ -144,9 +148,10 @@ export default function AssessmentDetail() {
   if (state.b_ozelSebepPuanBekliyor) {
     const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
     selectedDisadvantages.push(`Özel Sebep${reasonText} (⚠ Müdür Onayı Bekleniyor)`);
-  } else if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) > 0) {
+  } else if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) !== 0) {
     const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
-    selectedDisadvantages.push(`Özel Sebep${reasonText} (+${state.b_ozelSebepPuan} Puan)`);
+    const sign = Number(state.b_ozelSebepPuan) > 0 ? '+' : '';
+    selectedDisadvantages.push(`Özel Sebep${reasonText} (${sign}${state.b_ozelSebepPuan} Puan)`);
   }
 
   const selectedEducation = [];
