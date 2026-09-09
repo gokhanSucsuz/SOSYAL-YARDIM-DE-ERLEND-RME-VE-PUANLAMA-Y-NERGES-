@@ -402,6 +402,15 @@ export default function Dashboard() {
       return;
     }
 
+    // Client-side duplicate meetingNo check
+    const duplicateExists = meetings.some(
+      m => m.meetingNo === editMeetingData.meetingNo && m.id !== editingMeeting.id
+    );
+    if (duplicateExists) {
+      await showAlert(`"${editMeetingData.meetingNo}" isimli bir toplantı dosyası zaten mevcut. Lütfen farklı bir dosya numarası giriniz.`, 'warning');
+      return;
+    }
+
     const updated: Meeting = {
       ...editingMeeting,
       meetingNo: editMeetingData.meetingNo,
@@ -416,8 +425,37 @@ export default function Dashboard() {
       setMeetings(allM);
       setEditMeetingModalOpen(false);
       setEditingMeeting(null);
-    } catch (err) {
-      await showAlert('Toplantı güncellenirken hata oluştu.', 'warning');
+    } catch (err: any) {
+      await showAlert(err?.message || 'Toplantı güncellenirken hata oluştu.', 'warning');
+    }
+  };
+
+  const handleDeleteMeeting = async (meeting: Meeting, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (user?.role !== 'superadmin') {
+      await showAlert('Toplantı dosyasını silme yetkisi yalnızca Süper Admin\'e aittir.', 'warning');
+      return;
+    }
+
+    const mAssessments = assessments.filter(a => a.meetingId === meeting.id);
+    const warningText = mAssessments.length > 0 
+      ? `\n\n⚠️ DİKKAT: Bu toplantıya ait ${mAssessments.length} adet sosyal inceleme kaydı bulunmaktadır. Toplantı silinirse bu kayıtlar toplantısız kalacaktır.`
+      : '';
+
+    if (!(await showConfirm(
+      `"${meeting.meetingNo}" numaralı toplantı dosyasını kalıcı olarak SİLMEK istediğinizden emin misiniz?${warningText}\n\nBu işlem geri alınamaz!`
+    ))) return;
+
+    try {
+      await deleteMeeting(meeting.id);
+      const allM = await getAllMeetings();
+      setMeetings(allM);
+      if (filterMeetingId === meeting.id) {
+        setFilterMeetingId(null);
+      }
+      await showAlert(`"${meeting.meetingNo}" toplantı dosyası başarıyla silindi.`, 'success');
+    } catch (err: any) {
+      await showAlert(err?.message || 'Toplantı dosyası silinirken bir hata oluştu.', 'warning');
     }
   };
 
@@ -1599,14 +1637,26 @@ export default function Dashboard() {
                             Toplantı Tarihi: <strong className="text-slate-800 dark:text-slate-200 font-extrabold">{new Date(m.date).toLocaleDateString('tr-TR')}</strong>
                           </span>
                           {isManager && (
-                            <button
-                              type="button"
-                              onClick={(e) => handleOpenEditMeeting(m, e)}
-                              className="text-xs text-primary-600 hover:text-primary-800 hover:bg-primary-50 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 transition-colors border border-primary-200"
-                              title="Toplantı Bütçesini ve Bilgilerini Düzenle"
-                            >
-                              <Pencil size={12} /> Bütçe / Düzenle
-                            </button>
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={(e) => handleOpenEditMeeting(m, e)}
+                                className="text-xs text-primary-600 hover:text-primary-800 hover:bg-primary-50 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 transition-colors border border-primary-200"
+                                title="Toplantı Bütçesini ve Bilgilerini Düzenle"
+                              >
+                                <Pencil size={12} /> Düzenle
+                              </button>
+                              {isSuperAdmin && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleDeleteMeeting(m, e)}
+                                  className="text-xs text-red-600 hover:text-red-800 hover:bg-red-50 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 transition-colors border border-red-200"
+                                  title="Toplantı Dosyasını Sil"
+                                >
+                                  <Trash2 size={12} /> Sil
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                         
@@ -1759,16 +1809,30 @@ export default function Dashboard() {
                </div>
 
                {isManager && filterMeetingId && (
-                 <button
-                   onClick={() => {
-                     const currentM = meetings.find(m => m.id === filterMeetingId);
-                     if (currentM) handleOpenEditMeeting(currentM);
-                   }}
-                   className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm shrink-0 self-start md:self-center"
-                 >
-                   <Pencil size={15} />
-                   <span>Toplantı Bütçesini Düzenle</span>
-                 </button>
+                 <div className="flex items-center gap-2 shrink-0 self-start md:self-center">
+                   <button
+                     onClick={() => {
+                       const currentM = meetings.find(m => m.id === filterMeetingId);
+                       if (currentM) handleOpenEditMeeting(currentM);
+                     }}
+                     className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm"
+                   >
+                     <Pencil size={15} />
+                     <span>Toplantıyı Düzenle</span>
+                   </button>
+                   {isSuperAdmin && (
+                     <button
+                       onClick={() => {
+                         const currentM = meetings.find(m => m.id === filterMeetingId);
+                         if (currentM) handleDeleteMeeting(currentM);
+                       }}
+                       className="bg-red-600 hover:bg-red-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm"
+                     >
+                       <Trash2 size={15} />
+                       <span>Toplantıyı Sil</span>
+                     </button>
+                   )}
+                 </div>
                )}
              </div>
 
@@ -2840,25 +2904,35 @@ export default function Dashboard() {
                       await showAlert('Lütfen toplantı numarası ve tarihini giriniz.', 'warning');
                       return;
                     }
-                    const newMeeting: Meeting = {
-                      id: Date.now().toString(),
-                      meetingNo: newMeetingData.meetingNo,
-                      date: newMeetingData.date,
-                      createdAt: new Date().toISOString(),
-                      managerName: user.name,
-                      description: newMeetingData.description,
-                      budgetTL: newMeetingData.budgetTL ? Number(newMeetingData.budgetTL) : 0,
-                    };
-                    await saveMeeting(newMeeting);
-                    if (meetings.length === 0) {
-                      const { migrateAssessmentsToMeeting } = await import('@/lib/db');
-                      await migrateAssessmentsToMeeting(newMeeting.id);
-                      await reloadAssessments();
+                    // Client-side duplicate meetingNo check
+                    const duplicateExists = meetings.some(m => m.meetingNo === newMeetingData.meetingNo);
+                    if (duplicateExists) {
+                      await showAlert(`"${newMeetingData.meetingNo}" isimli bir toplantı dosyası zaten mevcut. Lütfen farklı bir dosya numarası giriniz.`, 'warning');
+                      return;
                     }
-                    const updated = await getAllMeetings();
-                    setMeetings(updated);
-                    setNewMeetingModalOpen(false);
-                    setNewMeetingData({ meetingNo: '', date: '', description: '', budgetTL: '' });
+                    try {
+                      const newMeeting: Meeting = {
+                        id: Date.now().toString(),
+                        meetingNo: newMeetingData.meetingNo,
+                        date: newMeetingData.date,
+                        createdAt: new Date().toISOString(),
+                        managerName: user.name,
+                        description: newMeetingData.description,
+                        budgetTL: newMeetingData.budgetTL ? Number(newMeetingData.budgetTL) : 0,
+                      };
+                      await saveMeeting(newMeeting);
+                      if (meetings.length === 0) {
+                        const { migrateAssessmentsToMeeting } = await import('@/lib/db');
+                        await migrateAssessmentsToMeeting(newMeeting.id);
+                        await reloadAssessments();
+                      }
+                      const updated = await getAllMeetings();
+                      setMeetings(updated);
+                      setNewMeetingModalOpen(false);
+                      setNewMeetingData({ meetingNo: '', date: '', description: '', budgetTL: '' });
+                    } catch (err: any) {
+                      await showAlert(err?.message || 'Toplantı oluşturulurken bir hata oluştu.', 'warning');
+                    }
                   }}
                   className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-900/20 active:scale-95 transition-all"
                 >

@@ -14,7 +14,7 @@ export interface IMeeting extends Document {
 
 const MeetingSchema: Schema = new Schema({
   id: { type: String, required: true, unique: true },
-  meetingNo: { type: String, required: true },
+  meetingNo: { type: String, required: true, unique: true },
   date: { type: String, required: true, index: true },
   createdAt: { type: String, required: true },
   managerName: { type: String, required: true },

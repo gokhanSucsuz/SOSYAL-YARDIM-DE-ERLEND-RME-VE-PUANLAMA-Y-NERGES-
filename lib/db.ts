@@ -165,7 +165,14 @@ export const saveMeeting = async (meeting: Meeting): Promise<void> => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(meeting)
   });
-  if (!res.ok) throw new Error('Failed to save meeting');
+  if (!res.ok) {
+    let errMessage = 'Failed to save meeting';
+    try {
+      const errData = await res.json();
+      errMessage = errData.error || errMessage;
+    } catch (e) {}
+    throw new Error(errMessage);
+  }
 };
 
 export const getAllMeetings = async (): Promise<Meeting[]> => {
@@ -176,7 +183,14 @@ export const getAllMeetings = async (): Promise<Meeting[]> => {
 
 export const deleteMeeting = async (id: string): Promise<void> => {
   const res = await fetch(`/api/meetings/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Failed to delete meeting');
+  if (!res.ok) {
+    let errMessage = 'Failed to delete meeting';
+    try {
+      const errData = await res.json();
+      errMessage = errData.error || errMessage;
+    } catch (e) {}
+    throw new Error(errMessage);
+  }
 };
 
 export const saveAssessment = async (assessment: Assessment): Promise<void> => {

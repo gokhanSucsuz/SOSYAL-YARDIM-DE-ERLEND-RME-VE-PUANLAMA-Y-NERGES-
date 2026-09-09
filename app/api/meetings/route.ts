@@ -18,6 +18,20 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
     const body = await req.json();
     
+    // Check for duplicate meetingNo (unique name enforcement)
+    if (body.meetingNo) {
+      const duplicateName = await Meeting.findOne({ 
+        meetingNo: body.meetingNo, 
+        id: { $ne: body.id } // Exclude self when updating
+      });
+      if (duplicateName) {
+        return NextResponse.json(
+          { error: `"${body.meetingNo}" isimli bir toplantı dosyası zaten mevcut. Lütfen farklı bir isim giriniz.` }, 
+          { status: 409 }
+        );
+      }
+    }
+
     // Check if meeting with ID already exists
     const existing = await Meeting.findOne({ id: body.id });
     if (existing) {
