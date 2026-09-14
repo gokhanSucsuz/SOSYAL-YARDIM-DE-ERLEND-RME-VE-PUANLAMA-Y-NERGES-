@@ -206,10 +206,19 @@ export default function PersonnelPage() {
 
     assessments.forEach(a => {
       const pKey = a.personnelId || a.personnelName;
+      
+      let actualName = a.personnelName;
+      if (a.personnelId) {
+        const matchingUser = systemUsers.find(u => u.id === a.personnelId);
+        if (matchingUser && matchingUser.name) {
+          actualName = matchingUser.name;
+        }
+      }
+
       if (!map.has(pKey)) {
         map.set(pKey, {
           id: pKey,
-          name: a.personnelName,
+          name: actualName,
           totalAssessments: 0,
           approvedCount: 0,
           pendingCount: 0,

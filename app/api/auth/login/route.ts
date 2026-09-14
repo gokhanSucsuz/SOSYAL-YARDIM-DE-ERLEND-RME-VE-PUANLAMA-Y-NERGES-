@@ -32,6 +32,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });
     }
 
+    // mongoose-field-encryption causes user.name to be encrypted if user.save() is called later
+    // So we capture the decrypted fields here first
+    const userId = user.id;
+    const userName = user.name;
+    const userRole = user.role;
+    const userEmail = user.email;
+
     const ipAddress = req.headers.get('x-forwarded-for') || 'unknown';
     const now = new Date();
 
@@ -41,9 +48,9 @@ export async function POST(req: NextRequest) {
       
       await AuditLog.create({
         action: 'LOGIN_RATE_LIMITED',
-        actorId: user.id,
-        actorName: user.name,
-        actorRole: user.role,
+        actorId: userId,
+        actorName: userName,
+        actorRole: userRole,
         targetResource: 'AUTH',
         ipAddress,
         details: { email }
@@ -56,19 +63,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Manager first login without password
-    if (user.role === 'manager' && !user.passwordHash) {
+    if (userRole === 'manager' && !user.passwordHash) {
       // Must set password, we will redirect to setup from frontend, but we need to log them in first or provide a temporary token
       // Let's create a full session anyway, but frontend will see they don't have a password
       const sessionData = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
+        id: userId,
+        email: userEmail,
+        name: userName,
+        role: userRole,
         needsSetup: true
       };
       
       const session = await encryptSession(sessionData);
-      const res = NextResponse.json({ success: true, needsSetup: true, user: { id: user.id, name: user.name, role: user.role } });
+      const res = NextResponse.json({ success: true, needsSetup: true, user: { id: userId, name: userName, role: userRole } });
       res.cookies.set('session', session, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -98,9 +105,9 @@ export async function POST(req: NextRequest) {
       
       await AuditLog.create({
         action: 'LOGIN_FAILED_PASSWORD',
-        actorId: user.id,
-        actorName: user.name,
-        actorRole: user.role,
+        actorId: userId,
+        actorName: userName,
+        actorRole: userRole,
         targetResource: 'AUTH',
         ipAddress,
         details: { attempts: user.failedLoginAttempts }
@@ -125,14 +132,14 @@ export async function POST(req: NextRequest) {
       // 2FA is enabled
       if (!user.twoFactorSecret) {
         const sessionData = {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
+          id: userId,
+          email: userEmail,
+          name: userName,
+          role: userRole,
           needsSetup: false
         };
         const session = await encryptSession(sessionData);
-        const res = NextResponse.json({ success: true, needs2FASetup: true, user: { id: user.id, name: user.name, role: user.role } });
+        const res = NextResponse.json({ success: true, needs2FASetup: true, user: { id: userId, name: userName, role: userRole } });
         res.cookies.set('session', session, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
@@ -142,10 +149,10 @@ export async function POST(req: NextRequest) {
         return res;
       } else {
         const tempSessionData = {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
+          id: userId,
+          email: userEmail,
+          name: userName,
+          role: userRole,
           requires2FA: true
         };
         const session = await encryptSession(tempSessionData);
@@ -161,15 +168,15 @@ export async function POST(req: NextRequest) {
     }
 
     const sessionData = {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
+      id: userId,
+      email: userEmail,
+      name: userName,
+      role: userRole,
       needsSetup
     };
 
     const session = await encryptSession(sessionData);
-    const res = NextResponse.json({ success: true, user: { id: user.id, name: user.name, role: user.role, needsSetup } });
+    const res = NextResponse.json({ success: true, user: { id: userId, name: userName, role: userRole, needsSetup } });
     res.cookies.set('session', session, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -180,9 +187,9 @@ export async function POST(req: NextRequest) {
     // Log successful login
     await AuditLog.create({
       action: 'LOGIN_SUCCESS',
-      actorId: user.id,
-      actorName: user.name,
-      actorRole: user.role,
+      actorId: userId,
+      actorName: userName,
+      actorRole: userRole,
       targetResource: 'AUTH',
       ipAddress
     });
