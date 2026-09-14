@@ -108,15 +108,35 @@ export default function Dashboard() {
     
     const loadData = async () => {
       try {
-        const loadedMeetings = await getAllMeetings();
+        const [loadedMeetings, usersRes] = await Promise.all([
+          getAllMeetings(),
+          fetch('/api/users')
+        ]);
         setMeetings(loadedMeetings);
-        if (currentUser.role === 'manager' || currentUser.role === 'superadmin') {
-          const allData = await fetchAllAssessments();
-          setAssessments(allData);
-        } else {
-          const allData = await fetchAllAssessments(currentUser.id);
-          setAssessments(allData);
+
+        let systemUsers = [];
+        if (usersRes.ok) {
+          systemUsers = await usersRes.json();
         }
+
+        let allData: Assessment[] = [];
+        if (currentUser.role === 'manager' || currentUser.role === 'superadmin') {
+          allData = await fetchAllAssessments();
+        } else {
+          allData = await fetchAllAssessments(currentUser.id);
+        }
+
+        allData = allData.map(a => {
+          if (a.personnelId) {
+            const matchingUser = systemUsers.find((u: any) => u.id === a.personnelId);
+            if (matchingUser && matchingUser.name) {
+              a.personnelName = matchingUser.name;
+            }
+          }
+          return a;
+        });
+
+        setAssessments(allData);
         setLastRefreshedAt(new Date());
       } catch (err) {
         console.error(err);
@@ -147,10 +167,27 @@ export default function Dashboard() {
           lastKnownTotal = total;
           lastKnownUpdatedAt = lastUpdatedAt;
           // Değişiklik tespit edildi — tam veriyi yenile
-          const [loadedMeetings, allData] = await Promise.all([
+          const [loadedMeetings, allDataRaw, usersRes] = await Promise.all([
             getAllMeetings(),
             fetchAllAssessments(user.role === 'personnel' ? user.id : undefined),
+            fetch('/api/users')
           ]);
+          
+          let systemUsers = [];
+          if (usersRes.ok) {
+            systemUsers = await usersRes.json();
+          }
+
+          const allData = allDataRaw.map(a => {
+            if (a.personnelId) {
+              const matchingUser = systemUsers.find((u: any) => u.id === a.personnelId);
+              if (matchingUser && matchingUser.name) {
+                a.personnelName = matchingUser.name;
+              }
+            }
+            return a;
+          });
+
           setMeetings(loadedMeetings);
           setAssessments(allData);
           setLastRefreshedAt(new Date());
@@ -341,13 +378,30 @@ export default function Dashboard() {
 
   const reloadAssessments = async () => {
     try {
+      let allData: Assessment[] = [];
       if (user.role === 'manager' || user.role === 'superadmin') {
-        const allData = await fetchAllAssessments();
-        setAssessments(allData);
+        allData = await fetchAllAssessments();
       } else {
-        const allData = await fetchAllAssessments(user.id);
-        setAssessments(allData);
+        allData = await fetchAllAssessments(user.id);
       }
+
+      const usersRes = await fetch('/api/users');
+      let systemUsers = [];
+      if (usersRes.ok) {
+        systemUsers = await usersRes.json();
+      }
+
+      allData = allData.map(a => {
+        if (a.personnelId) {
+          const matchingUser = systemUsers.find((u: any) => u.id === a.personnelId);
+          if (matchingUser && matchingUser.name) {
+            a.personnelName = matchingUser.name;
+          }
+        }
+        return a;
+      });
+
+      setAssessments(allData);
       setLastRefreshedAt(new Date());
     } catch (error) {
       console.error(error);
