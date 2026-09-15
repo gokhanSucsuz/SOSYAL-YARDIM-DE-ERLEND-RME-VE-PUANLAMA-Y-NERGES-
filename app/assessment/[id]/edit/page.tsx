@@ -468,7 +468,7 @@ export default function EditAssessmentWizard() {
                           }}
                           className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200"
                         >
-                          <option value={0}>Puan Girilmedi (Müdür Seçimi Bekleniyor)</option>
+                          <option value={0}>Puan Seçilmedi</option>
                           <option value={-20}>-20 Puan</option>
                           <option value={-15}>-15 Puan</option>
                           <option value={-10}>-10 Puan</option>

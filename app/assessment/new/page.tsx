@@ -512,48 +512,38 @@ function NewAssessmentContent() {
                                 value={state.b_ozelSebepMetin || ''}
                                 onChange={(e) => {
                                   set('b_ozelSebepMetin', e.target.value);
-                                  // Personel girerken müdür onayı bekliyor bayrağı
-                                  if (user?.role === 'personnel') {
-                                    set('b_ozelSebepPuanBekliyor', e.target.value.trim().length > 0);
-                                  }
+                                  set('b_ozelSebepPuanBekliyor', e.target.value.trim().length > 0);
                                 }}
                                 placeholder="Örn: Organ nakli, nadir hastalık, son birkaç günde karşılaşılan acil durum vb."
                                 className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-800 dark:text-slate-200 font-medium"
                               />
                             </div>
-                            {user?.role === 'personnel' ? (
-                              <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-[11px] text-amber-800 font-semibold flex items-start gap-2">
-                                <AlertTriangle size={13} className="shrink-0 mt-0.5 text-amber-600" />
-                                <span>Özel sebep puanı <strong>yalnızca Vakıf Müdürü</strong> tarafından belirlenebilir. Girdiğiniz açıklama Müdür incelemesi için kaydedilecek, puan otomatik olarak 0 kalacaktır.</span>
-                              </div>
-                            ) : (
-                              <div>
-                                <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 mb-1">İlave Puan Değeri (Müdür Yetkisi)</label>
-                                <select
-                                  value={state.b_ozelSebepPuan || 0}
-                                  onChange={(e) => {
-                                    const val = Number(e.target.value);
-                                    set('b_ozelSebepPuan', val);
-                                    if (val !== 0) {
-                                      set('b_ozelSebepPuanBekliyor', false);
-                                    } else if (state.b_ozelSebepMetin && state.b_ozelSebepMetin.trim().length > 0) {
-                                      set('b_ozelSebepPuanBekliyor', true);
-                                    }
-                                  }}
-                                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-800 dark:text-slate-200"
-                                >
-                                  <option value={0}>Puan Girilmedi (Müdür Seçimi Bekleniyor)</option>
-                                  <option value={-20}>-20 Puan</option>
-                                  <option value={-15}>-15 Puan</option>
-                                  <option value={-10}>-10 Puan</option>
-                                  <option value={-5}>-5 Puan</option>
-                                  <option value={5}>+5 Puan</option>
-                                  <option value={10}>+10 Puan</option>
-                                  <option value={15}>+15 Puan</option>
-                                  <option value={20}>+20 Puan</option>
-                                </select>
-                              </div>
-                            )}
+                            <div>
+                              <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-600 dark:text-slate-500 dark:text-slate-400 mb-1">İlave Puan Değeri</label>
+                              <select
+                                value={state.b_ozelSebepPuan || 0}
+                                onChange={(e) => {
+                                  const val = Number(e.target.value);
+                                  set('b_ozelSebepPuan', val);
+                                  if (val !== 0) {
+                                    set('b_ozelSebepPuanBekliyor', false);
+                                  } else if (state.b_ozelSebepMetin && state.b_ozelSebepMetin.trim().length > 0) {
+                                    set('b_ozelSebepPuanBekliyor', true);
+                                  }
+                                }}
+                                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white dark:bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-800 dark:text-slate-200"
+                              >
+                                <option value={0}>Puan Seçilmedi</option>
+                                <option value={-20}>-20 Puan</option>
+                                <option value={-15}>-15 Puan</option>
+                                <option value={-10}>-10 Puan</option>
+                                <option value={-5}>-5 Puan</option>
+                                <option value={5}>+5 Puan</option>
+                                <option value={10}>+10 Puan</option>
+                                <option value={15}>+15 Puan</option>
+                                <option value={20}>+20 Puan</option>
+                              </select>
+                            </div>
                           </div>
                         </div>
                       </SectionCard>

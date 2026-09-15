@@ -39,7 +39,7 @@ interface BatchModalState {
   totalCount: number;
 }
 
-type SortField = 'customOrder' | 'date' | 'applicantTc' | 'applicantName' | 'householdSize' | 'personnelName' | 'totalScore' | 'status' | 'decision';
+type SortField = 'customOrder' | 'date' | 'applicantTc' | 'applicantName' | 'householdSize' | 'personnelName' | 'totalScore' | 'status' | 'decision' | 'managerGroup';
 type SortOrder = 'asc' | 'desc';
 
 export default function Dashboard() {
@@ -72,6 +72,7 @@ export default function Dashboard() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved'>('all');
   const [filterDecision, setFilterDecision] = useState<'all' | 'accepted' | 'rejected'>('all');
   const [filterMeetingId, setFilterMeetingId] = useState<string | null>(null);
+  const [filterGroup, setFilterGroup] = useState<string>('all');
   const [showScores, setShowScores] = useState(false);
 
   
@@ -533,6 +534,9 @@ export default function Dashboard() {
       // Meeting Filter
       if (filterMeetingId && filterMeetingId !== 'all' && item.meetingId !== filterMeetingId) return false;
 
+      // Group Filter
+      if (filterGroup && filterGroup !== 'all' && (item.managerGroup || 'Gruplandırılmamış') !== filterGroup) return false;
+
       // Search Query Filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
@@ -579,6 +583,10 @@ export default function Dashboard() {
         case 'personnelName':
           aVal = (a.personnelName || '').toLowerCase();
           bVal = (b.personnelName || '').toLowerCase();
+          break;
+        case 'managerGroup':
+          aVal = (a.managerGroup || 'Gruplandırılmamış').toLowerCase();
+          bVal = (b.managerGroup || 'Gruplandırılmamış').toLowerCase();
           break;
         case 'totalScore':
           aVal = a.result.totalScore || 0;
@@ -1269,6 +1277,7 @@ export default function Dashboard() {
     setSearchQuery('');
     setFilterStatus('all');
     setFilterDecision('all');
+    setFilterGroup('all');
     setSortField('date');
     setSortOrder('desc');
   };
@@ -1309,10 +1318,6 @@ export default function Dashboard() {
           .page-break {
             page-break-after: always;
             break-after: page;
-          }
-          .page-break:last-child {
-            page-break-after: avoid;
-            break-after: avoid;
           }
           .print-table td, .print-table th {
             padding: 5px 8px !important;
@@ -2074,7 +2079,24 @@ export default function Dashboard() {
                 </select>
               </div>
 
-              {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
+              {isManager && (
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-400">
+                  <Users size={14} className="text-slate-500 dark:text-slate-400 shrink-0" />
+                  <span>Grup:</span>
+                  <select
+                    value={filterGroup}
+                    onChange={(e: any) => setFilterGroup(e.target.value)}
+                    className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm"
+                  >
+                    <option value="all">Tümü</option>
+                    {Array.from(new Set(assessments.filter(a => !filterMeetingId || filterMeetingId === 'all' || a.meetingId === filterMeetingId).map(a => a.managerGroup || 'Gruplandırılmamış'))).sort().map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {(searchQuery || filterDecision !== 'all' || filterStatus !== 'all' || filterGroup !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
                 <button
                   onClick={resetAllFilters}
                   className="text-xs text-primary-700 hover:text-primary-900 font-bold underline flex items-center gap-1 px-2 py-1 rounded hover:bg-primary-50 transition-colors"
@@ -2710,7 +2732,7 @@ export default function Dashboard() {
                 Detaylı raporu yazdırılacak seçili kayıt bulunmamaktadır.
               </div>
             ) : (
-              printableRecords.map((item) => {
+              printableRecords.map((item, index) => {
                 const state = item.data || {};
                 const calc = item.result || {};
                 const disadvantages = getDisadvantagesList(state);
@@ -2720,7 +2742,7 @@ export default function Dashboard() {
                 const appliances = getAppliancesText(state);
 
                 return (
-                  <div key={item.id} className="page-break w-full bg-white dark:bg-slate-800 text-black p-0 m-0 leading-tight pb-4">
+                  <div key={item.id} className={`${index !== printableRecords.length - 1 ? 'page-break ' : ''}w-full bg-white dark:bg-slate-800 text-black p-0 m-0 leading-tight pb-4`}>
                     {/* Official Letterhead */}
                     <div className="text-center border-b-2 border-black pb-1.5 mb-2">
                       <p className="text-[9px] font-bold uppercase tracking-widest">T.C.</p>
