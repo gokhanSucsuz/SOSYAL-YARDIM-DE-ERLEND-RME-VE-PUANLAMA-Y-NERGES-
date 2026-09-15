@@ -1,81 +1,96 @@
-# T.C. Edirne SYDV - Sosyal Yardım Değerlendirme ve Puanlama Yönergesi Sistemi 🤝
+# 📘 T.C. EDİRNE SYDV - SOSYAL YARDIM DEĞERLENDİRME VE PUANLAMA SİSTEMİ KILAVUZU
 
-Bu sistem, **Sosyal Yardımlaşma ve Dayanışma Vakfı (SYDV)** çalışanlarının, maddi veya ayni yardıma muhtaç olan vatandaşların başvurularını değerlendirirken kullanmaları için geliştirilmiş **şeffaf, adil ve bilimsel** bir karar destek yazılımıdır. 
-
-Geleneksel "kağıt-kalem" veya tamamen "gözleme dayalı" (subjektif) sistemlerin yerine; adil, ölçülebilir ve literatüre (dünya standartlarına) uygun bir matematiksel puanlama modeli kullanır.
+*Bu kılavuz, Sosyal Yardımlaşma ve Dayanışma Vakfı (SYDV) puanlama sisteminin nasıl çalıştığını, hiçbir teknik bilgisi olmayan bir kişinin bile kolayca anlayabileceği sadelikte, ancak kurumsal bir ciddiyetle açıklamak üzere hazırlanmıştır.*
 
 ---
 
-## 🎯 Bu Sistem Neden Geliştirildi? (Hiç Bilmeyenler İçin)
+## 1. SİSTEMİN AMACI: NEDEN BÖYLE BİR YAZILIMA İHTİYACIMIZ VAR?
 
-Düşünün ki vakfa bir gün içinde 50 farklı aile başvurdu ve vakfın elinde dağıtabileceği sınırlı bir bütçe var. Kimin **daha çok** yardıma ihtiyacı olduğunu nasıl belirleriz? 
-- Ahmet Bey'in geliri yok ama evi var.
-- Ayşe Hanım'ın geliri var ama evinde bakıma muhtaç 2 ağır engelli çocuğu var.
-- Fatma Teyze 70 yaşında, yalnız yaşıyor ve evi kışın ısınmıyor.
+Vakfımıza her gün onlarca vatandaşımız yardım talebiyle başvurmaktadır. Ancak devletimizin kaynakları ve vakfımızın bütçesi belirli bir sınır içindedir. Bu durumda en zor karar şudur: **"Kimin yardıma DAHA ÇOK ihtiyacı var?"**
 
-İşte bu yazılım, görevlinin sahada (vatandaşın evinde) tablet veya telefonundan doldurduğu basit sorulara (Evi kira mı? Engelli var mı? Kaç çocuğu var?) verdiği cevapları alır. Arka planda **matematiksel bir formül** çalıştırır ve o hane için bir **Muhtaçlık Puanı (Örn: 135 Puan)** üretir. Puan ne kadar yüksekse, o hanenin yardıma ihtiyacı o kadar "acil ve büyük" demektir.
+Örneğin:
+- Bir yanda hiç geliri olmayan ama başını sokacak bir evi olan bir vatandaşımız var.
+- Diğer yanda asgari ücretle çalışan ama evinde yatalak hastası olan ve kirada oturan bir aile var.
 
-Sistem daha sonra bu puana göre haneyi sınıflandırır (Örn: "1. Derece Aşırı Muhtaç") ve adaletli bir yardım miktarı (Örn: 10.000 TL) önerir.
+İnsan gözüyle bakıldığında kimin daha mağdur olduğuna karar vermek hem çok zordur hem de kişiden kişiye değişebilir. İşte bu sistem, insani duygulardan ve kişisel görüşlerden bağımsız, **tamamen matematiğe ve bilimsel verilere (Dünya Bankası ve OECD standartlarına)** dayalı adil bir karar vermek için tasarlanmıştır.
 
----
-
-## 🏗️ Temel Özellikler
-
-- **📱 Saha Uyumlu (PWA / Çevrimdışı Çalışma):** Görevliler internetin çekmediği ücra köylerde bile formu doldurabilir, veriler cihazda saklanır, internet geldiğinde sisteme kaydedilir.
-- **🔒 Gizlilik ve Güvenlik:** Görevli sahada formu doldururken ekranda puanı göremez (Saha Gizlilik Modu). Bu sayede hanedeki vatandaşlar "Bana kaç puan verdiniz, az verdiniz" diyerek görevliyi baskı altına alamaz.
-- **🛡️ Mükerrer (Yığılma) Kontrolü:** T.C. Kimlik No girildiği an sistem uyarır: "Bu kişi son 3 ayda yardım almış." Adaletsizliğin önüne geçilir.
-- **📊 Bütçe Takibi:** Vakıf müdürü toplantı öncesi bütçeyi girer (Örn: 100.000 TL). Onaylanan yardımlar arttıkça kalan bütçe anlık olarak ekranda güncellenir.
-- **🖨️ Tek Tıkla Excel/PDF:** Toplantı bittiğinde kimlere ne kadar yardım çıkacağı tek tuşla listelenir ve yazıcıdan çıktı alınabilir.
+Görevli personelimiz vatandaşın evine gittiğinde sistemdeki soruları (Evi kira mı? Hastası var mı? Kaç çocuğu var?) yanıtlar. Sistem arka planda bu cevapları bir süzgeçten geçirir ve **0 ile 100 arasında bir "Muhtaçlık Puanı"** hesaplar. Puan ne kadar yüksekse, ailenin durumu o kadar acil ve zordur.
 
 ---
 
-## 🧮 Puanlama Mantığı ve Dünya Standartlarına (Literatüre) Uyumu
+## 2. ADIM ADIM PUANLAMA SİSTEMİ (Detaylı Anlatım)
 
-Sistemin kalbi olan "Puanlama Formülü", Dünya Bankası (World Bank), OECD ve Birleşmiş Milletler (UNDP) yoksulluk endeksleri temel alınarak, A'dan G'ye kadar 7 ana başlıkta toplanmıştır. Toplam ulaşılabilecek teorik puan **150** civarındadır.
+Sistem toplam 6 ana başlıkta (A, B, C, D, E, F) puanlama yapar. Bir hanenin alabileceği **maksimum toplam puan 100'dür**. Şimdi bu başlıkların her birini, neden böyle puanlandığını açıklayarak inceleyelim:
 
-### A. Ekonomik Durum (Maksimum 40 Puan)
-Kişinin geliri, resmi "Muhtaçlık Sınırı"na göre oranlanır. Sınırın çok altındaysa en yüksek puanı (+40) alır. Hanede çalışan yoksa veya düzenli geliri yoksa ek puanlar verilir.
-- **Literatür Uyumu:** Gelir bazlı "Hedefleme (Targeting)" tüm dünyada temel standarttır. SGK kaydı olup aktif prim ödeyenlerin bu bölümden puan alması engellenir.
+### A. Ekonomik Durum (Maksimum 25 Puan)
+Bu bölüm hanenin cebine giren parayı ölçer.
+- **Gelir Durumu:** Hane başı geliri muhtaçlık sınırının ne kadar altındaysa sistem o kadar yüksek puan verir.
+- **Çalışan Yokluğu (+3 Puan):** Evde hiç çalışan, para kazanan biri yoksa ekstra puan verilir.
+- **Düzenli Gelir ve SGK Yokluğu (+4 Puan):** Ailenin düzenli bir geliri yoksa ve SGK güvencesi bulunmuyorsa puanı artar.
+> *Mantık: Gelir ne kadar düşükse ve düzensizse, ailenin ekonomik riski o kadar yüksektir.*
 
-### B. Dezavantajlı Bireyler (Maksimum 30 Puan)
-Hastalık, yaşlılık ve yalnızlık gibi dezavantajlar puanlanır. Örneğin ağır engelli biri için (+15), yalnız yaşayan yaşlı biri için (+8), yetim çocuk için (+5) puan verilir.
-- **Literatür Uyumu:** *5378 Sayılı Engelliler Kanunu* ve Birleşmiş Milletler normlarına göre "Çoklu Kırılganlık" ilkesi gereği engelli/hasta bireyler ekstra ağırlıklandırılır.
+### B. Dezavantajlı Bireyler (Maksimum 25 Puan)
+Evde hayatı zorlaştıran sağlık sorunları veya özel durumlar var mı?
+- **Engellilik ve Hastalık:** Ağır engelli birey varsa **+12 puan**, evde bakım hastası varsa **+8 puan**, kanser veya kronik hasta varsa puanlar eklenir.
+- **Özel Sosyal Durumlar:** Şehit yakını veya gazi olmak (+6 puan), yetim çocuk bulunması (+4 puan), yaşlı ve yalnız yaşamak (+6 puan) ailenin muhtaçlık puanını yükseltir.
+> *Mantık: Engelli veya hasta bir bireye bakmak, ailenin hem maddi hem de manevi yükünü inanılmaz derecede artırır. Bu yüzden en yüksek ek puanlar bu bölüme ayrılmıştır.*
 
-### C. Çocuk ve Eğitim (Maksimum 15 Puan)
-Okuyan çocuklara eğitim kademesine göre artan puanlar verilir. (0-6 yaş/İlkokul: +2 Puan, Lise: +3 Puan, Üniversite: +4 Puan).
-- **Literatür Uyumu:** Şartlı Eğitim Yardımı (ŞEY) ve Dünya Bankası raporlarında, eğitim seviyesi arttıkça eğitim masrafının arttığı kabul edilir. (Eskiden her çocuğa eşit puan verilirken bu sistemle adalet sağlanmıştır).
+### C. Sosyal Kırılganlık ve Hane Nüfusu (Maksimum 15 Puan)
+Ailenin sosyal yapısı ne kadar kırılgan?
+- **Zorlu Yaşam Koşulları:** Aile içi şiddet mağduru olmak (+5 puan), evi tek başına geçindiren bir kadın olmak (+4 puan), eşin cezaevinde olması (+4 puan), borç/icra baskısı altında olmak (+3 puan) gibi zorluklar puanlandırılır.
+- **Kalabalık Aile:** Evde yaşayan kişi sayısı arttıkça masraf artar. 7 ve üzeri kişi yaşayan hanelere **+4 puan** eklenirken, az nüfuslu hanelere daha düşük puan eklenir.
+> *Mantık: Bir kadının tek başına çocuklarına bakmaya çalışması veya ailenin şiddet geçmişi olması, o aileyi sosyal yardıma daha muhtaç hale getirir.*
 
-### D. Barınma Şartları (Maksimum 10 Puan)
-Kişi evsizse (+10), konutu ağır hasarlıysa (+8), asansörsüz yüksek katta oturuyorsa ve yaşlıysa (+4) puan alır.
-- **Literatür Uyumu:** Barınma hakkı, Çok Boyutlu Yoksulluk Endeksi'nin (MPI) yapı taşlarından biridir.
+### D. Eğitim ve Çocuk (Maksimum 15 Puan)
+Evde okuyan veya bakıma muhtaç küçük çocuk var mı?
+- **Eğitim Kademesi:** Sistem çocukların yaşına ve okudukları okula göre puan verir.
+  - 0-6 yaş bebek veya ilkokul/ortaokul çocuğu: **+2 Puan** (çocuk başı)
+  - Lise veya mesleki eğitim: **+3 Puan** (Masrafları daha yüksek olduğu için)
+  - Üniversite öğrencisi: **+4 Puan** (En yüksek eğitim masrafı)
+> *Mantık: Okuyan çocuk sayısı arttıkça, ailenin kırtasiye, yol ve harçlık giderleri artar. Eğitim kademesi yükseldikçe puanın da artması bu yüzdendir.*
 
-### E. Temel Eşya Eksikliği (Maksimum 10 Puan)
-Buzdolabı, çamaşır makinesi, yatak gibi hayati eşyalar eskiyse veya yoksa puan alır.
-- **Literatür Uyumu:** TÜİK ve OECD standartlarında bulaşık makinesi, akıllı telefon gibi cihazlar "konfor/lüks eşya" sayıldığından bu sistemde puan kazandırmaz. Yalnızca hayati eşyaların yokluğu puanlanır.
+### E. Barınma ve Temel Eşya (Maksimum 10 Puan)
+Ailenin yaşadığı evin fiziksel şartları nasıl?
+- **Ev Şartları:** Aile evsizse veya afetzede ise en yüksek puanı (**+8 puan**) alır. Ev ağır hasarlıysa (+6 puan), tuvalet/banyo yetersizse veya ev rutubetli, sağlıksız ise (+4 puan) eklenir. Kiracı olmak da (+3 puan) kazandırır.
+- **Temel Eşyalar:** Buzdolabı ve çamaşır makinesi "lüks değil, hayati zorunluluktur". Eğer bunlar yoksa sistem **+1.5 puan** verir. Fırın veya televizyon yoksa daha ufak puanlar eklenir.
+> *Mantık: Kışın ısınmayan, rutubetli bir evde kiracı olarak yaşamak, ailenin acil yardıma ihtiyacı olduğunun en somut fiziksel göstergesidir.*
 
-### F. Sosyal Kırılganlık ve Nüfus (Maksimum 30 Puan)
-Aile içi şiddet, boşanma, eşin cezaevinde olması gibi durumlar puanlanır. Ayrıca hane kalabalıklaştıkça puan artar. (1-2 kişi: +1 Puan ... 7 ve üzeri kişi: +6 Puan).
-- **Literatür Uyumu:** **OECD Modifiye Edilmiş Eşdeğerlik Ölçeği (Modified Equivalence Scale)** kullanılmıştır. Bu ölçek, evdeki kişi sayısı arttıkça masrafların da belirli bir oranda arttığını bilimsel olarak kanıtlar.
-
-### G. İnceleme Kanaati (Maksimum 20 Puan)
-Bilgisayar her şeyi bilemez; insan gözlemi şarttır. Eve giden görevli; kokuyu, hijyeni, ailenin aciliyetini ve çevreden (akraba) alabileceği destek ihtimalini 0'dan 5'e kadar puanlar.
-- **Literatür Uyumu:** Buna Avrupa sosyal hizmet modelinde "Professional Judgment (Uzman Kanaati)" denir. Sistem robotikleşmekten kurtarılır, uzman personelin görüşü sayısallaştırılır.
+### F. Görevli İnceleme Kanaati (Maksimum 10 Puan)
+Matematik ve formüller her şeyi göremez. Görevlinin gözlemi de çok önemlidir.
+- Sahaya giden personel; evin genel durumunu, ailenin çaresizliğini ve çevreden destek alıp alamayacaklarını gözlemleyerek kendi profesyonel kanaatine göre 0 ile 10 arasında bir puan verir.
+> *Mantık: Makineye duygu katılamaz, ancak uzman bir sosyal yardım görevlisinin eve girdiğinde hissettiği "aciliyet" durumu sistemin ayrılmaz bir parçası olmalıdır.*
 
 ---
 
-## 🚫 Güvenlik Filtreleri ve Ceza Puanları (Varlık Testi)
+## 3. CEZA PUANLARI VE GÜVENLİK (Varlık Testi)
 
-Sistem sadece "puan vererek" çalışmaz, bazı durumlarda puanları siler veya cezalandırır. Buna literatürde **"Means Testing (Varlık Testi)"** denir:
+Adaleti sağlamak sadece ihtiyacı olana puan vermekle olmaz; ihtiyacı olmadığı halde yardım almaya çalışanları engellemekle de olur. Sistem bu yüzden **"Ceza Puanları"** uygular:
 
-1. **Araç Kaydı Tespit Edilirse:** -15 Puan silinir.
-2. **Birden Fazla Evi (Taşınmazı) Varsa:** -20 Puan silinir.
-3. **Mükerrer (Yığılma) Yardım:** Son 3 ay içinde yardım almışlarsa kişi başı -5 Puan silinir (Yardım yığılmasının önüne geçmek için).
-4. **Gerçeğe Aykırı Beyan:** Evde gizlenen bir gelir tespit edilirse, sistem "DİKKAT" butonuna basılmasına izin verir ve başvuranın puanını anında **Sıfırlar (0)** ve reddeder.
+1. **Araç Sahibi Olmak:** Sistem tespit ederse hanenin toplam puanından anında **-15 Puan** düşer.
+2. **Birden Fazla Taşınmaz (Ev/Arsa):** Tespit edilirse **-20 Puan** düşer.
+3. **Aktif SGK Kaydı:** Çalışan biri varsa **-5 Puan** düşer.
+4. **Yakın Zamanda Yardım Almak:** Aile son 3 ay içinde zaten vakıftan yardım almışsa, adaleti sağlamak ve yardımı tabana yaymak için kişi başı **-5 Puan** düşülür.
+5. **Yalan Beyan:** Eğer başvuran kişinin bilerek gelirini sakladığı veya yalan beyanda bulunduğu tespit edilirse, sistem puanı acımasızca **SIFIRLAR (0)** ve yardımı anında reddeder.
 
 ---
 
-## 💡 Özet
+## 4. SİSTEM NASIL KARAR VERİYOR? (Derecelendirme)
 
-Bu sistem sayesinde, Edirne SYDV birimleri yardımları dağıtırken;
-- *“Neden Ahmet'e değil de Mehmet'e verdiniz?”* sorusuna **“Çünkü Mehmet'in literatüre dayalı çok boyutlu puanı 115, Ahmet'in ise 65”** diyerek bilimsel ve kanıtlanabilir bir cevap verebilecektir.
-- Kurumsal şeffaflık artacak, kayırmacılık ihtimali yazılımsal kısıtlarla ortadan kalkacak ve devletin kaynakları **gerçekten en muhtaç olanlara** gidecektir.
+Tüm bu karmaşık hesaplamalar saniyeler içinde yapılır ve ailenin **"Nihai Toplam Puanı"** ortaya çıkar.
+
+Sistem, elde edilen puana göre aileyi otomatik olarak sınıflara ayırır (Müdürlük bu puan aralıklarını ve tutarları bütçeye göre değiştirebilir):
+
+- **1. Derece (Aşırı Muhtaç):** En yüksek puan alan, durumu çok kritik olan dar kesim. En yüksek yardım tutarı önerilir.
+- **2. Derece (Ağır Muhtaç):** Durumu zor olan ancak 1. derece kadar kritik olmayanlar.
+- **3. Derece (Orta Muhtaç):** Temel ihtiyaçlarını karşılamakta zorlananlar.
+- **4. Derece (Temel Destek):** Ufak bir maddi destekle rahatlayabilecek olanlar.
+- **Red (Kapsam Dışı):** Puanı çok düşük olan veya ceza puanı alıp muhtaçlık sınırının üstünde kalanlar. Nakdi yardım reddedilir (Kömür vb. ayni yardıma yönlendirilebilir).
+
+---
+
+## 5. KURUMSAL KATKILAR VE SONUÇ
+
+1. **Tam Şeffaflık:** Vatandaş veya denetçiler *"Neden bu aileye yardım ettiniz de diğerine etmediniz?"* diye sorduğunda, *"Çünkü A ailesinin sistem puanı 85, B ailesinin ise 25"* şeklinde net, bilimsel ve belgelenebilir bir cevap verilir.
+2. **Kayırmacılığın Önlenmesi:** Formüller sabittir, görevlinin veya müdürün insiyatifi minimuma indirilerek adam kayırmanın önüne geçilir.
+3. **Gerçek İhtiyaç Sahibine Ulaşım:** Bütçe kısıtlı olduğunda, puanlama sistemi yardımların gerçekten en dipten, en muhtaç olanlardan başlayarak dağıtılmasını garanti altına alır.
+4. **Zaman Tasarrufu:** Manuel hesaplamalar, uzun toplantı tartışmaları biter; saniyeler içinde binlerce veri analiz edilerek karar taslağı müdürün önüne gelir.
