@@ -35,6 +35,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/settings/audit-logs', label: 'Denetim Kayıtları', icon: Shield, roles: ['superadmin'], section: 'Yönetim' },
   { href: '/guide', label: 'Kılavuz & Metodoloji', icon: BookOpen, roles: ['manager', 'superadmin', 'personnel'], section: 'Bilgi' },
   { href: '/presentation', label: 'Proje Sunumu', icon: Presentation, roles: ['manager', 'superadmin', 'personnel'], section: 'Bilgi' },
+  { href: '/analysis', label: 'Sistem Analizi', icon: ClipboardList, roles: ['manager', 'superadmin', 'personnel'], section: 'Bilgi' },
 ];
 
 export function SidebarLayout({ children }: SidebarProps) {
