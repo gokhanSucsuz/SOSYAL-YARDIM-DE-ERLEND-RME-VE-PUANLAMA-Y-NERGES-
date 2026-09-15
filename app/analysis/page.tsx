@@ -148,7 +148,7 @@ export default function AnalysisPage() {
               <AlertTriangle className="text-red-600" size={20} /> Güvenlik Filtreleri ve Ceza Mekanizması
             </h3>
             <p className="text-sm text-red-950 dark:text-red-200 leading-relaxed font-medium">
-              Bir hanenin puanı 90 bile olsa, sistem adaletsizliği önlemek için aşağıdaki durumlarda "Varlık Testi (Asset Test)" cezaları uygular:
+              Bir hanenin puanı 90 bile olsa, sistem adaletsizliği önlemek için aşağıdaki durumlarda &quot;Varlık Testi (Asset Test)&quot; cezaları uygular:
             </p>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-red-900 dark:text-red-300 font-semibold">
               <li className="flex items-center gap-2 bg-white/50 dark:bg-black/20 p-2.5 rounded-lg border border-red-200 dark:border-red-900/50">Araç Kaydı: <strong className="text-red-700 dark:text-red-400 ml-auto">-15 Puan</strong></li>

@@ -60,7 +60,7 @@ export default function GuidePage() {
               </h2>
 
               <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-                Vakfımıza her gün onlarca vatandaşımız yardım talebiyle başvurmaktadır. Ancak devletimizin kaynakları ve vakfımızın bütçesi belirli bir sınır içindedir. Bu durumda en zor karar şudur: <strong>"Kimin yardıma DAHA ÇOK ihtiyacı var?"</strong>
+                Vakfımıza her gün onlarca vatandaşımız yardım talebiyle başvurmaktadır. Ancak devletimizin kaynakları ve vakfımızın bütçesi belirli bir sınır içindedir. Bu durumda en zor karar şudur: <strong>&quot;Kimin yardıma DAHA ÇOK ihtiyacı var?&quot;</strong>
               </p>
               
               <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 mt-4">
@@ -76,7 +76,7 @@ export default function GuidePage() {
               </p>
               
               <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed font-semibold">
-                Görevli personelimiz vatandaşın evine gittiğinde sistemdeki soruları yanıtlar. Sistem arka planda bu cevapları bir süzgeçten geçirir ve <strong className="text-primary-600">0 ile 100 arasında bir "Muhtaçlık Puanı"</strong> hesaplar. Puan ne kadar yüksekse, ailenin durumu o kadar acil ve zordur.
+                Görevli personelimiz vatandaşın evine gittiğinde sistemdeki soruları yanıtlar. Sistem arka planda bu cevapları bir süzgeçten geçirir ve <strong className="text-primary-600">0 ile 100 arasında bir &quot;Muhtaçlık Puanı&quot;</strong> hesaplar. Puan ne kadar yüksekse, ailenin durumu o kadar acil ve zordur.
               </p>
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function GuidePage() {
             </div>
 
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Sistem toplam 6 ana başlıkta (A, B, C, D, E, F) puanlama yapar. Bir hanenin alabileceği <strong>maksimum toplam puan 100'dür</strong>. Şimdi bu başlıkların her birini, neden böyle puanlandığını açıklayarak inceleyelim:
+              Sistem toplam 6 ana başlıkta (A, B, C, D, E, F) puanlama yapar. Bir hanenin alabileceği <strong>maksimum toplam puan 100&apos;dür</strong>. Şimdi bu başlıkların her birini, neden böyle puanlandığını açıklayarak inceleyelim:
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -185,7 +185,7 @@ export default function GuidePage() {
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Ailenin yaşadığı evin fiziksel şartları nasıl?</p>
                 <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-2 list-disc pl-5">
                   <li><strong>Ev Şartları:</strong> Aile evsizse veya afetzede ise <strong>+8 puan</strong> alır. Ev ağır hasarlıysa (+6 puan), rutubetli/sağlıksız ise (+4 puan) eklenir. Kiracı olmak da (+3 puan) kazandırır.</li>
-                  <li><strong>Temel Eşyalar:</strong> Buzdolabı ve çamaşır makinesi "lüks değil, hayati zorunluluktur". Yoksa <strong>+1.5 puan</strong> verir.</li>
+                  <li><strong>Temel Eşyalar:</strong> Buzdolabı ve çamaşır makinesi &quot;lüks değil, hayati zorunluluktur&quot;. Yoksa <strong>+1.5 puan</strong> verir.</li>
                 </ul>
                 <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 text-xs italic text-slate-500">
                   <strong className="not-italic text-slate-700 dark:text-slate-300">Mantık:</strong> Kışın ısınmayan, rutubetli bir evde yaşamak ailenin acil yardıma ihtiyacı olduğunun en somut göstergesidir.
@@ -220,7 +220,7 @@ export default function GuidePage() {
             </h3>
             
             <p className="text-sm text-red-950 dark:text-red-200 leading-relaxed font-medium">
-              Adaleti sağlamak sadece ihtiyacı olana puan vermekle olmaz; ihtiyacı olmadığı halde yardım almaya çalışanları engellemekle de olur. Sistem bu yüzden <strong>"Ceza Puanları"</strong> uygular:
+              Adaleti sağlamak sadece ihtiyacı olana puan vermekle olmaz; ihtiyacı olmadığı halde yardım almaya çalışanları engellemekle de olur. Sistem bu yüzden <strong>&quot;Ceza Puanları&quot;</strong> uygular:
             </p>
 
             <ul className="text-sm space-y-3 text-red-900 dark:text-red-300 font-semibold mt-4">
@@ -299,7 +299,7 @@ export default function GuidePage() {
                 <CheckCircle2 className="text-emerald-500 shrink-0 mt-0.5" size={20} />
                 <div>
                   <strong className="block text-emerald-400 mb-1">Tam Şeffaflık:</strong>
-                  <span className="text-sm text-slate-300">Vatandaş veya denetçiler "Neden bu aileye yardım ettiniz de diğerine etmediniz?" diye sorduğunda, "Çünkü A ailesinin sistem puanı 85, B ailesinin ise 25" şeklinde net, bilimsel ve belgelenebilir bir cevap verilir.</span>
+                  <span className="text-sm text-slate-300">Vatandaş veya denetçiler &quot;Neden bu aileye yardım ettiniz de diğerine etmediniz?&quot; diye sorduğunda, &quot;Çünkü A ailesinin sistem puanı 85, B ailesinin ise 25&quot; şeklinde net, bilimsel ve belgelenebilir bir cevap verilir.</span>
                 </div>
               </li>
               <li className="flex items-start gap-3">
