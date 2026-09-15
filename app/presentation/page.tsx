@@ -125,7 +125,7 @@ export default function PresentationPage() {
               </li>
               <li className="flex gap-3 items-start">
                 <span className="bg-blue-100 text-blue-700 w-6 h-6 rounded-full flex items-center justify-center font-bold shrink-0 mt-0.5">2</span>
-                <span>Sistem arka planda bu verileri analiz eder ve anında <strong>100 üzerinden bir "Muhtaçlık Puanı"</strong> üretir.</span>
+                <span>Sistem arka planda bu verileri analiz eder ve anında <strong>100 üzerinden bir &quot;Muhtaçlık Puanı&quot;</strong> üretir.</span>
               </li>
               <li className="flex gap-3 items-start">
                 <span className="bg-blue-100 text-blue-700 w-6 h-6 rounded-full flex items-center justify-center font-bold shrink-0 mt-0.5">3</span>

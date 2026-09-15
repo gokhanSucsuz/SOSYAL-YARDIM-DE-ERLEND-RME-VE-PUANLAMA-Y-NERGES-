@@ -206,7 +206,7 @@ export default function GuidePage() {
                   <li>Sahaya giden personel; evin genel durumunu, ailenin çaresizliğini ve çevreden destek alıp alamayacaklarını gözlemleyerek kanaatine göre 0-10 arası ek puan verir.</li>
                 </ul>
                 <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 text-xs italic text-slate-500">
-                  <strong className="not-italic text-slate-700 dark:text-slate-300">Mantık:</strong> Makineye duygu katılamaz, personelin gözlemlediği "aciliyet" sistemin ayrılmaz bir parçası olmalıdır.
+                  <strong className="not-italic text-slate-700 dark:text-slate-300">Mantık:</strong> Makineye duygu katılamaz, personelin gözlemlediği &quot;aciliyet&quot; sistemin ayrılmaz bir parçası olmalıdır.
                 </div>
               </div>
             </div>
