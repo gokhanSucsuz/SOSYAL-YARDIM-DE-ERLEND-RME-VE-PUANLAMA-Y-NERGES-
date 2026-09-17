@@ -937,67 +937,75 @@ export default function PersonnelPage() {
 
       {/* PRINT-ONLY VISIBLE CONTENT (PDF Export / Print Layout) */}
       {viewState === 'detail' && selectedPersonnel && (
-        <div className="hidden print:block w-full text-black p-0 bg-white">
-         <div className="flex items-center gap-6 mb-8 border-b-2 border-black pb-4">
+        <div className="hidden print:flex print:flex-col w-full text-black p-0 bg-white" style={{ minHeight: '100vh' }}>
+         <div className="flex items-center gap-6 mb-6 border-b-2 border-black pb-3">
            <LogoImage />
-           <div>
-             <h1 className="text-2xl font-black uppercase">T.C. SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI</h1>
-             <h2 className="text-lg font-bold">Personel Performans İstatistik Raporu</h2>
-             <p className="text-sm mt-1">Oluşturulma Tarihi: {new Date().toLocaleDateString('tr-TR')}</p>
+           <div className="flex-1 text-center pr-12">
+             <h1 className="text-xl font-black uppercase tracking-tight">T.C. SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI</h1>
+             <h2 className="text-md font-bold mt-1">Personel Performans İstatistik Raporu</h2>
+           </div>
+           <div className="text-right text-xs font-medium whitespace-nowrap">
+             Tarih: {new Date().toLocaleDateString('tr-TR')}
            </div>
          </div>
          
-         <div className="mb-8">
-           <h3 className="font-bold text-xl mb-4 border-b pb-2">Personel Bilgileri ve Genel Toplamlar</h3>
-           <div className="flex gap-8 text-lg">
-             <div className="w-1/2 space-y-2">
-               <p><strong>Ad Soyad:</strong> {selectedPersonnel.name}</p>
-               <p><strong>Görev:</strong> Sosyal İnceleme Görevlisi</p>
-               <p><strong>Sisteme Kayıtlı Toplam İnceleme:</strong> {selectedPersonnel.totalAssessments}</p>
+         <div className="mb-6 border border-slate-300 rounded-xl bg-slate-50 p-5 print-break-inside-avoid">
+           <h3 className="font-bold text-sm mb-3 text-slate-800 border-b border-slate-200 pb-2">Personel Bilgileri ve Genel Toplamlar</h3>
+           <div className="flex gap-8 text-sm">
+             <div className="w-1/2 space-y-1.5">
+               <p><strong className="text-slate-600">Ad Soyad:</strong> {selectedPersonnel.name}</p>
+               <p><strong className="text-slate-600">Görev:</strong> Sosyal İnceleme Görevlisi</p>
+               <p><strong className="text-slate-600">Sisteme Kayıtlı İnceleme:</strong> {selectedPersonnel.totalAssessments} Dosya</p>
              </div>
-             <div className="w-1/2 space-y-2">
-               <p><strong>Onaylanan Dosya Sayısı:</strong> <span className="text-emerald-700 font-bold">{selectedPersonnel.approvedCount}</span></p>
-               <p><strong>Reddedilen Dosya Sayısı:</strong> <span className="text-red-700 font-bold">{selectedPersonnel.rejectedCount}</span></p>
-               <p><strong>Bekleyen Dosya Sayısı:</strong> <span className="text-amber-700 font-bold">{selectedPersonnel.pendingCount}</span></p>
+             <div className="w-1/2 space-y-1.5">
+               <p><strong className="text-slate-600">Onaylanan Dosya:</strong> <span className="text-emerald-700 font-bold">{selectedPersonnel.approvedCount}</span></p>
+               <p><strong className="text-slate-600">Reddedilen Dosya:</strong> <span className="text-red-700 font-bold">{selectedPersonnel.rejectedCount}</span></p>
+               <p><strong className="text-slate-600">Bekleyen Dosya:</strong> <span className="text-amber-700 font-bold">{selectedPersonnel.pendingCount}</span></p>
              </div>
            </div>
          </div>
 
-         <div className="print-break-before">
-           <h3 className="font-bold text-xl mb-4 border-b pb-2">Toplantı Bazlı İnceleme İstatistikleri</h3>
-           <table className="w-full text-left border-collapse border border-black text-sm">
+         <div className="print-break-inside-avoid mb-10 flex-1">
+           <h3 className="font-bold text-sm mb-2 text-slate-800">Toplantı Bazlı İnceleme Dağılımı</h3>
+           <table className="w-full text-left border-collapse border border-slate-400 text-xs">
              <thead>
-               <tr className="bg-gray-200">
-                 <th className="p-2 border border-black font-bold">Toplantı No</th>
-                 <th className="p-2 border border-black font-bold">Tarih</th>
-                 <th className="p-2 border border-black font-bold text-center">Toplam İnceleme</th>
-                 <th className="p-2 border border-black font-bold text-center">Onaylanan</th>
-                 <th className="p-2 border border-black font-bold text-center">Diğer (Bekleyen/Red)</th>
+               <tr className="bg-slate-100">
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold">Toplantı No</th>
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold">Tarih</th>
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold text-center">Toplam İnceleme</th>
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold text-center">Onaylanan</th>
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold text-center">Diğer</th>
                </tr>
              </thead>
              <tbody>
                {personnelMeetingStats.map(m => (
                  <tr key={m.id}>
-                   <td className="p-2 border border-black font-medium">{m.meetingNo}</td>
-                   <td className="p-2 border border-black">{new Date(m.date).toLocaleDateString('tr-TR')}</td>
-                   <td className="p-2 border border-black text-center font-bold">{m.total}</td>
-                   <td className="p-2 border border-black text-center text-green-700 font-bold">{m.approved}</td>
-                   <td className="p-2 border border-black text-center text-gray-700 font-bold">{m.total - m.approved}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 font-medium">{m.meetingNo}</td>
+                   <td className="px-3 py-1.5 border border-slate-400">{new Date(m.date).toLocaleDateString('tr-TR')}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-center font-bold">{m.total}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-center text-emerald-700 font-bold">{m.approved}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-center text-slate-700 font-medium">{m.total - m.approved}</td>
                  </tr>
                ))}
                {personnelMeetingStats.length === 0 && (
                  <tr>
-                   <td colSpan={5} className="p-2 border border-black text-center font-medium py-4">Kayıtlı toplantı incelemesi bulunamadı.</td>
+                   <td colSpan={5} className="px-3 py-3 border border-slate-400 text-center font-medium">Kayıtlı toplantı incelemesi bulunamadı.</td>
                  </tr>
                )}
              </tbody>
            </table>
          </div>
 
-         <div className="mt-16 w-full flex justify-end print-break-inside-avoid">
-           <div className="text-center mr-12">
-             <p className="font-bold text-lg">Vakıf Müdürü</p>
-             <p className="mt-12 text-gray-500">(İmza)</p>
+         <div className="mt-auto pt-10 pb-8 w-full flex justify-between px-16 print-break-inside-avoid">
+           <div className="text-center">
+             <p className="font-bold text-sm">Sosyal İnceleme Görevlisi</p>
+             <p className="mt-12 text-xs">{selectedPersonnel.name}</p>
+             <p className="text-slate-500 text-[10px] mt-0.5">(İmza)</p>
+           </div>
+           <div className="text-center">
+             <p className="font-bold text-sm">Vakıf Müdürü</p>
+             <p className="mt-12 text-xs text-transparent select-none">........................................</p>
+             <p className="text-slate-500 text-[10px] mt-0.5">(İmza / Kaşe)</p>
            </div>
          </div>
         </div>
