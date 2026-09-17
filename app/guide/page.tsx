@@ -5,10 +5,10 @@ export const dynamic = "force-dynamic";
 import React from 'react';
 import Link from 'next/link';
 import { SidebarLayout } from '@/components/sidebar';
-import { 
-  BookOpen, 
-  Presentation, 
-  Target, 
+import {
+  BookOpen,
+  Presentation,
+  Target,
   Calculator,
   AlertTriangle,
   Scale,
@@ -45,11 +45,11 @@ export default function GuidePage() {
 
         {/* Main Content */}
         <main className="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-6 lg:p-10 space-y-10">
-          
+
           {/* Banner Section */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary-50 rounded-full blur-3xl -z-0 opacity-70 transform translate-x-20 -translate-y-20"></div>
-            
+
             <div className="relative z-10 space-y-4">
               <div className="inline-flex items-center gap-2 bg-primary-100 text-primary-900 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider border border-primary-200">
                 <BookOpen size={14} className="text-primary-700" /> HERKES İÇİN ANLAŞILIR KILAVUZ
@@ -62,7 +62,7 @@ export default function GuidePage() {
               <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
                 Vakfımıza her gün onlarca vatandaşımız yardım talebiyle başvurmaktadır. Ancak devletimizin kaynakları ve vakfımızın bütçesi belirli bir sınır içindedir. Bu durumda en zor karar şudur: <strong>&quot;Kimin yardıma DAHA ÇOK ihtiyacı var?&quot;</strong>
               </p>
-              
+
               <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 mt-4">
                 <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Örneğin:</p>
                 <ul className="list-disc pl-5 text-sm text-slate-600 dark:text-slate-400 space-y-1">
@@ -74,7 +74,7 @@ export default function GuidePage() {
               <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed mt-4">
                 İnsan gözüyle bakıldığında kimin daha mağdur olduğuna karar vermek hem çok zordur hem de kişiden kişiye değişebilir. İşte bu sistem, insani duygulardan ve kişisel görüşlerden bağımsız, <strong>tamamen matematiğe ve bilimsel verilere (Dünya Bankası ve OECD standartlarına)</strong> dayalı adil bir karar vermek için tasarlanmıştır.
               </p>
-              
+
               <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed font-semibold">
                 Görevli personelimiz vatandaşın evine gittiğinde sistemdeki soruları yanıtlar. Sistem arka planda bu cevapları bir süzgeçten geçirir ve <strong className="text-primary-600">0 ile 100 arasında bir &quot;Muhtaçlık Puanı&quot;</strong> hesaplar. Puan ne kadar yüksekse, ailenin durumu o kadar acil ve zordur.
               </p>
@@ -98,7 +98,7 @@ export default function GuidePage() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
+
               {/* Category A */}
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
@@ -218,7 +218,7 @@ export default function GuidePage() {
               <AlertTriangle className="text-red-600 dark:text-red-500" size={24} />
               Ceza Puanları ve Güvenlik (Varlık Testi)
             </h3>
-            
+
             <p className="text-sm text-red-950 dark:text-red-200 leading-relaxed font-medium">
               Adaleti sağlamak sadece ihtiyacı olana puan vermekle olmaz; ihtiyacı olmadığı halde yardım almaya çalışanları engellemekle de olur. Sistem bu yüzden <strong>&quot;Ceza Puanları&quot;</strong> uygular:
             </p>
@@ -328,7 +328,7 @@ export default function GuidePage() {
               </li>
             </ul>
           </div>
-          
+
         </main>
       </div>
     </SidebarLayout>
