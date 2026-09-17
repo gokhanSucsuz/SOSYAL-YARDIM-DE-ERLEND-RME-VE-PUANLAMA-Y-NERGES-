@@ -769,7 +769,7 @@ export default function PersonnelPage() {
                       onClick={handleExportPersonnelDetail}
                       className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg flex items-center gap-2 font-bold transition-colors whitespace-nowrap"
                     >
-                      <Download size={18} /> Excel'e Aktar
+                      <Download size={18} /> Excel&apos;e Aktar
                     </button>
                   </div>
                 </div>
