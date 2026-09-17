@@ -179,6 +179,10 @@ export default function PersonnelPage() {
     }
   };
 
+  const handleExportPDF = () => {
+    window.print();
+  };
+
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
     if (!userStr) {
