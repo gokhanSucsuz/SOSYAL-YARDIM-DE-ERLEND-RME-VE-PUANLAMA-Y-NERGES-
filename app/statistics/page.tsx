@@ -180,8 +180,8 @@ export default function StatisticsPage() {
 
     assessments.forEach(a => {
       totalScore += a.result?.totalScore || 0;
-      if (a.status === 'approved' && a.data?.assistanceAmount) approvedAid += a.data.assistanceAmount;
-      if (a.data?.assistanceAmount) plannedAid += a.data.assistanceAmount;
+      if (a.status === 'approved' && a.result?.assistance?.amount) approvedAid += a.result.assistance.amount;
+      if (a.result?.assistance?.amount) plannedAid += a.result.assistance.amount;
 
       const d = a.data || {};
       
@@ -285,7 +285,6 @@ export default function StatisticsPage() {
         { header: 'Onaylı', key: 'approved', width: 15 },
         { header: 'Bekleyen', key: 'pending', width: 15 },
         { header: 'Onaylanan Yardım (TL)', key: 'aid', width: 25 },
-        { header: 'Bütçe (TL)', key: 'budget', width: 20 },
       ];
 
       allStats.forEach(s => {
@@ -295,8 +294,7 @@ export default function StatisticsPage() {
           total: s.totalCount,
           approved: s.approvedCount,
           pending: s.pendingCount,
-          aid: s.approvedAid,
-          budget: s.budget
+          aid: s.approvedAid
         });
       });
 
@@ -307,8 +305,7 @@ export default function StatisticsPage() {
         total: grandTotal.totalCount,
         approved: grandTotal.approvedCount,
         pending: grandTotal.pendingCount,
-        aid: grandTotal.approvedAid,
-        budget: grandTotal.budget
+        aid: grandTotal.approvedAid
       });
       totalRow.font = { bold: true };
 
@@ -578,8 +575,7 @@ export default function StatisticsPage() {
               <div className="w-1/2">
                 <h4 className="font-bold mb-2">Başvuru Dağılımı</h4>
                 <div className="h-64" style={{ height: '250px' }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
+                    <PieChart width={320} height={250}>
                       <Pie
                         data={[
                           { name: 'Onaylı', value: grandTotal.approvedCount },
@@ -594,13 +590,11 @@ export default function StatisticsPage() {
                       <Tooltip />
                       <Legend />
                     </PieChart>
-                  </ResponsiveContainer>
                 </div>
               </div>
               <div className="w-1/2 flex flex-col justify-center">
                  <h4 className="font-bold mb-4">Mali Özet</h4>
-                 <div className="text-lg mb-2"><strong>Toplam Bütçe:</strong> {grandTotal.budget.toLocaleString('tr-TR')} ₺</div>
-                 <div className="text-lg"><strong>Onaylanan Yardım:</strong> {grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</div>
+                 <div className="text-lg"><strong>Onaylanan Yardım (Genel):</strong> {grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</div>
               </div>
            </div>
          </div>
@@ -614,8 +608,7 @@ export default function StatisticsPage() {
                  <div key={index} className="print-break-inside-avoid mb-4">
                    <h4 className="font-bold mb-2 text-sm" style={{ color: catChart.color }}>{catChart.title}</h4>
                    <div className="h-48" style={{ height: '220px' }}>
-                     <ResponsiveContainer width="100%" height="100%">
-                       <BarChart data={catChart.data} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
+                       <BarChart width={350} height={220} data={catChart.data} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
                          <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
                          <XAxis type="number" hide />
                          <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 11, fill: '#000000', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
@@ -626,7 +619,6 @@ export default function StatisticsPage() {
                            ))}
                          </Bar>
                        </BarChart>
-                     </ResponsiveContainer>
                    </div>
                  </div>
                ))}
@@ -645,7 +637,6 @@ export default function StatisticsPage() {
                  <th className="p-2 border border-black font-bold text-center">Onaylı</th>
                  <th className="p-2 border border-black font-bold text-center">Bekleyen</th>
                  <th className="p-2 border border-black font-bold text-right">Yardım (TL)</th>
-                 <th className="p-2 border border-black font-bold text-right">Bütçe (TL)</th>
                </tr>
              </thead>
              <tbody>
@@ -657,7 +648,6 @@ export default function StatisticsPage() {
                    <td className="p-2 border border-black text-center">{s.approvedCount}</td>
                    <td className="p-2 border border-black text-center">{s.pendingCount}</td>
                    <td className="p-2 border border-black text-right">{s.approvedAid.toLocaleString('tr-TR')} ₺</td>
-                   <td className="p-2 border border-black text-right">{s.budget.toLocaleString('tr-TR')} ₺</td>
                  </tr>
                ))}
                <tr className="bg-gray-300 font-bold">
@@ -666,7 +656,6 @@ export default function StatisticsPage() {
                  <td className="p-2 border border-black text-center">{grandTotal.approvedCount}</td>
                  <td className="p-2 border border-black text-center">{grandTotal.pendingCount}</td>
                  <td className="p-2 border border-black text-right">{grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</td>
-                 <td className="p-2 border border-black text-right">{grandTotal.budget.toLocaleString('tr-TR')} ₺</td>
                </tr>
              </tbody>
            </table>
