@@ -3,12 +3,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye, UserPlus, Trash2, KeyRound, Download, Edit2, X, Loader2
+  ArrowLeft, Search, Users, CheckCircle2, AlertCircle, FileText, Calendar, Eye, UserPlus, Trash2, KeyRound, Download, Edit2, X, Loader2, Printer
 } from 'lucide-react';
 import { Meeting, Assessment, getAllMeetings, getAllAssessments } from '@/lib/db';
 import Link from 'next/link';
 import { SidebarLayout } from '@/components/sidebar';
 import { useDialog } from '@/components/DialogProvider';
+import { LogoImage } from '@/components/logo-image';
 import { calculateNewSystemScore, isOldSystemRecord, isRejectedRecord } from '@/lib/scoring';
 
 interface PersonnelStats {
@@ -438,7 +439,33 @@ export default function PersonnelPage() {
 
   return (
     <SidebarLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <style jsx global>{`
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 15mm 15mm;
+          }
+          body {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            font-size: 11pt !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .no-print, .sidebar-container, .sidebar-overlay {
+            display: none !important;
+          }
+          .print-break-inside-avoid {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .print-break-before {
+            page-break-before: always !important;
+            break-before: page !important;
+          }
+        }
+      `}</style>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:hidden no-print">
         {/* VIEW SELECTOR */}
         {viewState !== 'detail' && (
           <div className="flex bg-slate-200 dark:bg-slate-700 p-1 rounded-xl mb-6 w-full max-w-sm">
@@ -729,10 +756,16 @@ export default function PersonnelPage() {
                       <ArrowLeft size={16} /> Toplantılara Dön
                     </button>
                     <button 
+                      onClick={handleExportPDF}
+                      className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg flex items-center gap-2 font-bold transition-colors whitespace-nowrap"
+                    >
+                      <Printer size={18} /> PDF Rapor
+                    </button>
+                    <button 
                       onClick={handleExportPersonnelDetail}
                       className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg flex items-center gap-2 font-bold transition-colors whitespace-nowrap"
                     >
-                      <Download size={18} /> Excel&apos;e Aktar
+                      <Download size={18} /> Excel'e Aktar
                     </button>
                   </div>
                 </div>
@@ -895,6 +928,74 @@ export default function PersonnelPage() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* PRINT-ONLY VISIBLE CONTENT (PDF Export / Print Layout) */}
+      {viewState === 'detail' && selectedPersonnel && (
+        <div className="hidden print:block w-full text-black p-0 bg-white">
+         <div className="flex items-center gap-6 mb-8 border-b-2 border-black pb-4">
+           <LogoImage />
+           <div>
+             <h1 className="text-2xl font-black uppercase">T.C. SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI</h1>
+             <h2 className="text-lg font-bold">Personel Performans İstatistik Raporu</h2>
+             <p className="text-sm mt-1">Oluşturulma Tarihi: {new Date().toLocaleDateString('tr-TR')}</p>
+           </div>
+         </div>
+         
+         <div className="mb-8">
+           <h3 className="font-bold text-xl mb-4 border-b pb-2">Personel Bilgileri ve Genel Toplamlar</h3>
+           <div className="flex gap-8 text-lg">
+             <div className="w-1/2 space-y-2">
+               <p><strong>Ad Soyad:</strong> {selectedPersonnel.name}</p>
+               <p><strong>Görev:</strong> Sosyal İnceleme Görevlisi</p>
+               <p><strong>Sisteme Kayıtlı Toplam İnceleme:</strong> {selectedPersonnel.totalAssessments}</p>
+             </div>
+             <div className="w-1/2 space-y-2">
+               <p><strong>Onaylanan Dosya Sayısı:</strong> <span className="text-emerald-700 font-bold">{selectedPersonnel.approvedCount}</span></p>
+               <p><strong>Reddedilen Dosya Sayısı:</strong> <span className="text-red-700 font-bold">{selectedPersonnel.rejectedCount}</span></p>
+               <p><strong>Bekleyen Dosya Sayısı:</strong> <span className="text-amber-700 font-bold">{selectedPersonnel.pendingCount}</span></p>
+             </div>
+           </div>
+         </div>
+
+         <div className="print-break-before">
+           <h3 className="font-bold text-xl mb-4 border-b pb-2">Toplantı Bazlı İnceleme İstatistikleri</h3>
+           <table className="w-full text-left border-collapse border border-black text-sm">
+             <thead>
+               <tr className="bg-gray-200">
+                 <th className="p-2 border border-black font-bold">Toplantı No</th>
+                 <th className="p-2 border border-black font-bold">Tarih</th>
+                 <th className="p-2 border border-black font-bold text-center">Toplam İnceleme</th>
+                 <th className="p-2 border border-black font-bold text-center">Onaylanan</th>
+                 <th className="p-2 border border-black font-bold text-center">Diğer (Bekleyen/Red)</th>
+               </tr>
+             </thead>
+             <tbody>
+               {personnelMeetingStats.map(m => (
+                 <tr key={m.id}>
+                   <td className="p-2 border border-black font-medium">{m.meetingNo}</td>
+                   <td className="p-2 border border-black">{new Date(m.date).toLocaleDateString('tr-TR')}</td>
+                   <td className="p-2 border border-black text-center font-bold">{m.total}</td>
+                   <td className="p-2 border border-black text-center text-green-700 font-bold">{m.approved}</td>
+                   <td className="p-2 border border-black text-center text-gray-700 font-bold">{m.total - m.approved}</td>
+                 </tr>
+               ))}
+               {personnelMeetingStats.length === 0 && (
+                 <tr>
+                   <td colSpan={5} className="p-2 border border-black text-center font-medium py-4">Kayıtlı toplantı incelemesi bulunamadı.</td>
+                 </tr>
+               )}
+             </tbody>
+           </table>
+         </div>
+
+         <div className="mt-16 w-full flex justify-end print-break-inside-avoid">
+           <div className="text-center mr-12">
+             <p className="font-bold text-lg">Vakıf Müdürü</p>
+             <p className="mt-12 text-gray-500">(İmza)</p>
+           </div>
+         </div>
         </div>
       )}
 
