@@ -333,9 +333,40 @@ export default function StatisticsPage() {
 
   return (
     <SidebarLayout>
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 pb-20">
+      <style jsx global>{`
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 15mm 15mm;
+          }
+          body {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            font-size: 11pt !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .no-print, .sidebar-container, .sidebar-overlay {
+            display: none !important;
+          }
+          .print-break-inside-avoid {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .print-break-before {
+            page-break-before: always !important;
+            break-before: page !important;
+          }
+          /* Fix Recharts in print */
+          .recharts-wrapper {
+            width: 100% !important;
+            height: 100% !important;
+          }
+        }
+      `}</style>
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 pb-20 print:bg-white print:pb-0">
 
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6 print:hidden">
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6 print:hidden no-print">
         {/* Page title + actions */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -531,7 +562,7 @@ export default function StatisticsPage() {
       {/* ------------------------------------------------------------- */}
       {/* PRINT-ONLY VISIBLE CONTENT (PDF Export / Print Layout)       */}
       {/* ------------------------------------------------------------- */}
-      <div className="hidden print:block w-full text-black p-8">
+      <div className="hidden print:block w-full text-black p-0">
          <div className="flex items-center gap-6 mb-8 border-b-2 border-black pb-4">
            <LogoImage />
            <div>
@@ -546,7 +577,7 @@ export default function StatisticsPage() {
            <div className="flex gap-8">
               <div className="w-1/2">
                 <h4 className="font-bold mb-2">Başvuru Dağılımı</h4>
-                <div className="h-48">
+                <div className="h-64" style={{ height: '250px' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -554,7 +585,8 @@ export default function StatisticsPage() {
                           { name: 'Onaylı', value: grandTotal.approvedCount },
                           { name: 'Bekleyen', value: grandTotal.pendingCount },
                         ]}
-                        cx="50%" cy="50%" innerRadius={40} outerRadius={60} paddingAngle={5} dataKey="value"
+                        cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={5} dataKey="value"
+                        isAnimationActive={false}
                       >
                         <Cell fill={COLORS.emerald} />
                         <Cell fill={COLORS.amber} />
@@ -567,49 +599,83 @@ export default function StatisticsPage() {
               </div>
               <div className="w-1/2 flex flex-col justify-center">
                  <h4 className="font-bold mb-4">Mali Özet</h4>
-                 <div className="text-lg"><strong>Toplam Bütçe:</strong> {grandTotal.budget.toLocaleString('tr-TR')} ₺</div>
+                 <div className="text-lg mb-2"><strong>Toplam Bütçe:</strong> {grandTotal.budget.toLocaleString('tr-TR')} ₺</div>
                  <div className="text-lg"><strong>Onaylanan Yardım:</strong> {grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</div>
               </div>
            </div>
          </div>
 
-         <h3 className="font-bold text-xl mb-4">Toplantı Detayları</h3>
-         <table className="w-full text-left border-collapse border border-black">
-           <thead>
-             <tr className="bg-gray-200">
-               <th className="p-2 border border-black font-bold">Toplantı No</th>
-               <th className="p-2 border border-black font-bold">Tarih</th>
-               <th className="p-2 border border-black font-bold text-center">Toplam</th>
-               <th className="p-2 border border-black font-bold text-center">Onaylı</th>
-               <th className="p-2 border border-black font-bold text-center">Bekleyen</th>
-               <th className="p-2 border border-black font-bold">Yardım (TL)</th>
-             </tr>
-           </thead>
-           <tbody>
-             {allStats.map((s, idx) => (
-               <tr key={idx}>
-                 <td className="p-2 border border-black font-medium">{s.meeting.meetingNo}</td>
-                 <td className="p-2 border border-black">{s.meeting.date}</td>
-                 <td className="p-2 border border-black text-center">{s.totalCount}</td>
-                 <td className="p-2 border border-black text-center">{s.approvedCount}</td>
-                 <td className="p-2 border border-black text-center">{s.pendingCount}</td>
-                 <td className="p-2 border border-black">{s.approvedAid.toLocaleString('tr-TR')} ₺</td>
-               </tr>
-             ))}
-             <tr className="bg-gray-300 font-bold text-lg">
-               <td colSpan={2} className="p-2 border border-black text-right">GENEL TOPLAM</td>
-               <td className="p-2 border border-black text-center">{grandTotal.totalCount}</td>
-               <td className="p-2 border border-black text-center">{grandTotal.approvedCount}</td>
-               <td className="p-2 border border-black text-center">{grandTotal.pendingCount}</td>
-               <td className="p-2 border border-black">{grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</td>
-             </tr>
-           </tbody>
-         </table>
+         {/* Kategorik İstatistikler - Print View */}
+         {grandTotal.categoryCharts && grandTotal.categoryCharts.length > 0 && (
+           <div className="mb-8 print-break-before">
+             <h3 className="font-bold text-xl mb-4 border-b pb-2">Genel Toplam Kategorik İstatistikler</h3>
+             <div className="grid grid-cols-2 gap-8">
+               {grandTotal.categoryCharts.map((catChart: any, index: number) => (
+                 <div key={index} className="print-break-inside-avoid mb-4">
+                   <h4 className="font-bold mb-2 text-sm" style={{ color: catChart.color }}>{catChart.title}</h4>
+                   <div className="h-48" style={{ height: '220px' }}>
+                     <ResponsiveContainer width="100%" height="100%">
+                       <BarChart data={catChart.data} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
+                         <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
+                         <XAxis type="number" hide />
+                         <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 11, fill: '#000000', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+                         <Tooltip cursor={{fill: '#f1f5f9'}} formatter={(value) => [value, 'Birey/Kayıt']} />
+                         <Bar dataKey="birey" fill={catChart.color} radius={[0, 4, 4, 0]} isAnimationActive={false}>
+                           {catChart.data.map((entry: any, i: number) => (
+                             <Cell key={`cell-${i}`} fill={catChart.color} />
+                           ))}
+                         </Bar>
+                       </BarChart>
+                     </ResponsiveContainer>
+                   </div>
+                 </div>
+               ))}
+             </div>
+           </div>
+         )}
 
-         <div className="mt-16 w-full flex justify-end">
-           <div className="text-center">
+         <div className="print-break-before">
+           <h3 className="font-bold text-xl mb-4 border-b pb-2">Toplantı Detayları</h3>
+           <table className="w-full text-left border-collapse border border-black text-sm">
+             <thead>
+               <tr className="bg-gray-200">
+                 <th className="p-2 border border-black font-bold">Toplantı No</th>
+                 <th className="p-2 border border-black font-bold">Tarih</th>
+                 <th className="p-2 border border-black font-bold text-center">Toplam</th>
+                 <th className="p-2 border border-black font-bold text-center">Onaylı</th>
+                 <th className="p-2 border border-black font-bold text-center">Bekleyen</th>
+                 <th className="p-2 border border-black font-bold text-right">Yardım (TL)</th>
+                 <th className="p-2 border border-black font-bold text-right">Bütçe (TL)</th>
+               </tr>
+             </thead>
+             <tbody>
+               {allStats.map((s, idx) => (
+                 <tr key={idx}>
+                   <td className="p-2 border border-black font-medium">{s.meeting.meetingNo}</td>
+                   <td className="p-2 border border-black">{s.meeting.date}</td>
+                   <td className="p-2 border border-black text-center">{s.totalCount}</td>
+                   <td className="p-2 border border-black text-center">{s.approvedCount}</td>
+                   <td className="p-2 border border-black text-center">{s.pendingCount}</td>
+                   <td className="p-2 border border-black text-right">{s.approvedAid.toLocaleString('tr-TR')} ₺</td>
+                   <td className="p-2 border border-black text-right">{s.budget.toLocaleString('tr-TR')} ₺</td>
+                 </tr>
+               ))}
+               <tr className="bg-gray-300 font-bold">
+                 <td colSpan={2} className="p-2 border border-black text-right">GENEL TOPLAM</td>
+                 <td className="p-2 border border-black text-center">{grandTotal.totalCount}</td>
+                 <td className="p-2 border border-black text-center">{grandTotal.approvedCount}</td>
+                 <td className="p-2 border border-black text-center">{grandTotal.pendingCount}</td>
+                 <td className="p-2 border border-black text-right">{grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</td>
+                 <td className="p-2 border border-black text-right">{grandTotal.budget.toLocaleString('tr-TR')} ₺</td>
+               </tr>
+             </tbody>
+           </table>
+         </div>
+
+         <div className="mt-16 w-full flex justify-end print-break-inside-avoid">
+           <div className="text-center mr-12">
              <p className="font-bold text-lg">Vakıf Müdürü</p>
-             <p className="mt-10">(İmza)</p>
+             <p className="mt-12 text-gray-500">(İmza)</p>
            </div>
          </div>
       </div>
