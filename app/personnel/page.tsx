@@ -937,7 +937,7 @@ export default function PersonnelPage() {
 
       {/* PRINT-ONLY VISIBLE CONTENT (PDF Export / Print Layout) */}
       {viewState === 'detail' && selectedPersonnel && (
-        <div className="hidden print:flex print:flex-col w-full text-black p-0 bg-white" style={{ minHeight: '100vh' }}>
+        <div className="hidden print:block w-full text-black p-0 bg-white">
          <div className="flex items-center gap-6 mb-6 border-b-2 border-black pb-3">
            <LogoImage />
            <div className="flex-1 text-center pr-12">
@@ -965,7 +965,7 @@ export default function PersonnelPage() {
            </div>
          </div>
 
-         <div className="print-break-inside-avoid mb-10 flex-1">
+         <div className="print-break-inside-avoid mb-10">
            <h3 className="font-bold text-sm mb-2 text-slate-800">Toplantı Bazlı İnceleme Dağılımı</h3>
            <table className="w-full text-left border-collapse border border-slate-400 text-xs">
              <thead>
@@ -996,7 +996,7 @@ export default function PersonnelPage() {
            </table>
          </div>
 
-         <div className="mt-auto pt-10 pb-8 w-full flex justify-between px-16 print-break-inside-avoid">
+         <div className="mt-16 w-full flex justify-between px-16 print-break-inside-avoid">
            <div className="text-center">
              <p className="font-bold text-sm">Sosyal İnceleme Görevlisi</p>
              <p className="mt-12 text-xs">{selectedPersonnel.name}</p>
