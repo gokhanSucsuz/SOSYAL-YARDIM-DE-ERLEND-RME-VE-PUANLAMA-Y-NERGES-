@@ -309,17 +309,7 @@ export default function EditAssessmentWizard() {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Telefon Numarası</label>
-                      <input 
-                        type="tel" 
-                        value={state.phoneNumber}
-                        onChange={e => set('phoneNumber', e.target.value)}
-                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none"
-                        placeholder="Örn: 0555 555 5555"
-                      />
-                    </div>
+                  <div className="grid grid-cols-1 gap-6">
                     <div>
                       <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Hane Numarası (Sistem Ref)</label>
                       <input 
@@ -332,8 +322,8 @@ export default function EditAssessmentWizard() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-1">
+                  <div className="grid grid-cols-1 gap-6">
+                    <div>
                       <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Hanedeki Kişi Sayısı</label>
                       <div className="flex items-center w-full border border-slate-300 dark:border-slate-600 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500 transition-all">
                         <button
@@ -360,16 +350,6 @@ export default function EditAssessmentWizard() {
                           <Plus size={20} />
                         </button>
                       </div>
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Açık Adres</label>
-                      <textarea 
-                        value={state.applicantAddress}
-                        onChange={e => set('applicantAddress', e.target.value)}
-                        rows={2}
-                        className="w-full border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-lg font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all outline-none"
-                        placeholder="Mahalle, Sokak, Kapı No vb."
-                      />
                     </div>
                   </div>
                 </div>

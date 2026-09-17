@@ -208,23 +208,33 @@ export default function PresentationPage() {
                 <tbody className="text-slate-600 dark:text-slate-300 font-medium">
                   <tr className="border-b border-slate-100 dark:border-slate-800 bg-emerald-50/50 dark:bg-emerald-900/10">
                     <td className="p-4"><strong className="text-emerald-700 dark:text-emerald-400">1. Derece</strong></td>
-                    <td className="p-4">Aşırı Muhtaç (86-100 Puan)</td>
+                    <td className="p-4">Kritik / Çok Yüksek İhtiyaç (86-100 Puan)</td>
                     <td className="p-4 text-right font-black text-emerald-800 dark:text-emerald-300">10.000 TL</td>
                   </tr>
                   <tr className="border-b border-slate-100 dark:border-slate-800">
                     <td className="p-4"><strong className="text-slate-800 dark:text-slate-300">2. Derece</strong></td>
-                    <td className="p-4">Ağır Muhtaç (71-85 Puan)</td>
+                    <td className="p-4">Yüksek İhtiyaç (71-85 Puan)</td>
                     <td className="p-4 text-right font-black text-slate-800 dark:text-slate-200">7.500 TL</td>
                   </tr>
                   <tr className="border-b border-slate-100 dark:border-slate-800">
                     <td className="p-4"><strong className="text-slate-800 dark:text-slate-300">3. Derece</strong></td>
-                    <td className="p-4">Orta Muhtaç (56-70 Puan)</td>
+                    <td className="p-4">Orta Düzey İhtiyaç (56-70 Puan)</td>
                     <td className="p-4 text-right font-black text-slate-800 dark:text-slate-200">5.000 TL</td>
                   </tr>
                   <tr className="border-b border-slate-100 dark:border-slate-800">
                     <td className="p-4"><strong className="text-slate-800 dark:text-slate-300">4. Derece</strong></td>
-                    <td className="p-4">Temel Destek (41-55 Puan)</td>
+                    <td className="p-4">Düşük-Orta İhtiyaç (41-55 Puan)</td>
                     <td className="p-4 text-right font-black text-slate-800 dark:text-slate-200">4.000 TL</td>
+                  </tr>
+                  <tr className="border-b border-slate-100 dark:border-slate-800">
+                    <td className="p-4"><strong className="text-slate-800 dark:text-slate-300">5. Derece</strong></td>
+                    <td className="p-4">Temel İhtiyaç (26-40 Puan)</td>
+                    <td className="p-4 text-right font-black text-slate-800 dark:text-slate-200">3.000 TL</td>
+                  </tr>
+                  <tr className="border-b border-slate-100 dark:border-slate-800">
+                    <td className="p-4"><strong className="text-slate-800 dark:text-slate-300">6. Derece</strong></td>
+                    <td className="p-4">Dönemsel / Sınır İhtiyaç (10-25 Puan)</td>
+                    <td className="p-4 text-right font-black text-slate-800 dark:text-slate-200">2.000 TL</td>
                   </tr>
                   <tr className="bg-red-50/50 dark:bg-red-900/10">
                     <td className="p-4"><strong className="text-red-700 dark:text-red-400">RED</strong></td>

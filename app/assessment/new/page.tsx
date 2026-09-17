@@ -363,19 +363,7 @@ function NewAssessmentContent() {
                         </div>
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <Phone size={14} className="text-primary-400" /> Telefon Numarası
-                          </label>
-                          <input 
-                            type="tel" 
-                            value={state.phoneNumber}
-                            onChange={e => set('phoneNumber', e.target.value)}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
-                            placeholder="Örn: 0555 555 5555"
-                          />
-                        </div>
+                      <div className="grid grid-cols-1 gap-6">
                         <div>
                           <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <Hash size={14} className="text-primary-400" /> Hane Numarası (Sistem Ref)
@@ -390,8 +378,8 @@ function NewAssessmentContent() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="md:col-span-1">
+                      <div className="grid grid-cols-1 gap-6">
+                        <div>
                           <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <Users size={14} className="text-primary-400" /> Hanedeki Toplam Kişi Sayısı
                           </label>
@@ -420,18 +408,6 @@ function NewAssessmentContent() {
                               <Plus size={20} />
                             </button>
                           </div>
-                        </div>
-                        <div className="md:col-span-2">
-                          <label className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <MapPin size={14} className="text-primary-400" /> İkamet Adresi
-                          </label>
-                          <textarea 
-                            value={state.applicantAddress}
-                            onChange={e => set('applicantAddress', e.target.value)}
-                            rows={2}
-                            className="w-full bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-2xl py-3.5 px-4 text-base font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary-500 transition-all outline-none shadow-inner"
-                            placeholder="Mahalle, Cadde/Sokak, Kapı No, Daire..."
-                          />
                         </div>
                       </div>
                     </div>
