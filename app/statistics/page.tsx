@@ -559,59 +559,64 @@ export default function StatisticsPage() {
       {/* ------------------------------------------------------------- */}
       {/* PRINT-ONLY VISIBLE CONTENT (PDF Export / Print Layout)       */}
       {/* ------------------------------------------------------------- */}
-      <div className="hidden print:block w-full text-black p-0">
-         <div className="flex items-center gap-6 mb-8 border-b-2 border-black pb-4">
+      <div className="hidden print:block w-full text-black p-0 bg-white">
+         <div className="flex items-center gap-6 mb-6 border-b-2 border-black pb-3">
            <LogoImage />
-           <div>
-             <h1 className="text-2xl font-black uppercase">T.C. SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI</h1>
-             <h2 className="text-lg font-bold">Resmi İstatistik ve Analiz Raporu</h2>
-             <p className="text-sm mt-1">Oluşturulma Tarihi: {new Date().toLocaleDateString('tr-TR')}</p>
+           <div className="flex-1 text-center pr-12">
+             <h1 className="text-xl font-black uppercase tracking-tight">T.C. SOSYAL YARDIMLAŞMA VE DAYANIŞMA VAKFI</h1>
+             <h2 className="text-md font-bold mt-1">Resmi İstatistik ve Analiz Raporu</h2>
+           </div>
+           <div className="text-right text-xs font-medium whitespace-nowrap">
+             Tarih: {new Date().toLocaleDateString('tr-TR')}
            </div>
          </div>
 
-         <div className="mb-6">
-           <h3 className="font-bold text-xl mb-4 border-b pb-2">Özet Grafikler</h3>
-           <div className="flex gap-8">
-              <div className="w-1/2">
-                <h4 className="font-bold mb-2">Başvuru Dağılımı</h4>
-                <div className="h-64" style={{ height: '250px' }}>
-                    <PieChart width={320} height={250}>
+         <div className="mb-6 border border-slate-300 rounded-xl bg-slate-50 p-5 print-break-inside-avoid">
+           <h3 className="font-bold text-sm mb-3 text-slate-800 border-b border-slate-200 pb-2">Özet Durum ve Mali Tablo</h3>
+           <div className="flex gap-8 items-center">
+              <div className="w-1/2 flex items-center justify-center">
+                <div style={{ width: '220px', height: '180px' }}>
+                    <PieChart width={220} height={180}>
                       <Pie
                         data={[
                           { name: 'Onaylı', value: grandTotal.approvedCount },
                           { name: 'Bekleyen', value: grandTotal.pendingCount },
                         ]}
-                        cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={5} dataKey="value"
+                        cx="50%" cy="50%" innerRadius={35} outerRadius={60} paddingAngle={5} dataKey="value"
                         isAnimationActive={false}
                       >
                         <Cell fill={COLORS.emerald} />
                         <Cell fill={COLORS.amber} />
                       </Pie>
                       <Tooltip />
-                      <Legend />
+                      <Legend wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
                     </PieChart>
                 </div>
               </div>
-              <div className="w-1/2 flex flex-col justify-center">
-                 <h4 className="font-bold mb-4">Mali Özet</h4>
-                 <div className="text-lg"><strong>Onaylanan Yardım (Genel):</strong> {grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</div>
+              <div className="w-1/2 flex flex-col justify-center space-y-2 text-sm">
+                 <p><strong className="text-slate-600">Toplam Başvuru:</strong> {grandTotal.totalCount} Adet</p>
+                 <p><strong className="text-slate-600">Onaylanan:</strong> <span className="text-emerald-700 font-bold">{grandTotal.approvedCount}</span></p>
+                 <p><strong className="text-slate-600">Bekleyen/Reddedilen:</strong> <span className="text-amber-700 font-bold">{grandTotal.pendingCount}</span></p>
+                 <div className="mt-4 pt-4 border-t border-slate-200">
+                   <p className="text-lg"><strong className="text-slate-800">Toplam Yardım (Onaylanan):</strong> <span className="font-black text-emerald-700">{grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</span></p>
+                 </div>
               </div>
            </div>
          </div>
 
          {/* Kategorik İstatistikler - Print View */}
          {grandTotal.categoryCharts && grandTotal.categoryCharts.length > 0 && (
-           <div className="mb-8 print-break-before">
-             <h3 className="font-bold text-xl mb-4 border-b pb-2">Genel Toplam Kategorik İstatistikler</h3>
-             <div className="grid grid-cols-2 gap-8">
+           <div className="mb-6 print-break-inside-avoid">
+             <h3 className="font-bold text-sm mb-3 text-slate-800 border-b border-slate-200 pb-2">Genel Kategori Dağılımı (Onaylı İhtiyaçlar)</h3>
+             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                {grandTotal.categoryCharts.map((catChart: any, index: number) => (
-                 <div key={index} className="print-break-inside-avoid mb-4">
-                   <h4 className="font-bold mb-2 text-sm" style={{ color: catChart.color }}>{catChart.title}</h4>
-                   <div className="h-48" style={{ height: '220px' }}>
-                       <BarChart width={350} height={220} data={catChart.data} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
+                 <div key={index} className="print-break-inside-avoid bg-white border border-slate-200 rounded p-2">
+                   <h4 className="font-bold mb-1 text-[11px]" style={{ color: catChart.color }}>{catChart.title}</h4>
+                   <div style={{ height: '160px' }}>
+                       <BarChart width={320} height={160} data={catChart.data} layout="vertical" margin={{ top: 2, right: 10, left: 110, bottom: 2 }}>
                          <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
                          <XAxis type="number" hide />
-                         <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 11, fill: '#000000', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+                         <YAxis dataKey="name" type="category" width={105} tick={{ fontSize: 9, fill: '#000000', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
                          <Tooltip cursor={{fill: '#f1f5f9'}} formatter={(value) => [value, 'Birey/Kayıt']} />
                          <Bar dataKey="birey" fill={catChart.color} radius={[0, 4, 4, 0]} isAnimationActive={false}>
                            {catChart.data.map((entry: any, i: number) => (
@@ -626,45 +631,58 @@ export default function StatisticsPage() {
            </div>
          )}
 
-         <div className="print-break-before">
-           <h3 className="font-bold text-xl mb-4 border-b pb-2">Toplantı Detayları</h3>
-           <table className="w-full text-left border-collapse border border-black text-sm">
+         <div className="print-break-inside-avoid mb-10">
+           <h3 className="font-bold text-sm mb-2 text-slate-800">Toplantı Detayları</h3>
+           <table className="w-full text-left border-collapse border border-slate-400 text-xs">
              <thead>
-               <tr className="bg-gray-200">
-                 <th className="p-2 border border-black font-bold">Toplantı No</th>
-                 <th className="p-2 border border-black font-bold">Tarih</th>
-                 <th className="p-2 border border-black font-bold text-center">Toplam</th>
-                 <th className="p-2 border border-black font-bold text-center">Onaylı</th>
-                 <th className="p-2 border border-black font-bold text-center">Bekleyen</th>
-                 <th className="p-2 border border-black font-bold text-right">Yardım (TL)</th>
+               <tr className="bg-slate-100">
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold">Toplantı No</th>
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold">Tarih</th>
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold text-center">Toplam</th>
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold text-center">Onaylı</th>
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold text-center">Diğer</th>
+                 <th className="px-3 py-1.5 border border-slate-400 font-bold text-right">Yardım (TL)</th>
                </tr>
              </thead>
              <tbody>
                {allStats.map((s, idx) => (
                  <tr key={idx}>
-                   <td className="p-2 border border-black font-medium">{s.meeting.meetingNo}</td>
-                   <td className="p-2 border border-black">{s.meeting.date}</td>
-                   <td className="p-2 border border-black text-center">{s.totalCount}</td>
-                   <td className="p-2 border border-black text-center">{s.approvedCount}</td>
-                   <td className="p-2 border border-black text-center">{s.pendingCount}</td>
-                   <td className="p-2 border border-black text-right">{s.approvedAid.toLocaleString('tr-TR')} ₺</td>
+                   <td className="px-3 py-1.5 border border-slate-400 font-medium">{s.meeting.meetingNo}</td>
+                   <td className="px-3 py-1.5 border border-slate-400">{s.meeting.date}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-center font-medium">{s.totalCount}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-center font-bold text-emerald-700">{s.approvedCount}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-center text-slate-600">{s.pendingCount}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-right font-medium">{s.approvedAid.toLocaleString('tr-TR')} ₺</td>
                  </tr>
                ))}
-               <tr className="bg-gray-300 font-bold">
-                 <td colSpan={2} className="p-2 border border-black text-right">GENEL TOPLAM</td>
-                 <td className="p-2 border border-black text-center">{grandTotal.totalCount}</td>
-                 <td className="p-2 border border-black text-center">{grandTotal.approvedCount}</td>
-                 <td className="p-2 border border-black text-center">{grandTotal.pendingCount}</td>
-                 <td className="p-2 border border-black text-right">{grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</td>
-               </tr>
+               {allStats.length === 0 && (
+                 <tr>
+                   <td colSpan={6} className="px-3 py-3 border border-slate-400 text-center font-medium">Kayıt bulunamadı.</td>
+                 </tr>
+               )}
+               {allStats.length > 0 && (
+                 <tr className="bg-slate-200">
+                   <td colSpan={2} className="px-3 py-1.5 border border-slate-400 text-right font-black text-slate-800">GENEL TOPLAM</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-center font-black text-slate-800">{grandTotal.totalCount}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-center font-black text-emerald-800">{grandTotal.approvedCount}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-center font-black text-slate-800">{grandTotal.pendingCount}</td>
+                   <td className="px-3 py-1.5 border border-slate-400 text-right font-black text-emerald-800">{grandTotal.approvedAid.toLocaleString('tr-TR')} ₺</td>
+                 </tr>
+               )}
              </tbody>
            </table>
          </div>
 
-         <div className="mt-16 w-full flex justify-end print-break-inside-avoid">
-           <div className="text-center mr-12">
-             <p className="font-bold text-lg">Vakıf Müdürü</p>
-             <p className="mt-12 text-gray-500">(İmza)</p>
+         <div className="mt-12 w-full flex justify-between px-16 print-break-inside-avoid pb-8">
+           <div className="text-center">
+             <p className="font-bold text-sm">Düzenleyen</p>
+             <p className="mt-12 text-xs text-transparent select-none">........................................</p>
+             <p className="text-slate-500 text-[10px] mt-0.5">(İmza)</p>
+           </div>
+           <div className="text-center">
+             <p className="font-bold text-sm">Vakıf Müdürü</p>
+             <p className="mt-12 text-xs text-transparent select-none">........................................</p>
+             <p className="text-slate-500 text-[10px] mt-0.5">(İmza / Kaşe)</p>
            </div>
          </div>
       </div>
