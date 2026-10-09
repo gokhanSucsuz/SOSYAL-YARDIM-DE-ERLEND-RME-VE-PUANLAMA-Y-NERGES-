@@ -90,7 +90,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Şifre gereklidir' }, { status: 400 });
     }
 
-    const isMatch = await bcrypt.compare(password, user.passwordHash || '');
+    const trimmedPassword = password.trim();
+    let isMatch = false;
+
+    if (user.passwordHash && !user.passwordHash.startsWith('$2')) {
+      if (trimmedPassword === user.passwordHash) {
+        isMatch = true;
+        const salt = await bcrypt.genSalt(10);
+        user.passwordHash = await bcrypt.hash(trimmedPassword, salt);
+        await user.save();
+      }
+    } else {
+      isMatch = await bcrypt.compare(trimmedPassword, user.passwordHash || '');
+    }
+
     if (!isMatch) {
       // Increment failed attempts
       user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
