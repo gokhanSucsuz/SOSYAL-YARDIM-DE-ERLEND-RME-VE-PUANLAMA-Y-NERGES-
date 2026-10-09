@@ -39,6 +39,7 @@ export async function middleware(req: NextRequest) {
   // istek konteynerin kendi loopback adresine, kısa bir zaman aşımıyla yapılır ve sonuç bellekte önbelleklenir.
   let isMaintenanceMode = false;
   const now = Date.now();
+  /*
   if (maintenanceCache && now - maintenanceCache.at < MAINTENANCE_CACHE_MS) {
     isMaintenanceMode = maintenanceCache.value;
   } else {
@@ -62,6 +63,7 @@ export async function middleware(req: NextRequest) {
       clearTimeout(timeoutId);
     }
   }
+  */
 
   // Parse session early to know if superadmin
   let sessionPayload: any = null;
