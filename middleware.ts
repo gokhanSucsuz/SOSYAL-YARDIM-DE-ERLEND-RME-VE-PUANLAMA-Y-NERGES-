@@ -165,6 +165,8 @@ export async function middleware(req: NextRequest) {
   // Allow passing to the login API and fetching users list for login dropdown
   if (
     pathname.startsWith('/api/auth/login') ||
+    pathname === '/api/settings/google-login' ||
+    pathname === '/api/auth/me' ||
     (req.method === 'GET' && pathname === '/api/users')
   ) {
     return NextResponse.next();

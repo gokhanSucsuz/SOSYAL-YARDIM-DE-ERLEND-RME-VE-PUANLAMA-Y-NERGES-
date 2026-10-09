@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     const res = NextResponse.json({ success: true, user: { name: user.name, role: user.role } });
     res.cookies.set('session', newSessionToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production' && req.nextUrl.protocol === 'https:',
       sameSite: 'lax',
       path: '/'
     });

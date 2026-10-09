@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     // Set a specialized cookie for the gatekeeper
     res.cookies.set('google_gate_session', sessionToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production' && req.nextUrl.protocol === 'https:',
       sameSite: 'lax',
       path: '/'
     });

@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
         const res = NextResponse.json({ success: true, needs2FASetup: true, user: { name: user.name, role: user.role } });
         res.cookies.set('session', session, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
+          secure: process.env.NODE_ENV === 'production' && req.nextUrl.protocol === 'https:',
           sameSite: 'lax',
           path: '/'
         });
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
         const res = NextResponse.json({ success: true, requires2FA: true });
         res.cookies.set('session', session, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
+          secure: process.env.NODE_ENV === 'production' && req.nextUrl.protocol === 'https:',
           sameSite: 'lax',
           path: '/'
         });
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
     const res = NextResponse.json({ success: true, user: { name: user.name, role: user.role, needsSetup } });
     res.cookies.set('session', session, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production' && req.nextUrl.protocol === 'https:',
       sameSite: 'lax',
       path: '/'
     });
