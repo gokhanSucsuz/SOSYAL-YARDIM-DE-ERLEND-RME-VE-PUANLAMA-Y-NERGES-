@@ -11,7 +11,7 @@ import {
 } from '@/lib/db';
 import { 
   ShieldCheck, ArrowLeft, Plus, Trash2, Save, RotateCcw, 
-  CheckCircle2, AlertTriangle, Settings, Sliders, Info, ShieldAlert, Award, Shield, Key, Power
+  CheckCircle2, AlertTriangle, Settings, Sliders, Info, ShieldAlert, Award, Shield, Key, Power, Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import { SidebarLayout } from '@/components/sidebar';
@@ -28,6 +28,10 @@ export default function SettingsPage() {
   // Maintenance & 2FA states
   const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
   const [loadingMaintenance, setLoadingMaintenance] = useState(true);
+
+  // Google Login state
+  const [isGoogleLoginEnabled, setIsGoogleLoginEnabled] = useState(false);
+  const [loadingGoogleLogin, setLoadingGoogleLogin] = useState(true);
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
@@ -48,8 +52,14 @@ export default function SettingsPage() {
          .then(res => res.json())
          .then(data => setIsMaintenanceMode(data.isMaintenanceMode))
          .finally(() => setLoadingMaintenance(false));
+         
+       fetch('/api/settings/google-login')
+         .then(res => res.json())
+         .then(data => setIsGoogleLoginEnabled(data.isGoogleLoginEnabled))
+         .finally(() => setLoadingGoogleLogin(false));
     } else {
        setLoadingMaintenance(false);
+       setLoadingGoogleLogin(false);
     }
 
     setLoading(false);
@@ -179,6 +189,26 @@ export default function SettingsPage() {
     }
   };
 
+  const handleToggleGoogleLogin = async () => {
+    if (await showConfirm(`Google ile giriş sistemini ${isGoogleLoginEnabled ? 'kapatmak' : 'açmak'} istediğinize emin misiniz?`)) {
+      try {
+        const res = await fetch('/api/settings/google-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isGoogleLoginEnabled: !isGoogleLoginEnabled })
+        });
+        if (res.ok) {
+          setIsGoogleLoginEnabled(!isGoogleLoginEnabled);
+          await showAlert('Google giriş durumu başarıyla güncellendi.');
+        } else {
+          setErrorMessage('Google giriş durumu güncellenemedi.');
+        }
+      } catch (err) {
+        setErrorMessage('Sunucuya bağlanılamadı.');
+      }
+    }
+  };
+
   return (
     <SidebarLayout>
       <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 flex flex-col">
@@ -281,6 +311,39 @@ export default function SettingsPage() {
                   <>
                     <Power size={16} />
                     <span>Sistemi Bakım Moduna Al</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* GOOGLE LOGIN MODE (ONLY FOR SUPERADMIN) */}
+          {user?.role === 'superadmin' && (
+            <div className={`rounded-2xl p-6 border shadow-sm flex flex-col gap-4 relative overflow-hidden transition-colors duration-300 ${isGoogleLoginEnabled ? 'bg-primary-50 border-primary-200' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}>
+              <div className={`absolute top-0 right-0 w-32 h-32 rounded-bl-full -z-10 ${isGoogleLoginEnabled ? 'bg-primary-100' : 'bg-slate-50 dark:bg-slate-900'}`}></div>
+              <div className="flex items-center gap-3 text-slate-900 dark:text-slate-100 font-black text-lg">
+                <div className={`p-2 rounded-xl ${isGoogleLoginEnabled ? 'bg-primary-200 text-primary-700' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400'}`}>
+                  <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
+                </div>
+                <h2>Google Girişi (Login)</h2>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed flex-1">
+                Kullanıcıların Google hesaplarıyla giriş yapmalarını etkinleştirir. Kapalı olduğunda giriş sayfasında buton görünmez.
+              </p>
+              <button
+                onClick={handleToggleGoogleLogin}
+                disabled={loadingGoogleLogin}
+                className={`mt-2 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all w-full md:w-auto self-start shadow-md ${isGoogleLoginEnabled ? 'bg-primary-600 hover:bg-primary-700 text-white' : 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200'}`}
+              >
+                {loadingGoogleLogin ? (
+                  <span>Yükleniyor...</span>
+                ) : isGoogleLoginEnabled ? (
+                  <>
+                    <span>Google Girişini Devre Dışı Bırak</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Google Girişini Etkinleştir</span>
                   </>
                 )}
               </button>
