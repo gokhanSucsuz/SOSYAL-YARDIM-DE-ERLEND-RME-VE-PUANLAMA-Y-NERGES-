@@ -12,7 +12,7 @@ import Link from 'next/link';
 
 export default function Login() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'personnel' | 'manager'>('manager');
+  const [activeTab, setActiveTab] = useState<'personnel' | 'manager'>('personnel');
   
   // Install states
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);

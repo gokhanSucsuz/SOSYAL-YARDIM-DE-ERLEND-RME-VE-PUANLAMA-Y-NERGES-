@@ -122,12 +122,31 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  // Fetch google login setting for edge runtime
+  let isGoogleLoginEnabled = false;
+  try {
+    const internalOrigin = process.env.INTERNAL_APP_URL || `http://127.0.0.1:${process.env.PORT || 3000}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1000);
+    const googleRes = await fetch(`${internalOrigin}/api/settings/google-login`, {
+      signal: controller.signal,
+      cache: 'no-store',
+    });
+    if (googleRes.ok) {
+      const data = await googleRes.json();
+      isGoogleLoginEnabled = !!data.isGoogleLoginEnabled;
+    }
+    clearTimeout(timeoutId);
+  } catch (e) {
+    // Fail silently, default is false
+  }
+
   // Allow passing to the google verification API
   if (pathname.startsWith('/api/auth/google')) {
     return NextResponse.next();
   }
 
-  if (!isGoogleVerified && !isSuperAdmin) {
+  if (isGoogleLoginEnabled && !isGoogleVerified && !isSuperAdmin) {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Yetkisiz erişim. Lütfen ana sayfadan Google ile giriş yapın.' }, { status: 401 });
     }
@@ -137,8 +156,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname === '/gate' && isGoogleVerified) {
-    // Already verified, no need to be at the gate
+  if (pathname === '/gate' && (!isGoogleLoginEnabled || isGoogleVerified)) {
+    // Already verified or google login disabled, no need to be at the gate
     return NextResponse.redirect(new URL('/login', req.url));
   }
 
