@@ -4,6 +4,10 @@ import { jwtVerify } from 'jose';
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fallback';
 const key = new TextEncoder().encode(JWT_SECRET);
 
+// Bakım modu durumu için basit bellek içi önbellek (middleware'de fetch'in `next.revalidate` seçeneği çalışmaz).
+const MAINTENANCE_CACHE_MS = 15_000;
+let maintenanceCache: { value: boolean; at: number } | null = null;
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -21,18 +25,42 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // ÖNEMLİ: Bakım modu endpoint'i middleware'den muaf tutulmalı. Aksi halde middleware
+  // aşağıda bu endpoint'e fetch atar, o istek de middleware'e girip tekrar fetch atar...
+  // => SONSUZ DÖNGÜ. (Vercel bunu "508 Loop Detected" ile keser, Coolify/Docker'da kesen yoktur
+  // ve sayfa sonsuza kadar yüklenir.) Endpoint GET'te herkese açık, POST'ta kendi yetki kontrolünü yapar.
+  if (pathname === '/api/settings/maintenance') {
+    return NextResponse.next();
+  }
+
   // Fetch maintenance mode
+  // NOT: Docker/Coolify arkasında req.nextUrl.origin dış alan adını (ör. http://puanlama.sydv) verir.
+  // Bu adrese konteyner içinden gidilmesi proxy üzerinden dolaşır veya asılı kalabilir. Bu yüzden
+  // istek konteynerin kendi loopback adresine, kısa bir zaman aşımıyla yapılır ve sonuç bellekte önbelleklenir.
   let isMaintenanceMode = false;
-  try {
-    const maintenanceRes = await fetch(`${req.nextUrl.origin}/api/settings/maintenance`, {
-      next: { revalidate: 15 } // Cache for 15 seconds
-    });
-    if (maintenanceRes.ok) {
-      const data = await maintenanceRes.json();
-      isMaintenanceMode = data.isMaintenanceMode;
+  const now = Date.now();
+  if (maintenanceCache && now - maintenanceCache.at < MAINTENANCE_CACHE_MS) {
+    isMaintenanceMode = maintenanceCache.value;
+  } else {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    try {
+      const internalOrigin =
+        process.env.INTERNAL_APP_URL || `http://127.0.0.1:${process.env.PORT || 3000}`;
+      const maintenanceRes = await fetch(`${internalOrigin}/api/settings/maintenance`, {
+        signal: controller.signal,
+        cache: 'no-store',
+      });
+      if (maintenanceRes.ok) {
+        const data = await maintenanceRes.json();
+        isMaintenanceMode = !!data.isMaintenanceMode;
+        maintenanceCache = { value: isMaintenanceMode, at: now };
+      }
+    } catch (e) {
+      // Fail silently if API is unreachable during build or network issue
+    } finally {
+      clearTimeout(timeoutId);
     }
-  } catch (e) {
-    // Fail silently if API is unreachable during build or network issue
   }
 
   // Parse session early to know if superadmin

@@ -27,13 +27,22 @@ async function connectToDatabase() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      // Veritabanına ulaşılamazsa istekler ~30 sn asılı kalmasın, hızlıca hata dönsün.
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
       return mongoose;
     });
   }
-  cached.conn = await cached.promise;
+  try {
+    cached.conn = await cached.promise;
+  } catch (err) {
+    // Başarısız bağlantı önbellekte kalırsa sonraki tüm istekler de başarısız olur.
+    cached.promise = null;
+    throw err;
+  }
   return cached.conn;
 }
 
