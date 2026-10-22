@@ -73,7 +73,7 @@ export default function Dashboard() {
   const [filterDecision, setFilterDecision] = useState<'all' | 'accepted' | 'rejected'>('all');
   const [filterMeetingId, setFilterMeetingId] = useState<string | null>(null);
   const [filterGroup, setFilterGroup] = useState<string>('all');
-  const [showScores, setShowScores] = useState(false);
+  const [showScores, setShowScores] = useState(true);
 
   
   // Sort States

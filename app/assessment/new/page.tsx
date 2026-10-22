@@ -7,7 +7,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2, Info,
-  Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug, User, MapPin, Phone, Hash, Users, Activity, Minus, Plus
+  Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug, User, MapPin, Phone, Hash, Users, Activity, Minus, Plus,
+  Eye, EyeOff, Award, Banknote, TrendingUp
 } from 'lucide-react';
 import { saveAssessment, getAllAssessments, calculateAssistanceFromScore } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
@@ -27,6 +28,7 @@ function NewAssessmentContent() {
   const [allAssessments, setAllAssessments] = useState<any[]>([]);
   const [tcHistory, setTcHistory] = useState<any[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [showScores, setShowScores] = useState(true); // Puan gizleme varsaylan olarak kapal (puan ve yardm ak)
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
@@ -227,21 +229,56 @@ function NewAssessmentContent() {
           </div>
         </div>
 
-        {/* Live Score Pill in Header replaced with Privacy Badge */}
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex flex-col items-end border-r border-slate-200 dark:border-slate-800 pr-3.5">
-            <span className="text-[10px] uppercase font-bold text-slate-600 dark:text-slate-500 dark:text-slate-400 tracking-wider">Görevli Personel</span>
+        {/* Live Score & Aid Pill in Header */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="hidden md:flex flex-col items-end border-r border-slate-200 dark:border-slate-800 pr-3">
+            <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Görevli Personel</span>
             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{user.name}</span>
           </div>
 
-          <div className="bg-slate-100/80 dark:bg-slate-100 dark:bg-slate-800/80 border border-slate-300/80 dark:border-slate-300 dark:border-slate-700/80 px-3 py-1.5 rounded-2xl text-right shrink-0 flex items-center gap-2">
-            <div className="p-1 rounded-lg bg-primary-500/20 text-primary-400">
-              <ShieldCheck size={16} />
+          <div className={`px-3 py-1.5 rounded-2xl border transition-all flex items-center gap-2.5 shadow-sm ${
+            calc.isRejected
+              ? 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800/60'
+              : calc.totalScore >= 71
+              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60'
+              : calc.totalScore >= 41
+              ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/60'
+              : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/60'
+          }`}>
+            <div className="text-right">
+              <div className="flex items-center justify-end gap-1.5">
+                <span className="text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 tracking-wider">
+                  Hane Puanı:
+                </span>
+                <span className={`text-xs sm:text-sm font-black ${
+                  calc.isRejected ? 'text-red-600 dark:text-red-400' : 'text-primary-600 dark:text-primary-400'
+                }`}>
+                  {showScores ? `${calc.totalScore} Puan` : '*** Puan'}
+                </span>
+              </div>
+              <div className="flex items-center justify-end gap-1 -mt-0.5">
+                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">Yardım:</span>
+                <span className={`text-xs sm:text-sm font-extrabold ${
+                  calc.isRejected || calc.assistance.amount === 0 
+                    ? 'text-slate-600 dark:text-slate-400' 
+                    : 'text-emerald-600 dark:text-emerald-400'
+                }`}>
+                  {showScores 
+                    ? (calc.assistance.amount > 0 ? `${calc.assistance.amount.toLocaleString('tr-TR')} ₺` : (calc.isRejected ? 'Kapsam Dışı' : 'Destek Yok')) 
+                    : '*** ₺'}
+                </span>
+              </div>
             </div>
-            <div>
-              <p className="text-[9px] uppercase font-bold text-slate-600 dark:text-slate-500 dark:text-slate-400 tracking-widest leading-none">Saha Kayıt Modu</p>
-              <p className="text-xs font-black text-slate-800 dark:text-slate-200 mt-0.5 leading-none">Puan Gizli</p>
-            </div>
+
+            {/* Privacy toggle button */}
+            <button
+              type="button"
+              onClick={() => setShowScores(!showScores)}
+              className="p-1.5 rounded-xl hover:bg-slate-200/70 dark:hover:bg-slate-800 transition-colors text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+              title={showScores ? "Puanı ve Yardımı Gizle" : "Puanı ve Yardımı Göster"}
+            >
+              {showScores ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </div>
         </div>
       </header>
@@ -757,32 +794,169 @@ function NewAssessmentContent() {
                 )}
 
                 {step === 9 && (
-                  <div className="flex-1 flex flex-col justify-center items-center py-6">
+                  <div className="flex-1 flex flex-col justify-center items-center py-6 w-full">
                     <motion.div 
-                      initial={{ scale: 0.9, opacity: 0 }}
+                      initial={{ scale: 0.95, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-3xl shadow-2xl text-center w-full max-w-lg space-y-6"
+                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-3xl shadow-2xl text-center w-full max-w-2xl space-y-6"
                     >
-                      <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary-600/20 text-primary-400 border border-primary-500/30 shadow-lg shadow-primary-500/20">
-                        <Save size={36} />
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-600/20 text-primary-400 border border-primary-500/30 shadow-lg shadow-primary-500/20">
+                        <Award size={32} />
                       </div>
 
                       <div>
-                        <h2 className="text-2xl sm:text-3xl font-black text-white">İncelemeyi Tamamla & Kaydet</h2>
-                        <p className="text-slate-600 dark:text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">
-                          Tüm adımlar tamamlandı. Formu sisteme kaydederek Vakıf onay sürecine sunabilirsiniz.
+                        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                          İnceleme Tamamlandı & Değerlendirme Sonucu
+                        </h2>
+                        <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">
+                          {state.applicantName} ({state.applicantTc}) • Hane Mevcudu: {state.householdSize} Kişi
                         </p>
                       </div>
-                      
-                      <div className="bg-slate-50 dark:bg-slate-950/80 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 space-y-3 text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/10 text-primary-400 border border-primary-500/20 text-xs font-bold">
-                          <ShieldCheck size={16} /> Saha Güvenlik Protokolü Etkin
+
+                      {/* Prominent Score & Assistance Overview Cards */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                        {/* Toplam Puan Kartı */}
+                        <div className={`p-5 rounded-2xl border transition-all ${
+                          calc.isRejected
+                            ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/50'
+                            : calc.totalScore >= 71
+                            ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/50'
+                            : calc.totalScore >= 41
+                            ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/50'
+                            : 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50'
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                              Hesaplanan Toplam Puan
+                            </span>
+                            <Award size={18} className={calc.isRejected ? 'text-red-500' : 'text-primary-500'} />
+                          </div>
+                          <div className="mt-2 flex items-baseline gap-1.5">
+                            <span className={`text-3xl sm:text-4xl font-black ${
+                              calc.isRejected ? 'text-red-600 dark:text-red-400' : 'text-primary-600 dark:text-primary-400'
+                            }`}>
+                              {calc.totalScore}
+                            </span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">/ 100 Puan</span>
+                          </div>
+                          <p className="text-xs font-bold mt-1 text-slate-600 dark:text-slate-300">
+                            {calc.isRejected 
+                              ? 'Başvuru Reddedildi / Kapsam Dışı' 
+                              : calc.totalScore >= 86 
+                              ? '1. Kademe (Kritik / Çok Yüksek İhtiyaç)' 
+                              : calc.totalScore >= 71 
+                              ? '2. Kademe (Yüksek İhtiyaç)' 
+                              : calc.totalScore >= 56 
+                              ? '3. Kademe (Orta Düzey İhtiyaç)' 
+                              : calc.totalScore >= 41 
+                              ? '4. Kademe (Düşük-Orta İhtiyaç)' 
+                              : calc.totalScore >= 26 
+                              ? '5. Kademe (Temel İhtiyaç)' 
+                              : calc.totalScore >= 10 
+                              ? '6. Kademe (Dönemsel/Sınır İhtiyaç)' 
+                              : '10 Puan Altı: Kriter Karşılanmadı'}
+                          </p>
                         </div>
-                        <h3 className="text-sm font-extrabold text-white">Gizli Değerlendirme Modu</h3>
-                        <p className="text-xs text-slate-600 dark:text-slate-500 dark:text-slate-400 leading-relaxed max-w-md mx-auto">
-                          Saha ziyareti sırasında hane halkı gizliliği gereği puan sonucu ekranda gösterilmemektedir. Form kaydedildikten sonra detay ve yönetim ekranlarından puan kümülasyonunu inceleyebilirsiniz.
-                        </p>
+
+                        {/* Tavsiye Edilen Yardım Tutarı Kartı */}
+                        <div className={`p-5 rounded-2xl border transition-all ${
+                          calc.isRejected || calc.assistance.amount === 0
+                            ? 'bg-slate-50 dark:bg-slate-900/70 border-slate-200 dark:border-slate-800'
+                            : 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/50'
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                              Öngörülen Yardım Tutarı
+                            </span>
+                            <Banknote size={18} className={calc.assistance.amount > 0 ? 'text-emerald-500' : 'text-slate-400'} />
+                          </div>
+                          <div className="mt-2 flex items-baseline gap-1.5">
+                            <span className={`text-3xl sm:text-4xl font-black ${
+                              calc.assistance.amount > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400'
+                            }`}>
+                              {calc.assistance.amount > 0 ? `${calc.assistance.amount.toLocaleString('tr-TR')} ₺` : '0 ₺'}
+                            </span>
+                          </div>
+                          <p className="text-xs font-bold mt-1 text-slate-600 dark:text-slate-300">
+                            {calc.isRejected ? 'Kapsam Dışı (0 ₺)' : calc.assistance.text}
+                          </p>
+                        </div>
                       </div>
+
+                      {/* Kategori Bazında Puan Dağılımı */}
+                      <div className="bg-slate-50 dark:bg-slate-950/70 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 text-left">
+                        <div className="flex items-center justify-between mb-3 border-b border-slate-200 dark:border-slate-800 pb-2">
+                          <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                            Puanlama Kategori Dağılımı
+                          </h4>
+                          <span className="text-[11px] font-bold text-primary-600 dark:text-primary-400">
+                            Net Toplam: {calc.totalScore} Puan
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+                          <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400 block text-[10px]">A: Gelir & SGK</span>
+                            <strong className="text-slate-800 dark:text-slate-200 text-sm font-black">+{calc.scoreA}</strong>
+                            <span className="text-[10px] text-slate-400"> / 25</span>
+                          </div>
+                          <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400 block text-[10px]">B: Özel İhtiyaç & Sağlık</span>
+                            <strong className="text-slate-800 dark:text-slate-200 text-sm font-black">+{calc.scoreB}</strong>
+                            <span className="text-[10px] text-slate-400"> / 25</span>
+                          </div>
+                          <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400 block text-[10px]">C: Sosyal Kırılganlık</span>
+                            <strong className="text-slate-800 dark:text-slate-200 text-sm font-black">+{calc.scoreC}</strong>
+                            <span className="text-[10px] text-slate-400"> / 15</span>
+                          </div>
+                          <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400 block text-[10px]">D: Çocuk & Eğitim</span>
+                            <strong className="text-slate-800 dark:text-slate-200 text-sm font-black">+{calc.scoreD}</strong>
+                            <span className="text-[10px] text-slate-400"> / 15</span>
+                          </div>
+                          <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400 block text-[10px]">E: Barınma & Eşya</span>
+                            <strong className="text-slate-800 dark:text-slate-200 text-sm font-black">+{calc.scoreE}</strong>
+                            <span className="text-[10px] text-slate-400"> / 10</span>
+                          </div>
+                          <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400 block text-[10px]">F: Sosyal Kanaat</span>
+                            <strong className="text-slate-800 dark:text-slate-200 text-sm font-black">+{calc.scoreF}</strong>
+                            <span className="text-[10px] text-slate-400"> / 10</span>
+                          </div>
+                        </div>
+
+                        {calc.scorePenalty > 0 && (
+                          <div className="mt-3 p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-600 dark:text-red-400 font-bold flex items-center justify-between">
+                            <span>Varlık / Mükerrerlik Ceza Kesintisi:</span>
+                            <span className="font-black text-sm">−{calc.scorePenalty} Puan</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Öncelikli Kriterler Varsa */}
+                      {calc.priorities && calc.priorities.length > 0 && (
+                        <div className="text-left space-y-2">
+                          <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            Tespit Edilen Öncelikli Durumlar:
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {calc.priorities.map((item, idx) => (
+                              <span key={idx} className="px-2.5 py-1 rounded-lg text-xs font-bold bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20">
+                                ✓ {item}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Gerçeğe Aykırı Beyan Varsa */}
+                      {state.falseStatement && (
+                        <div className="p-3 rounded-2xl bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-bold text-left flex items-start gap-2">
+                          <AlertTriangle size={18} className="shrink-0 text-red-600 mt-0.5" />
+                          <span>DİKKAT: Gerçeğe aykırı beyan tespit edildiği için hane puanı sıfırlanmış ve başvuru doğrudan RED olarak sonuçlanacaktır.</span>
+                        </div>
+                      )}
 
                       <motion.button 
                         whileHover={{ scale: isSaving ? 1 : 1.02 }}
@@ -823,9 +997,19 @@ function NewAssessmentContent() {
           <ChevronLeft size={20} className="mr-1" /> Geri
         </motion.button>
         
-        <div className="text-center">
-          <span className="text-[9px] font-black text-slate-600 dark:text-slate-500 dark:text-slate-400 block uppercase tracking-widest">Saha Formu</span>
-          <span className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300">Adım {step + 1} / {stepsCount}</span>
+        <div className="text-center px-1">
+          <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+            <span className="text-[11px] sm:text-xs font-black text-primary-600 dark:text-primary-400">
+              {showScores ? `${calc.totalScore} Puan` : '***'}
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+            <span className={`text-[11px] sm:text-xs font-black ${calc.assistance.amount > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}`}>
+              {showScores ? (calc.assistance.amount > 0 ? `${calc.assistance.amount.toLocaleString('tr-TR')} TL` : 'Destek Yok') : '*** TL'}
+            </span>
+          </div>
+          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block tracking-tight">
+            Adım {step + 1} / {stepsCount} ({stepNames[step].replace(/^\d+\.\s*/, '')})
+          </span>
         </div>
 
         {step < stepsCount - 1 ? (
