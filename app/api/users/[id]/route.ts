@@ -52,12 +52,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     // Process general info updates
-    if (name) user.name = name;
-    if (email && email !== user.email) {
-      // check if email is taken
-      const existing = await User.findOne({ email });
+    if (name) user.name = name.trim();
+    if (email && email.trim().toLowerCase() !== (user.email || '').toLowerCase()) {
+      const cleanEmail = email.trim().toLowerCase();
+      const existing = await User.findOne({ email: cleanEmail });
       if (existing) return NextResponse.json({ error: 'Bu e-posta adresi zaten kullanılıyor.' }, { status: 400 });
-      user.email = email;
+      user.email = cleanEmail;
     }
     
     // Process role update
@@ -68,9 +68,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     if (password) {
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(password, salt);
-      user.passwordHash = hash;
+      const trimmed = (password || '').trim();
+      if (trimmed.length >= 6) {
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(trimmed, salt);
+        user.passwordHash = hash;
+        user.forcePasswordReset = false;
+        user.failedLoginAttempts = 0;
+        user.lockUntil = null;
+      }
     }
 
     if (isTwoFactorEnabled !== undefined && session.role === 'superadmin') {

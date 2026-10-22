@@ -23,11 +23,14 @@ export async function POST(req: NextRequest) {
 
     const { email, password } = await req.json();
 
-    if (!email) {
+    const rawEmail = (email || '').trim();
+    if (!rawEmail) {
       return NextResponse.json({ error: 'E-posta adresi gereklidir' }, { status: 400 });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      email: { $regex: new RegExp(`^${rawEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+    });
     if (!user) {
       return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });
     }
@@ -90,18 +93,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Şifre gereklidir' }, { status: 400 });
     }
 
-    const trimmedPassword = password.trim();
+    const trimmedPassword = (password || '').trim();
     let isMatch = false;
 
-    if (user.passwordHash && !user.passwordHash.startsWith('$2')) {
-      if (trimmedPassword === user.passwordHash) {
+    if (user.passwordHash) {
+      // 1. Try standard bcrypt comparison
+      try {
+        isMatch = await bcrypt.compare(trimmedPassword, user.passwordHash);
+      } catch (e) {
+        isMatch = false;
+      }
+
+      // 2. Fallback to direct plain-text match (for unhashed / initial legacy passwords)
+      if (!isMatch && trimmedPassword === user.passwordHash) {
         isMatch = true;
+        // Upgrade immediately to bcrypt hash
         const salt = await bcrypt.genSalt(10);
         user.passwordHash = await bcrypt.hash(trimmedPassword, salt);
         await user.save();
       }
-    } else {
-      isMatch = await bcrypt.compare(trimmedPassword, user.passwordHash || '');
     }
 
     if (!isMatch) {

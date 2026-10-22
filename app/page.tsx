@@ -1607,6 +1607,12 @@ export default function Dashboard() {
                               >
                                 <FileText size={13} /> Detay
                               </Link>
+                              <Link
+                                href={`/assessment/${item.id}/edit`}
+                                className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
+                              >
+                                <Pencil size={13} /> Düzenle
+                              </Link>
                             </div>
                           </div>
                         );
@@ -2330,10 +2336,11 @@ export default function Dashboard() {
                       <td className={`px-3 py-3 font-bold ${isRejectedRecord(item.result) ? 'text-red-600' : ''}`}>{user?.role === "personnel" && !showScores ? "***" : isRejectedRecord(item.result) ? "KAPSAM DIŞI (RED)" : item.result.assistance?.text}</td>
                       <td className="px-3 py-3 text-right">
                         <div className="inline-flex gap-1">
-                          {isManager && !isApproved && <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 text-white p-1 rounded">✓</button>}
-                          <button onClick={() => handlePrintSingleDetailed(item)} className="bg-primary-600 text-white p-1 rounded">📄</button>
-                          <Link href={`/assessment/${item.id}`} className="bg-slate-900 text-white p-1 rounded">👁️</Link>
-                          {canDelete && <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 text-white p-1 rounded">🗑️</button>}
+                          {isManager && !isApproved && <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 text-white p-1 rounded" title="Onayla">✓</button>}
+                          <button onClick={() => handlePrintSingleDetailed(item)} className="bg-primary-600 text-white p-1 rounded" title="Rapor (A4)">📄</button>
+                          <Link href={`/assessment/${item.id}`} className="bg-slate-900 text-white p-1 rounded" title="Detay">👁️</Link>
+                          <Link href={`/assessment/${item.id}/edit`} className="bg-amber-600 hover:bg-amber-700 text-white p-1 rounded transition-colors inline-flex items-center justify-center" title="Düzenle">✏️</Link>
+                          {canDelete && <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 text-white p-1 rounded" title="Sil">🗑️</button>}
                         </div>
                       </td>
                     </tr>
@@ -2392,6 +2399,9 @@ export default function Dashboard() {
                       </button>
                       <Link href={`/assessment/${item.id}`} className="bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-bold transition-colors">
                         <FileText size={14}/> Detay
+                      </Link>
+                      <Link href={`/assessment/${item.id}/edit`} className="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-bold transition-colors">
+                        <Pencil size={14}/> Düzenle
                       </Link>
                       {canDelete && (
                         <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg font-bold transition-colors">

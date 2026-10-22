@@ -37,8 +37,16 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, name, password, role } = await req.json();
-    if (!email || !name || !password) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanName = (name || '').trim();
+    const cleanPassword = (password || '').trim();
+
+    if (!cleanEmail || !cleanName || !cleanPassword) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (cleanPassword.length < 6) {
+      return NextResponse.json({ error: 'Şifre en az 6 karakter olmalıdır' }, { status: 400 });
     }
 
     // Determine the role to assign
@@ -50,19 +58,22 @@ export async function POST(req: NextRequest) {
     }
 
     await connectToDatabase();
-    const existing = await User.findOne({ email });
+    const existing = await User.findOne({ email: cleanEmail });
     if (existing) {
-      return NextResponse.json({ error: 'User already exists' }, { status: 400 });
+      return NextResponse.json({ error: 'Bu kullanıcı / e-posta zaten kayıtlı.' }, { status: 400 });
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
+    const hash = await bcrypt.hash(cleanPassword, salt);
 
     const user = new User({
-      email,
-      name,
+      email: cleanEmail,
+      name: cleanName,
       role: assignRole,
-      passwordHash: hash
+      passwordHash: hash,
+      forcePasswordReset: false,
+      failedLoginAttempts: 0,
+      lockUntil: null
     });
     await user.save();
 

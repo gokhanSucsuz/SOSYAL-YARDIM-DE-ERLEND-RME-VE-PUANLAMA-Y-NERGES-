@@ -12,35 +12,44 @@ export async function POST(req: NextRequest) {
     }
 
     const { password } = await req.json();
-    if (!password || password.length < 6) {
-      return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
+    const trimmedPassword = (password || '').trim();
+    if (!trimmedPassword || trimmedPassword.length < 6) {
+      return NextResponse.json({ error: 'Şifre en az 6 karakter olmalıdır' }, { status: 400 });
     }
 
     await connectToDatabase();
     
     const user = await User.findById(session.id);
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 });
     }
+
+    // Capture decrypted fields before user.save() encrypts them
+    const userId = user.id;
+    const userName = user.name;
+    const userEmail = user.email;
+    const userRole = user.role;
 
     // Hash the new password
     const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
+    const hash = await bcrypt.hash(trimmedPassword, salt);
     
     user.passwordHash = hash;
     user.forcePasswordReset = false; // Reset the flag
+    user.failedLoginAttempts = 0;
+    user.lockUntil = null;
     await user.save();
 
     // Create a new session without needsSetup
     const sessionData = {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role
+      id: userId,
+      email: userEmail,
+      name: userName,
+      role: userRole
     };
 
     const newSessionToken = await encryptSession(sessionData);
-    const res = NextResponse.json({ success: true, user: { name: user.name, role: user.role } });
+    const res = NextResponse.json({ success: true, user: { id: userId, name: userName, role: userRole } });
     res.cookies.set('session', newSessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production' && req.nextUrl.protocol === 'https:',

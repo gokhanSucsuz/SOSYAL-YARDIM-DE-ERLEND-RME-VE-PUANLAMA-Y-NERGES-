@@ -7,12 +7,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home, BarChart3, Users, Settings, BookOpen, Presentation,
   LogOut, ChevronLeft, ChevronRight, Menu, X, Shield,
-  FileText, ClipboardList, Sun, Moon
+  FileText, ClipboardList, Sun, Moon, KeyRound
 } from 'lucide-react';
 import { LogoImage } from '@/components/logo-image';
 import { googleLogout } from '@react-oauth/google';
 import { useTheme } from 'next-themes';
 import { useColorTheme } from '@/components/theme-context';
+import { ChangePasswordModal } from '@/components/change-password-modal';
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -46,6 +47,7 @@ export function SidebarLayout({ children }: SidebarProps) {
   const [user, setUser] = useState<any>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
@@ -123,8 +125,8 @@ export function SidebarLayout({ children }: SidebarProps) {
       </div>
 
       {/* User Profile Card */}
-      <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl bg-white/5 border border-white/10 ${isCollapsed && !isMobile ? 'mx-2 p-2 flex justify-center' : ''}`}>
-        <div className={`flex items-center gap-3 ${isCollapsed && !isMobile ? 'flex-col' : ''}`}>
+      <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl bg-white/5 border border-white/10 ${isCollapsed && !isMobile ? 'mx-2 p-2 flex flex-col items-center' : ''}`}>
+        <div className={`flex items-center gap-3 w-full ${isCollapsed && !isMobile ? 'flex-col' : ''}`}>
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md">
             {(user.name || 'U').charAt(0).toUpperCase()}
           </div>
@@ -141,6 +143,24 @@ export function SidebarLayout({ children }: SidebarProps) {
             </motion.div>
           )}
         </div>
+        {(!isCollapsed || isMobile) ? (
+          <button
+            onClick={() => setIsChangePasswordOpen(true)}
+            className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] font-semibold text-slate-300 hover:text-white transition-all border border-white/5"
+            title="Şifrenizi Değiştirin"
+          >
+            <KeyRound size={13} className="text-amber-400 shrink-0" />
+            <span className="truncate">Şifre Değiştir</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => setIsChangePasswordOpen(true)}
+            className="mt-2 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
+            title="Şifre Değiştir"
+          >
+            <KeyRound size={15} className="text-amber-400" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -326,6 +346,12 @@ export function SidebarLayout({ children }: SidebarProps) {
           {children}
         </main>
       </div>
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
     </div>
   );
 }

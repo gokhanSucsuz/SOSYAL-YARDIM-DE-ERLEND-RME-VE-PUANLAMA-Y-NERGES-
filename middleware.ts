@@ -162,9 +162,10 @@ export async function middleware(req: NextRequest) {
   }
 
   // --- 2. INTERNAL APP SESSION ---
-  // Allow passing to the login API and fetching users list for login dropdown
+  // Allow passing to the login API, forgot-password API and fetching users list for login dropdown
   if (
     pathname.startsWith('/api/auth/login') ||
+    pathname.startsWith('/api/auth/forgot-password') ||
     pathname === '/api/settings/google-login' ||
     pathname === '/api/auth/me' ||
     (req.method === 'GET' && pathname === '/api/users')
@@ -172,8 +173,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // If path is /login, they are allowed to see it since they passed the gate
-  if (pathname === '/login') {
+  // If path is /login or /forgot-password, they are allowed to see it since they passed the gate
+  if (pathname === '/login' || pathname === '/forgot-password') {
     return NextResponse.next();
   }
 
