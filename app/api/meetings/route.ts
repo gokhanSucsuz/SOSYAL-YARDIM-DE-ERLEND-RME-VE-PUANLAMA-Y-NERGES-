@@ -5,8 +5,12 @@ import Meeting from '@/models/Meeting';
 export async function GET() {
   try {
     await connectToDatabase();
-    const meetings = await Meeting.find({}).sort({ date: -1 });
-    return NextResponse.json(meetings);
+    const meetings = await Meeting.find({}).sort({ date: -1 }).lean();
+    return NextResponse.json(meetings, {
+      headers: {
+        'Cache-Control': 'no-cache, must-revalidate',
+      }
+    });
   } catch (error) {
     console.error('Error fetching meetings:', error);
     return NextResponse.json({ error: 'Failed to fetch meetings' }, { status: 500 });

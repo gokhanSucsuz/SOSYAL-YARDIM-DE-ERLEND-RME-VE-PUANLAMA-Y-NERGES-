@@ -8,6 +8,10 @@ const key = new TextEncoder().encode(JWT_SECRET);
 const MAINTENANCE_CACHE_MS = 15_000;
 let maintenanceCache: { value: boolean; at: number } | null = null;
 
+// Google login ayarı için bellek içi önbellek (her istekte iç ağa HTTP fetch atıp 3-4 saniye gecikme yaratmasını önler)
+const GOOGLE_LOGIN_CACHE_MS = 60_000;
+let googleLoginCache: { value: boolean; at: number } | null = null;
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -122,23 +126,33 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Fetch google login setting for edge runtime
+  // Fetch google login setting with in-memory caching and fast-path
   let isGoogleLoginEnabled = false;
-  try {
-    const internalOrigin = process.env.INTERNAL_APP_URL || `http://127.0.0.1:${process.env.PORT || 3000}`;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1000);
-    const googleRes = await fetch(`${internalOrigin}/api/settings/google-login`, {
-      signal: controller.signal,
-      cache: 'no-store',
-    });
-    if (googleRes.ok) {
-      const data = await googleRes.json();
-      isGoogleLoginEnabled = !!data.isGoogleLoginEnabled;
+  if (!isGoogleVerified && !isSuperAdmin) {
+    const now = Date.now();
+    if (googleLoginCache && (now - googleLoginCache.at < GOOGLE_LOGIN_CACHE_MS)) {
+      isGoogleLoginEnabled = googleLoginCache.value;
+    } else {
+      try {
+        const internalOrigin = process.env.INTERNAL_APP_URL || `http://127.0.0.1:${process.env.PORT || 3000}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 400);
+        const googleRes = await fetch(`${internalOrigin}/api/settings/google-login`, {
+          signal: controller.signal,
+          cache: 'no-store',
+        });
+        if (googleRes.ok) {
+          const data = await googleRes.json();
+          isGoogleLoginEnabled = !!data.isGoogleLoginEnabled;
+          googleLoginCache = { value: isGoogleLoginEnabled, at: now };
+        }
+        clearTimeout(timeoutId);
+      } catch (e) {
+        // Hata veya zaman aşımında önbellekteki değer kullanılır, istek kilitlenmez
+        isGoogleLoginEnabled = googleLoginCache ? googleLoginCache.value : false;
+        googleLoginCache = { value: isGoogleLoginEnabled, at: now };
+      }
     }
-    clearTimeout(timeoutId);
-  } catch (e) {
-    // Fail silently, default is false
   }
 
   // Allow passing to the google verification API

@@ -10,11 +10,14 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
     const personnelId = searchParams.get('personnelId');
+    const meetingId = searchParams.get('meetingId');
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '50', 10);
     const skip = (page - 1) * limit;
 
-    let query = personnelId ? { personnelId } : {};
+    let query: any = {};
+    if (personnelId) query.personnelId = personnelId;
+    if (meetingId && meetingId !== 'all') query.meetingId = meetingId;
 
     const [data, total] = await Promise.all([
       Assessment.find(query).sort({ date: -1 }).skip(skip).limit(limit),

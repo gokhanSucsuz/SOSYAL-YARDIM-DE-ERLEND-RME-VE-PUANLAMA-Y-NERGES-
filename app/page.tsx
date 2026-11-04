@@ -57,10 +57,9 @@ export default function Dashboard() {
   const [groupNameInput, setGroupNameInput] = useState('');
 
   // New & Edit Meeting Modal State
-  const [newAssessmentModalOpen, setNewAssessmentModalOpen] = useState(false);
-  const [selectedMeetingId, setSelectedMeetingId] = useState<string>('');
   const [newMeetingModalOpen, setNewMeetingModalOpen] = useState(false);
   const [newMeetingData, setNewMeetingData] = useState({ meetingNo: '', date: '', description: '', budgetTL: '' });
+  const [hasInitializedMeeting, setHasInitializedMeeting] = useState(false);
 
   const [editMeetingModalOpen, setEditMeetingModalOpen] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
@@ -98,6 +97,18 @@ export default function Dashboard() {
     totalCount: 0,
   });
 
+  const isMeetingActiveStrict = (m: Meeting) => {
+    if (m.isClosed) return false;
+    if (m.date) {
+      const meetingDate = new Date(m.date);
+      meetingDate.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (meetingDate < today && !m.forceOpen) return false;
+    }
+    return true;
+  };
+
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
     if (!userStr) {
@@ -114,6 +125,15 @@ export default function Dashboard() {
           fetch('/api/users')
         ]);
         setMeetings(loadedMeetings);
+
+        // Gösterge panelinde her zaman varsayılan olarak aktif dosyanın içindeki kayıtlar görüntülensin
+        const active = loadedMeetings.find(m => isMeetingActiveStrict(m));
+        if (active) {
+          setFilterMeetingId(active.id);
+        } else {
+          setFilterMeetingId(null);
+        }
+        setHasInitializedMeeting(true);
 
         let systemUsers = [];
         if (usersRes.ok) {
@@ -365,16 +385,25 @@ export default function Dashboard() {
     router.push('/gate');
   };
 
-  const isMeetingActiveStrict = (m: Meeting) => {
-    if (m.isClosed) return false;
-    if (m.date) {
-      const meetingDate = new Date(m.date);
-      meetingDate.setHours(0, 0, 0, 0);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (meetingDate < today && !m.forceOpen) return false;
+  const handleStartNewAssessment = async () => {
+    const activeMeeting = meetings.find(m => isMeetingActiveStrict(m));
+    if (activeMeeting) {
+      router.push(`/assessment/new?meetingId=${activeMeeting.id}`);
+    } else {
+      if (isManager) {
+        const createNow = await showConfirm(
+          'Sistemde şu anda açık veya aktif bir toplantı dosyası bulunmuyor. Yeni bir inceleme başlatabilmek için önce bir toplantı oluşturmalısınız. Şimdi oluşturmak ister misiniz?'
+        );
+        if (createNow) {
+          setNewMeetingModalOpen(true);
+        }
+      } else {
+        await showAlert(
+          'Sistemde şu anda açık veya aktif bir toplantı bulunmamaktadır. Lütfen yöneticinizin yeni bir toplantı açmasını bekleyiniz.',
+          'warning'
+        );
+      }
     }
-    return true;
   };
 
   const reloadAssessments = async () => {
@@ -1391,21 +1420,14 @@ export default function Dashboard() {
               </>
             )}
 
-            {user.role === 'personnel' && (
+            {(user.role === 'personnel' || isManager) && (
               <button 
-                onClick={() => {
-                  const activeMeeting = meetings.find(m => isMeetingActiveStrict(m));
-                  if (activeMeeting) {
-                    setSelectedMeetingId(activeMeeting.id);
-                  } else {
-                    setSelectedMeetingId('');
-                  }
-                  setNewAssessmentModalOpen(true);
-                }}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 btn-primary px-5 py-3 text-sm touch-manipulation"
+                onClick={handleStartNewAssessment}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 btn-primary px-5 py-2.5 text-xs sm:text-sm font-extrabold touch-manipulation shadow-md shadow-primary-900/10 active:scale-95 transition-all"
+                title="Aktif toplantıya doğrudan yeni bir hane incelemesi başlat"
               >
                 <Plus size={18} />
-                Yeni İnceleme Başlat
+                <span>Yeni İnceleme Başlat</span>
               </button>
             )}
           </div>
@@ -1627,14 +1649,32 @@ export default function Dashboard() {
 
         {!filterMeetingId ? (
           <div className="card p-6 sm:p-8 min-h-[500px]">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
                 <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                   <Calendar className="text-indigo-600" size={24} />
-                  Toplantı Dosyaları
+                  Toplantı Dosyaları (Arşiv & Geçmiş)
                 </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">İşlem yapmak veya kayıtları görüntülemek için bir toplantı seçiniz.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  İncelemek istediğiniz herhangi bir geçmiş veya aktif toplantı dosyasını seçip kayıtlarına erişebilirsiniz.
+                </p>
               </div>
+              {(() => {
+                const activeM = meetings.find(m => isMeetingActiveStrict(m));
+                if (activeM) {
+                  return (
+                    <button
+                      onClick={() => setFilterMeetingId(activeM.id)}
+                      className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold shadow-sm transition-all"
+                      title="Şu anki aktif toplantının kayıtlarını görüntüle"
+                    >
+                      <CheckCircle2 size={18} />
+                      <span>Aktif Dosyaya Gir ({activeM.meetingNo})</span>
+                    </button>
+                  );
+                }
+                return null;
+              })()}
             </div>
 
             {meetings.length === 0 ? (
@@ -1680,18 +1720,22 @@ export default function Dashboard() {
                   const isExpiredDate = mDate < today && !m.forceOpen;
                   const isLockedForPersonnel = isClosedByManager || isExpiredDate;
 
+                  const isCurrentActive = isMeetingActiveStrict(m);
+
                   return (
                     <div 
                       key={m.id}
                       onClick={() => setFilterMeetingId(m.id)}
-                      className="group card card-interactive p-5 cursor-pointer relative overflow-hidden flex flex-col justify-between"
+                      className={`group card card-interactive p-5 cursor-pointer relative overflow-hidden flex flex-col justify-between transition-all ${
+                        isCurrentActive ? 'ring-2 ring-emerald-500 shadow-md bg-emerald-50/10 dark:bg-emerald-950/20' : ''
+                      }`}
                     >
                       <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 rounded-bl-full -z-10 group-hover:bg-primary-100 transition-colors"></div>
                       
                       <div>
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex items-center gap-2">
-                            <div className="p-2 bg-primary-100 text-primary-700 rounded-lg">
+                            <div className={`p-2 rounded-lg ${isCurrentActive ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300' : 'bg-primary-100 text-primary-700'}`}>
                               <Calendar size={20} />
                             </div>
                             <span className="font-bold text-slate-800 dark:text-slate-200 text-lg">{m.meetingNo}</span>
@@ -1703,11 +1747,11 @@ export default function Dashboard() {
                             </span>
                           ) : isExpiredDate ? (
                             <span className="inline-flex items-center gap-1 text-[10px] font-black text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md border border-amber-200 shrink-0">
-                              <Lock size={12} /> KİLİTLİ (TARİHİ GEÇTİ)
+                              <Lock size={12} /> GEÇMİŞ DOSYA
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-200 shrink-0">
-                              <CheckCircle2 size={12} /> AKTİF TOPLANTI
+                            <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/70 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700 shrink-0 shadow-xs">
+                              <CheckCircle2 size={12} /> AKTİF TOPLANTI (ŞU ANKİ)
                             </span>
                           )}
                         </div>
@@ -1874,47 +1918,83 @@ export default function Dashboard() {
                <div className="flex items-center gap-3">
                  <button 
                    onClick={() => setFilterMeetingId(null)}
-                   className="p-2 bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:bg-slate-700 rounded-xl text-slate-600 dark:text-slate-400 transition-colors shrink-0"
-                   title="Toplantı Listesine Dön"
+                   className="flex items-center gap-2 px-3.5 py-2 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors border border-slate-200 dark:border-slate-700 shadow-sm shrink-0"
+                   title="Aktif dosyadan çıkıp tüm geçmiş toplantı dosyalarını görüntüle"
                  >
-                   <ArrowLeft size={20} />
+                   <ArrowLeft size={16} />
+                   <span>Geçmiş Dosyalar</span>
                  </button>
                  <div>
-                   <h2 className="text-lg font-black text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                     {meetings.find(m => m.id === filterMeetingId)?.meetingNo} <span className="text-slate-400 font-medium text-sm">Toplantı Kayıtları</span>
-                   </h2>
-                   <p className="text-xs text-slate-500 dark:text-slate-400">
+                   <div className="flex items-center gap-2">
+                     <h2 className="text-lg font-black text-slate-800 dark:text-slate-200">
+                       {meetings.find(m => m.id === filterMeetingId)?.meetingNo} <span className="text-slate-400 font-medium text-sm">Toplantı Kayıtları</span>
+                     </h2>
+                     {(() => {
+                       const currentM = meetings.find(m => m.id === filterMeetingId);
+                       if (!currentM) return null;
+                       const isActive = isMeetingActiveStrict(currentM);
+                       return isActive ? (
+                         <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">
+                           <CheckCircle2 size={12} /> AKTİF DOSYA
+                         </span>
+                       ) : (
+                         <span className="inline-flex items-center gap-1 text-[11px] font-black text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full border border-amber-300 dark:border-amber-700">
+                           <Lock size={12} /> GEÇMİŞ DOSYA
+                         </span>
+                       );
+                     })()}
+                   </div>
+                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                      Toplantı Tarihi: {meetings.find(m => m.id === filterMeetingId)?.date ? new Date(meetings.find(m => m.id === filterMeetingId)!.date).toLocaleDateString('tr-TR') : '-'}
                    </p>
                  </div>
                </div>
 
-               {isManager && filterMeetingId && (
-                 <div className="flex items-center gap-2 shrink-0 self-start md:self-center">
-                   <button
-                     onClick={() => {
-                       const currentM = meetings.find(m => m.id === filterMeetingId);
-                       if (currentM) handleOpenEditMeeting(currentM);
-                     }}
-                     className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm"
-                   >
-                     <Pencil size={15} />
-                     <span>Toplantıyı Düzenle</span>
-                   </button>
-                   {isSuperAdmin && (
+               <div className="flex flex-wrap items-center gap-2 shrink-0 self-start md:self-center">
+                 {(() => {
+                   const activeMeeting = meetings.find(m => isMeetingActiveStrict(m));
+                   if (activeMeeting && filterMeetingId !== activeMeeting.id) {
+                     return (
+                       <button
+                         onClick={() => setFilterMeetingId(activeMeeting.id)}
+                         className="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
+                         title="Şu anki aktif toplantı dosyasına geri dön"
+                       >
+                         <CheckCircle2 size={15} />
+                         <span>Aktif Dosyaya Dön ({activeMeeting.meetingNo})</span>
+                       </button>
+                     );
+                   }
+                   return null;
+                 })()}
+
+                 {isManager && filterMeetingId && (
+                   <>
                      <button
                        onClick={() => {
                          const currentM = meetings.find(m => m.id === filterMeetingId);
-                         if (currentM) handleDeleteMeeting(currentM);
+                         if (currentM) handleOpenEditMeeting(currentM);
                        }}
-                       className="bg-red-600 hover:bg-red-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm"
+                       className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm"
                      >
-                       <Trash2 size={15} />
-                       <span>Toplantıyı Sil</span>
+                       <Pencil size={15} />
+                       <span>Toplantıyı Düzenle</span>
                      </button>
-                   )}
-                 </div>
-               )}
+                     {isSuperAdmin && (
+                       <button
+                         onClick={() => {
+                           const currentM = meetings.find(m => m.id === filterMeetingId);
+                           if (currentM) handleDeleteMeeting(currentM);
+                         }}
+                         className="bg-red-600 hover:bg-red-700 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm"
+                       >
+                         <Trash2 size={15} />
+                         <span>Toplantıyı Sil</span>
+                       </button>
+                     )}
+                   </>
+                 )}
+               </div>
              </div>
 
              {(() => {
@@ -2045,15 +2125,23 @@ export default function Dashboard() {
                 <select
                   value={filterMeetingId || ''}
                   onChange={(e: any) => {
-                    if (e.target.value === '') setFilterMeetingId(null);
-                    else setFilterMeetingId(e.target.value);
+                    if (e.target.value === 'all_files' || e.target.value === '') {
+                      setFilterMeetingId(null);
+                    } else {
+                      setFilterMeetingId(e.target.value);
+                    }
                   }}
-                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm max-w-[120px] truncate"
+                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold py-1.5 px-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm max-w-[170px] truncate"
                 >
-                  <option value="" disabled>Seçiniz</option>
-                  {meetings.filter(m => isMeetingActiveStrict(m)).map(m => (
-                    <option key={m.id} value={m.id}>{m.meetingNo}</option>
-                  ))}
+                  <option value="all_files">📁 Tüm Dosyaları Göster</option>
+                  {meetings.map(m => {
+                    const isActive = isMeetingActiveStrict(m);
+                    return (
+                      <option key={m.id} value={m.id}>
+                        {isActive ? `🟢 ${m.meetingNo} (Aktif)` : `📁 ${m.meetingNo}`}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -3030,6 +3118,7 @@ export default function Dashboard() {
                       }
                       const updated = await getAllMeetings();
                       setMeetings(updated);
+                      setFilterMeetingId(newMeeting.id);
                       setNewMeetingModalOpen(false);
                       setNewMeetingData({ meetingNo: '', date: '', description: '', budgetTL: '' });
                     } catch (err: any) {
@@ -3132,78 +3221,6 @@ export default function Dashboard() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Select Meeting & Start Assessment Modal (Personnel) */}
-      <AnimatePresence>
-        {newAssessmentModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print"
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-primary-100"
-            >
-              <div className="bg-gradient-to-r from-primary-600 to-indigo-600 px-6 py-5 flex items-center justify-between relative overflow-hidden">
-                <div className="absolute -right-4 -top-12 opacity-10">
-                  <ShieldCheck size={120} />
-                </div>
-                <h3 className="text-xl font-extrabold text-white flex items-center gap-2 relative z-10 tracking-tight">
-                  <Plus size={24} className="opacity-90" />
-                  Yeni İnceleme Başlat
-                </h3>
-                <button onClick={() => setNewAssessmentModalOpen(false)} className="text-white/70 hover:text-white p-1 rounded-full hover:bg-white dark:bg-slate-800/20 transition-colors relative z-10">
-                  <X size={20} />
-                </button>
-              </div>
-              <div className="p-6 space-y-5">
-                <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Hane inceleme kaydı oluşturmak için öncelikle bu kaydın hangi mütevelli heyeti toplantısında sunulacağını seçiniz.</p>
-                <div>
-                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Hedef Toplantı Seçimi</label>
-                  <select
-                    value={selectedMeetingId}
-                    onChange={(e) => setSelectedMeetingId(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 focus:outline-none focus:border-primary-500 bg-slate-50 dark:bg-slate-900 font-semibold text-slate-800 dark:text-slate-200 shadow-sm transition-colors"
-                  >
-                    <option value="" disabled>Toplantı Seçiniz...</option>
-                    {meetings.filter(m => isMeetingActiveStrict(m)).map(m => (
-                      <option key={m.id} value={m.id}>{m.meetingNo} - {new Date(m.date).toLocaleDateString('tr-TR')} ({m.managerName})</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="bg-slate-50 dark:bg-slate-900 px-6 py-5 flex flex-col gap-3 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  onClick={async () => {
-                      if (!selectedMeetingId) {
-                      await showAlert('Lütfen işleme devam etmek için bir toplantı seçiniz.', 'warning');
-                      return;
-                    }
-                    router.push(`/assessment/new?meetingId=${selectedMeetingId}`);
-                  }}
-                  disabled={!selectedMeetingId}
-                  className="w-full px-5 py-3.5 rounded-xl font-extrabold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-900/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
-                >
-                  <Plus size={20} />
-                  İnceleme Formunu Aç
-                </button>
-                <button
-                  onClick={() => setNewAssessmentModalOpen(false)}
-                  className="w-full px-5 py-3 rounded-xl font-bold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900 hover:text-slate-700 dark:text-slate-300 transition-colors"
-                >
-                  Geri Dön
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-
 
     </div>
     </SidebarLayout>

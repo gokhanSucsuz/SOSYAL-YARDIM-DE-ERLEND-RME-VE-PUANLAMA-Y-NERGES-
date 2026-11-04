@@ -24,4 +24,7 @@ const MeetingSchema: Schema = new Schema({
   budgetTL: { type: Number }
 }, { timestamps: true });
 
+MeetingSchema.index({ isClosed: 1 });
+MeetingSchema.index({ createdAt: -1 });
+
 export default mongoose.models.Meeting || mongoose.model<IMeeting>('Meeting', MeetingSchema);

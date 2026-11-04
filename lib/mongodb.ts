@@ -30,6 +30,9 @@ async function connectToDatabase() {
       // Veritabanına ulaşılamazsa istekler ~30 sn asılı kalmasın, hızlıca hata dönsün.
       serverSelectionTimeoutMS: 5000,
       connectTimeoutMS: 5000,
+      maxPoolSize: 10,
+      minPoolSize: 2,
+      socketTimeoutMS: 30000,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {

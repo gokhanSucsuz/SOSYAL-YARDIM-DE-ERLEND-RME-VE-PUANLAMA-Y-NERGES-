@@ -6,12 +6,19 @@ import { getSession } from '@/lib/auth';
 export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
-    let settings = await Settings.findOne({});
+    let settings = await Settings.findOne({}).lean();
     if (!settings) {
-      settings = new Settings({ isMaintenanceMode: false, isGoogleLoginEnabled: false });
-      await settings.save();
+      const created = new Settings({ isMaintenanceMode: false, isGoogleLoginEnabled: false });
+      await created.save();
+      return NextResponse.json(
+        { isGoogleLoginEnabled: false },
+        { headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' } }
+      );
     }
-    return NextResponse.json({ isGoogleLoginEnabled: settings.isGoogleLoginEnabled });
+    return NextResponse.json(
+      { isGoogleLoginEnabled: !!settings.isGoogleLoginEnabled },
+      { headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' } }
+    );
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -10,21 +10,35 @@ import {
   Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug, User, MapPin, Phone, Hash, Users, Activity, Minus, Plus,
   Eye, EyeOff, Award, Banknote, TrendingUp
 } from 'lucide-react';
-import { saveAssessment, getAllAssessments, calculateAssistanceFromScore } from '@/lib/db';
+import { saveAssessment, getAllAssessments, calculateAssistanceFromScore, getAllMeetings } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
 import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
 import { useDialog } from '@/components/DialogProvider';
 import { calculateNewSystemScore } from '@/lib/scoring';
 
+const isMeetingActiveStrict = (m: any) => {
+  if (m.isClosed) return false;
+  if (m.date) {
+    const meetingDate = new Date(m.date);
+    meetingDate.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (meetingDate < today && !m.forceOpen) return false;
+  }
+  return true;
+};
+
 function NewAssessmentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const meetingId = searchParams?.get('meetingId') || undefined;
+  const initialMeetingId = searchParams?.get('meetingId') || undefined;
   const { showAlert } = useDialog();
   
   const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(0);
+  const [meetingId, setMeetingId] = useState<string | undefined>(initialMeetingId);
+  const [meetingInfo, setMeetingInfo] = useState<any>(null);
   const [allAssessments, setAllAssessments] = useState<any[]>([]);
   const [tcHistory, setTcHistory] = useState<any[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -37,9 +51,23 @@ function NewAssessmentContent() {
     } else {
       setUser(JSON.parse(userStr));
     }
+
+    // Toplantı bilgisini çek ve gerekirse otomatik aktif toplantıya bağla
+    getAllMeetings().then(meetings => {
+      const active = meetings.find(m => isMeetingActiveStrict(m));
+      if (!initialMeetingId && active) {
+        setMeetingId(active.id);
+        setMeetingInfo(active);
+      } else if (initialMeetingId) {
+        const found = meetings.find(m => m.id === initialMeetingId);
+        if (found) setMeetingInfo(found);
+        else if (active) setMeetingInfo(active);
+      }
+    }).catch(() => {});
+
     // TC geçmiş araması için tüm kayıtları yükle
     getAllAssessments().then(res => setAllAssessments(res.data)).catch(() => {});
-  }, [router]);
+  }, [router, initialMeetingId]);
 
   const [state, setState] = useState({
     applicantName: "",
@@ -224,6 +252,11 @@ function NewAssessmentContent() {
               <span className="text-primary-600 dark:text-primary-400 font-extrabold bg-primary-500/10 px-1.5 py-0.5 rounded border border-primary-500/20">
                 {stepNames[step]}
               </span>
+              {meetingInfo && (
+                <span className="hidden sm:inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300 font-extrabold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 ml-1">
+                  <CheckCircle2 size={11} /> Toplantı: {meetingInfo.meetingNo}
+                </span>
+              )}
             </p>
           </div>
         </div>

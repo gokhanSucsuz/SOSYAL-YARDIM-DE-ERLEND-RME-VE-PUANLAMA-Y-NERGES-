@@ -68,6 +68,13 @@ const AssessmentSchema: Schema = new Schema({
   }
 }, { timestamps: true });
 
+// Performans İndeksleri
+AssessmentSchema.index({ meetingId: 1, date: -1 });
+AssessmentSchema.index({ personnelId: 1, date: -1 });
+AssessmentSchema.index({ updatedAt: -1 });
+AssessmentSchema.index({ status: 1 });
+AssessmentSchema.index({ createdAt: -1 });
+
 // Plugin for KVKK Encryption (Maximum Security)
 AssessmentSchema.plugin(mongooseFieldEncryption.fieldEncryption, {
   fields: ['applicantName', 'applicantTc', 'applicantAddress', 'phoneNumber', 'data'],
