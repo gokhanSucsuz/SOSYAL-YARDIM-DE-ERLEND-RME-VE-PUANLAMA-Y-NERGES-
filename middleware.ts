@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
+import { verifyGateCookie } from '@/lib/ssoGate';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fallback';
 const key = new TextEncoder().encode(JWT_SECRET);
@@ -26,6 +27,35 @@ export async function middleware(req: NextRequest) {
     pathname.endsWith('.png') ||
     pathname.endsWith('.js')
   ) {
+    return NextResponse.next();
+  }
+
+  // --- 0. VAKIFPANEL SSO GATEKEEPER ---
+  const ssoSecret = process.env.PANEL_SSO_SECRET;
+  if (
+    ssoSecret &&
+    !pathname.startsWith('/api/sso/callback') &&
+    !pathname.startsWith('/yetkisiz-erisim') &&
+    !pathname.startsWith('/api/settings/')
+  ) {
+    const gateCookie = req.cookies.get('vakif_panel_gate')?.value;
+    const isGateValid = gateCookie ? await verifyGateCookie(gateCookie, ssoSecret) : false;
+
+    if (!isGateValid) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json(
+          { error: 'Doğrudan erişim engellendi. Lütfen Merkezi Panel üzerinden giriş yapın.' },
+          { status: 403 }
+        );
+      }
+      const proto = req.headers.get('x-forwarded-proto') || 'https';
+      const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
+      const baseOrigin = host ? `${proto}://${host}` : req.nextUrl.origin;
+      return NextResponse.redirect(`${baseOrigin}/yetkisiz-erisim`);
+    }
+  }
+
+  if (pathname === '/yetkisiz-erisim' || pathname.startsWith('/api/sso/callback')) {
     return NextResponse.next();
   }
 
