@@ -76,7 +76,7 @@ export default function ForgotPassword() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none font-medium"
-                  placeholder="isim@sydv.gov.tr"
+                  placeholder="ornek@eposta.com"
                   required
                 />
               </div>

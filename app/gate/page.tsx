@@ -46,10 +46,10 @@ export default function GatePage() {
         </div>
         
         <h1 className="text-2xl font-black mb-2 text-center tracking-tight">
-          Sistem Koruması
+          Sosyal Yardım Değerlendirme ve Puanlama Sistemi
         </h1>
         <p className="text-sm text-slate-400 text-center mb-8 font-medium">
-          Bu sisteme yalnızca <strong className="text-white">edirnesydv@gmail.com</strong> yetkili Google hesabı ile erişim sağlanabilir.
+          Bu sisteme yalnızca yetkili kurumsal Google hesabı ile erişim sağlanabilir.
         </p>
 
         {error && (

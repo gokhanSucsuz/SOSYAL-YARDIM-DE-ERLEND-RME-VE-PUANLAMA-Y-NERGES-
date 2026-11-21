@@ -214,15 +214,15 @@ export default function Login() {
       <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl shadow-primary-950/10 border border-slate-200 dark:border-slate-700 w-full max-w-md relative overflow-hidden text-slate-900 dark:text-slate-100">
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary-800 via-amber-500 to-primary-700"></div>
         
-        <div className="flex justify-center mb-6 mt-2">
+        <div className="flex justify-center mb-5 mt-2">
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary-700 to-primary-900 rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
-            <LogoImage className="relative w-20 h-20 rounded-2xl shadow-xl border-2 border-slate-200 dark:border-slate-700 object-cover" />
+            <div className="absolute -inset-1.5 bg-gradient-to-r from-primary-600 via-amber-500 to-indigo-600 rounded-3xl blur-md opacity-35 group-hover:opacity-65 transition duration-300"></div>
+            <LogoImage className="relative w-20 h-20 rounded-2xl shadow-xl" />
           </div>
         </div>
 
-        <h1 className="text-xl sm:text-2xl font-black mb-2 text-center text-slate-900 dark:text-slate-100 tracking-tight">
-          T.C. SYDV Otomasyonu
+        <h1 className="text-lg sm:text-xl font-black mb-1.5 text-center text-slate-900 dark:text-slate-100 tracking-tight leading-snug">
+          Sosyal Yardım Değerlendirme ve Puanlama Sistemi
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 text-center mb-6 font-semibold">
           Güvenli Oturum Açma Portalı
@@ -246,14 +246,14 @@ export default function Login() {
         <form onSubmit={handleLogin} className="space-y-4">
           {activeTab === 'manager' ? (
             <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">E-Posta (Sabit)</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Yönetici Hesabı</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-600" size={18} />
                 <input
-                  type="email"
-                  value={selectedEmail}
+                  type="text"
+                  value="Sistem Yöneticisi (Müdür)"
                   disabled
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 font-medium"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold"
                 />
               </div>
             </div>

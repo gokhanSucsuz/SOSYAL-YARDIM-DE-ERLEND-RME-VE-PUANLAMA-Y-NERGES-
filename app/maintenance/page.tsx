@@ -36,7 +36,7 @@ export default function Maintenance() {
       </div>
       
       <div className="mt-8 text-xs text-slate-400 flex items-center gap-1 font-medium">
-        <ShieldCheck size={14} /> T.C. SYDV Otomasyonu Güvenlik Birimi
+        <ShieldCheck size={14} /> Sosyal Yardım Değerlendirme ve Puanlama Sistemi
       </div>
     </div>
   );

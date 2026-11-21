@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
+import { Scale, HeartHandshake } from 'lucide-react';
 
 interface LogoImageProps {
   className?: string;
@@ -8,43 +9,69 @@ interface LogoImageProps {
 }
 
 export function LogoImage({ 
-  className = "w-10 h-10 rounded-2xl shadow-md border-2 border-red-700 shrink-0", 
-  alt = "T.C. Edirne Valiliği Sosyal Yardımlaşma ve Dayanışma Vakfı Logo" 
+  className = "w-10 h-10 rounded-2xl shadow-md shrink-0", 
+  alt = "Sosyal Yardım Değerlendirme ve Puanlama Sistemi İkonu" 
 }: LogoImageProps) {
-  const OFFICIAL_LOGO_URL = 'https://pbs.twimg.com/profile_images/1456143975845404674/xGjOJe4S_400x400.jpg';
-  const [imgSrc, setImgSrc] = useState<string>(OFFICIAL_LOGO_URL);
-  const [hasError, setHasError] = useState<boolean>(false);
-
-  const handleError = () => {
-    if (imgSrc === '/logo.jpg') {
-      setImgSrc(OFFICIAL_LOGO_URL);
-    } else if (imgSrc === OFFICIAL_LOGO_URL) {
-      setImgSrc('/logo.png');
-    } else {
-      setHasError(true);
-    }
-  };
-
-  if (!hasError) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={imgSrc}
-        alt={alt}
-        onError={handleError}
-        className={`${className} object-cover`}
-      />
-    );
-  }
-
   return (
-    <div className={`relative flex items-center justify-center shrink-0 overflow-hidden bg-red-900 rounded-2xl border-2 border-red-700 shadow-md ${className}`} title={alt}>
-      <svg viewBox="0 0 100 100" className="w-full h-full p-1">
-        <circle cx="50" cy="50" r="46" fill="#991b1b" stroke="#fef08a" strokeWidth="2" />
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#fef08a" strokeWidth="1" strokeDasharray="3 2" />
-        <path d="M 44 32 A 18 18 0 1 0 62 68 A 15 15 0 1 1 44 32 Z" fill="#ffffff" />
-        <polygon points="60,44 62,49 67,49 63,52 64,57 60,54 56,57 57,52 53,49 58,49" fill="#ffffff" />
-        <text x="50" y="80" textAnchor="middle" fill="#fef08a" fontSize="8" fontWeight="bold">EDİRNE SYDV</text>
+    <div
+      className={`relative flex items-center justify-center shrink-0 overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-indigo-900 text-white shadow-lg border border-white/20 select-none ${className}`}
+      title={alt}
+      aria-label={alt}
+    >
+      <div className="absolute -top-3 -right-3 w-8 h-8 bg-amber-400/25 rounded-full blur-md pointer-events-none" />
+      <div className="absolute -bottom-3 -left-3 w-8 h-8 bg-primary-300/20 rounded-full blur-md pointer-events-none" />
+      <svg
+        viewBox="0 0 64 64"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-3/5 h-3/5 drop-shadow-sm"
+      >
+        {/* Shield Base representing Institutional Trust & Social Protection */}
+        <path
+          d="M32 6L10 15V30.5C10 44.8 19.4 57.6 32 61C44.6 57.6 54 44.8 54 30.5V15L32 6Z"
+          fill="url(#shieldGrad)"
+          stroke="rgba(255,255,255,0.85)"
+          strokeWidth="2.8"
+          strokeLinejoin="round"
+        />
+        {/* Balance Scale & Evaluation Bars representing 100-Point Fair Scoring */}
+        <path
+          d="M32 17V45M21 24H43"
+          stroke="#FBBF24"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+        />
+        {/* Left Scale Pan */}
+        <path
+          d="M21 24L16.5 33.5H25.5L21 24Z"
+          fill="rgba(251,191,36,0.35)"
+          stroke="#FDE68A"
+          strokeWidth="2.2"
+          strokeLinejoin="round"
+        />
+        {/* Right Scale Pan */}
+        <path
+          d="M43 24L38.5 33.5H47.5L43 24Z"
+          fill="rgba(251,191,36,0.35)"
+          stroke="#FDE68A"
+          strokeWidth="2.2"
+          strokeLinejoin="round"
+        />
+        {/* Base Pedestal */}
+        <path
+          d="M25 45H39"
+          stroke="#FBBF24"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+        />
+        {/* Top Star / Point Indicator */}
+        <circle cx="32" cy="15.5" r="2.8" fill="#FDE68A" />
+        <defs>
+          <linearGradient id="shieldGrad" x1="10" y1="6" x2="54" y2="61" gradientUnits="userSpaceOnUse">
+            <stop stopColor="rgba(255,255,255,0.22)" />
+            <stop offset="1" stopColor="rgba(255,255,255,0.05)" />
+          </linearGradient>
+        </defs>
       </svg>
     </div>
   );
