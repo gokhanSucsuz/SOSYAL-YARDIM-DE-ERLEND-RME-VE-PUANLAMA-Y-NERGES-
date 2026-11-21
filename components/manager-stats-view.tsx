@@ -176,7 +176,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
     const validHouseholds = approvedCount + pendingCount;
     const avgAidPerHousehold = validHouseholds > 0 ? Math.round(plannedAidTL / validHouseholds) : 0;
 
-    // Household characteristics counts
+    // Household characteristics counts (mapped to actual state keys)
     let homeOwnerCount = 0;
     let tenantCount = 0;
     let relativeAllocatedCount = 0;
@@ -184,7 +184,7 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
 
     let disabledCount = 0;
     let chronicCount = 0;
-    let largeFamilyCount = 0; // 3+ children
+    let largeFamilyCount = 0; // 3+ children or 5+ household size
 
     let score80Plus = 0;
     let score60To79 = 0;
@@ -192,20 +192,22 @@ export function ManagerStatsView({ meetings, assessments, user, onBack }: Manage
     let scoreBelow40 = 0;
 
     filteredAssessments.forEach(a => {
-      const housing = a.data?.housingStatus;
-      if (housing === 'ev_sahibi') homeOwnerCount++;
-      else if (housing === 'kiraci') tenantCount++;
-      else if (housing === 'akraba_yani' || housing === 'tahsis') relativeAllocatedCount++;
-      else otherHousingCount++;
+      const d = a.data || {};
+      if (d.d_kiraci || d.housingStatus === 'kiraci') tenantCount++;
+      else if (d.d_evsiz || d.d_afetzede || d.d_agirHasarli) otherHousingCount++;
+      else if (d.d_gecekondu || d.housingStatus === 'akraba_yani' || d.housingStatus === 'tahsis') relativeAllocatedCount++;
+      else homeOwnerCount++;
 
-      if (a.data?.hasDisabled) disabledCount++;
-      if (a.data?.hasChronicIllness) chronicCount++;
-      if ((a.data?.childrenCount || 0) >= 3) largeFamilyCount++;
+      if (d.b_agirEngelli || d.b_engelli || d.b_dusukEngelli || d.hasDisabled) disabledCount++;
+      if (d.b_kronik || d.b_kanser || d.b_evdeBakim || d.hasChronicIllness) chronicCount++;
+
+      const totalChildren = (Number(d.c_0_6yas) || 0) + (Number(d.c_ilkokul) || 0) + (Number(d.c_ortaokul) || 0) + (Number(d.c_lise) || 0) + (Number(d.c_meslekiEgitim) || 0) + (Number(d.c_acikLise) || 0) + (Number(d.c_uni) || 0) + (Number(d.childrenCount) || 0);
+      if (totalChildren >= 3 || (Number(a.householdSize) || Number(d.householdSize) || 1) >= 5) largeFamilyCount++;
 
       const score = a.result?.totalScore || 0;
-      if (score >= 80) score80Plus++;
-      else if (score >= 60) score60To79++;
-      else if (score >= 40) score40To59++;
+      if (score >= 86) score80Plus++;
+      else if (score >= 56) score60To79++;
+      else if (score >= 26) score40To59++;
       else scoreBelow40++;
     });
 

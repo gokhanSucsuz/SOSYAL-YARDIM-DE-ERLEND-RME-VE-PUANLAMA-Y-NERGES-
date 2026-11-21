@@ -949,31 +949,32 @@ export default function Dashboard() {
   };
 
   const getIncomeText = (val: number) => {
-    if (val === 40) return "Kişi başına gelir muhtaçlık sınırının %25 altında (+40 Pn)";
-    if (val === 35) return "Muhtaçlık sınırının %25 – 50 arasında (+35 Pn)";
-    if (val === 25) return "Muhtaçlık sınırının %50 – 75 arasında (+25 Pn)";
-    if (val === 15) return "Muhtaçlık sınırının %75 – 100 arasında (+15 Pn)";
+    if (val === 20 || val === 40) return "Kişi başına gelir muhtaçlık sınırının %25 altında (+20 Pn)";
+    if (val === 15 || val === 35) return "Muhtaçlık sınırının %25 – 50 arasında (+15 Pn)";
+    if (val === 10 || val === 25) return "Muhtaçlık sınırının %50 – 75 arasında (+10 Pn)";
+    if (val === 5) return "Muhtaçlık sınırının %75 – 100 arasında (+5 Pn)";
     return "Muhtaçlık sınırı üzerinde (0 Pn)";
   };
 
   const getDisadvantagesList = (state: any) => {
     if (!state) return [];
     const list = [];
-    if (state.b_agirEngelli) list.push('Ağır engelli (%70+) (+15 Pn)');
-    if (state.b_engelli) list.push('Engelli (%40-69) (+10 Pn)');
-    if (state.b_dusukEngelli) list.push('Hafif Engelli (%20-39) (+3 Pn)');
-    if (state.b_evdeBakim) list.push('Evde bakım hastası (+10 Pn)');
-    if (state.b_kanser) list.push('Kanser tedavisi gören (+10 Pn)');
-    if (state.b_kronik) list.push('Kronik hastalık (+6 Pn)');
-    if (state.b_yasliYalniz) list.push('65 yaş üstü yalnız yaşayan (+8 Pn)');
-    if (state.b_sehitYakini) list.push('Şehit yakını (+8 Pn)');
-    if (state.b_gazi) list.push('Gazi (+8 Pn)');
-    if (state.b_yetim) list.push('Yetim / Öksüz çocuk (+5 Pn)');
-    if (state.b_koruyucuAile) list.push('Koruyucu aile (+5 Pn)');
-    if (state.b_yabanciUyruklu) list.push('Yabancı uyruklu / Sığınmacı (+3 Pn)');
+    if (state.b_cokluOzelDurumluBirey) list.push('Çoklu özel durumlu birey (+4 Pn)');
+    if (state.b_agirEngelli) list.push('Ağır engelli (%70+) (+12 Pn)');
+    if (state.b_engelli) list.push('Engelli (%40-69) (+8 Pn)');
+    if (state.b_dusukEngelli) list.push('Düşük Oranlı Engelli (%20-39) (+3 Pn)');
+    if (state.b_evdeBakim) list.push('Evde bakım hastası (+8 Pn)');
+    if (state.b_kanser) list.push('Kanser tedavisi gören (+8 Pn)');
+    if (state.b_kronik) list.push('Kronik hastalık (+5 Pn)');
+    if (state.b_yasliYalniz) list.push('65 yaş üstü yalnız yaşayan (+6 Pn)');
+    if (state.b_sehitYakini) list.push('Şehit yakını (+6 Pn)');
+    if (state.b_gazi) list.push('Gazi (+6 Pn)');
+    if (state.b_yetim) list.push('Yetim / Öksüz çocuk (+4 Pn)');
+    if (state.b_koruyucuAile) list.push('Koruyucu aile (+4 Pn)');
+    if (state.b_yabanciUyruklu) list.push('Yabancı uyruklu / Göçmen (+2 Pn)');
     if (state.b_ozelSebepPuanBekliyor) {
       const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
-      list.push(`Özel Sebep${reasonText} (Ümüdür Onayı Bekleniyor)`);
+      list.push(`Özel Sebep${reasonText} (⚠ Müdür Onayı Bekleniyor)`);
     } else if (state.b_ozelSebepPuan && Number(state.b_ozelSebepPuan) !== 0) {
       const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
       const sign = Number(state.b_ozelSebepPuan) > 0 ? '+' : '';
@@ -990,7 +991,7 @@ export default function Dashboard() {
     if (state.c_ortaokul > 0) list.push(`Ortaokul: ${state.c_ortaokul} öğr (+${state.c_ortaokul * 2} Pn)`);
     if (state.c_lise > 0) list.push(`Lise: ${state.c_lise} öğr (+${state.c_lise * 3} Pn)`);
     if (state.c_meslekiEgitim > 0) list.push(`Mesleki Eğt: ${state.c_meslekiEgitim} öğr (+${state.c_meslekiEgitim * 3} Pn)`);
-    if (state.c_acikLise > 0) list.push(`Açık Lise: ${state.c_acikLise} öğr (+${state.c_acikLise * 3} Pn)`);
+    if (state.c_acikLise > 0) list.push(`Açık Lise: ${state.c_acikLise} öğr (+${state.c_acikLise * 2} Pn)`);
     if (state.c_uni > 0) list.push(`Üniversite: ${state.c_uni} öğr (+${state.c_uni * 4} Pn)`);
     return list;
   };
@@ -998,41 +999,47 @@ export default function Dashboard() {
   const getHousingList = (state: any) => {
     if (!state) return [];
     const list = [];
-    if (state.d_evsiz) list.push("Evsiz (+10 Pn)");
-    if (state.d_afetzede) list.push("Afetzede (+10 Pn)");
-    if (state.d_agirHasarli) list.push("Konut ağır hasarlı (+8 Pn)");
-    if (state.d_sagliksiz) list.push("Sağlıksız konut (+6 Pn)");
-    if (state.d_kiraci) list.push("Kiracı (+5 Pn)");
+    if (state.d_evsiz) list.push("Evsiz / Barınaksız (+8 Pn)");
+    if (state.d_afetzede) list.push("Afetzede (+8 Pn)");
+    if (state.d_agirHasarli) list.push("Konut ağır hasarlı (+6 Pn)");
+    if (state.d_sagliksiz) list.push("Sağlıksız konut (+4 Pn)");
+    if (state.d_dereYatagi) list.push("Bodrum kat / Dere yatağı (+4 Pn)");
+    if (state.d_kiraci) list.push("Kiracı (+3 Pn)");
+    if (state.d_tahliyeBaskisi) list.push("Tahliye / İcra baskısı (+3 Pn)");
+    if (state.d_isinmaProblem) list.push("Isınma problemi (+2 Pn)");
+    if (state.d_gecekondu) list.push("Gecekondu / Hisseli (+2 Pn)");
+    if (state.d_asansorsuzYuksek) list.push("Asansörsüz yüksek kat (+2 Pn)");
+    if (state.d_tuvaletBanyoYetersiz) list.push("Banyo/WC yetersiz (+2 Pn)");
     return list;
   };
 
   const getFragilityList = (state: any) => {
     if (!state) return [];
     const list = [];
-    if (state.e_siddetMagduru) list.push('Şiddet mağduru (+6 Pn)');
-    if (state.e_kadinReis) list.push('Kadın hane reisi (+5 Pn)');
-    if (state.e_esiCezaevinde) list.push('Eşi cezaevinde (+5 Pn)');
-    if (state.e_afetGelirKaybi) list.push('Afet gelir kaybı (+5 Pn)');
-    if (state.e_maddeBagimliligi) list.push('Madde bağımlılığı (+5 Pn)');
-    if (state.e_sosyalGuvencesiz) list.push('Sosyal güvencesiz (+5 Pn)');
+    if (state.e_siddetMagduru) list.push('Şiddet mağduru (+5 Pn)');
+    if (state.e_kadinReis) list.push('Kadın hane reisi (+4 Pn)');
+    if (state.e_esiCezaevinde) list.push('Eşi cezaevinde (+4 Pn)');
+    if (state.e_afetGelirKaybi) list.push('Afet gelir kaybı (+4 Pn)');
+    if (state.e_maddeBagimliligi) list.push('Madde bağımlılığı (+4 Pn)');
+    if (state.e_sosyalGuvencesiz) list.push('Sosyal güvencesiz (+4 Pn)');
     if (state.e_acilHastalik) list.push('Acil hastalık durumu (+4 Pn)');
-    if (state.e_icraBorcBaskisi) list.push('Borç/icra baskısı (+4 Pn)');
-    if (state.e_gebelikBebek) list.push('Bakıma muhtaç bebek/gebelik (+4 Pn)');
-    if (state.e_bosanmis) list.push('Boşanmış (+3 Pn)');
-    if (state.e_dul) list.push('Dul (+3 Pn)');
-    if (state.e_hukumluYakin) list.push('Eski hükümlü (+3 Pn)');
+    if (state.e_icraBorcBaskisi) list.push('Borç/icra baskısı (+3 Pn)');
+    if (state.e_gebelikBebek) list.push('Bakıma muhtaç bebek/gebelik (+3 Pn)');
+    if (state.e_bosanmis) list.push('Boşanmış (+2 Pn)');
+    if (state.e_dul) list.push('Dul (+2 Pn)');
+    if (state.e_hukumluYakin) list.push('Eski hükümlü (+2 Pn)');
     // OECD 4 kademeli hane büyüklüğü skalası
     const hhSize = state.householdSize || 1;
-    if (hhSize >= 7) list.push(`Hane Nüfusu ${hhSize} kişi (+6 Pn)`);
-    else if (hhSize >= 5) list.push(`Hane Nüfusu ${hhSize} kişi (+4 Pn)`);
+    if (hhSize >= 7) list.push(`Hane Nüfusu ${hhSize} kişi (+4 Pn)`);
+    else if (hhSize >= 5) list.push(`Hane Nüfusu ${hhSize} kişi (+3 Pn)`);
     else if (hhSize >= 3) list.push(`Hane Nüfusu ${hhSize} kişi (+2 Pn)`);
     else list.push(`Hane Nüfusu ${hhSize} kişi (+1 Pn)`);
     // Ceza puanları
-    if (state.a_aracSahibi) list.push('Araç Tescil Tespit (-15 Pn)');
-    if (state.a_birdenFazlaTasinmaz) list.push('Birden Fazla Taşınmaz (-20 Pn)');
-    if (state.a_aktifSgkPrim) list.push('Aktif SGK Prim (A bölümü sıfır)');
+    if (state.a_aracSahibi) list.push('Araç Tescil Tespit (−15 Pn)');
+    if (state.a_birdenFazlaTasinmaz) list.push('Birden Fazla Taşınmaz (−20 Pn)');
+    if (state.a_aktifSgkPrim) list.push('Aktif SGK Prim (−5 Pn)');
     if (state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0) {
-      list.push(`Son 3 Ay Mükerrer Yardım: ${state.a_son3AyYardimKisi} kişi (-${state.a_son3AyYardimKisi * 5} Pn)`);
+      list.push(`Son 3 Ay Mükerrer Yardım: ${state.a_son3AyYardimKisi} kişi (−${state.a_son3AyYardimKisi * 5} Pn)`);
     }
     return list;
   };
@@ -2895,61 +2902,68 @@ export default function Dashboard() {
                             <td className="border-r border-black p-1 font-bold">A. Ekonomik Durum</td>
                             <td className="border-r border-black p-1">
                               {getIncomeText(state.income)}
-                              {state.noWorker && " • Hanede çalışan yok"}
-                              {state.noRegularIncome && " • Düzenli gelir yok"}
-                              {state.noSgk && " • SGK kaydı yok"}
-                              {state.a_son3AyYardimKisi > 0 && ` • Son 3 ayda yardım alan: ${state.a_son3AyYardimKisi} kişi (-${state.a_son3AyYardimKisi * 5})`}
+                              {state.noWorker && " • Hanede çalışan yok (+3 Pn)"}
+                              {state.noRegularIncome && " • Düzenli gelir yok (+2 Pn)"}
+                              {state.noSgk && " • SGK kaydı yok (+2 Pn)"}
                             </td>
-                            <td className="p-1 text-center font-bold">{calc.scoreA} / 40</td>
+                            <td className="p-1 text-center font-bold">{calc.scoreA} / 25</td>
                           </tr>
 
                           <tr className="border-b border-black">
-                            <td className="border-r border-black p-1 font-bold">B. Dezavantajlılık</td>
+                            <td className="border-r border-black p-1 font-bold">B. Dezavantajlı Bireyler</td>
                             <td className="border-r border-black p-1">
                               {disadvantages.length > 0 ? disadvantages.join(" • ") : "Mevcut Değil"}
                             </td>
-                            <td className="p-1 text-center font-bold">{calc.scoreB} / 30</td>
+                            <td className="p-1 text-center font-bold">{calc.scoreB} / 25</td>
                           </tr>
 
                           <tr className="border-b border-black">
-                            <td className="border-r border-black p-1 font-bold">C. Çocuk ve Eğitim</td>
+                            <td className="border-r border-black p-1 font-bold">C. Sosyal Kırılganlık ve Nüfus</td>
+                            <td className="border-r border-black p-1">
+                              {fragility.length > 0 ? fragility.join(" • ") : "Özel kırılganlık maddesi yok"}
+                            </td>
+                            <td className="p-1 text-center font-bold">{calc.scoreC} / 15</td>
+                          </tr>
+
+                          <tr className="border-b border-black">
+                            <td className="border-r border-black p-1 font-bold">D. Eğitim ve Çocuk</td>
                             <td className="border-r border-black p-1">
                               {education.length > 0 ? education.join(" • ") : "Eğitim gören çocuk kaydı yok"}
                             </td>
-                            <td className="p-1 text-center font-bold">{calc.scoreC} / 10</td>
+                            <td className="p-1 text-center font-bold">{calc.scoreD} / 15</td>
                           </tr>
 
                           <tr className="border-b border-black">
-                            <td className="border-r border-black p-1 font-bold">D. Barınma Durumu</td>
+                            <td className="border-r border-black p-1 font-bold">E. Barınma ve Temel Eşya</td>
                             <td className="border-r border-black p-1">
-                              {housing.length > 0 ? housing.join(" • ") : "Standart konut"}
-                            </td>
-                            <td className="p-1 text-center font-bold">{calc.scoreD} / 10</td>
-                          </tr>
-
-                          <tr className="border-b border-black">
-                            <td className="border-r border-black p-1 font-bold">E. Ev Eşyaları</td>
-                            <td className="border-r border-black p-1">
-                              {appliances}
+                              <strong>Barınma:</strong> {housing.length > 0 ? housing.join(" • ") : "Standart konut"} <br />
+                              <strong>Eşya:</strong> {appliances}
                             </td>
                             <td className="p-1 text-center font-bold">{calc.scoreE} / 10</td>
                           </tr>
 
                           <tr className="border-b border-black">
-                            <td className="border-r border-black p-1 font-bold">F. Kırılganlık</td>
-                            <td className="border-r border-black p-1">
-                              {fragility.length > 0 ? fragility.join(" • ") : "Özel kırılganlık maddesi yok"}
-                            </td>
-                            <td className="p-1 text-center font-bold">{calc.scoreF} / 30</td>
-                          </tr>
-
-                          <tr className="border-b border-black">
-                            <td className="border-r border-black p-1 font-bold">G. İnceleme Kanaati</td>
+                            <td className="border-r border-black p-1 font-bold">F. İnceleme Kanaati</td>
                             <td className="border-r border-black p-1">
                               Yaşam Koşulları: {state.f_yasamKosullari || 0}/5 • Aciliyet: {state.f_aciliyet || 0}/5 • Sosyal Destek: {state.f_sosyalDestek || 0}/5 • Risk: {state.f_risk || 0}/5
                             </td>
                             <td className="p-1 text-center font-bold">{calc.scoreF ?? 0} / 10</td>
                           </tr>
+
+                          {(calc.scorePenalty ?? 0) > 0 && (
+                            <tr className="border-b border-black bg-red-50">
+                              <td className="border-r border-black p-1 font-bold text-red-700">Varlık Testi / Ceza Kesintisi</td>
+                              <td className="border-r border-black p-1 text-red-700 font-semibold">
+                                {[
+                                  state.a_aracSahibi && 'Araç Tescil Kaydı (−15 Pn)',
+                                  state.a_birdenFazlaTasinmaz && '2+ Taşınmaz Kaydı (−20 Pn)',
+                                  state.a_aktifSgkPrim && 'Aktif SGK Prim Kaydı (−5 Pn)',
+                                  state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0 && `Son 3 Ay Mükerrer Yardım: ${state.a_son3AyYardimKisi} Kişi (−${state.a_son3AyYardimKisi * 5} Pn)`
+                                ].filter(Boolean).join(' • ')}
+                              </td>
+                              <td className="p-1 text-center font-bold text-red-700">−{calc.scorePenalty}</td>
+                            </tr>
+                          )}
                         </tbody>
                       </table>
                     </div>

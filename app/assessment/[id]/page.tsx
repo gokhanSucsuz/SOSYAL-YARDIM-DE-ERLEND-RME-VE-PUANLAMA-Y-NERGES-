@@ -123,28 +123,29 @@ export default function AssessmentDetail() {
 
   const { data: state, result: calc } = assessment;
 
-  // Helper arrays for options checked
+  // Helper arrays for options checked (100-point literature standard)
   const getIncomeText = (val: number) => {
-    if (val === 40) return "Kişi başına gelir muhtaçlık sınırının %25 altında (+40 Puan)";
-    if (val === 35) return "Muhtaçlık sınırının %25 – 50 arasında (+35 Puan)";
-    if (val === 25) return "Muhtaçlık sınırının %50 – 75 arasında (+25 Puan)";
-    if (val === 15) return "Muhtaçlık sınırının %75 – 100 arasında (+15 Puan)";
+    if (val === 20 || val === 40) return "Kişi başına gelir muhtaçlık sınırının %25 altında (+20 Puan)";
+    if (val === 15 || val === 35) return "Muhtaçlık sınırının %25 – 50 arasında (+15 Puan)";
+    if (val === 10 || val === 25) return "Muhtaçlık sınırının %50 – 75 arasında (+10 Puan)";
+    if (val === 5) return "Muhtaçlık sınırının %75 – 100 arasında (+5 Puan)";
     return "Muhtaçlık sınırı üzerinde (0 Puan)";
   };
 
   const selectedDisadvantages = [];
-  if (state.b_agirEngelli) selectedDisadvantages.push('Ağır engelli (%70+) (+15 Puan)');
-  if (state.b_engelli) selectedDisadvantages.push('Engelli (%40-69) (+10 Puan)');
-  if (state.b_dusukEngelli) selectedDisadvantages.push('Hafif Engelli (%20-39) (+3 Puan)');
-  if (state.b_evdeBakim) selectedDisadvantages.push('Evde bakım hastası (+10 Puan)');
-  if (state.b_kanser) selectedDisadvantages.push('Kanser tedavisi gören (+10 Puan)');
-  if (state.b_kronik) selectedDisadvantages.push('Kronik hastalık (+6 Puan)');
-  if (state.b_yasliYalniz) selectedDisadvantages.push('65 yaş üstü yalnız yaşayan (+8 Puan)');
-  if (state.b_sehitYakini) selectedDisadvantages.push('Şehit yakını (+8 Puan)');
-  if (state.b_gazi) selectedDisadvantages.push('Gazi (+8 Puan)');
-  if (state.b_yetim) selectedDisadvantages.push('Yetim / Öksüz çocuk (+5 Puan)');
-  if (state.b_koruyucuAile) selectedDisadvantages.push('Koruyucu aile (+5 Puan)');
-  if (state.b_yabanciUyruklu) selectedDisadvantages.push('Yabancı uyruklu / Sığınmacı (+3 Puan)');
+  if (state.b_cokluOzelDurumluBirey) selectedDisadvantages.push('Aynı hanede birden fazla özel durumlu birey (+4 Puan)');
+  if (state.b_agirEngelli) selectedDisadvantages.push('Ağır engelli (%70+ / Tam Bağımlı) (+12 Puan)');
+  if (state.b_engelli) selectedDisadvantages.push('Engelli (%40-69 / Kısmi Bağımlı) (+8 Puan)');
+  if (state.b_dusukEngelli) selectedDisadvantages.push('Düşük Oranlı Engelli (%20-39) (+3 Puan)');
+  if (state.b_evdeBakim) selectedDisadvantages.push('Evde bakım hastası (+8 Puan)');
+  if (state.b_kanser) selectedDisadvantages.push('Kanser tedavisi gören (+8 Puan)');
+  if (state.b_kronik) selectedDisadvantages.push('Kronik hastalık (+5 Puan)');
+  if (state.b_yasliYalniz) selectedDisadvantages.push('65 yaş üstü yalnız yaşayan (+6 Puan)');
+  if (state.b_sehitYakini) selectedDisadvantages.push('Şehit yakını (+6 Puan)');
+  if (state.b_gazi) selectedDisadvantages.push('Gazi (+6 Puan)');
+  if (state.b_yetim) selectedDisadvantages.push('Yetim / Öksüz çocuk (+4 Puan)');
+  if (state.b_koruyucuAile) selectedDisadvantages.push('Koruyucu aile (+4 Puan)');
+  if (state.b_yabanciUyruklu) selectedDisadvantages.push('Yabancı uyruklu / Göçmen (+2 Puan)');
   if (state.b_ozelSebepPuanBekliyor) {
     const reasonText = state.b_ozelSebepMetin ? `: ${state.b_ozelSebepMetin}` : '';
     selectedDisadvantages.push(`Özel Sebep${reasonText} (⚠ Müdür Onayı Bekleniyor)`);
@@ -160,40 +161,45 @@ export default function AssessmentDetail() {
   if (state.c_ortaokul > 0) selectedEducation.push(`Ortaokul Öğrencisi: ${state.c_ortaokul} kişi (+${state.c_ortaokul * 2} Puan)`);
   if (state.c_lise > 0) selectedEducation.push(`Lise Öğrencisi: ${state.c_lise} kişi (+${state.c_lise * 3} Puan)`);
   if (state.c_meslekiEgitim > 0) selectedEducation.push(`Mesleki Eğitim Merkezi: ${state.c_meslekiEgitim} kişi (+${state.c_meslekiEgitim * 3} Puan)`);
-  if (state.c_acikLise > 0) selectedEducation.push(`Açık Lise Öğrencisi: ${state.c_acikLise} kişi (+${state.c_acikLise * 3} Puan)`);
+  if (state.c_acikLise > 0) selectedEducation.push(`Açık Lise Öğrencisi: ${state.c_acikLise} kişi (+${state.c_acikLise * 2} Puan)`);
   if (state.c_uni > 0) selectedEducation.push(`Üniversite Öğrencisi (Yüksek Maliyet): ${state.c_uni} kişi (+${state.c_uni * 4} Puan)`);
 
-
   const selectedHousing = [];
-  if (state.d_evsiz) selectedHousing.push("Evsiz (+10 Puan)");
-  if (state.d_afetzede) selectedHousing.push("Afetzede (+10 Puan)");
-  if (state.d_agirHasarli) selectedHousing.push("Konut ağır hasarlı (+8 Puan)");
-  if (state.d_sagliksiz) selectedHousing.push("Sağlıksız konut (+6 Puan)");
-  if (state.d_kiraci) selectedHousing.push("Kiracı (+5 Puan)");
+  if (state.d_evsiz) selectedHousing.push("Evsiz / Barınaksız (+8 Puan)");
+  if (state.d_afetzede) selectedHousing.push("Afetzede (+8 Puan)");
+  if (state.d_agirHasarli) selectedHousing.push("Konut ağır hasarlı (+6 Puan)");
+  if (state.d_sagliksiz) selectedHousing.push("Sağlıksız konut (Rutubetli/Havasız) (+4 Puan)");
+  if (state.d_dereYatagi) selectedHousing.push("Bodrum kat / Sığınak / Dere yatağı (+4 Puan)");
+  if (state.d_kiraci) selectedHousing.push("Kiracı (+3 Puan)");
+  if (state.d_tahliyeBaskisi) selectedHousing.push("Ev sahibi tahliye / icra baskısı (+3 Puan)");
+  if (state.d_isinmaProblem) selectedHousing.push("Sobalı / Isınma ve yakacak sıkıntısı (+2 Puan)");
+  if (state.d_gecekondu) selectedHousing.push("Gecekondu / İmar sıkıntılı / Hisseli (+2 Puan)");
+  if (state.d_asansorsuzYuksek) selectedHousing.push("Asansörsüz yüksek kat (Engelli/Yaşlı) (+2 Puan)");
+  if (state.d_tuvaletBanyoYetersiz) selectedHousing.push("Islak hacim (Banyo/WC) yetersiz (+2 Puan)");
 
   const selectedFragility = [];
-  if (state.e_siddetMagduru) selectedFragility.push('Aile içi Şiddet mağduru (+6 Puan)');
-  if (state.e_kadinReis) selectedFragility.push('Kadın hane reisi (+5 Puan)');
-  if (state.e_esiCezaevinde) selectedFragility.push('Eşi cezaevinde (+5 Puan)');
-  if (state.e_afetGelirKaybi) selectedFragility.push('Afet nedeniyle gelir kaybı (+5 Puan)');
-  if (state.e_maddeBagimliligi) selectedFragility.push('Madde / alkol bağımlılığı (+5 Puan)');
-  if (state.e_sosyalGuvencesiz) selectedFragility.push('Sosyal güvencesiz / kimsesiz (+5 Puan)');
+  if (state.e_siddetMagduru) selectedFragility.push('Aile içi şiddet mağduru (+5 Puan)');
+  if (state.e_kadinReis) selectedFragility.push('Kadın hane reisi (+4 Puan)');
+  if (state.e_esiCezaevinde) selectedFragility.push('Eşi cezaevinde (+4 Puan)');
+  if (state.e_afetGelirKaybi) selectedFragility.push('Afet nedeniyle gelir kaybı (+4 Puan)');
+  if (state.e_maddeBagimliligi) selectedFragility.push('Madde / alkol bağımlılığı (+4 Puan)');
+  if (state.e_sosyalGuvencesiz) selectedFragility.push('Sosyal güvencesiz / kimsesiz (+4 Puan)');
   if (state.e_acilHastalik) selectedFragility.push('Acil hastalık durumu (+4 Puan)');
-  if (state.e_icraBorcBaskisi) selectedFragility.push('Borç / icra / haciz baskısı (+4 Puan)');
-  if (state.e_gebelikBebek) selectedFragility.push('Bakıma muhtaç bebek / riskli gebelik (+4 Puan)');
-  if (state.e_bosanmis) selectedFragility.push('Boşanmış (+3 Puan)');
-  if (state.e_dul) selectedFragility.push('Dul (Eşi vefat etmiş) (+3 Puan)');
-  if (state.e_hukumluYakin) selectedFragility.push('Denetimli serbestlik / Eski hükümlü (+3 Puan)');
+  if (state.e_icraBorcBaskisi) selectedFragility.push('Borç / icra / haciz baskısı (+3 Puan)');
+  if (state.e_gebelikBebek) selectedFragility.push('Bakıma muhtaç bebek / riskli gebelik (+3 Puan)');
+  if (state.e_bosanmis) selectedFragility.push('Boşanmış (+2 Puan)');
+  if (state.e_dul) selectedFragility.push('Dul (Eşi vefat etmiş) (+2 Puan)');
+  if (state.e_hukumluYakin) selectedFragility.push('Denetimli serbestlik / Eski hükümlü (+2 Puan)');
   // OECD 4 kademeli hane büyüklüğü skalası
   const hhSize = state.householdSize || 1;
-  if (hhSize >= 7) selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +6 Puan`);
-  else if (hhSize >= 5) selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +4 Puan`);
-  else if (hhSize >= 3) selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +2 Puan`);
-  else selectedFragility.push(`Hane Nüfusu (${hhSize} kişi): +1 Puan`);
+  if (hhSize >= 7) selectedFragility.push(`Hane Nüfusu (${hhSize} kişi — OECD Ölçeği): +4 Puan`);
+  else if (hhSize >= 5) selectedFragility.push(`Hane Nüfusu (${hhSize} kişi — OECD Ölçeği): +3 Puan`);
+  else if (hhSize >= 3) selectedFragility.push(`Hane Nüfusu (${hhSize} kişi — OECD Ölçeği): +2 Puan`);
+  else selectedFragility.push(`Hane Nüfusu (${hhSize} kişi — OECD Ölçeği): +1 Puan`);
   // Varlık Testi / Ceza Puanları
   if (state.a_aracSahibi) selectedFragility.push('⚠ Araç Tescil Kaydı Tespit — Ceza: −15 Puan');
   if (state.a_birdenFazlaTasinmaz) selectedFragility.push('⚠ Birden Fazla Taşınmaz Kaydı — Ceza: −20 Puan');
-  if (state.a_aktifSgkPrim) selectedFragility.push('⚠ Aktif SGK Prim Tespit — A Bölümü Sıfırlandı');
+  if (state.a_aktifSgkPrim) selectedFragility.push('⚠ Aktif SGK Prim Tespit — Ceza: −5 Puan');
   if (state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0) {
     selectedFragility.push(`⚠ Mükerrer Yardım (${state.a_son3AyYardimKisi} kişi) — Ceza: −${state.a_son3AyYardimKisi * 5} Puan`);
   }
@@ -256,7 +262,7 @@ export default function AssessmentDetail() {
         subtitle={`📄 İnceleme Detayı • Ref: ${assessment.id.slice(0, 8)}`}
         actions={
           <div className="flex items-center gap-2 flex-wrap justify-end">
-            {user.role === 'personnel' && assessment.status !== 'approved' && (
+            {(user.role === 'personnel' || (user.role === 'manager' && assessment.data?.b_ozelSebepPuanBekliyor)) && assessment.status !== 'approved' && (
               <Link
                 href={`/assessment/${assessment.id}/edit`}
                 className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800/50 dark:hover:bg-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-white/30 transition-colors"
@@ -450,81 +456,12 @@ export default function AssessmentDetail() {
               </div>
             </div>
 
-            {/* C. Çocuk ve Eğitim */}
+            {/* C. Sosyal Kırılganlık ve Nüfus */}
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">C. ÇOCUK VE EĞİTİM DURUMU</h3>
+                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">C. SOSYAL KIRILGANLIK VE HANE NÜFUSU</h3>
                 <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
-                  {calc.scoreC} / {isOldSystemRecord(calc) ? 10 : 15} Puan
-                </span>
-              </div>
-              <div className="p-5">
-                {selectedEducation.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedEducation.map((item, idx) => (
-                      <span key={idx} className="bg-indigo-50 text-indigo-900 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                        <CheckCircle2 size={14} className="text-indigo-600" /> {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-slate-400 font-medium italic">Eğitim gören çocuk kaydı işaretlenmedi (0 Puan).</p>
-                )}
-              </div>
-            </div>
-
-            {/* D. Barınma Durumu */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-              <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">D. BARINMA DURUMU SEÇENEKLERİ</h3>
-                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
-                  {calc.scoreD} / {isOldSystemRecord(calc) ? 10 : 15} Puan
-                </span>
-              </div>
-              <div className="p-5">
-                {selectedHousing.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedHousing.map((item, idx) => (
-                      <span key={idx} className="bg-primary-50 text-primary-900 border border-primary-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                        <CheckCircle2 size={14} className="text-primary-600" /> {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-slate-400 font-medium italic">Barınma kriteri işaretlenmedi (0 Puan).</p>
-                )}
-              </div>
-            </div>
-
-            {/* E. Beyaz Eşya ve Ev Aletleri */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-              <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">E. BEYAZ EŞYA VE EV ALETLERİ KONTROLÜ</h3>
-                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
-                  {calc.scoreE} / 10 Puan
-                </span>
-              </div>
-              <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {appliancesList.map((app, idx) => {
-                  const status = formatApplianceVal(app.val);
-                  return (
-                    <div key={idx} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{app.label}</span>
-                      <span className={`px-2.5 py-1 rounded-md text-[11px] font-extrabold border ${status.class}`}>
-                        {status.text}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* F. Sosyal Kırılganlık */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-              <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">F. SOSYAL KIRILGANLIK VE NÜFUS</h3>
-                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
-                  {calc.scoreF} / {isOldSystemRecord(calc) ? 30 : 10} Puan
+                  {calc.scoreC} / 15 Puan
                 </span>
               </div>
               <div className="p-5">
@@ -542,10 +479,76 @@ export default function AssessmentDetail() {
               </div>
             </div>
 
-            {/* G. Sosyal İnceleme Kanaati */}
+            {/* D. Çocuk ve Eğitim */}
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
               <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">G. PERSONEL İNCELEME KANAAT PUANLARI</h3>
+                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">D. EĞİTİM VE ÇOCUK DURUMU</h3>
+                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
+                  {calc.scoreD} / 15 Puan
+                </span>
+              </div>
+              <div className="p-5">
+                {selectedEducation.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedEducation.map((item, idx) => (
+                      <span key={idx} className="bg-indigo-50 text-indigo-900 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-indigo-600" /> {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-400 font-medium italic">Eğitim gören çocuk kaydı işaretlenmedi (0 Puan).</p>
+                )}
+              </div>
+            </div>
+
+            {/* E. Barınma ve Temel Eşya */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+              <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">E. BARINMA VE TEMEL EŞYA DURUMU</h3>
+                <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
+                  {calc.scoreE} / 10 Puan
+                </span>
+              </div>
+              <div className="p-5 space-y-4">
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">1. Fiziksel Barınma Şartları</p>
+                  {selectedHousing.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedHousing.map((item, idx) => (
+                        <span key={idx} className="bg-primary-50 text-primary-900 border border-primary-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                          <CheckCircle2 size={14} className="text-primary-600" /> {item}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400 font-medium italic">Standart konut / Özel barınma riski işaretlenmedi.</p>
+                  )}
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">2. Beyaz Eşya ve Ev Aletleri Kontrolü (Eşya Eksikliğinden Maks +3 Puan)</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {appliancesList.map((app, idx) => {
+                      const status = formatApplianceVal(app.val);
+                      return (
+                        <div key={idx} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                          <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{app.label}</span>
+                          <span className={`px-2.5 py-1 rounded-md text-[11px] font-extrabold border ${status.class}`}>
+                            {status.text}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* F. Görevli İnceleme Kanaati */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+              <div className="bg-slate-50 dark:bg-slate-900 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">F. GÖREVLİ İNCELEME KANAAT PUANLARI</h3>
                 <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-100">
                   {calc.scoreF ?? 0} / 10 Puan
                 </span>
@@ -734,61 +737,68 @@ export default function AssessmentDetail() {
                 <td className="border-r border-black p-1 font-bold">A. Ekonomik Durum</td>
                 <td className="border-r border-black p-1">
                   {getIncomeText(state.income)}
-                  {state.noWorker && " • Hanede çalışan yok (+10)"}
-                  {state.noRegularIncome && " • Düzenli gelir yok (+5)"}
-                  {state.noSgk && " • SGK kaydı yok (+5)"}
-                  {state.a_son3AyYardimKisi > 0 && ` • Son 3 ayda Vakıf yardımı alan: ${state.a_son3AyYardimKisi} kişi (-${state.a_son3AyYardimKisi * 5})`}
+                  {state.noWorker && " • Hanede çalışan yok (+3)"}
+                  {state.noRegularIncome && " • Düzenli gelir yok (+2)"}
+                  {state.noSgk && " • SGK kaydı yok (+2)"}
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreA} / {isOldSystemRecord(calc) ? 40 : 25}</td>
+                <td className="p-1 text-center font-bold">{calc.scoreA} / 25</td>
               </tr>
 
               <tr className="border-b border-black">
-                <td className="border-r border-black p-1 font-bold">B. Dezavantajlılık</td>
+                <td className="border-r border-black p-1 font-bold">B. Dezavantajlı Bireyler</td>
                 <td className="border-r border-black p-1">
                   {selectedDisadvantages.length > 0 ? selectedDisadvantages.join(" • ") : "Mevcut Değil"}
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreB} / {isOldSystemRecord(calc) ? 30 : 25}</td>
+                <td className="p-1 text-center font-bold">{calc.scoreB} / 25</td>
               </tr>
 
               <tr className="border-b border-black">
-                <td className="border-r border-black p-1 font-bold">C. Çocuk ve Eğitim</td>
+                <td className="border-r border-black p-1 font-bold">C. Sosyal Kırılganlık ve Nüfus</td>
+                <td className="border-r border-black p-1">
+                  {selectedFragility.length > 0 ? selectedFragility.join(" • ") : "Özel kırılganlık maddesi bulunmuyor"}
+                </td>
+                <td className="p-1 text-center font-bold">{calc.scoreC} / 15</td>
+              </tr>
+
+              <tr className="border-b border-black">
+                <td className="border-r border-black p-1 font-bold">D. Eğitim ve Çocuk</td>
                 <td className="border-r border-black p-1">
                   {selectedEducation.length > 0 ? selectedEducation.join(" • ") : "Eğitim gören çocuk kaydı yok"}
                 </td>
-                <td className="p-1 text-center font-bold">{calc.scoreC} / {isOldSystemRecord(calc) ? 10 : 15}</td>
+                <td className="p-1 text-center font-bold">{calc.scoreD} / 15</td>
               </tr>
 
               <tr className="border-b border-black">
-                <td className="border-r border-black p-1 font-bold">D. Barınma Durumu</td>
+                <td className="border-r border-black p-1 font-bold">E. Barınma ve Temel Eşya</td>
                 <td className="border-r border-black p-1">
-                  {selectedHousing.length > 0 ? selectedHousing.join(" • ") : "Standart konut"}
-                </td>
-                <td className="p-1 text-center font-bold">{calc.scoreD} / {isOldSystemRecord(calc) ? 10 : 15}</td>
-              </tr>
-
-              <tr className="border-b border-black">
-                <td className="border-r border-black p-1 font-bold">E. Ev Eşyaları</td>
-                <td className="border-r border-black p-1">
-                  {appliancesList.map(a => `${a.label}: ${a.val === 'yok' ? 'YOK' : (a.val === 'eski' ? 'ESKİ' : 'TAM')}`).join(" | ")}
+                  <strong>Barınma:</strong> {selectedHousing.length > 0 ? selectedHousing.join(" • ") : "Standart konut"} <br />
+                  <strong>Eşya:</strong> {appliancesList.map(a => `${a.label}: ${a.val === 'yok' ? 'YOK' : (a.val === 'eski' ? 'ESKİ' : 'TAM')}`).join(" | ")}
                 </td>
                 <td className="p-1 text-center font-bold">{calc.scoreE} / 10</td>
               </tr>
 
               <tr className="border-b border-black">
-                <td className="border-r border-black p-1 font-bold">F. Kırılganlık</td>
-                <td className="border-r border-black p-1">
-                  {selectedFragility.length > 0 ? selectedFragility.join(" • ") : "Özel kırılganlık maddesi bulunmuyor"}
-                </td>
-                <td className="p-1 text-center font-bold">{calc.scoreF} / {isOldSystemRecord(calc) ? 30 : 10}</td>
-              </tr>
-
-              <tr className="border-b border-black">
-                <td className="border-r border-black p-1 font-bold">G. İnceleme Kanaati</td>
+                <td className="border-r border-black p-1 font-bold">F. İnceleme Kanaati</td>
                 <td className="border-r border-black p-1">
                   Yaşam Koşulları: {state.f_yasamKosullari || 0}/5 • Aciliyet: {state.f_aciliyet || 0}/5 • Sosyal Destek: {state.f_sosyalDestek || 0}/5 • Risk: {state.f_risk || 0}/5
                 </td>
                 <td className="p-1 text-center font-bold">{calc.scoreF ?? 0} / 10</td>
               </tr>
+
+              {(calc.scorePenalty ?? 0) > 0 && (
+                <tr className="border-b border-black bg-red-50">
+                  <td className="border-r border-black p-1 font-bold text-red-700">Varlık Testi / Ceza Kesintisi</td>
+                  <td className="border-r border-black p-1 text-red-700 font-semibold">
+                    {[
+                      state.a_aracSahibi && 'Araç Tescil Kaydı (−15 Pn)',
+                      state.a_birdenFazlaTasinmaz && '2+ Taşınmaz Kaydı (−20 Pn)',
+                      state.a_aktifSgkPrim && 'Aktif SGK Prim Kaydı (−5 Pn)',
+                      state.a_son3AyYardimAldi && (state.a_son3AyYardimKisi || 0) > 0 && `Son 3 Ay Mükerrer Yardım: ${state.a_son3AyYardimKisi} Kişi (−${state.a_son3AyYardimKisi * 5} Pn)`
+                    ].filter(Boolean).join(' • ')}
+                  </td>
+                  <td className="p-1 text-center font-bold text-red-700">−{calc.scorePenalty}</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

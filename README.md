@@ -80,11 +80,13 @@ Tüm bu karmaşık hesaplamalar saniyeler içinde yapılır ve ailenin **"Nihai 
 
 Sistem, elde edilen puana göre aileyi otomatik olarak sınıflara ayırır (Müdürlük bu puan aralıklarını ve tutarları bütçeye göre değiştirebilir):
 
-- **1. Derece (Aşırı Muhtaç):** En yüksek puan alan, durumu çok kritik olan dar kesim. En yüksek yardım tutarı önerilir.
-- **2. Derece (Ağır Muhtaç):** Durumu zor olan ancak 1. derece kadar kritik olmayanlar.
-- **3. Derece (Orta Muhtaç):** Temel ihtiyaçlarını karşılamakta zorlananlar.
-- **4. Derece (Temel Destek):** Ufak bir maddi destekle rahatlayabilecek olanlar.
-- **Red (Kapsam Dışı):** Puanı çok düşük olan veya ceza puanı alıp muhtaçlık sınırının üstünde kalanlar. Nakdi yardım reddedilir (Kömür vb. ayni yardıma yönlendirilebilir).
+- **1. Derece (86–100 Puan — Kritik / Çok Yüksek İhtiyaç):** En yüksek puan alan, durumu çok kritik olan dar kesim. En yüksek yardım tutarı (Örn: 10.000 TL) önerilir.
+- **2. Derece (71–85 Puan — Yüksek İhtiyaç):** Durumu zor olan ancak 1. derece kadar kritik olmayanlar (Örn: 7.500 TL).
+- **3. Derece (56–70 Puan — Orta Düzey İhtiyaç):** Temel ihtiyaçlarını karşılamakta belirgin zorluk yaşayanlar (Örn: 5.000 TL).
+- **4. Derece (41–55 Puan — Düşük-Orta İhtiyaç):** Kırılganlığı bulunan ve nakdi desteğe ihtiyaç duyan haneler (Örn: 4.000 TL).
+- **5. Derece (26–40 Puan — Temel İhtiyaç):** Temel destekle rahatlayabilecek haneler (Örn: 3.000 TL).
+- **6. Derece (10–25 Puan — Dönemsel / Sınır İhtiyaç):** Sınırda muhtaçlık yaşayan haneler (Örn: 2.000 TL).
+- **Red / Kapsam Dışı (0–9 Puan):** Puanı 10'un altında olan veya ceza puanı/gerçeğe aykırı beyan nedeniyle muhtaçlık sınırının üstünde kalanlar. Nakdi yardım reddedilir (Kömür vb. ayni yardıma yönlendirilebilir).
 
 ---
 

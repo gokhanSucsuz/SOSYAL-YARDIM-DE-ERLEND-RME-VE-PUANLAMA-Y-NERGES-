@@ -27,80 +27,83 @@ const COLORS = {
 const CATEGORIES_MAP = [
   {
     id: 'A',
-    title: 'A. Gelir ve Barınma',
+    title: 'A. Ekonomik Durum (Maks 25 Puan)',
     color: '#3b82f6', // blue
     fields: [
-      { key: 'noWorker', label: 'Hanede Çalışan Yok' },
-      { key: 'noRegularIncome', label: 'Düzenli Gelir Yok' },
-      { key: 'noSgk', label: 'SGK Kaydı Yok' },
-      { key: 'a_kiraBorcu', label: 'Kira Borcu Var' },
-      { key: 'a_faturaBorcu', label: 'Fatura Borcu Var' },
-      { key: 'a_krediBorcu', label: 'Kredi Borcu Var' }
+      { key: 'noWorker', label: 'Hanede Çalışan Yok (+3)' },
+      { key: 'noRegularIncome', label: 'Düzenli Gelir Yok (+2)' },
+      { key: 'noSgk', label: 'SGK Kaydı Yok (+2)' }
     ]
   },
   {
     id: 'B',
-    title: 'B. Dezavantajlı Bireyler',
+    title: 'B. Dezavantajlı Bireyler (Maks 25 Puan)',
     color: '#8b5cf6', // purple
     fields: [
-      { key: 'b_agirEngelli', label: 'Ağır Engelli' },
-      { key: 'b_engelli', label: 'Engelli' },
-      { key: 'b_evdeBakim', label: 'Evde Bakım Hastası' },
-      { key: 'b_kanser', label: 'Kanser Tedavisi' },
-      { key: 'b_kronik', label: 'Kronik Hastalık' },
-      { key: 'b_yasliYalniz', label: '65 Yaş Üstü Yalnız' },
-      { key: 'b_sehitYakini', label: 'Şehit Yakını' },
-      { key: 'b_gazi', label: 'Gazi' },
-      { key: 'b_yetim', label: 'Yetim / Öksüz' },
-      { key: 'b_koruyucuAile', label: 'Koruyucu Aile' },
-      { key: 'b_yabanciUyruklu', label: 'Yabancı Uyruklu' }
+      { key: 'b_agirEngelli', label: 'Ağır Engelli (+12)' },
+      { key: 'b_engelli', label: 'Engelli (+8)' },
+      { key: 'b_dusukEngelli', label: 'Düşük Oranlı Engelli (+3)' },
+      { key: 'b_evdeBakim', label: 'Evde Bakım Hastası (+8)' },
+      { key: 'b_kanser', label: 'Kanser Tedavisi (+8)' },
+      { key: 'b_kronik', label: 'Kronik Hastalık (+5)' },
+      { key: 'b_yasliYalniz', label: '65 Yaş Üstü Yalnız (+6)' },
+      { key: 'b_sehitYakini', label: 'Şehit Yakını (+6)' },
+      { key: 'b_gazi', label: 'Gazi (+6)' },
+      { key: 'b_yetim', label: 'Yetim / Öksüz (+4)' },
+      { key: 'b_koruyucuAile', label: 'Koruyucu Aile (+4)' },
+      { key: 'b_yabanciUyruklu', label: 'Yabancı Uyruklu (+2)' },
+      { key: 'b_cokluOzelDurumluBirey', label: 'Çoklu Özel Durumlu (+4)' }
     ]
   },
   {
     id: 'C',
-    title: 'C. İhtiyaç Analizi',
-    color: '#f59e0b', // amber
+    title: 'C. Sosyal Kırılganlık ve Nüfus (Maks 15 Puan)',
+    color: '#ec4899', // pink
     fields: [
-      { key: 'c_beslenme', label: 'Beslenme' },
-      { key: 'c_giyim', label: 'Giyim' },
-      { key: 'c_fatura', label: 'Fatura Desteği' },
-      { key: 'c_yakacak', label: 'Yakacak Desteği' },
-      { key: 'c_saglikGideri', label: 'Sağlık / Medikal Gider' },
-      { key: 'c_egitimGideri', label: 'Eğitim Gideri' },
-      { key: 'c_bebekBakim', label: 'Bebek Bakım' }
+      { key: 'e_siddetMagduru', label: 'Şiddet Mağduru (+5)' },
+      { key: 'e_kadinReis', label: 'Kadın Hane Reisi (+4)' },
+      { key: 'e_esiCezaevinde', label: 'Eşi/Yakını Cezaevinde (+4)' },
+      { key: 'e_afetGelirKaybi', label: 'Kaza/Afet Gelir Kaybı (+4)' },
+      { key: 'e_maddeBagimliligi', label: 'Madde Bağımlısı Birey (+4)' },
+      { key: 'e_sosyalGuvencesiz', label: 'Sosyal Güvencesiz (+4)' },
+      { key: 'e_acilHastalik', label: 'Acil Hastalık Durumu (+4)' },
+      { key: 'e_icraBorcBaskisi', label: 'Yüksek Borç / İcra (+3)' },
+      { key: 'e_gebelikBebek', label: 'Bebek / Riskli Gebelik (+3)' },
+      { key: 'e_bosanmis', label: 'Boşanmış / Terk Edilmiş (+2)' },
+      { key: 'e_dul', label: 'Dul (Vefat) (+2)' },
+      { key: 'e_hukumluYakin', label: 'Denetimli Serbestlik (+2)' }
     ]
   },
   {
     id: 'D',
-    title: 'D. Eğitim ve Fiziksel Koşullar',
-    color: '#10b981', // emerald
+    title: 'D. Eğitim ve Çocuk (Maks 15 Puan)',
+    color: '#f59e0b', // amber
     fields: [
-      { key: 'd_evsiz', label: 'Evsiz / Barınaksız' },
-      { key: 'd_afetzede', label: 'Afetzede' },
-      { key: 'd_agirHasarli', label: 'Ağır Hasarlı Konut' },
-      { key: 'd_sagliksiz', label: 'Sağlıksız Konut' },
-      { key: 'd_dereYatagi', label: 'Riskli Bölge/Bodrum' },
-      { key: 'd_kiraci', label: 'Kiracı' },
-      { key: 'd_tahliyeBaskisi', label: 'Tahliye/İcra Baskısı' },
-      { key: 'd_isinmaProblem', label: 'Isınma Problemi' }
+      { key: 'c_0_6yas', label: '0-6 Yaş Çocuk (+2/çck)' },
+      { key: 'c_ilkokul', label: 'İlkokul Öğrencisi (+2/öğr)' },
+      { key: 'c_ortaokul', label: 'Ortaokul Öğrencisi (+2/öğr)' },
+      { key: 'c_lise', label: 'Lise Öğrencisi (+3/öğr)' },
+      { key: 'c_meslekiEgitim', label: 'Mesleki Eğitim (+3/öğr)' },
+      { key: 'c_acikLise', label: 'Açık Lise (+2/öğr)' },
+      { key: 'c_uni', label: 'Üniversite Öğrencisi (+4/öğr)' }
     ]
   },
   {
-    id: 'F',
-    title: 'F. Sosyal Kırılganlık',
-    color: '#ec4899', // pink
+    id: 'E',
+    title: 'E. Barınma ve Fiziksel Koşullar (Maks 10 Puan)',
+    color: '#10b981', // emerald
     fields: [
-      { key: 'e_siddetMagduru', label: 'Şiddet Mağduru' },
-      { key: 'e_kadinReis', label: 'Kadın Hane Reisi' },
-      { key: 'e_esiCezaevinde', label: 'Eşi/Yakını Cezaevinde' },
-      { key: 'e_afetGelirKaybi', label: 'Kaza/Afet Kaynaklı Gelir Kaybı' },
-      { key: 'e_maddeBagimliligi', label: 'Madde Bağımlısı Birey' },
-      { key: 'e_sosyalGuvencesiz', label: 'Sosyal Güvencesiz' },
-      { key: 'e_acilHastalik', label: 'Acil Hastalık Durumu' },
-      { key: 'e_icraBorcBaskisi', label: 'Yüksek Borç / İcra' },
-      { key: 'e_gebelikBebek', label: 'Bebek / Riskli Gebelik' },
-      { key: 'e_bosanmis', label: 'Boşanmış / Terk Edilmiş' },
-      { key: 'e_dul', label: 'Dul (Vefat)' }
+      { key: 'd_evsiz', label: 'Evsiz / Barınaksız (+8)' },
+      { key: 'd_afetzede', label: 'Afetzede (+8)' },
+      { key: 'd_agirHasarli', label: 'Ağır Hasarlı Konut (+6)' },
+      { key: 'd_sagliksiz', label: 'Sağlıksız Konut (+4)' },
+      { key: 'd_dereYatagi', label: 'Riskli Bölge/Bodrum (+4)' },
+      { key: 'd_kiraci', label: 'Kiracı (+3)' },
+      { key: 'd_tahliyeBaskisi', label: 'Tahliye/İcra Baskısı (+3)' },
+      { key: 'd_isinmaProblem', label: 'Isınma Problemi (+2)' },
+      { key: 'd_gecekondu', label: 'Gecekondu / Hisseli (+2)' },
+      { key: 'd_asansorsuzYuksek', label: 'Asansörsüz Yüksek Kat (+2)' },
+      { key: 'd_tuvaletBanyoYetersiz', label: 'Islak Hacim Yetersiz (+2)' }
     ]
   }
 ];

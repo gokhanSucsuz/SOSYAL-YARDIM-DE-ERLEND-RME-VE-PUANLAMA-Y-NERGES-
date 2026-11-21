@@ -16,7 +16,7 @@ import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, Applia
 import Link from 'next/link';
 import { LogoImage } from '@/components/logo-image';
 import { AppHeader } from '@/components/app-header';
-import { calculateNewSystemScore } from '@/lib/scoring';
+import { calculateNewSystemScore, isValidTcKimlik } from '@/lib/scoring';
 
 export default function EditAssessmentWizard() {
   const { showAlert, showConfirm } = useDialog();
@@ -26,6 +26,7 @@ export default function EditAssessmentWizard() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
+  const [originalAssessment, setOriginalAssessment] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showScores, setShowScores] = useState(true); // Puan gizleme varsayılan olarak kapalı (puan ve yardım açık)
 
@@ -143,12 +144,13 @@ export default function EditAssessmentWizard() {
             router.push('/');
             return;
           }
-          if (currentUser.role === 'manager') {
-            await showAlert('Müdürler incelemeleri düzenleyemez, sadece onaylayabilir.');
+          if (currentUser.role === 'manager' && !data.data?.b_ozelSebepPuanBekliyor) {
+            await showAlert('Müdürler yalnızca Özel Sebep Puanı bekleyen incelemeleri düzenleyebilir.');
             router.push('/');
             return;
           }
           setAssessmentId(data.id);
+          setOriginalAssessment(data);
           setState(s => ({
             ...s,
             ...data.data,
@@ -181,15 +183,16 @@ export default function EditAssessmentWizard() {
     "1. Kimlik",
     "2. Gelir (A)",
     "3. Dezavantaj (B)",
-    "4. Çocuk (C)",
-    "5. Barınma (D)",
-    "6. Eşya (E)",
-    "7. Sosyal (F)",
-    "8. Kanaat (G)",
+    "4. Sosyal (C)",
+    "5. Eğitim (D)",
+    "6. Barınma (E1)",
+    "7. Eşya (E2)",
+    "8. Kanaat (F)",
     "9. Kontrol",
     "10. Kaydet"
   ];
 
+  const isTcAlgorithmValid = isValidTcKimlik(state.applicantTc);
   const isIdentityValid = state.applicantName.trim() !== "" && state.applicantTc.length === 11;
   const canProceed = step === 0 ? isIdentityValid : (step === 8 ? state.systemChecksDone : true);
 
@@ -199,9 +202,12 @@ export default function EditAssessmentWizard() {
     try {
       const assessmentData = {
         id: assessmentId,
-        date: new Date().toISOString(),
-        personnelId: user.id,
-        personnelName: user.name,
+        meetingId: originalAssessment?.meetingId,
+        date: originalAssessment?.date || new Date().toISOString(),
+        personnelId: originalAssessment?.personnelId || user.id,
+        personnelName: originalAssessment?.personnelName || user.name,
+        customOrder: originalAssessment?.customOrder,
+        managerGroup: originalAssessment?.managerGroup,
         applicantName: state.applicantName,
         applicantTc: state.applicantTc,
         applicantAddress: state.applicantAddress,
@@ -217,6 +223,7 @@ export default function EditAssessmentWizard() {
           scoreD: calc.scoreD,
           scoreE: calc.scoreE,
           scoreF: calc.scoreF,
+          scorePenalty: calc.scorePenalty,
           totalScore: calc.totalScore,
           assistance: calc.assistance,
           priorities: calc.priorities,
@@ -224,7 +231,7 @@ export default function EditAssessmentWizard() {
         }
       };
       await saveAssessment(assessmentData);
-      router.push('/');
+      router.push(`/assessment/${assessmentId}`);
     } catch (err) {
       console.error(err);
       await showAlert("Kayıt sırasında hata oluştu! " + (err instanceof Error ? err.message : ''), 'warning');
@@ -404,6 +411,16 @@ export default function EditAssessmentWizard() {
                           <AlertTriangle size={12} className="mr-1 shrink-0"/> 11 hane olmalıdır
                         </p>
                       )}
+                      {state.applicantTc.length === 11 && !isTcAlgorithmValid && (
+                        <p className="text-amber-500 text-[10px] mt-1 flex items-center font-bold">
+                          <AlertTriangle size={12} className="mr-1 shrink-0"/> T.C. algoritmik doğrulama uyarısı
+                        </p>
+                      )}
+                      {state.applicantTc.length === 11 && isTcAlgorithmValid && (
+                        <p className="text-emerald-600 dark:text-emerald-400 text-[10px] mt-1 flex items-center font-bold">
+                          <CheckCircle2 size={12} className="mr-1 shrink-0"/> Geçerli T.C. Kimlik No
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -450,6 +467,33 @@ export default function EditAssessmentWizard() {
                       </div>
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                    <div>
+                      <label className="block text-[11px] font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <Smartphone size={13} className="text-primary-500" /> İletişim Telefonu
+                      </label>
+                      <input 
+                        type="tel" 
+                        value={state.phoneNumber}
+                        onChange={e => set('phoneNumber', e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl py-2 px-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary-500 outline-none transition-all"
+                        placeholder="Örn: 05XX XXX XX XX"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <MapPin size={13} className="text-primary-500" /> İkamet Adresi / Mahalle / Köy
+                      </label>
+                      <input 
+                        type="text" 
+                        value={state.applicantAddress}
+                        onChange={e => set('applicantAddress', e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl py-2 px-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary-500 outline-none transition-all"
+                        placeholder="Örn: Sabuni Mah. Saraçlar Cad. No:12 Merkez / Edirne"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -465,7 +509,7 @@ export default function EditAssessmentWizard() {
                 </div>
                 
                 <div>
-                  <SectionCard title="Gelir Seviyesi ve Çalışma Durumu" maxScore={25} currentScore={calc.scoreA} hideScore={true}>
+                  <SectionCard title="Gelir Seviyesi ve Çalışma Durumu (Maks 25 Puan)" maxScore={25} currentScore={calc.scoreA} hideScore={!showScores}>
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
                       <div className="lg:col-span-7 space-y-2">
                         <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Gelir Aralığı (Birini Seçiniz)</h3>
@@ -500,7 +544,7 @@ export default function EditAssessmentWizard() {
                   <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">Hanedeki sağlık ve özel sosyal kırılganlık durumları</span>
                 </div>
 
-                <SectionCard title="Hastalık ve Engellilik Durumu" maxScore={25} currentScore={calc.scoreB} hideScore={true}>
+                <SectionCard title="Hastalık ve Engellilik Durumu (Maks 25 Puan)" maxScore={25} currentScore={calc.scoreB} hideScore={!showScores}>
                   <div className="mb-2.5">
                     <CheckboxItem label="Aynı hanede birden fazla özel durumu (dezavantajlı) olan farklı KİŞİ var" checked={state.b_cokluOzelDurumluBirey} onChange={(v:any) => set('b_cokluOzelDurumluBirey', v)} points={4} />
                   </div>
@@ -572,153 +616,22 @@ export default function EditAssessmentWizard() {
               <div className="flex-1 flex flex-col justify-start space-y-2.5">
                 <div className="flex items-center justify-between bg-primary-500/10 dark:bg-primary-950/40 border border-primary-500/20 px-3.5 py-1.5 rounded-xl shrink-0">
                   <div className="flex items-center gap-2">
-                    <Users className="text-primary-500 shrink-0" size={16} />
-                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">C. Çocuk ve Eğitim</h2>
-                  </div>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">Kademeli ağırlıklı puanlama (Şartlı Eğitim Yardımı)</span>
-                </div>
-
-                <SectionCard title="Eğitim Durumu ve Çocuk Sayısı" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
-                    <CounterItem label="0-6 yaş çocuk (Bakım Yükü)" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={2} />
-                    <CounterItem label="İlkokul öğrencisi" value={state.c_ilkokul} onChange={(v:any) => set('c_ilkokul', v)} pointsPerItem={2} />
-                    <CounterItem label="Ortaokul öğrencisi" value={state.c_ortaokul} onChange={(v:any) => set('c_ortaokul', v)} pointsPerItem={2} />
-                    <CounterItem label="Lise öğrencisi" value={state.c_lise} onChange={(v:any) => set('c_lise', v)} pointsPerItem={3} />
-                    <CounterItem label="Mesleki Eğitim Merkezi" value={state.c_meslekiEgitim || 0} onChange={(v:any) => set('c_meslekiEgitim', v)} pointsPerItem={3} />
-                    <CounterItem label="Açık Lise öğrencisi" value={state.c_acikLise || 0} onChange={(v:any) => set('c_acikLise', v)} pointsPerItem={3} />
-                    <CounterItem label="Üniversite öğrencisi" value={state.c_uni} onChange={(v:any) => set('c_uni', v)} pointsPerItem={4} />
-                  </div>
-                </SectionCard>
-              </div>
-            )}
-
-            {step === 4 && (
-              <div className="flex-1 flex flex-col justify-start space-y-2.5">
-                <div className="flex items-center justify-between bg-primary-500/10 dark:bg-primary-950/40 border border-primary-500/20 px-3.5 py-1.5 rounded-xl shrink-0">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="text-primary-500 shrink-0" size={16} />
-                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">D. Barınma Durumu</h2>
-                  </div>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">Fiziki yaşam alanları ve konut şartları</span>
-                </div>
-
-                <SectionCard title="Barınma Şartları" maxScore={10} currentScore={calc.scoreD} hideScore={true}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-                    <CheckboxItem label="Evsiz / Barınaksız / Geçici Sığınma" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={10} />
-                    <CheckboxItem label="Afetzede (Yangın / Deprem / Su)" checked={state.d_afetzede} onChange={(v:any) => set('d_afetzede', v)} points={10} />
-                    <CheckboxItem label="Konut ağır hasarlı / Yıkılma riski var" checked={state.d_agirHasarli} onChange={(v:any) => set('d_agirHasarli', v)} points={8} />
-                    <CheckboxItem label="Sağlıksız konut (Rutubetli / Havasız)" checked={state.d_sagliksiz} onChange={(v:any) => set('d_sagliksiz', v)} points={6} />
-                    <CheckboxItem label="Bodrum kat / Sığınak / Dere yatağı" checked={state.d_dereYatagi} onChange={(v:any) => set('d_dereYatagi', v)} points={6} />
-                    <CheckboxItem label="Kiracı (Kira ödemekte zorlanan)" checked={state.d_kiraci} onChange={(v:any) => set('d_kiraci', v)} points={5} />
-                    <CheckboxItem label="Ev sahibinin tahliye / icra baskısı altında" checked={state.d_tahliyeBaskisi} onChange={(v:any) => set('d_tahliyeBaskisi', v)} points={5} />
-                    <CheckboxItem label="Sobalı / Isınma ve yakacak sıkıntısı" checked={state.d_isinmaProblem} onChange={(v:any) => set('d_isinmaProblem', v)} points={4} />
-                    <CheckboxItem label="Gecekondu / İmar sıkıntılı / Hisseli tapu" checked={state.d_gecekondu} onChange={(v:any) => set('d_gecekondu', v)} points={4} />
-                    <CheckboxItem label="Asansörsüz yüksek kat (Engelli/Yaşlı)" checked={state.d_asansorsuzYuksek} onChange={(v:any) => set('d_asansorsuzYuksek', v)} points={4} />
-                    <CheckboxItem label="Islak hacim (Banyo/WC) yetersiz" checked={state.d_tuvaletBanyoYetersiz} onChange={(v:any) => set('d_tuvaletBanyoYetersiz', v)} points={4} />
-                  </div>
-                </SectionCard>
-              </div>
-            )}
-
-            {step === 5 && (
-              <div className="flex-1 flex flex-col justify-start space-y-2.5">
-                <div className="flex items-center justify-between bg-primary-500/10 dark:bg-primary-950/40 border border-primary-500/20 px-3.5 py-1.5 rounded-xl shrink-0">
-                  <div className="flex items-center gap-2">
-                    <Box className="text-primary-500 shrink-0" size={16} />
-                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">E. Beyaz Eşya ve Ev Aletleri</h2>
-                  </div>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">Temel eşyaların varlık ve yıpranma durumu</span>
-                </div>
-
-                <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü" maxScore={10} currentScore={calc.scoreE} hideScore={true}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-2.5">
-                    <ApplianceStatusItem 
-                      label="Buzdolabı" 
-                      icon={Box} 
-                      value={state.appliance_buzdolabi} 
-                      onChange={(v: any) => set('appliance_buzdolabi', v)} 
-                      pointsYok={3} 
-                      pointsEski={1.5} 
-                    />
-                    <ApplianceStatusItem 
-                      label="Çamaşır Makinesi" 
-                      icon={Shirt} 
-                      value={state.appliance_camasir} 
-                      onChange={(v: any) => set('appliance_camasir', v)} 
-                      pointsYok={3} 
-                      pointsEski={1.5} 
-                    />
-                    <ApplianceStatusItem 
-                      label="Fırın / Ocak" 
-                      icon={Flame} 
-                      value={state.appliance_firin} 
-                      onChange={(v: any) => set('appliance_firin', v)} 
-                      pointsYok={2} 
-                      pointsEski={1} 
-                    />
-                    <ApplianceStatusItem 
-                      label="Bulaşık Makinesi" 
-                      icon={Sparkles} 
-                      value={state.appliance_bulasik} 
-                      onChange={(v: any) => set('appliance_bulasik', v)} pointsYok={0} pointsEski={0} 
-                    />
-                    <ApplianceStatusItem 
-                      label="Televizyon (TV)" 
-                      icon={Tv} 
-                      value={state.appliance_tv} 
-                      onChange={(v: any) => set('appliance_tv', v)} 
-                      pointsYok={1} 
-                      pointsEski={0.5} 
-                    />
-                    <ApplianceStatusItem 
-                      label="Akıllı / Sabit Telefon" 
-                      icon={Smartphone} 
-                      value={state.appliance_telefon} 
-                      onChange={(v: any) => set('appliance_telefon', v)} 
-                      pointsYok={1} 
-                      pointsEski={0.5} 
-                    />
-                    <ApplianceStatusItem 
-                      label="Klima / Isıtıcı" 
-                      icon={Wind} 
-                      value={state.appliance_klima} 
-                      onChange={(v: any) => set('appliance_klima', v)} 
-                      pointsYok={1} 
-                      pointsEski={0.5} 
-                    />
-                    <ApplianceStatusItem 
-                      label="Diğer Temel Ev Aletleri (Süpürge vb.)" 
-                      icon={Plug} 
-                      value={state.appliance_diger} 
-                      onChange={(v: any) => set('appliance_diger', v)} 
-                      pointsYok={1} 
-                      pointsEski={0.5} 
-                    />
-                  </div>
-                </SectionCard>
-              </div>
-            )}
-
-            {step === 6 && (
-              <div className="flex-1 flex flex-col justify-start space-y-2.5">
-                <div className="flex items-center justify-between bg-primary-500/10 dark:bg-primary-950/40 border border-primary-500/20 px-3.5 py-1.5 rounded-xl shrink-0">
-                  <div className="flex items-center gap-2">
                     <TrendingUp className="text-primary-500 shrink-0" size={16} />
-                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">F. Sosyal Kırılganlık</h2>
+                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">C. Sosyal Kırılganlık ve Hane Nüfusu</h2>
                   </div>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">Özel sosyal kırılganlık durumları</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">OECD Modifiye Eşdeğerlik Ölçeği ve özel kırılganlık durumları (Maks 15 Puan)</span>
                 </div>
 
-                <SectionCard title="Sosyal Kırılganlık ve Nüfus" maxScore={15} currentScore={calc.scoreC} hideScore={true}>
+                <SectionCard title="Sosyal Kırılganlık ve Nüfus (Maks 15 Puan)" maxScore={15} currentScore={calc.scoreC} hideScore={!showScores}>
                   <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
                     <span className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-primary-600"></span>
-                      Hane Nüfusu Etkisi — {state.householdSize || 1} Kişi
+                      Hane Nüfusu Etkisi — {state.householdSize || 1} Kişi (OECD Ölçeği)
                     </span>
                     <span className="bg-primary-100 dark:bg-primary-900 text-primary-900 dark:text-primary-100 font-extrabold text-[11px] px-2.5 py-0.5 rounded-md">
-                      {(state.householdSize || 1) >= 7 ? `Çok Kalabalık (+4)` :
-                       (state.householdSize || 1) >= 5 ? `Kalabalık (+3)` :
-                       (state.householdSize || 1) >= 3 ? `Orta Büyüklük (+2)` : `Küçük Hane (+1)`}
+                      {(state.householdSize || 1) >= 7 ? `Çok Kalabalık (+4 P.)` :
+                       (state.householdSize || 1) >= 5 ? `Kalabalık (+3 P.)` :
+                       (state.householdSize || 1) >= 3 ? `Orta Büyüklük (+2 P.)` : `Küçük Hane (+1 P.)`}
                     </span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
@@ -739,17 +652,148 @@ export default function EditAssessmentWizard() {
               </div>
             )}
 
+            {step === 4 && (
+              <div className="flex-1 flex flex-col justify-start space-y-2.5">
+                <div className="flex items-center justify-between bg-primary-500/10 dark:bg-primary-950/40 border border-primary-500/20 px-3.5 py-1.5 rounded-xl shrink-0">
+                  <div className="flex items-center gap-2">
+                    <Users className="text-primary-500 shrink-0" size={16} />
+                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">D. Eğitim ve Çocuk</h2>
+                  </div>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">Kademeli ağırlıklı puanlama (Şartlı Eğitim Yardımı — Maks 15 Puan)</span>
+                </div>
+
+                <SectionCard title="Eğitim Durumu ve Çocuk Sayısı (Maks 15 Puan)" maxScore={15} currentScore={calc.scoreD} hideScore={!showScores}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
+                    <CounterItem label="0-6 yaş çocuk (Bakım Yükü)" value={state.c_0_6yas} onChange={(v:any) => set('c_0_6yas', v)} pointsPerItem={2} />
+                    <CounterItem label="İlkokul öğrencisi" value={state.c_ilkokul} onChange={(v:any) => set('c_ilkokul', v)} pointsPerItem={2} />
+                    <CounterItem label="Ortaokul öğrencisi" value={state.c_ortaokul} onChange={(v:any) => set('c_ortaokul', v)} pointsPerItem={2} />
+                    <CounterItem label="Lise öğrencisi" value={state.c_lise} onChange={(v:any) => set('c_lise', v)} pointsPerItem={3} />
+                    <CounterItem label="Mesleki Eğitim Merkezi" value={state.c_meslekiEgitim || 0} onChange={(v:any) => set('c_meslekiEgitim', v)} pointsPerItem={3} />
+                    <CounterItem label="Açık Lise öğrencisi" value={state.c_acikLise || 0} onChange={(v:any) => set('c_acikLise', v)} pointsPerItem={2} />
+                    <CounterItem label="Üniversite öğrencisi" value={state.c_uni} onChange={(v:any) => set('c_uni', v)} pointsPerItem={4} />
+                  </div>
+                </SectionCard>
+              </div>
+            )}
+
+            {step === 5 && (
+              <div className="flex-1 flex flex-col justify-start space-y-2.5">
+                <div className="flex items-center justify-between bg-primary-500/10 dark:bg-primary-950/40 border border-primary-500/20 px-3.5 py-1.5 rounded-xl shrink-0">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="text-primary-500 shrink-0" size={16} />
+                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">E1. Barınma Durumu (Fiziksel Şartlar)</h2>
+                  </div>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">UNDP Barınma Endeksi — Barınma ve Eşya Toplamı Maks 10 Puan</span>
+                </div>
+
+                <SectionCard title="Barınma Şartları (Modül E — Maks 10 Puan)" maxScore={10} currentScore={calc.scoreE} hideScore={!showScores}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                    <CheckboxItem label="Evsiz / Barınaksız / Geçici Sığınma" checked={state.d_evsiz} onChange={(v:any) => set('d_evsiz', v)} points={8} />
+                    <CheckboxItem label="Afetzede (Yangın / Deprem / Su)" checked={state.d_afetzede} onChange={(v:any) => set('d_afetzede', v)} points={8} />
+                    <CheckboxItem label="Konut ağır hasarlı / Yıkılma riski var" checked={state.d_agirHasarli} onChange={(v:any) => set('d_agirHasarli', v)} points={6} />
+                    <CheckboxItem label="Sağlıksız konut (Rutubetli / Havasız)" checked={state.d_sagliksiz} onChange={(v:any) => set('d_sagliksiz', v)} points={4} />
+                    <CheckboxItem label="Bodrum kat / Sığınak / Dere yatağı" checked={state.d_dereYatagi} onChange={(v:any) => set('d_dereYatagi', v)} points={4} />
+                    <CheckboxItem label="Kiracı (Kira ödemekte zorlanan)" checked={state.d_kiraci} onChange={(v:any) => set('d_kiraci', v)} points={3} />
+                    <CheckboxItem label="Ev sahibinin tahliye / icra baskısı altında" checked={state.d_tahliyeBaskisi} onChange={(v:any) => set('d_tahliyeBaskisi', v)} points={3} />
+                    <CheckboxItem label="Sobalı / Isınma ve yakacak sıkıntısı" checked={state.d_isinmaProblem} onChange={(v:any) => set('d_isinmaProblem', v)} points={2} />
+                    <CheckboxItem label="Gecekondu / İmar sıkıntılı / Hisseli tapu" checked={state.d_gecekondu} onChange={(v:any) => set('d_gecekondu', v)} points={2} />
+                    <CheckboxItem label="Asansörsüz yüksek kat (Engelli/Yaşlı)" checked={state.d_asansorsuzYuksek} onChange={(v:any) => set('d_asansorsuzYuksek', v)} points={2} />
+                    <CheckboxItem label="Islak hacim (Banyo/WC) yetersiz" checked={state.d_tuvaletBanyoYetersiz} onChange={(v:any) => set('d_tuvaletBanyoYetersiz', v)} points={2} />
+                  </div>
+                </SectionCard>
+              </div>
+            )}
+
+            {step === 6 && (
+              <div className="flex-1 flex flex-col justify-start space-y-2.5">
+                <div className="flex items-center justify-between bg-primary-500/10 dark:bg-primary-950/40 border border-primary-500/20 px-3.5 py-1.5 rounded-xl shrink-0">
+                  <div className="flex items-center gap-2">
+                    <Box className="text-primary-500 shrink-0" size={16} />
+                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">E2. Temel Ev Eşyaları</h2>
+                  </div>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">Temel eşyaların varlık ve yıpranma durumu (Eşyadan Maks +3 Puan, Modül E Toplam Maks 10 Puan)</span>
+                </div>
+
+                <SectionCard title="Beyaz Eşya ve Cihaz Kontrolü (Modül E — Maks 10 Puan)" maxScore={10} currentScore={calc.scoreE} hideScore={!showScores}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-2.5">
+                    <ApplianceStatusItem 
+                      label="Buzdolabı" 
+                      icon={Box} 
+                      value={state.appliance_buzdolabi} 
+                      onChange={(v: any) => set('appliance_buzdolabi', v)} 
+                      pointsYok={1.5} 
+                      pointsEski={0.75} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Çamaşır Makinesi" 
+                      icon={Shirt} 
+                      value={state.appliance_camasir} 
+                      onChange={(v: any) => set('appliance_camasir', v)} 
+                      pointsYok={1.5} 
+                      pointsEski={0.75} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Fırın / Ocak" 
+                      icon={Flame} 
+                      value={state.appliance_firin} 
+                      onChange={(v: any) => set('appliance_firin', v)} 
+                      pointsYok={1} 
+                      pointsEski={0.5} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Bulaşık Makinesi (Konfor — Puan Dışı)" 
+                      icon={Sparkles} 
+                      value={state.appliance_bulasik} 
+                      onChange={(v: any) => set('appliance_bulasik', v)} pointsYok={0} pointsEski={0} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Televizyon (TV)" 
+                      icon={Tv} 
+                      value={state.appliance_tv} 
+                      onChange={(v: any) => set('appliance_tv', v)} 
+                      pointsYok={0.5} 
+                      pointsEski={0.25} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Akıllı / Sabit Telefon" 
+                      icon={Smartphone} 
+                      value={state.appliance_telefon} 
+                      onChange={(v: any) => set('appliance_telefon', v)} 
+                      pointsYok={0.5} 
+                      pointsEski={0.25} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Klima / Isıtıcı" 
+                      icon={Wind} 
+                      value={state.appliance_klima} 
+                      onChange={(v: any) => set('appliance_klima', v)} 
+                      pointsYok={0.5} 
+                      pointsEski={0.25} 
+                    />
+                    <ApplianceStatusItem 
+                      label="Diğer Temel Ev Aletleri (Süpürge vb.)" 
+                      icon={Plug} 
+                      value={state.appliance_diger} 
+                      onChange={(v: any) => set('appliance_diger', v)} 
+                      pointsYok={0.5} 
+                      pointsEski={0.25} 
+                    />
+                  </div>
+                </SectionCard>
+              </div>
+            )}
+
             {step === 7 && (
               <div className="flex-1 flex flex-col justify-start space-y-2.5">
                 <div className="flex items-center justify-between bg-primary-500/10 dark:bg-primary-950/40 border border-primary-500/20 px-3.5 py-1.5 rounded-xl shrink-0">
                   <div className="flex items-center gap-2">
                     <Award className="text-primary-500 shrink-0" size={16} />
-                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">G. Sosyal İnceleme Kanaati</h2>
+                    <h2 className="text-xs sm:text-sm font-black text-slate-800 dark:text-white uppercase tracking-wide">F. Görevli İnceleme Kanaati</h2>
                   </div>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">0 (İyi) ile 5 (Kritik/Acil) arası seviye seçiniz</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">0 (İyi) ile 5 (Kritik/Acil) arası seviye seçiniz (Maks 10 Puan)</span>
                 </div>
 
-                <SectionCard title="Kanaat Notları" maxScore={10} currentScore={calc.scoreF} hideScore={true}>
+                <SectionCard title="Kanaat Notları (Maks 10 Puan)" maxScore={10} currentScore={calc.scoreF} hideScore={!showScores}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                     <ScoreButtons 
                       label="1. Yaşam Koşulları (Fiziki Şartlar, Hijyen, Eşya)" 
@@ -812,8 +856,8 @@ export default function EditAssessmentWizard() {
                         <AlertTriangle size={14} className="text-orange-600" />
                         Sorgu Sonuçları — Ceza Puanları
                       </h4>
-                      <CheckboxItem label="Araç tescil kaydı tespit edildi (−15 P.)" checked={state.a_aracSahibi} onChange={(v:any) => set('a_aracSahibi', v)} isAlert={true} points={null} />
-                      <CheckboxItem label="Birden fazla taşınmaz (gayrimenkul) kaydı var (−20 P.)" checked={state.a_birdenFazlaTasinmaz} onChange={(v:any) => set('a_birdenFazlaTasinmaz', v)} isAlert={true} points={null} />
+                      <CheckboxItem label="Araç tescil kaydı tespit edildi" checked={state.a_aracSahibi} onChange={(v:any) => set('a_aracSahibi', v)} isAlert={true} points={-15} />
+                      <CheckboxItem label="Birden fazla taşınmaz (gayrimenkul) kaydı var" checked={state.a_birdenFazlaTasinmaz} onChange={(v:any) => set('a_birdenFazlaTasinmaz', v)} isAlert={true} points={-20} />
                       <CheckboxItem label="Aktif SGK prim ödemesi tespit edildi" checked={state.a_aktifSgkPrim} onChange={(v:any) => set('a_aktifSgkPrim', v)} isAlert={true} points={-5} />
                       <div className="space-y-1.5 pt-1.5 border-t border-orange-200 dark:border-orange-800">
                         <CheckboxItem label="Son 3 ayda bu vakıftan yardım aldı" checked={state.a_son3AyYardimAldi} onChange={(v:any) => { set('a_son3AyYardimAldi', v); if (!v) set('a_son3AyYardimKisi', 0); }} isAlert={true} points={null} />
@@ -957,27 +1001,27 @@ export default function EditAssessmentWizard() {
                     </div>
                     <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-xs">
                       <div className="bg-white dark:bg-slate-800 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
-                        <span className="text-slate-400 block text-[9px]">A: Gelir</span>
+                        <span className="text-slate-400 block text-[9px]">A: Ekonomi (25)</span>
                         <strong className="text-slate-800 dark:text-slate-200 text-xs font-black">+{calc.scoreA}</strong>
                       </div>
                       <div className="bg-white dark:bg-slate-800 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
-                        <span className="text-slate-400 block text-[9px]">B: Sağlık</span>
+                        <span className="text-slate-400 block text-[9px]">B: Dezavantaj (25)</span>
                         <strong className="text-slate-800 dark:text-slate-200 text-xs font-black">+{calc.scoreB}</strong>
                       </div>
                       <div className="bg-white dark:bg-slate-800 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
-                        <span className="text-slate-400 block text-[9px]">C: Eğitim</span>
+                        <span className="text-slate-400 block text-[9px]">C: Sosyal (15)</span>
                         <strong className="text-slate-800 dark:text-slate-200 text-xs font-black">+{calc.scoreC}</strong>
                       </div>
                       <div className="bg-white dark:bg-slate-800 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
-                        <span className="text-slate-400 block text-[9px]">D: Barınma</span>
+                        <span className="text-slate-400 block text-[9px]">D: Eğitim (15)</span>
                         <strong className="text-slate-800 dark:text-slate-200 text-xs font-black">+{calc.scoreD}</strong>
                       </div>
                       <div className="bg-white dark:bg-slate-800 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
-                        <span className="text-slate-400 block text-[9px]">E: Eşya</span>
+                        <span className="text-slate-400 block text-[9px]">E: Barınma/Eşya (10)</span>
                         <strong className="text-slate-800 dark:text-slate-200 text-xs font-black">+{calc.scoreE}</strong>
                       </div>
                       <div className="bg-white dark:bg-slate-800 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
-                        <span className="text-slate-400 block text-[9px]">F: Kanaat</span>
+                        <span className="text-slate-400 block text-[9px]">F: Kanaat (10)</span>
                         <strong className="text-slate-800 dark:text-slate-200 text-xs font-black">+{calc.scoreF}</strong>
                       </div>
                     </div>

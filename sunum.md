@@ -127,11 +127,13 @@ Sistem sadece puan vermez, kaynakları korumak için adaletsizliği cezalandır�
 
 | Derece | Durum | Yardım Tutarı (Örnek) |
 |--------|-------|-----------------------|
-| **1. Derece** | Aşırı Muhtaç (90-100 Puan) | **10.000 TL** |
-| **2. Derece** | Ağır Muhtaç (70-89 Puan) | **7.500 TL** |
-| **3. Derece** | Orta Muhtaç (50-69 Puan) | **5.000 TL** |
-| **4. Derece** | Temel Destek (30-49 Puan) | **2.500 TL** |
-| **RED** | Kapsam Dışı (0-29 Puan) | **0 TL** |
+| **1. Derece** | Kritik / Çok Yüksek İhtiyaç (86-100 Puan) | **10.000 TL** |
+| **2. Derece** | Yüksek İhtiyaç (71-85 Puan) | **7.500 TL** |
+| **3. Derece** | Orta Düzey İhtiyaç (56-70 Puan) | **5.000 TL** |
+| **4. Derece** | Düşük-Orta İhtiyaç (41-55 Puan) | **4.000 TL** |
+| **5. Derece** | Temel İhtiyaç (26-40 Puan) | **3.000 TL** |
+| **6. Derece** | Dönemsel / Sınır İhtiyaç (10-25 Puan) | **2.000 TL** |
+| **RED** | Kapsam Dışı (0-9 Puan) | **0 TL** |
 
 *(Not: Puan aralıkları ve tutarlar Vakıf yönetimi tarafından bütçeye göre esnekçe değiştirilebilir.)*
 

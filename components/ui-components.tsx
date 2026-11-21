@@ -42,9 +42,9 @@ export const CheckboxItem = ({ label, checked, onChange, isAlert = false, points
       <span className={`text-xs sm:text-sm font-semibold leading-tight ${checked && isAlert ? 'text-rose-900 dark:text-rose-100 font-bold' : checked ? 'text-primary-950 dark:text-primary-100 font-bold' : 'text-slate-700 dark:text-slate-300'}`}>
         {label}
       </span>
-      {points && (
+      {points !== null && points !== undefined && (
         <span className={`text-[10px] sm:text-xs font-black shrink-0 px-1.5 py-0.5 rounded-md ${checked ? (isAlert ? 'bg-rose-200 dark:bg-rose-900/50 text-rose-900 dark:text-rose-100' : 'bg-primary-200 dark:bg-primary-900/50 text-primary-900 dark:text-primary-100') : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400'}`}>
-          +{points} P.
+          {Number(points) > 0 ? `+${points}` : points} P.
         </span>
       )}
     </div>
