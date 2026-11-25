@@ -2407,35 +2407,63 @@ export default function Dashboard() {
                   const isSuperAdmin = user?.role === 'superadmin' || user?.role === 'super_admin';
                   const canDelete = !isApproved && (isSuperAdmin || (itemMeeting && isMeetingActiveStrict(itemMeeting)));
                   return (
-                    <tr key={item.id} className={`${isSelected ? 'bg-primary-50/80' : 'hover:bg-slate-50/80'}`}>
-                      <td className="px-3 py-3 text-center"><input type="checkbox" checked={isSelected} onChange={() => toggleSelectId(item.id)} className="rounded border-slate-300 dark:border-slate-600 text-primary-600" /></td>
-                      <td className="px-2 py-2 text-center"><input type="number" value={item.customOrder ?? ''} onChange={(e) => handleUpdateCustomOrder(item, e.target.value ? parseInt(e.target.value) : undefined)} className="w-12 text-center border border-slate-300 dark:border-slate-600 rounded" /></td>
-                      <td className="px-3 py-3">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
-                      <td className="px-3 py-3">{item.applicantTc}</td>
-                      <td className="px-3 py-3 font-extrabold">{item.applicantName}</td>
-                      <td className="px-3 py-3 text-center">{item.householdSize}</td>
-                      {isManager && <td className="px-3 py-3">{item.personnelName}</td>}
-                      <td className={`px-3 py-3 text-center font-bold ${isRejectedRecord(item.result) ? 'text-red-600' : ''}`}>
-  {user?.role === 'personnel' && !showScores ? '***' : (
-    <div className="flex flex-col items-center gap-1">
-      {isOldSystemRecord(item.result) && (
-        <span className="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded border border-amber-200 leading-none">
-          Eski: {item.result.totalScore}
-        </span>
-      )}
-      <span>{isOldSystemRecord(item.result) ? calculateNewSystemScore(item.data).totalScore : item.result.totalScore}</span>
-    </div>
-  )}
-</td>
-                      <td className="px-3 py-3 font-black uppercase text-[10px]">{isApproved ? 'ONAYLI' : 'BEKLİYOR'}</td>
-                      <td className={`px-3 py-3 font-bold ${isRejectedRecord(item.result) ? 'text-red-600' : ''}`}>{user?.role === "personnel" && !showScores ? "***" : isRejectedRecord(item.result) ? "KAPSAM DIŞI (RED)" : item.result.assistance?.text}</td>
-                      <td className="px-3 py-3 text-right">
-                        <div className="inline-flex gap-1">
-                          {isManager && !isApproved && <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 text-white p-1 rounded" title="Onayla">✓</button>}
-                          <button onClick={() => handlePrintSingleDetailed(item)} className="bg-primary-600 text-white p-1 rounded" title="Rapor (A4)">📄</button>
-                          <Link href={`/assessment/${item.id}`} className="bg-slate-900 text-white p-1 rounded" title="Detay">👁️</Link>
-                          <Link href={`/assessment/${item.id}/edit`} className="bg-amber-600 hover:bg-amber-700 text-white p-1 rounded transition-colors inline-flex items-center justify-center" title="Düzenle">✏️</Link>
-                          {canDelete && <button onClick={() => handleDeleteSingle(item)} className="bg-red-600 text-white p-1 rounded" title="Sil">🗑️</button>}
+                    <tr key={item.id} className={`transition-colors ${isSelected ? 'bg-primary-50/80 dark:bg-primary-950/30' : 'hover:bg-slate-50/80 dark:hover:bg-slate-800/60'}`}>
+                      <td className="px-2.5 py-2.5 text-center"><input type="checkbox" checked={isSelected} onChange={() => toggleSelectId(item.id)} className="rounded border-slate-300 dark:border-slate-600 text-primary-600 cursor-pointer" /></td>
+                      <td className="px-2 py-2 text-center"><input type="number" value={item.customOrder ?? ''} onChange={(e) => handleUpdateCustomOrder(item, e.target.value ? parseInt(e.target.value) : undefined)} className="w-12 text-center border border-slate-300 dark:border-slate-600 rounded-md py-0.5 text-xs font-bold" /></td>
+                      <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400 font-medium">{new Date(item.date).toLocaleDateString('tr-TR')}</td>
+                      <td className="px-3 py-2.5 font-mono text-slate-700 dark:text-slate-300">{item.applicantTc}</td>
+                      <td className="px-3 py-2.5 font-extrabold text-slate-900 dark:text-slate-100">{item.applicantName}</td>
+                      <td className="px-3 py-2.5 text-center font-semibold">{item.householdSize}</td>
+                      {isManager && <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400">{item.personnelName}</td>}
+                      <td className={`px-3 py-2.5 text-center font-black ${isRejectedRecord(item.result) ? 'text-red-600 dark:text-red-400' : 'text-primary-700 dark:text-primary-400'}`}>
+                        {user?.role === 'personnel' && !showScores ? '***' : (
+                          <div className="flex flex-col items-center gap-0.5">
+                            {isOldSystemRecord(item.result) && (
+                              <span className="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded border border-amber-200 leading-none">
+                                Eski: {item.result.totalScore}
+                              </span>
+                            )}
+                            <span className="bg-primary-50 dark:bg-primary-950/60 border border-primary-200 dark:border-primary-800 px-2 py-0.5 rounded-full text-xs">
+                              {isOldSystemRecord(item.result) ? calculateNewSystemScore(item.data).totalScore : item.result.totalScore}
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-extrabold uppercase text-[10px] border ${
+                          isApproved
+                            ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                            : 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
+                        }`}>
+                          {isApproved ? <><CheckCircle2 size={11}/> ONAYLI</> : <><Clock size={11}/> BEKLİYOR</>}
+                        </span>
+                      </td>
+                      <td className={`px-3 py-2.5 font-bold ${isRejectedRecord(item.result) ? 'text-red-600 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                        {user?.role === "personnel" && !showScores ? "***" : isRejectedRecord(item.result) ? "KAPSAM DIŞI (RED)" : item.result.assistance?.text}
+                      </td>
+                      <td className="px-3 py-2.5 text-right">
+                        <div className="inline-flex items-center gap-1">
+                          {isManager && !isApproved && (
+                            <button onClick={() => handleSingleApprove(item)} className="bg-emerald-600 hover:bg-emerald-500 text-white p-1.5 rounded-lg transition-all shadow-2xs active:scale-95" title="Onayla">
+                              <Check size={14} />
+                            </button>
+                          )}
+                          <button onClick={() => handlePrintSingleDetailed(item)} className="bg-primary-600 hover:bg-primary-500 text-white p-1.5 rounded-lg transition-all shadow-2xs active:scale-95" title="Resmi A4 Rapor Yazdır">
+                            <Printer size={14} />
+                          </button>
+                          <Link href={`/assessment/${item.id}`} className="bg-slate-800 hover:bg-slate-700 text-white p-1.5 rounded-lg transition-all shadow-2xs active:scale-95 inline-flex items-center justify-center" title="İnceleme Detayı">
+                            <Eye size={14} />
+                          </Link>
+                          {!isApproved && (
+                            <Link href={`/assessment/${item.id}/edit`} className="bg-amber-500 hover:bg-amber-600 text-white p-1.5 rounded-lg transition-all shadow-2xs active:scale-95 inline-flex items-center justify-center" title="Düzenle">
+                              <Pencil size={14} />
+                            </Link>
+                          )}
+                          {canDelete && (
+                            <button onClick={() => handleDeleteSingle(item)} className="bg-rose-600 hover:bg-rose-500 text-white p-1.5 rounded-lg transition-all shadow-2xs active:scale-95" title="Sil">
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

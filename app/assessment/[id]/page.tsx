@@ -6,10 +6,11 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getAssessmentById, Assessment, saveAssessment, deleteAssessment } from '@/lib/db';
-import { ShieldCheck, Printer, CheckCircle2, Info, AlertTriangle, Check, X, FileText, RotateCcw, Lock, Unlock, Trash2 } from 'lucide-react';
+import { ShieldCheck, Printer, CheckCircle2, Info, AlertTriangle, Check, X, FileText, RotateCcw, Lock, Unlock, Trash2, ArrowLeft, Pencil, Award, Banknote, Users, Phone, Hash, MapPin, Calendar } from 'lucide-react';
 import { useDialog } from '@/components/DialogProvider';
 import Link from 'next/link';
-import { AppHeader } from '@/components/app-header';
+import { SidebarLayout } from '@/components/sidebar';
+import { LogoImage } from '@/components/logo-image';
 import { calculateNewSystemScore, isOldSystemRecord, isRejectedRecord } from '@/lib/scoring';
 
 export default function AssessmentDetail() {
@@ -226,7 +227,8 @@ export default function AssessmentDetail() {
     : (assessment.managerName || 'Vakıf Müdürü');
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 flex flex-col">
+    <SidebarLayout>
+    <div className="min-h-screen bg-slate-50/70 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 flex flex-col">
       {/* Print Specific CSS to enforce single page clean official document */}
       <style>{`
         @media print {
@@ -258,113 +260,154 @@ export default function AssessmentDetail() {
         }
       `}</style>
 
-      <AppHeader
-        subtitle={`📄 İnceleme Detayı • Ref: ${assessment.id.slice(0, 8)}`}
-        actions={
-          <div className="flex items-center gap-2 flex-wrap justify-end">
-            {(user.role === 'personnel' || (user.role === 'manager' && assessment.data?.b_ozelSebepPuanBekliyor)) && assessment.status !== 'approved' && (
-              <Link
-                href={`/assessment/${assessment.id}/edit`}
-                className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800/50 dark:hover:bg-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-white/30 transition-colors"
-              >
-                <span>Düzenle</span>
-              </Link>
-            )}
-            {user.role === 'manager' && assessment.status !== 'approved' && (
-              <button
-                onClick={handleApprove}
-                disabled={approving}
-                className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
-              >
-                <CheckCircle2 size={14} />
-                <span>{approving ? 'Onaylanıyor...' : 'Onayla'}</span>
-              </button>
-            )}
-            {user.role === 'manager' && assessment.status === 'approved' && (
-              <button
-                onClick={handleRevokeApproval}
-                disabled={approving}
-                className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
-              >
-                <RotateCcw size={14} />
-                <span>{approving ? 'İşleniyor...' : 'Onaylı Aç'}</span>
-              </button>
-            )}
-            <button
-              onClick={() => window.print()}
-              className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800/50 dark:hover:bg-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-white/30 transition-colors"
-            >
-              <Printer size={14} />
-              <span className="hidden sm:inline">Yazdır</span>
-            </button>
-            {assessment.status !== 'approved' && (
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="flex items-center gap-1.5 bg-red-500/80 hover:bg-red-400 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95"
-              >
-                <Trash2 size={14} />
-                <span>{deleting ? 'Siliniyor...' : 'Sil'}</span>
-              </button>
-            )}
+      {/* Top Sticky Official Navigation & Action Bar */}
+      <header className="no-print sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-2xs">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-extrabold border border-slate-200 dark:border-slate-700 transition-all active:scale-95 shrink-0"
+            title="Gösterge Paneline Dön"
+          >
+            <ArrowLeft size={15} />
+            <span>Panele Dön</span>
+          </Link>
+          <div className="hidden sm:flex items-center gap-2 min-w-0">
+            <span className="text-slate-300 dark:text-slate-700">|</span>
+            <span className="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-wide truncate">
+              Resmi Sosyal İnceleme Dosyası
+            </span>
+            <span className="text-[10px] font-mono bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 px-2 py-0.5 rounded-md border border-primary-200 dark:border-primary-800 font-bold">
+              #{assessment.id.slice(0, 8)}
+            </span>
           </div>
-        }
-      />
+        </div>
+
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
+          {(user.role === 'personnel' || user.role === 'superadmin' || (user.role === 'manager' && assessment.data?.b_ozelSebepPuanBekliyor)) && assessment.status !== 'approved' && (
+            <Link
+              href={`/assessment/${assessment.id}/edit`}
+              className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all shadow-xs active:scale-95"
+            >
+              <Pencil size={13} />
+              <span>Düzenle</span>
+            </Link>
+          )}
+          {(user.role === 'manager' || user.role === 'superadmin') && assessment.status !== 'approved' && (
+            <button
+              onClick={handleApprove}
+              disabled={approving}
+              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all shadow-xs active:scale-95"
+            >
+              <CheckCircle2 size={14} />
+              <span>{approving ? 'Onaylanıyor...' : 'Onayla'}</span>
+            </button>
+          )}
+          {(user.role === 'manager' || user.role === 'superadmin') && assessment.status === 'approved' && (
+            <button
+              onClick={handleRevokeApproval}
+              disabled={approving}
+              className="flex items-center gap-1.5 bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all shadow-xs active:scale-95"
+            >
+              <RotateCcw size={14} />
+              <span>{approving ? 'İşleniyor...' : 'Onayı Kaldır'}</span>
+            </button>
+          )}
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 bg-primary-600 hover:bg-primary-500 text-white px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all shadow-xs active:scale-95"
+          >
+            <Printer size={14} />
+            <span>Resmi A4 Yazdır</span>
+          </button>
+          {assessment.status !== 'approved' && (
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="flex items-center gap-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/70 px-2.5 py-1.5 rounded-xl text-xs font-extrabold transition-all active:scale-95"
+              title="Kaydı Sil"
+            >
+              <Trash2 size={14} />
+              <span className="hidden sm:inline">{deleting ? 'Siliniyor...' : 'Sil'}</span>
+            </button>
+          )}
+          <Link
+            href="/"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-extrabold transition-all active:scale-95"
+            title="Detay Sayfasını Kapat"
+          >
+            <X size={15} />
+            <span className="hidden sm:inline">Kapat</span>
+          </Link>
+        </div>
+      </header>
 
       {/* SCREEN MAIN CONTENT */}
-      <main className="flex-1 max-w-6xl mx-auto w-full p-6 lg:p-8 space-y-6 no-print">
+      <main className="flex-1 max-w-6xl mx-auto w-full p-3 sm:p-5 lg:p-6 space-y-4 no-print">
         
-        {/* Top Header Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100">{assessment.applicantName}</h2>
+        {/* Top Institutional Dossier Header Card */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-600 via-indigo-500 to-emerald-500" />
+          <div className="space-y-2.5 flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">{assessment.applicantName}</h2>
               {assessment.status === 'approved' ? (
-                <span className="bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full font-extrabold border border-emerald-200 flex items-center gap-1">
-                  <CheckCircle2 size={14} /> ONAYLANDI
+                <span className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[11px] px-2.5 py-0.5 rounded-full font-extrabold border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                  <CheckCircle2 size={13} /> ONAYLANDI
                 </span>
               ) : (
-                <span className="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-extrabold border border-amber-200 flex items-center gap-1">
-                  <Info size={14} /> MÜDÜR ONAYI BEKLİYOR
+                <span className="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-[11px] px-2.5 py-0.5 rounded-full font-extrabold border border-amber-200 dark:border-amber-800 flex items-center gap-1">
+                  <Info size={13} /> MÜDÜR ONAYI BEKLİYOR
                 </span>
               )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm text-slate-600 dark:text-slate-400 pt-1">
-              <div><span className="font-bold text-slate-400 block text-xs uppercase">T.C. Kimlik</span>{assessment.applicantTc}</div>
-              <div><span className="font-bold text-slate-400 block text-xs uppercase">Telefon</span>{assessment.phoneNumber || '-'}</div>
-              <div><span className="font-bold text-slate-400 block text-xs uppercase">Hane Kişi Sayısı</span>{assessment.householdSize} kişi</div>
-              <div><span className="font-bold text-slate-400 block text-xs uppercase">Hane No (Ref)</span>{assessment.householdNo || '-'}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs text-slate-600 dark:text-slate-300 pt-0.5">
+              <div className="bg-slate-50 dark:bg-slate-900/70 px-3 py-2 rounded-xl border border-slate-200/70 dark:border-slate-700/70">
+                <span className="font-bold text-slate-400 block text-[10px] uppercase flex items-center gap-1"><Hash size={11}/> T.C. Kimlik No</span>
+                <strong className="text-slate-900 dark:text-slate-100 font-mono text-xs sm:text-sm">{assessment.applicantTc}</strong>
+              </div>
+              <div className="bg-slate-50 dark:bg-slate-900/70 px-3 py-2 rounded-xl border border-slate-200/70 dark:border-slate-700/70">
+                <span className="font-bold text-slate-400 block text-[10px] uppercase flex items-center gap-1"><Phone size={11}/> Telefon</span>
+                <strong className="text-slate-900 dark:text-slate-100 text-xs sm:text-sm">{assessment.phoneNumber || '-'}</strong>
+              </div>
+              <div className="bg-slate-50 dark:bg-slate-900/70 px-3 py-2 rounded-xl border border-slate-200/70 dark:border-slate-700/70">
+                <span className="font-bold text-slate-400 block text-[10px] uppercase flex items-center gap-1"><Users size={11}/> Hane Mevcudu</span>
+                <strong className="text-slate-900 dark:text-slate-100 text-xs sm:text-sm">{assessment.householdSize} Kişi</strong>
+              </div>
+              <div className="bg-slate-50 dark:bg-slate-900/70 px-3 py-2 rounded-xl border border-slate-200/70 dark:border-slate-700/70">
+                <span className="font-bold text-slate-400 block text-[10px] uppercase flex items-center gap-1"><FileText size={11}/> Hane Ref No</span>
+                <strong className="text-slate-900 dark:text-slate-100 text-xs sm:text-sm">{assessment.householdNo || '-'}</strong>
+              </div>
             </div>
 
             {assessment.applicantAddress && (
-              <p className="text-sm text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 mt-2">
-                <strong className="text-slate-800 dark:text-slate-200 font-semibold">Adres:</strong> {assessment.applicantAddress}
+              <p className="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/70 px-3 py-2 rounded-xl border border-slate-200/70 dark:border-slate-700/70 flex items-center gap-1.5">
+                <MapPin size={13} className="text-primary-500 shrink-0" />
+                <span><strong className="text-slate-800 dark:text-slate-200 font-bold">İkamet Adresi:</strong> {assessment.applicantAddress}</span>
               </p>
             )}
           </div>
 
-          <div className="bg-slate-900 text-white p-5 rounded-xl text-right shrink-0 min-w-[200px]">
-  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Hesaplanan Puan</p>
-  <p className={`text-4xl font-black ${isRejectedRecord(calc) ? 'text-red-400' : 'text-primary-400'}`}>
-    {isOldSystemRecord(calc) ? calculateNewSystemScore(state).totalScore : calc.totalScore} <span className="text-xs text-slate-400 font-normal">/ 100</span>
-  </p>
-  <p className="text-xs font-bold mt-2 uppercase text-slate-300">
-    {isRejectedRecord(calc) ? 'KAPSAM DIŞI (RED)' : (isOldSystemRecord(calc) ? calculateNewSystemScore(state).assistance.text : calc.assistance.text)}
-  </p>
-  
-  {isOldSystemRecord(calc) && (
-    <div className="mt-4 pt-4 border-t border-slate-700">
-      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Eski Sistem Puanı (Rozet)</p>
-      <p className={`text-xl font-black ${calc.totalScore < 50 || calc.isRejected ? 'text-red-400' : 'text-amber-400'}`}>
-        {calc.totalScore} <span className="text-[10px] text-slate-500 font-normal">/ 155</span>
-      </p>
-      <p className="text-[10px] font-bold mt-1 text-slate-400">
-        {calc.totalScore < 50 || calc.isRejected ? 'RED' : calc.assistance.text}
-      </p>
-    </div>
-  )}
-</div>
+          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white p-4 sm:p-5 rounded-2xl text-right shrink-0 min-w-[210px] border border-slate-800 shadow-md flex flex-col justify-center">
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-0.5">Muhtaçlık Puanı</p>
+            <p className={`text-3xl sm:text-4xl font-black leading-none ${isRejectedRecord(calc) ? 'text-red-400' : 'text-primary-400'}`}>
+              {isOldSystemRecord(calc) ? calculateNewSystemScore(state).totalScore : calc.totalScore} <span className="text-xs text-slate-400 font-semibold">/ 100</span>
+            </p>
+            <div className="mt-2 pt-2 border-t border-white/10">
+              <p className={`text-xs font-extrabold uppercase ${isRejectedRecord(calc) ? 'text-red-300' : 'text-emerald-400'}`}>
+                {isRejectedRecord(calc) ? 'KAPSAM DIŞI (RED)' : (isOldSystemRecord(calc) ? calculateNewSystemScore(state).assistance.text : calc.assistance.text)}
+              </p>
+            </div>
+            
+            {isOldSystemRecord(calc) && (
+              <div className="mt-2.5 pt-2.5 border-t border-slate-700">
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Eski Sistem Puanı</p>
+                <p className={`text-sm font-black ${calc.totalScore < 50 || calc.isRejected ? 'text-red-400' : 'text-amber-400'}`}>
+                  {calc.totalScore} / 155 ({calc.totalScore < 50 || calc.isRejected ? 'RED' : calc.assistance.text})
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Manager Banner Alert if pending */}
@@ -858,5 +901,6 @@ export default function AssessmentDetail() {
       </div>
 
     </div>
+    </SidebarLayout>
   );
 }

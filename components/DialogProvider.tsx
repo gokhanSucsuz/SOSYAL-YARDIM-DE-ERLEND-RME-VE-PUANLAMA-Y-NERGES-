@@ -2,11 +2,14 @@
 
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Info, X, Check, AlertCircle } from 'lucide-react';
+import { AlertTriangle, Info, X, Check, AlertCircle, Save, Trash2 } from 'lucide-react';
+
+export type UnsavedChoice = 'save' | 'discard' | 'cancel';
 
 interface DialogContextProps {
   showAlert: (message: string, type?: 'info' | 'warning' | 'error' | 'success') => Promise<void>;
   showConfirm: (message: string, confirmText?: string, cancelText?: string) => Promise<boolean>;
+  showUnsavedChanges: (message?: string) => Promise<UnsavedChoice>;
 }
 
 const DialogContext = createContext<DialogContextProps | undefined>(undefined);
@@ -21,12 +24,12 @@ export function useDialog() {
 
 type DialogState = {
   isOpen: boolean;
-  type: 'alert' | 'confirm';
+  type: 'alert' | 'confirm' | 'unsaved';
   message: string;
   alertType?: 'info' | 'warning' | 'error' | 'success';
   confirmText?: string;
   cancelText?: string;
-  resolve?: (value: boolean | void | PromiseLike<boolean | void>) => void;
+  resolve?: (value: any) => void;
 };
 
 export function DialogProvider({ children }: { children: ReactNode }) {
@@ -43,7 +46,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         type: 'alert',
         message,
         alertType,
-        resolve: resolve as (value: boolean | void | PromiseLike<boolean | void>) => void,
+        resolve,
       });
     });
   }, []);
@@ -56,24 +59,35 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         message,
         confirmText,
         cancelText,
-        resolve: resolve as (value: boolean | void | PromiseLike<boolean | void>) => void,
+        resolve,
       });
     });
   }, []);
 
-  const close = useCallback((result: boolean = false) => {
+  const showUnsavedChanges = useCallback((message = 'İnceleme formunda kaydedilmemiş değişiklikler yaptınız. Çıkmadan önce bu değişiklikleri kaydetmek ister misiniz?') => {
+    return new Promise<UnsavedChoice>((resolve) => {
+      setDialog({
+        isOpen: true,
+        type: 'unsaved',
+        message,
+        resolve,
+      });
+    });
+  }, []);
+
+  const close = useCallback((result: any = false) => {
     setDialog(prev => ({ ...prev, isOpen: false }));
     if (dialog.resolve) {
-      if (dialog.type === 'confirm') {
+      if (dialog.type === 'confirm' || dialog.type === 'unsaved') {
         dialog.resolve(result);
       } else {
-        dialog.resolve();
+        dialog.resolve(undefined);
       }
     }
   }, [dialog]);
 
   return (
-    <DialogContext.Provider value={{ showAlert, showConfirm }}>
+    <DialogContext.Provider value={{ showAlert, showConfirm, showUnsavedChanges }}>
       {children}
       <AnimatePresence>
         {dialog.isOpen && (
@@ -82,67 +96,109 @@ export function DialogProvider({ children }: { children: ReactNode }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="absolute inset-0 bg-secondary-900/40 backdrop-blur-sm"
-              onClick={() => { if (dialog.type === 'alert') close() }}
+              transition={{ duration: 0.18 }}
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-xs"
+              onClick={() => {
+                if (dialog.type === 'alert') close();
+                else if (dialog.type === 'unsaved') close('cancel');
+              }}
             />
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.94, opacity: 0, y: 12 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden max-w-sm w-full mx-auto flex flex-col"
+              exit={{ scale: 0.94, opacity: 0, y: 12 }}
+              transition={{ type: 'spring', damping: 26, stiffness: 340 }}
+              className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden max-w-md w-full mx-auto flex flex-col"
             >
               {dialog.type === 'alert' && (
-                <div className="p-6 pb-0 flex flex-col items-center text-center">
-                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
-                    dialog.alertType === 'error' ? 'bg-red-100 text-red-600' :
-                    dialog.alertType === 'warning' ? 'bg-amber-100 text-amber-600' :
-                    dialog.alertType === 'success' ? 'bg-emerald-100 text-emerald-600' :
-                    'bg-primary-100 text-primary-600'
+                <div className="p-5 pb-0 flex flex-col items-center text-center">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3.5 shadow-sm ${
+                    dialog.alertType === 'error' ? 'bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400' :
+                    dialog.alertType === 'warning' ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' :
+                    dialog.alertType === 'success' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' :
+                    'bg-primary-100 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400'
                   }`}>
-                    {dialog.alertType === 'error' ? <AlertCircle size={32} /> :
-                     dialog.alertType === 'warning' ? <AlertTriangle size={32} /> :
-                     dialog.alertType === 'success' ? <Check size={32} /> :
-                     <Info size={32} />}
+                    {dialog.alertType === 'error' ? <AlertCircle size={28} /> :
+                     dialog.alertType === 'warning' ? <AlertTriangle size={28} /> :
+                     dialog.alertType === 'success' ? <Check size={28} /> :
+                     <Info size={28} />}
                   </div>
-                  <h3 className="text-xl font-bold text-secondary-900 mb-2">Bilgi</h3>
-                  <p className="text-secondary-600 text-sm">{dialog.message}</p>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-slate-100 mb-1.5">Sistem Bildirimi</h3>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">{dialog.message}</p>
                 </div>
               )}
 
               {dialog.type === 'confirm' && (
-                <div className="p-6 pb-0 flex flex-col items-center text-center">
-                  <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mb-4">
-                    <AlertTriangle size={32} />
+                <div className="p-5 pb-0 flex flex-col items-center text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3.5 shadow-sm">
+                    <AlertTriangle size={28} />
                   </div>
-                  <h3 className="text-xl font-bold text-secondary-900 mb-2">Emin misiniz?</h3>
-                  <p className="text-secondary-600 text-sm whitespace-pre-line">{dialog.message}</p>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-slate-100 mb-1.5">İşlem Onayı</h3>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm whitespace-pre-line leading-relaxed">{dialog.message}</p>
                 </div>
               )}
 
-              <div className="p-6 flex gap-3 mt-2">
-                {dialog.type === 'confirm' && (
+              {dialog.type === 'unsaved' && (
+                <div className="p-5 pb-1 flex flex-col items-center text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3 shadow-sm border border-amber-200 dark:border-amber-800/50">
+                    <Save size={26} />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 mb-1.5">
+                    Değişiklikler Kaydedilsin mi?
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
+                    {dialog.message}
+                  </p>
+                </div>
+              )}
+
+              {dialog.type === 'unsaved' ? (
+                <div className="p-5 flex flex-col gap-2 mt-1">
                   <button
-                    onClick={() => close(false)}
-                    className="flex-1 py-3 px-4 rounded-xl font-bold text-secondary-700 bg-secondary-100 hover:bg-secondary-200 transition-colors"
+                    onClick={() => close('save')}
+                    className="w-full py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm text-white bg-gradient-to-r from-emerald-600 to-primary-600 hover:from-emerald-500 hover:to-primary-500 shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                   >
-                    {dialog.cancelText}
+                    <Save size={16} />
+                    <span>Kaydet ve Kapat</span>
                   </button>
-                )}
-                <button
-                  onClick={() => close(true)}
-                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-white transition-colors ${
-                    dialog.type === 'confirm' ? 'bg-primary-700 hover:bg-primary-800' :
-                    dialog.alertType === 'error' ? 'bg-red-600 hover:bg-red-700' :
-                    dialog.alertType === 'warning' ? 'bg-amber-600 hover:bg-amber-700' :
-                    dialog.alertType === 'success' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                    'bg-primary-700 hover:bg-primary-800'
-                  }`}
-                >
-                  {dialog.type === 'confirm' ? dialog.confirmText : 'Tamam'}
-                </button>
-              </div>
+                  <button
+                    onClick={() => close('discard')}
+                    className="w-full py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200 dark:border-rose-800/60 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                  >
+                    <Trash2 size={15} />
+                    <span>Kaydetmeden Kapat</span>
+                  </button>
+                  <button
+                    onClick={() => close('cancel')}
+                    className="w-full py-2 px-4 rounded-xl font-bold text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
+                  >
+                    İncelemeye Devam Et (İptal)
+                  </button>
+                </div>
+              ) : (
+                <div className="p-5 flex gap-2.5 mt-2">
+                  {dialog.type === 'confirm' && (
+                    <button
+                      onClick={() => close(false)}
+                      className="flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      {dialog.cancelText}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => close(true)}
+                    className={`flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm text-white transition-colors shadow-sm ${
+                      dialog.type === 'confirm' ? 'bg-primary-700 hover:bg-primary-800' :
+                      dialog.alertType === 'error' ? 'bg-red-600 hover:bg-red-700' :
+                      dialog.alertType === 'warning' ? 'bg-amber-600 hover:bg-amber-700' :
+                      dialog.alertType === 'success' ? 'bg-emerald-600 hover:bg-emerald-700' :
+                      'bg-primary-700 hover:bg-primary-800'
+                    }`}
+                  >
+                    {dialog.type === 'confirm' ? dialog.confirmText : 'Tamam'}
+                  </button>
+                </div>
+              )}
             </motion.div>
           </div>
         )}

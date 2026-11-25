@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldCheck, ChevronRight, ChevronLeft, Save, AlertTriangle, ArrowLeft, CheckCircle2, Info,
   Tv, Smartphone, Wind, Flame, Box, Shirt, Sparkles, Plug, User, MapPin, Phone, Hash, Users, Activity, Minus, Plus,
-  Eye, EyeOff, Award, Banknote, TrendingUp
+  Eye, EyeOff, Award, Banknote, TrendingUp, X
 } from 'lucide-react';
 import { saveAssessment, getAllAssessments, calculateAssistanceFromScore, getAllMeetings } from '@/lib/db';
 import { SectionCard, CheckboxItem, RadioItem, ScoreButtons, CounterItem, ApplianceStatusItem } from '@/components/ui-components';
@@ -33,7 +33,7 @@ function NewAssessmentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialMeetingId = searchParams?.get('meetingId') || undefined;
-  const { showAlert } = useDialog();
+  const { showAlert, showUnsavedChanges } = useDialog();
   
   const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(0);
@@ -69,7 +69,7 @@ function NewAssessmentContent() {
     getAllAssessments().then(res => setAllAssessments(res.data)).catch(() => {});
   }, [router, initialMeetingId]);
 
-  const [state, setState] = useState({
+  const INITIAL_STATE = {
     applicantName: "",
     applicantTc: "",
     applicantAddress: "",
@@ -93,10 +93,10 @@ function NewAssessmentContent() {
     b_yetim: false,
     b_koruyucuAile: false,
     b_yabanciUyruklu: false,
-    b_dusukEngelli: false,         // YENİ: %20-39 engel oranı (+3 puan)
+    b_dusukEngelli: false,
     b_ozelSebepMetin: "",
-    b_ozelSebepPuan: 0,            // Müdür onayıyla aktif; personel giremez
-    b_ozelSebepPuanBekliyor: false, // Personel metin girdi, müdür onayı bekliyor
+    b_ozelSebepPuan: 0,
+    b_ozelSebepPuanBekliyor: false,
     b_cokluOzelDurumluBirey: false,
     // C
     c_0_6yas: 0,
@@ -106,7 +106,7 @@ function NewAssessmentContent() {
     c_meslekiEgitim: 0,
     c_acikLise: 0,
     c_uni: 0,
-    // D - Barınma (Genişletilmiş Kriterler)
+    // D - Barınma
     d_evsiz: false,
     d_afetzede: false,
     d_kiraci: false,
@@ -127,7 +127,7 @@ function NewAssessmentContent() {
     appliance_telefon: 'yeni',
     appliance_klima: 'yeni',
     appliance_diger: 'yeni',
-    // F - Sosyal Kırılganlık (Genişletilmiş Kriterler)
+    // F - Sosyal Kırılganlık
     e_kadinReis: false,
     e_bosanmis: false,
     e_dul: false,
@@ -145,17 +145,33 @@ function NewAssessmentContent() {
     f_aciliyet: 0,
     f_sosyalDestek: 0,
     f_risk: 0,
-    // Varlık Testi (Sistem Kontrolleri Adımı)
-    a_aracSahibi: false,           // Araç tescil kaydı var → -15 puan
-    a_birdenFazlaTasinmaz: false,  // 2+ taşınmaz kaydı → -20 puan
-    a_aktifSgkPrim: false,         // Aktif SGK prim ödemesi → -5 ceza puanı
-    // Yardım Yığılması (Mükerrerlik)
-    a_son3AyYardimAldi: false,     // Son 3 ayda vakıftan yardım aldı mı?
-    a_son3AyYardimKisi: 0,         // Varsa kaç kişi? (Her kişi -5 puan)
+    // Varlık Testi
+    a_aracSahibi: false,
+    a_birdenFazlaTasinmaz: false,
+    a_aktifSgkPrim: false,
+    // Yardım Yığılması
+    a_son3AyYardimAldi: false,
+    a_son3AyYardimKisi: 0,
     // Check
     systemChecksDone: false,
     falseStatement: false,
-  });
+  };
+
+  const [state, setState] = useState(INITIAL_STATE);
+  const initialSnapshot = useMemo(() => JSON.stringify(INITIAL_STATE), []);
+  const isDirty = useMemo(() => JSON.stringify(state) !== initialSnapshot, [state, initialSnapshot]);
+
+  // Tarayıcı sekmesi kapatılırken kaydedilmemiş değişiklik uyarısı
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty && !isSaving) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty, isSaving]);
 
   const set = (key: string, value: any) => setState(s => ({ ...s, [key]: value }));
 
@@ -230,46 +246,78 @@ function NewAssessmentContent() {
     }
   };
 
+  const handleClose = async () => {
+    if (!isDirty) {
+      router.push('/');
+      return;
+    }
+    const choice = await showUnsavedChanges(
+      'Yeni inceleme formunda girilmiş bilgiler bulunuyor. Çıkmadan önce bu incelemeyi kaydetmek ister misiniz?'
+    );
+    if (choice === 'save') {
+      if (!isIdentityValid) {
+        await showAlert('Kaydedebilmek için 1. Adımdaki "Adı Soyadı" ve 11 haneli "T.C. Kimlik No" alanlarını eksiksiz doldurmanız gerekmektedir.', 'warning');
+        setStep(0);
+        return;
+      }
+      await handleSave();
+    } else if (choice === 'discard') {
+      router.push('/');
+    }
+  };
+
   if (!user) return null;
 
   return (
-    <div className="h-screen max-h-screen w-full overflow-hidden flex flex-col bg-slate-50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary-600 selection:text-white">
+    <div className="h-[100dvh] max-h-[100dvh] w-full overflow-hidden flex flex-col bg-slate-50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary-600 selection:text-white">
       
       {/* Header */}
-      <header className="bg-white dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-5 py-2 flex justify-between items-center shrink-0 z-30">
-        <div className="flex items-center gap-2.5">
-          <Link href="/" className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all active:scale-95 touch-manipulation text-slate-700 dark:text-slate-300">
-            <ArrowLeft size={18} />
-          </Link>
+      <header className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-2.5 sm:px-5 py-1.5 sm:py-2 flex justify-between items-center shrink-0 z-30">
+        <div className="flex items-center gap-2 min-w-0">
+          <button
+            type="button"
+            onClick={handleClose}
+            title="İncelemeyi Kapat / Gösterge Paneline Dön"
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all active:scale-95 touch-manipulation text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80 shrink-0"
+          >
+            <ArrowLeft size={17} />
+          </button>
           <LogoImage 
-            className="w-8 h-8 rounded-xl shadow-md border-2 border-slate-300 dark:border-slate-700 object-cover shrink-0" 
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 shrink-0" 
           />
-          <div>
-            <h1 className="text-xs sm:text-sm font-black tracking-tight uppercase bg-gradient-to-r from-slate-800 via-slate-600 to-slate-500 dark:from-white dark:via-slate-100 dark:to-slate-400 bg-clip-text text-transparent">
-              Saha İnceleme Sihirbazı
-            </h1>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5">
-              <span>Adım {step + 1} / {stepsCount}:</span>
-              <span className="text-primary-600 dark:text-primary-400 font-extrabold bg-primary-500/10 px-1.5 py-0.5 rounded border border-primary-500/20">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <h1 className="text-xs sm:text-sm font-black tracking-tight uppercase bg-gradient-to-r from-slate-900 via-primary-800 to-slate-700 dark:from-white dark:via-slate-100 dark:to-slate-300 bg-clip-text text-transparent truncate">
+                Saha İnceleme Sihirbazı
+              </h1>
+              {isDirty && (
+                <span className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                  Taslak • Değişiklik Var
+                </span>
+              )}
+            </div>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1 truncate">
+              <span>Adım {step + 1}/{stepsCount}:</span>
+              <span className="text-primary-600 dark:text-primary-400 font-extrabold bg-primary-500/10 px-1.5 py-0.2 rounded border border-primary-500/20">
                 {stepNames[step]}
               </span>
               {meetingInfo && (
-                <span className="hidden sm:inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300 font-extrabold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 ml-1">
-                  <CheckCircle2 size={11} /> Toplantı: {meetingInfo.meetingNo}
+                <span className="hidden sm:inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300 font-extrabold bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20 ml-0.5">
+                  <CheckCircle2 size={10} /> {meetingInfo.meetingNo}
                 </span>
               )}
             </p>
           </div>
         </div>
 
-        {/* Live Score & Aid Pill in Header */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="hidden md:flex flex-col items-end border-r border-slate-200 dark:border-slate-800 pr-3">
+        {/* Live Score & Aid Pill + Close Button in Header */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          <div className="hidden lg:flex flex-col items-end border-r border-slate-200 dark:border-slate-800 pr-2.5">
             <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Görevli Personel</span>
             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{user.name}</span>
           </div>
 
-          <div className={`px-2.5 py-1 rounded-xl border transition-all flex items-center gap-2 shadow-xs ${
+          <div className={`px-2 sm:px-2.5 py-1 rounded-xl border transition-all flex items-center gap-1.5 sm:gap-2 shadow-2xs ${
             calc.isRejected
               ? 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800/60'
               : calc.totalScore >= 71
@@ -280,7 +328,7 @@ function NewAssessmentContent() {
           }`}>
             <div className="text-right">
               <div className="flex items-center justify-end gap-1">
-                <span className="text-[9px] uppercase font-extrabold text-slate-400 tracking-wider">
+                <span className="text-[9px] uppercase font-extrabold text-slate-400 tracking-wider hidden xs:inline">
                   Puan:
                 </span>
                 <span className={`text-xs font-black ${
@@ -290,8 +338,8 @@ function NewAssessmentContent() {
                 </span>
               </div>
               <div className="flex items-center justify-end gap-1 -mt-0.5">
-                <span className="text-[9px] font-bold text-slate-400">Yardım:</span>
-                <span className={`text-[11px] font-extrabold ${
+                <span className="text-[9px] font-bold text-slate-400 hidden xs:inline">Yardım:</span>
+                <span className={`text-[10px] sm:text-[11px] font-extrabold ${
                   calc.isRejected || calc.assistance.amount === 0 
                     ? 'text-slate-500' 
                     : 'text-emerald-600 dark:text-emerald-400'
@@ -313,6 +361,17 @@ function NewAssessmentContent() {
               {showScores ? <EyeOff size={14} /> : <Eye size={14} />}
             </button>
           </div>
+
+          {/* Explicit Close Button */}
+          <button
+            type="button"
+            onClick={handleClose}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/70 transition-all active:scale-95 touch-manipulation shadow-2xs"
+            title="İncelemeyi Kapat"
+          >
+            <X size={15} />
+            <span className="hidden sm:inline">Kapat</span>
+          </button>
         </div>
       </header>
 
@@ -1062,19 +1121,28 @@ function NewAssessmentContent() {
       </div>
 
       {/* Ergonomic Bottom Navigation Bar as flex child */}
-      <div className="shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-2 sm:py-2.5 shadow-lg z-30 flex items-center justify-between gap-3">
+      <div className="shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg z-30 flex items-center justify-between gap-2 sm:gap-3">
         <motion.button
           whileTap={{ scale: 0.95 }}
           type="button"
-          onClick={() => setStep(s => Math.max(0, s - 1))}
-          disabled={step === 0}
-          className={`flex items-center justify-center px-4 py-2 rounded-xl font-bold text-xs sm:text-sm min-h-[40px] transition-all touch-manipulation ${
+          onClick={() => {
+            if (step === 0) {
+              handleClose();
+            } else {
+              setStep(s => Math.max(0, s - 1));
+            }
+          }}
+          className={`flex items-center justify-center px-3.5 sm:px-4 py-2 rounded-xl font-bold text-xs sm:text-sm min-h-[40px] transition-all touch-manipulation ${
             step === 0 
-              ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700' 
+              ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 hover:bg-rose-100 border border-rose-200 dark:border-rose-800/70' 
               : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600'
           }`}
         >
-          <ChevronLeft size={18} className="mr-1" /> Geri
+          {step === 0 ? (
+            <><X size={16} className="mr-1" /> Kapat</>
+          ) : (
+            <><ChevronLeft size={18} className="mr-1" /> Geri</>
+          )}
         </motion.button>
         
         <div className="text-center px-1">
