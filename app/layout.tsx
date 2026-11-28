@@ -2,6 +2,7 @@ import { type ReactNode } from "react";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import PanelSessionGuard from "@/components/PanelSessionGuard";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
       </head>
       <body className={`${plusJakarta.className} antialiased`}>
+        <PanelSessionGuard />
         <Providers>
           {children}
         </Providers>

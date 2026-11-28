@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
-import { verifyGateCookie } from '@/lib/ssoGate';
+import { clearAllAuthCookies, verifyGateCookie } from '@/lib/ssoGate';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fallback';
 const key = new TextEncoder().encode(JWT_SECRET);
@@ -32,30 +32,37 @@ export async function middleware(req: NextRequest) {
 
   // --- 0. VAKIFPANEL SSO GATEKEEPER ---
   const ssoSecret = process.env.PANEL_SSO_SECRET;
-  if (
-    ssoSecret &&
-    !pathname.startsWith('/api/sso/callback') &&
-    !pathname.startsWith('/yetkisiz-erisim') &&
-    !pathname.startsWith('/api/settings/')
-  ) {
+  const isSsoPublicPath =
+    pathname.startsWith('/api/sso/callback') ||
+    pathname.startsWith('/api/sso/logout') ||
+    pathname.startsWith('/api/sso/status') ||
+    pathname.startsWith('/yetkisiz-erisim');
+
+  if (ssoSecret && !isSsoPublicPath) {
     const gateCookie = req.cookies.get('vakif_panel_gate')?.value;
     const isGateValid = gateCookie ? await verifyGateCookie(gateCookie, ssoSecret) : false;
 
     if (!isGateValid) {
       if (pathname.startsWith('/api/')) {
-        return NextResponse.json(
-          { error: 'Doğrudan erişim engellendi. Lütfen Merkezi Panel üzerinden giriş yapın.' },
+        const apiRes = NextResponse.json(
+          {
+            error: 'Merkezi Panel oturumunuz sonlandırıldı veya doğrudan erişim engellendi.',
+            code: 'PANEL_SESSION_ENDED',
+            redirectTo: '/yetkisiz-erisim',
+          },
           { status: 403 }
         );
+        return clearAllAuthCookies(apiRes);
       }
       const proto = req.headers.get('x-forwarded-proto') || 'https';
       const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
       const baseOrigin = host ? `${proto}://${host}` : req.nextUrl.origin;
-      return NextResponse.redirect(`${baseOrigin}/yetkisiz-erisim`);
+      const redirectRes = NextResponse.redirect(`${baseOrigin}/yetkisiz-erisim`);
+      return clearAllAuthCookies(redirectRes);
     }
   }
 
-  if (pathname === '/yetkisiz-erisim' || pathname.startsWith('/api/sso/callback')) {
+  if (isSsoPublicPath) {
     return NextResponse.next();
   }
 
